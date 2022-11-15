@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
-import com.github.wolfshotz.wyrmroost.blocks.tile.WRSignBlockEntity;
+/*import com.github.wolfshotz.wyrmroost.blocks.tile.WRSignBlockEntity;
 import com.github.wolfshotz.wyrmroost.registry.WRBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.StandingSignBlock;
@@ -61,3 +61,4 @@ public class WRSignBlock extends StandingSignBlock implements WRBlockEntities.Va
         }
     }
 }
+*/

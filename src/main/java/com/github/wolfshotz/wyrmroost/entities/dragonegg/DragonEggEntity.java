@@ -1,33 +1,34 @@
 package com.github.wolfshotz.wyrmroost.entities.dragonegg;
 
-import com.github.wolfshotz.wyrmroost.Wyrmroost;
+/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.DragonEggItem;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
 import com.github.wolfshotz.wyrmroost.util.LerpedFloat;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import net.minecraft.entity.*;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.IPacket;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.particles.ItemParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.particles.RedstoneParticleData;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.World;
-import net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fml.network.FMLPlayMessages;
-import net.minecraftforge.fml.network.NetworkHooks;
+import com.mojang.math.Vector3f;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.DustParticleOptions;
+import net.minecraft.core.particles.ItemParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.Containers;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.fmllegacy.common.registry.IEntityAdditionalSpawnData;
+import net.minecraftforge.fmllegacy.network.FMLPlayMessages;
+import net.minecraftforge.fmllegacy.network.NetworkHooks;
 
 public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnData
 {
@@ -45,19 +46,19 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
     public boolean wiggling = false;
     public int hatchTime;
 
-    public DragonEggEntity(EntityType<? extends DragonEggEntity> type, World level)
+    public DragonEggEntity(EntityType<? extends DragonEggEntity> type, Level level)
     {
         super(type, level);
     }
 
-    public DragonEggEntity(EntityType<TameableDragonEntity> type, int hatchTime, World level)
+    public DragonEggEntity(EntityType<TameableDragonEntity> type, int hatchTime, Level level)
     {
         super(WREntities.DRAGON_EGG.get(), level);
         this.containedDragon = type;
         this.hatchTime = hatchTime;
     }
 
-    public DragonEggEntity(FMLPlayMessages.SpawnEntity packet, World level)
+    public DragonEggEntity(FMLPlayMessages.SpawnEntity packet, Level level)
     {
         super(WREntities.DRAGON_EGG.get(), level);
         this.containedDragon = ModUtils.getEntityTypeByKey(packet.getAdditionalData().readUtf());
@@ -72,14 +73,14 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound)
+    public void readAdditionalSaveData(CompoundTag compound)
     {
         containedDragon = ModUtils.getEntityTypeByKey(compound.getString(DATA_DRAGON_TYPE));
         hatchTime = compound.getInt(DATA_HATCH_TIME);
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound)
+    public void addAdditionalSaveData(CompoundTag compound)
     {
         compound.putString(DATA_DRAGON_TYPE, getDragonKey());
         compound.putInt(DATA_HATCH_TIME, hatchTime);
@@ -119,7 +120,7 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
                     double x = getX() + random.nextGaussian() * 0.2d;
                     double y = getY() + random.nextDouble() + getBbHeight() / 2;
                     double z = getZ() + random.nextGaussian() * 0.2d;
-                    level.addParticle(new RedstoneParticleData(1f, 1f, 0, 0.5f), x, y, z, 0, 0, 0);
+                    level.addParticle(new DustParticleOptions(new Vector3f(1f, 1f, 0), 0.5f), x, y, z, 0, 0, 0);
                 }
                 wiggleTime.add(wiggling? 0.4f : -0.4f);
                 if (wiggleTime.get() == 1) wiggling = false;
@@ -138,7 +139,7 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
     }
 
     @Override
-    public boolean causeFallDamage(float distance, float damageMultiplier)
+    public boolean causeFallDamage(float distance, float damageMultiplier, DamageSource source)
     {
         if (distance > 3)
         {
@@ -157,7 +158,7 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
         move(MoverType.SELF, getDeltaMovement());
         if (!isNoGravity() && !isSprinting())
         {
-            Vector3d vec3d2 = getDeltaMovement();
+            Vec3 vec3d2 = getDeltaMovement();
             double d2;
             if (flag && Math.abs(vec3d2.y - 0.005D) >= 0.003D && Math.abs(vec3d2.y - d0 / 16.0D) < 0.003D) d2 = -0.003D;
             else d2 = vec3d2.y - d0 / 16.0D;
@@ -165,7 +166,7 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
             setDeltaMovement(vec3d2.x, d2, vec3d2.z);
         }
 
-        Vector3d vec3d6 = getDeltaMovement();
+        Vec3 vec3d6 = getDeltaMovement();
         if (horizontalCollision && isFree(vec3d6.x, vec3d6.y + (double) 0.6F - getY() + d1, vec3d6.z))
         {
             setDeltaMovement(vec3d6.x, 0.3F, vec3d6.z);
@@ -195,7 +196,6 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
      * - Set the dragons growing age to a baby <P>
      * - Set the position of that dragon to the position of this egg <P>
      * - Remove this entity (the egg) and play any effects
-     */
     public void hatch()
     {
         if (!level.isClientSide)
@@ -208,20 +208,20 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
             }
             newDragon.moveTo(getX(), getY(), getZ(), 0, 0);
             newDragon.setAge(getProperties().getGrowthTime());
-            newDragon.finalizeSpawn((IServerWorld) level, level.getCurrentDifficultyAt(blockPosition()), SpawnReason.BREEDING, null, null);
+            newDragon.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(blockPosition()), MobSpawnType.BREEDING, null, null);
             level.addFreshEntity(newDragon);
         }
         else
         {
             crack(25);
-            level.playLocalSound(getX(), getY(), getZ(), SoundEvents.TURTLE_EGG_HATCH, SoundCategory.BLOCKS, 1, 1, false);
+            level.playLocalSound(getX(), getY(), getZ(), SoundEvents.TURTLE_EGG_HATCH, SoundSource.BLOCKS, 1, 1, false);
         }
-        remove();
+        remove(RemovalReason.DISCARDED);
     }
 
     public void crack(int intensity)
     {
-        level.playLocalSound(getX(), getY(), getZ(), SoundEvents.TURTLE_EGG_CRACK, SoundCategory.BLOCKS, 1, 1, false);
+        level.playLocalSound(getX(), getY(), getZ(), SoundEvents.TURTLE_EGG_CRACK, SoundSource.BLOCKS, 1, 1, false);
         float f = getBbWidth() * getBbHeight();
         f += f;
         for (int i = 0; i < f * intensity; ++i)
@@ -232,7 +232,7 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
             double xMot = Mafs.nextDouble(random) * getBbWidth() * 0.35;
             double yMot = random.nextDouble() * getBbHeight() * 0.5;
             double zMot = Mafs.nextDouble(random) * getBbWidth() * 0.35;
-            level.addParticle(new ItemParticleData(ParticleTypes.ITEM, new ItemStack(Items.EGG)), x, y, z, xMot, yMot, zMot);
+            level.addParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.EGG)), x, y, z, xMot, yMot, zMot);
         }
     }
 
@@ -246,19 +246,17 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
 
     /**
      * Called When the dragon type of the egg is not what it should be.
-     */
     private void safeError()
     {
         Wyrmroost.LOG.error("THIS ISNT A DRAGON WTF KIND OF ABOMINATION IS THIS HATCHING?!?! Unknown Entity Type for Dragon Egg @ {}", blockPosition());
-        remove();
+        remove(RemovalReason.DISCARDED);
     }
 
-    @Override
     public boolean hurt(DamageSource source, float amount)
     {
         ItemStack stack = DragonEggItem.getStack(containedDragon, hatchTime);
-        InventoryHelper.dropItemStack(level, getX(), getY(), getZ(), stack);
-        remove();
+        Containers.dropItemStack(level, getX(), getY(), getZ(), stack);
+        remove(RemovalReason.KILLED);
 
         return true;
     }
@@ -270,18 +268,18 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
     }
 
     @Override
-    public ItemStack getPickedResult(RayTraceResult target)
+    public ItemStack getPickedResult(HitResult target)
     {
         return DragonEggItem.getStack(containedDragon);
     }
 
     @Override
-    public EntitySize getDimensions(Pose poseIn)
+    public EntityDimensions getDimensions(Pose poseIn)
     {
         return getDimensions();
     }
 
-    public EntitySize getDimensions()
+    public EntityDimensions getDimensions()
     {
         return getProperties().getDimensions();
     }
@@ -299,19 +297,20 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
     }
 
     @Override
-    public IPacket<?> getAddEntityPacket()
+    public Packet<?> getAddEntityPacket()
     {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
     @Override
-    public void writeSpawnData(PacketBuffer buffer)
+    public void writeSpawnData(FriendlyByteBuf buffer)
     {
         buffer.writeUtf(getDragonKey());
     }
 
     @Override
-    public void readSpawnData(PacketBuffer buffer)
+    public void readSpawnData(FriendlyByteBuf buffer)
     {
     }
 }
+*/

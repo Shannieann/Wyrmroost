@@ -1,9 +1,9 @@
 package com.github.wolfshotz.wyrmroost.util;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.Optional;
@@ -48,9 +48,9 @@ public final class Mafs
     /**
      * A good way to get a position offset by the direction of a yaw angle.
      */
-    public static Vector3d getYawVec(float yaw, double xOffset, double zOffset)
+    public static Vec3 getYawVec(float yaw, double xOffset, double zOffset)
     {
-        return new Vector3d(xOffset, 0, zOffset).yRot(-yaw * (PI / 180f));
+        return new Vec3(xOffset, 0, zOffset).yRot(-yaw * (PI / 180f));
     }
 
     /**
@@ -60,12 +60,12 @@ public final class Mafs
      */
     public static double getAngle(double sourceX, double sourceZ, double targetX, double targetZ)
     {
-        return MathHelper.atan2(targetZ - sourceZ, targetX - sourceX) * 180 / Math.PI + 180;
+        return Mth.atan2(targetZ - sourceZ, targetX - sourceX) * 180 / Math.PI + 180;
     }
 
     public static double getAngle(Entity source, Entity target)
     {
-        return MathHelper.atan2(target.getZ() - source.getZ(), target.getX() - source.getX()) * (180 / Math.PI) + 180;
+        return Mth.atan2(target.getZ() - source.getZ(), target.getX() - source.getX()) * (180 / Math.PI) + 180;
     }
 
     /**
@@ -79,22 +79,22 @@ public final class Mafs
     }
 
     @Nullable
-    public static EntityRayTraceResult clipEntities(Entity shooter, double range, @Nullable Predicate<Entity> filter)
+    public static EntityHitResult clipEntities(Entity shooter, double range, @Nullable Predicate<Entity> filter)
     {
         return clipEntities(shooter, range, 0, filter);
     }
 
     @Nullable
-    public static EntityRayTraceResult clipEntities(Entity shooter, double range, double hitRadius, @Nullable Predicate<Entity> filter)
+    public static EntityHitResult clipEntities(Entity shooter, double range, double hitRadius, @Nullable Predicate<Entity> filter)
     {
-        Vector3d eyes = shooter.getEyePosition(1f);
-        Vector3d end = eyes.add(shooter.getLookAngle().multiply(range, range, range));
+        Vec3 eyes = shooter.getEyePosition(1f);
+        Vec3 end = eyes.add(shooter.getLookAngle().multiply(range, range, range));
 
         Entity result = null;
         double distance = range * range;
         for (Entity entity : shooter.level.getEntities(shooter, shooter.getBoundingBox().inflate(range), filter))
         {
-            Optional<Vector3d> opt = entity.getBoundingBox().inflate(hitRadius).clip(eyes, end);
+            Optional<Vec3> opt = entity.getBoundingBox().inflate(hitRadius).clip(eyes, end);
             if (opt.isPresent())
             {
                 double dist = eyes.distanceToSqr(opt.get());
@@ -106,6 +106,6 @@ public final class Mafs
             }
         }
 
-        return result == null? null : new EntityRayTraceResult(result);
+        return result == null? null : new EntityHitResult(result);
     }
 }

@@ -1,19 +1,19 @@
 package com.github.wolfshotz.wyrmroost.client.sound;
 
-import com.github.wolfshotz.wyrmroost.entities.dragon.RoyalRedEntity;
+/*import com.github.wolfshotz.wyrmroost.entities.dragon.RoyalRedEntity;
 import com.github.wolfshotz.wyrmroost.registry.WRSounds;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.TickableSound;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.phys.Vec3;
 
-public class BreathSound extends TickableSound
+public class BreathSound extends AbstractTickableSoundInstance
 {
     private final RoyalRedEntity dragon;
 
     public BreathSound(RoyalRedEntity dragon)
     {
-        super(WRSounds.FIRE_BREATH.get(), SoundCategory.PLAYERS);
+        super(WRSounds.FIRE_BREATH.get(), SoundSource.PLAYERS);
         this.dragon = dragon;
         this.looping = true;
         this.delay = 0;
@@ -30,7 +30,7 @@ public class BreathSound extends TickableSound
             return;
         }
         volume = tick * dragon.getSoundVolume();
-        Vector3d mouth = dragon.getApproximateMouthPos();
+        Vec3 mouth = dragon.getApproximateMouthPos();
         x = (float) mouth.x;
         y = (float) mouth.y;
         z = (float) mouth.z;
@@ -41,3 +41,4 @@ public class BreathSound extends TickableSound
         Minecraft.getInstance().getSoundManager().play(new BreathSound(dragon));
     }
 }
+*/

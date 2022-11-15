@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.registry;
 
-import com.github.wolfshotz.wyrmroost.Wyrmroost;
+/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.blocks.tile.WRSignBlockEntity;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import net.minecraft.block.Block;
@@ -53,4 +53,4 @@ public class WRBlockEntities<T extends TileEntity> extends TileEntityType<T>
     {
         boolean isValidEntity(TileEntityType<?> type);
     }
-}
+}*/

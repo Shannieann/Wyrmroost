@@ -1,14 +1,15 @@
 package com.github.wolfshotz.wyrmroost.items.base;
 
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
-import net.minecraft.item.IItemTier;
-import net.minecraft.item.Item;
-import net.minecraft.item.crafting.Ingredient;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Tier;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.util.Lazy;
 
 import java.util.function.Supplier;
 
-public enum ToolMaterials implements IItemTier
+
+public enum ToolMaterials implements Tier
 {
     BLUE_GEODE(7.5f, 0.5f, 1732, 3, 20, WRItems.BLUE_GEODE),
     RED_GEODE(8.5f, 0.5f, 2031, 4, 20, WRItems.RED_GEODE),

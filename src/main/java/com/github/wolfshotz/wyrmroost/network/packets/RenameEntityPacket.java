@@ -1,9 +1,9 @@
 package com.github.wolfshotz.wyrmroost.network.packets;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.ITextComponent;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -11,21 +11,21 @@ import java.util.function.Supplier;
 public class RenameEntityPacket
 {
     private final UUID entity;
-    private final ITextComponent text;
+    private final Component text;
 
-    public RenameEntityPacket(Entity entity, ITextComponent text)
+    public RenameEntityPacket(Entity entity, Component text)
     {
         this.entity = entity.getUUID();
         this.text = text;
     }
 
-    public RenameEntityPacket(PacketBuffer buf)
+    public RenameEntityPacket(FriendlyByteBuf buf)
     {
         this.entity = buf.readUUID();
         this.text = buf.readComponent();
     }
     
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
         buf.writeUUID(entity);
         buf.writeComponent(text);

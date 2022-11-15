@@ -1,14 +1,14 @@
 package com.github.wolfshotz.wyrmroost.client;
 
-import com.github.wolfshotz.wyrmroost.registry.WRWorld;
+/*import com.github.wolfshotz.wyrmroost.registry.WRWorld;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;
 import net.minecraft.client.renderer.LightTexture;
-import net.minecraft.client.world.ClientWorld;
+import net.minecraft.client.world.ClientLevel;
 import net.minecraft.client.world.DimensionRenderInfo;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vec3;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 
 public class WRDimensionRenderInfo extends DimensionRenderInfo
@@ -23,7 +23,7 @@ public class WRDimensionRenderInfo extends DimensionRenderInfo
     }
 
     @Override
-    public Vector3d getBrightnessDependentFogColor(Vector3d color, float density)
+    public Vec3 getBrightnessDependentFogColor(Vec3 color, float density)
     {
         return color.multiply(density * 0.94F + 0.06F, density * 0.94F + 0.06F, density * 0.91F + 0.09F);
     }
@@ -34,12 +34,12 @@ public class WRDimensionRenderInfo extends DimensionRenderInfo
         return false;
     }
 
-    private void renderWeather(int ticks, float partialTicks, ClientWorld world, Minecraft minecraft, LightTexture lightTexture, double x, double y, double z)
+    private void renderWeather(int ticks, float partialTicks, ClientLevel world, Minecraft minecraft, LightTexture lightTexture, double x, double y, double z)
     {
 
     }
 
-    private void renderWeatherParticles(int ticks, ClientWorld level, Minecraft client, ActiveRenderInfo renderInfo)
+    private void renderWeatherParticles(int ticks, ClientLevel level, Minecraft client, ActiveRenderInfo renderInfo)
     {
     }
 
@@ -57,3 +57,4 @@ public class WRDimensionRenderInfo extends DimensionRenderInfo
         }
     }
 }
+*/

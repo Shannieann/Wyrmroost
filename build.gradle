@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
     }
 }
 
@@ -13,11 +13,10 @@ apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'net.minecraftforge.gradle'
 
-version = "$project.mc_version-$project.mod_version"
+version = "$mc_version-$mod_version"
 group = 'com.github.wolfShotz.wyrmroost'
 archivesBaseName = "$project.archiveBaseName"
-
-java.toolchain.languageVersion = JavaLanguageVersion.of(8)
+java.toolchain.languageVersion = JavaLanguageVersion.of(16)
 
 sourceSets {
     main.resources.srcDirs += 'src/main/generated_resources'
@@ -25,6 +24,10 @@ sourceSets {
 
 dependencies {
     minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
+    implementation fg.deobf('software.bernie.geckolib:geckolib-1.17.1-forge:3.0.15')
+}
+repositories{
+    maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
 }
 
 minecraft {

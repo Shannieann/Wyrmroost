@@ -1,8 +1,8 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
-import net.minecraft.block.Block;
+/*import net.minecraft.block.Block;
 import net.minecraft.block.OreBlock;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Mth;
 
 import java.util.Random;
 
@@ -20,6 +20,6 @@ public class EXPBlock extends OreBlock
     @Override
     protected int xpOnDrop(Random random)
     {
-        return MathHelper.nextInt(random, minXp, maxXp);
+        return Mth.nextInt(random, minXp, maxXp);
     }
-}
+}*/

@@ -1,12 +1,12 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
-import net.minecraft.block.*;
+/*import net.minecraft.block.*;
 import net.minecraft.item.Item;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.LevelReader;
+import net.minecraft.world.server.ServerLevel;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -28,7 +28,7 @@ public class GrowingPlantBodyBlock extends AbstractBodyPlantBlock
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos)
+    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos)
     {
         BlockPos below = pos.relative(growthDirection.getOpposite());
         BlockState belowState = worldIn.getBlockState(below);
@@ -50,7 +50,7 @@ public class GrowingPlantBodyBlock extends AbstractBodyPlantBlock
     }
 
     @Override
-    public void performBonemeal(ServerWorld worldIn, Random rand, BlockPos pos, BlockState state)
+    public void performBonemeal(ServerLevel worldIn, Random rand, BlockPos pos, BlockState state)
     {
         BlockPos headPos = getHeadPos(worldIn, pos, state);
         if (headPos != null)
@@ -63,7 +63,7 @@ public class GrowingPlantBodyBlock extends AbstractBodyPlantBlock
     @Nullable
     private BlockPos getHeadPos(IBlockReader reader, BlockPos pos, BlockState state)
     {
-        BlockPos.Mutable mutable = pos.mutable();
+        BlockPos.MutableBlockPos mutable = pos.mutable();
         BlockState bstate = state;
         int j = getHeadBlock().getMaxGrowthHeight();
         for (int i = 0; i < j && bstate.is(state.getBlock()); i++)
@@ -87,3 +87,4 @@ public class GrowingPlantBodyBlock extends AbstractBodyPlantBlock
         return (GrowingPlantBlock) tip.get();
     }
 }
+*/

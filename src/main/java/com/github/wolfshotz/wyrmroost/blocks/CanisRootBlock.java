@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
-import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
+/*import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.CropsBlock;
@@ -8,12 +8,12 @@ import net.minecraft.block.SoundType;
 import net.minecraft.state.IntegerProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.IItemProvider;
+import net.minecraft.util.ItemLike;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.server.ServerLevel;
 
 import java.util.Random;
 
@@ -51,7 +51,7 @@ public class CanisRootBlock extends CropsBlock
     }
 
     @Override
-    protected IItemProvider getBaseSeedId()
+    protected ItemLike getBaseSeedId()
     {
         return WRBlocks.CANIS_ROOT.get().asItem();
     }
@@ -61,8 +61,8 @@ public class CanisRootBlock extends CropsBlock
         return SHAPE_BY_AGE[state.getValue(getAgeProperty())];
     }
 
-    public void randomTick(BlockState state, ServerWorld level, BlockPos pos, Random random)
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, Random random)
     {
         if (random.nextInt(3) != 0) super.randomTick(state, level, pos, random);
     }
-}
+}*/

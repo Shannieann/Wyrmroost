@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.client.screen;
 
-import com.github.wolfshotz.wyrmroost.Wyrmroost;
+/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.screen.widgets.BookActionButton;
 import com.github.wolfshotz.wyrmroost.client.screen.widgets.CollapsibleWidget;
 import com.github.wolfshotz.wyrmroost.client.screen.widgets.PinButton;
@@ -10,40 +10,41 @@ import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookAction;
 import com.github.wolfshotz.wyrmroost.util.LerpedFloat;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.sun.javafx.geom.Vec2d;
-import net.minecraft.client.gui.IGuiEventListener;
-import net.minecraft.client.gui.screen.inventory.ContainerScreen;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.texture.PotionSpriteUploader;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3f;
+import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.gui.narration.NarratableEntry;
+import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.I18n;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.potion.Effect;
-import net.minecraft.potion.EffectInstance;
-import net.minecraft.potion.EffectUtils;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Quaternion;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.resources.MobEffectTextureManager;
+import net.minecraft.client.resources.language.I18n;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffectUtil;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DragonControlScreen extends ContainerScreen<BookContainer> implements BookScreen
+public class DragonControlScreen extends AbstractContainerScreen<BookContainer> implements BookScreen
 {
     public static final ResourceLocation SPRITES = Wyrmroost.id("textures/gui/container/dragon_inventory.png");
-    public static final Vec2d SADDLE_UV = new Vec2d(194, 18);
-    public static final Vec2d ARMOR_UV = new Vec2d(194, 34);
-    public static final Vec2d CHEST_UV = new Vec2d(194, 50);
-    public static final Vec2d CONDUIT_UV = new Vec2d(194, 66);
+    public static final Vec2 SADDLE_UV = new Vec2(194, 18);
+    public static final Vec2 ARMOR_UV = new Vec2(194, 34);
+    public static final Vec2 CHEST_UV = new Vec2(194, 50);
+    public static final Vec2 CONDUIT_UV = new Vec2(194, 66);
 
     public final LerpedFloat collapsedTime = LerpedFloat.unit();
     public final List<CollapsibleWidget> collapsibles = new ArrayList<>();
@@ -54,7 +55,7 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
     public float dragY;
     public float scale;
 
-    public DragonControlScreen(BookContainer container, PlayerInventory inventory, ITextComponent title)
+    public DragonControlScreen(BookContainer container, Inventory inventory, Component title)
     {
         super(container, inventory, title);
         this.imageWidth = 193;
@@ -82,7 +83,7 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
 
     protected void initButtons()
     {
-        addButton(pin);
+        addRenderableWidget(pin);
 
         int size = menu.actions.size();
         int xRadius = width / 3;
@@ -90,23 +91,22 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
         for (int i = 0; i < size; i++)
         {
             BookAction action = menu.actions.get(i);
-            ITextComponent name = action.getTranslation(menu.dragon);
+            Component name = action.getTranslation(menu.dragon);
             double deg = 2 * Math.PI * i / size - Math.toRadians(90);
             int x = ((int) (xRadius * Math.cos(deg))) + centerX - 50;
             int y = ((int) (yRadius * Math.sin(deg))) + centerY - 10;
-            addButton(new BookActionButton(this, action, x, y, name));
+            addRenderableWidget(new BookActionButton(this, action, x, y, name));
         }
     }
-
     @Override
-    protected <T extends IGuiEventListener> T addWidget(T widget)
-    {
+    protected <T extends GuiEventListener & NarratableEntry> T addWidget(T widget) {
         if (widget instanceof CollapsibleWidget) collapsibles.add((CollapsibleWidget) widget);
         return super.addWidget(widget);
     }
 
+
     @Override
-    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         double scale = this.scale * 2;
         boolean showAccessories = showAccessories();
@@ -117,14 +117,14 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
         super.render(ms, mouseX, mouseY, partialTicks);
 
         renderTooltip(ms, mouseX, mouseY);
-        if (!showAccessories && withinBoundary(mouseX, mouseY, centerX, centerY, scale, scale) && minecraft.player.inventory.getCarried().isEmpty() && hoveredSlot == null)
+        if (!showAccessories && withinBoundary(mouseX, mouseY, centerX, centerY, scale, scale) && minecraft.player.getInventory().getSelected().isEmpty() && hoveredSlot == null)
         {
             renderComponentTooltip(ms, menu.toolTips, mouseX, mouseY);
-            renderEffects(ms, menu.dragon.getActiveEffects().stream().filter(e -> e.shouldRender() && e.getDuration() > 0).collect(Collectors.toList()), mouseX - 124, mouseY - 16);
+            renderEffects(ms, menu.dragon.getActiveEffects().stream().filter(e -> e.isVisible() && e.getDuration() > 0).collect(Collectors.toList()), mouseX - 124, mouseY - 16);
         }
     }
 
-    private void renderEffects(MatrixStack ms, List<EffectInstance> effects, int x, int y)
+    private void renderEffects(PoseStack ms, List<MobEffectInstance> effects, int x, int y)
     {
         if (effects.isEmpty()) return;
 
@@ -132,20 +132,20 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
         ms.translate(0, 0, 400);
 
         // multiple for loops to avoid binding textures many more times than needed. annoying af but w/e
-        minecraft.getTextureManager().bind(SPRITES);
+        minecraft.getTextureManager().bindForSetup(SPRITES);
 
         // backgrounds and labels
         for (int i = 0; i < effects.size(); i++)
         {
-            RenderSystem.color4f(1f, 1f, 1f, 1f);
+            RenderSystem.clearColor(1f, 1f, 1f, 1f);
             int yOff = y + (i * 33);
             blit(ms, x, yOff, 122, 174, 120, 32);
         }
 
         for (int i = 0; i < effects.size(); i++)
         {
-            EffectInstance instance = effects.get(i);
-            if (instance.shouldRenderInvText())
+            MobEffectInstance instance = effects.get(i);
+            if (instance.showIcon())
             {
                 String s = I18n.get(instance.getEffect().getDescriptionId());
                 int amp = instance.getAmplifier();
@@ -153,27 +153,27 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
                 if (amp >= 1 && amp <= 9) s += ' ' + I18n.get("enchantment.level." + (amp + 1));
 
                 font.drawShadow(ms, s, x + 10 + 18, yOff + 6, 16777215);
-                String duration = EffectUtils.formatDuration(instance, 1.0F);
+                String duration = MobEffectUtil.formatDuration(instance, 1.0F);
                 font.drawShadow(ms, duration, x + 10 + 18, yOff + 6 + 10, 8355711);
             }
         }
 
-        PotionSpriteUploader sheet = minecraft.getMobEffectTextures();
+        MobEffectTextureManager sheet = minecraft.getMobEffectTextures();
 
         // icons
         for (int i = 0; i < effects.size(); i++)
         {
-            Effect effect = effects.get(i).getEffect();
+            MobEffect effect = effects.get(i).getEffect();
             TextureAtlasSprite atlas = sheet.get(effect);
             int yOff = y + (i * 32);
-            minecraft.getTextureManager().bind(atlas.atlas().location());
+            minecraft.getTextureManager().bindForSetup(atlas.atlas().location());
             blit(ms, x + 6, yOff + 7, getBlitOffset(), 18, 18, atlas);
         }
         ms.popPose();
     }
 
     @Override
-    protected void renderBg(MatrixStack ms, float partialTicks, int mouseX, int mouseY)
+    protected void renderBg(PoseStack ms, float partialTicks, int mouseX, int mouseY)
     {
         float time = collapsedTime.get(partialTicks);
         float speed = 0.35f * partialTicks;
@@ -199,12 +199,12 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
     }
 
     @Override
-    protected void renderLabels(MatrixStack ms, int mouseX, int mouseY)
+    protected void renderLabels(PoseStack ms, int mouseX, int mouseY)
     {
     }
 
     @Override
-    public void renderSlot(MatrixStack ms, Slot slot)
+    public void renderSlot(PoseStack ms, Slot slot)
     {
         boolean flag = false;
         if (slot instanceof Slot3D)
@@ -213,14 +213,14 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
             double scale = this.scale / 22f;
             float xRot = (dragX + 270f) / 180f * Mafs.PI;
             float yRot = (dragY + 270f) / 180f * Mafs.PI;
-            Vector3d vector = new Vector3d(uiSlot.anchorY, uiSlot.anchorZ, uiSlot.anchorX)
+            Vec3 vector = new Vec3(uiSlot.anchorY, uiSlot.anchorZ, uiSlot.anchorX)
                     .scale(scale)
                     .xRot(xRot)
                     .yRot(yRot);
             float colZ = (float) Math.max(-vector.x * 0.15f, 0.4f);
 
             flag = true;
-            RenderSystem.pushMatrix();
+            RenderSystem.applyModelViewMatrix();
             RenderSystem.translated(0, 0, -vector.x);
             uiSlot.setPos((int) vector.y - 8, (int) vector.z - 8);
             if (!slot.hasItem() && uiSlot.iconUV != null)
@@ -239,7 +239,7 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button)
     {
-        if (button == GLFW.GLFW_MOUSE_BUTTON_2 && (hoveredSlot == null || !hoveredSlot.hasItem()) && minecraft.player.inventory.getCarried().isEmpty())
+        if (button == GLFW.GLFW_MOUSE_BUTTON_2 && (hoveredSlot == null || !hoveredSlot.hasItem()) && minecraft.player.getInventory().getSelected().isEmpty())
         {
             pin.onPress();
             pin.playDownSound(minecraft.getSoundManager());
@@ -253,8 +253,8 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
     {
         if (button == GLFW.GLFW_MOUSE_BUTTON_1)
         {
-            this.dragX = MathHelper.wrapDegrees(this.dragX + (float) dragX);
-            this.dragY = MathHelper.wrapDegrees(this.dragY + (float) dragY);
+            this.dragX = Mth.wrapDegrees(this.dragX + (float) dragX);
+            this.dragY = Mth.wrapDegrees(this.dragY + (float) dragY);
         }
         return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
@@ -262,7 +262,7 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta)
     {
-        this.scale = MathHelper.clamp(this.scale + (float) scrollDelta, 4f, 60f);
+        this.scale = Mth.clamp(this.scale + (float) scrollDelta, 4f, 60f);
         return super.mouseScrolled(mouseX, mouseY, scrollDelta);
     }
 
@@ -275,10 +275,10 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
 
     public boolean showAccessories()
     {
-        return collapsedTime.get() > 0 || !minecraft.player.inventory.getCarried().isEmpty();
+        return collapsedTime.get() > 0 || !minecraft.player.getInventory().getSelected().isEmpty();
     }
 
-    public void renderEntity(MatrixStack ms, int mouseX, int mouseY)
+    public void renderEntity(PoseStack ms, int mouseX, int mouseY)
     {
         TameableDragonEntity dragon = menu.dragon;
         float x = centerX;
@@ -286,14 +286,14 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
         float yaw = (float) Math.atan((x - mouseX) / 40);
         float pitch = (float) Math.atan((y - mouseY) / 40);
         float oBody = dragon.yBodyRot;
-        float oYRot = dragon.yRot;
-        float oXRot = dragon.xRot;
+        float oYRot = dragon.getYRot();
+        float oXRot = dragon.getXRot();
         float oOldYHead = dragon.yHeadRotO;
         float oYHead = dragon.yHeadRot;
 
-        RenderSystem.pushMatrix();
+        RenderSystem.applyModelViewMatrix();
         ms.pushPose();
-        RenderSystem.translatef(x, y, 1100f);
+        RenderSystem.translate(x, y, 1100f);
         RenderSystem.scalef(1f, 1f, -1f);
         ms.translate(0, 0, 1000d);
         ms.scale(scale, scale, scale);
@@ -302,22 +302,22 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
         quaternion.mul(quaternion1);
         ms.mulPose(quaternion);
         dragon.yBodyRot = -dragX;
-        dragon.yRot = dragon.yBodyRot;
-        dragon.xRot = -pitch * 20f;
+        dragon.setYRot(dragon.yBodyRot);
+        dragon.setXRot(-pitch * 20f);
         dragon.yHeadRot = 180f + yaw * 40f;
         dragon.yHeadRotO = dragon.yHeadRot;
-        EntityRendererManager renderer = minecraft.getEntityRenderDispatcher();
+        EntityRenderDispatcher renderer = minecraft.getEntityRenderDispatcher();
         quaternion1.conj();
         renderer.overrideCameraOrientation(quaternion1);
         renderer.setRenderShadow(false);
-        IRenderTypeBuffer.Impl buffer = minecraft.renderBuffers().bufferSource();
+        MultiBufferSource.BufferSource buffer = minecraft.renderBuffers().bufferSource();
         ms.translate(0, -1, 0);
         RenderSystem.runAsFancy(() -> renderer.render(dragon, 0, 0, 0, 0, 1f, ms, buffer, 15728880));
         buffer.endBatch();
         renderer.setRenderShadow(true);
         dragon.yBodyRot = oBody;
-        dragon.yRot = oYRot;
-        dragon.xRot = oXRot;
+        dragon.setYRot(oYRot);
+        dragon.setXRot(oXRot);
         dragon.yHeadRotO = oOldYHead;
         dragon.yHeadRot = oYHead;
         ms.popPose();
@@ -328,4 +328,4 @@ public class DragonControlScreen extends ContainerScreen<BookContainer> implemen
     {
         return (mouseX < pointX + boundaryX && mouseX > pointX - boundaryX) && (mouseY < pointY + boundaryY && mouseY > pointY - boundaryY);
     }
-}
+}*/

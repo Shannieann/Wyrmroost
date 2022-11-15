@@ -1,7 +1,0 @@
-{
-  "parent": "minecraft:block/snow_height14",
-  "textures": {
-    "particle": "wyrmroost:block/ember_block",
-    "texture": "wyrmroost:block/ember_block"
-  }
-}

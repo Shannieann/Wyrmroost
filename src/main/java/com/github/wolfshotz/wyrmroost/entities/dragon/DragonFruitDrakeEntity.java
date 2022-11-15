@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon;
 
-import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+/*import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.client.model.entity.DragonFruitDrakeModel;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.DragonBreedGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.MoveToHomeGoal;
@@ -16,23 +16,23 @@ import com.github.wolfshotz.wyrmroost.util.animation.Animation;
 import com.github.wolfshotz.wyrmroost.util.animation.LogicalAnimation;
 import net.minecraft.block.*;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.Player;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.util.math.AABB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Mth;
 import net.minecraft.world.DifficultyInstance;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.ServerLevelAccessor;
+import net.minecraft.world.LevelReader;
+import net.minecraft.world.Level;
+import net.minecraft.world.server.ServerLevel;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.IForgeShearable;
 import net.minecraftforge.common.Tags;
@@ -65,7 +65,7 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
     private int shearCooldownTime, napTime, growCropsTime;
     private TemptGoal temptGoal;
 
-    public DragonFruitDrakeEntity(EntityType<? extends DragonFruitDrakeEntity> dragon, World level)
+    public DragonFruitDrakeEntity(EntityType<? extends DragonFruitDrakeEntity> dragon, Level level)
     {
         super(dragon, level);
     }
@@ -106,9 +106,9 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
                 return !isTame() && super.canUse();
             }
         });
-        goalSelector.addGoal(10, new WaterAvoidingRandomWalkingGoal(this, 1));
-        goalSelector.addGoal(11, new LookAtGoal(this, LivingEntity.class, 7f));
-        goalSelector.addGoal(12, new LookRandomlyGoal(this));
+        goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
+        goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 7f));
+        goalSelector.addGoal(12, new RandomLookAroundGoal(this));
         goalSelector.addGoal(7, temptGoal = new TemptGoal(this, 1d, false, Ingredient.of(Items.APPLE))
         {
             @Override
@@ -119,7 +119,7 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
         });
 
         targetSelector.addGoal(0, new HurtByTargetGoal(this).setAlertOthers());
-        targetSelector.addGoal(1, new NonTamedTargetGoal<PlayerEntity>(this, PlayerEntity.class, true, EntityPredicates.ATTACK_ALLOWED::test)
+        targetSelector.addGoal(1, new NonTameRandomTargetGoal<Player>(this, Player.class, true, EntitySelector.ATTACK_ALLOWED::test)
         {
             @Override
             public boolean canUse()
@@ -130,10 +130,10 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
     }
 
     @Override
-    public ActionResultType playerInteraction(PlayerEntity player, Hand hand, ItemStack stack)
+    public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
     {
         if (stack.getItem() == Items.SHEARS && isShearable(stack, level, blockPosition()))
-            return ActionResultType.sidedSuccess(level.isClientSide);
+            return InteractionResult.sidedSuccess(level.isClientSide);
 
         if (!isTame() && isHatchling() && isFood(stack))
         {
@@ -141,16 +141,16 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
             {
                 tame(getRandom().nextDouble() <= 0.2d, player);
                 eat(stack);
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
-            return ActionResultType.CONSUME;
+            return InteractionResult.CONSUME;
         }
 
         if (isTame() && stack.getItem() == Items.GLISTERING_MELON_SLICE && growCropsTime <= 0)
         {
             eat(stack);
             growCropsTime = CROP_GROWTH_TIME;
-            return ActionResultType.sidedSuccess(level.isClientSide);
+            return InteractionResult.sidedSuccess(level.isClientSide);
         }
 
         return super.playerInteraction(player, hand, stack);
@@ -175,10 +175,10 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
                 --growCropsTime;
                 if (getRandom().nextBoolean())
                 {
-                    AxisAlignedBB aabb = getBoundingBox().inflate(CROP_GROWTH_RADIUS);
-                    int x = MathHelper.nextInt(getRandom(), (int) aabb.minX, (int) aabb.maxX);
-                    int y = MathHelper.nextInt(getRandom(), (int) aabb.minY, (int) aabb.maxY);
-                    int z = MathHelper.nextInt(getRandom(), (int) aabb.minZ, (int) aabb.maxZ);
+                    AABB aabb = getBoundingBox().inflate(CROP_GROWTH_RADIUS);
+                    int x = Mth.nextInt(getRandom(), (int) aabb.minX, (int) aabb.maxX);
+                    int y = Mth.nextInt(getRandom(), (int) aabb.minY, (int) aabb.maxY);
+                    int z = Mth.nextInt(getRandom(), (int) aabb.minZ, (int) aabb.maxZ);
                     BlockPos pos = new BlockPos(x, y, z);
                     BlockState state = level.getBlockState(pos);
                     Block block = state.getBlock();
@@ -187,7 +187,7 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
                         IGrowable plant = (IGrowable) block;
                         if (plant.isValidBonemealTarget(level, pos, state, false))
                         {
-                            plant.performBonemeal((ServerWorld) level, getRandom(), pos, state);
+                            plant.performBonemeal((ServerLevel) level, getRandom(), pos, state);
                             level.levelEvent(Constants.WorldEvents.BONEMEAL_PARTICLES, pos, 0);
                         }
                     }
@@ -207,7 +207,7 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
         if (time == 7)
         {
             attackInBox(getOffsetBox(getBbWidth()));
-            AxisAlignedBB aabb = getBoundingBox().inflate(2).move(Mafs.getYawVec(yHeadRot, 0, 2));
+            AABB aabb = getBoundingBox().inflate(2).move(Mafs.getYawVec(yHeadRot, 0, 2));
             for (BlockPos pos : ModUtils.eachPositionIn(aabb))
             {
                 if (level.getBlockState(pos).getBlock() instanceof BushBlock)
@@ -235,15 +235,15 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
     }
 
     @Override
-    protected float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn)
+    protected float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn)
     {
         return getBbHeight();
     }
 
     @Override
-    public EntitySize getDimensions(Pose pose)
+    public EntityDimensions getDimensions(Pose pose)
     {
-        EntitySize size = getType().getDimensions().scale(getScale());
+        EntityDimensions size = getType().getDimensions().scale(getScale());
         if (isInSittingPose() || isSleeping()) size = size.scale(1, 0.7f);
         return size;
     }
@@ -261,14 +261,14 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
     }
 
     @Override
-    public boolean isShearable(@Nonnull ItemStack item, World world, BlockPos pos)
+    public boolean isShearable(@Nonnull ItemStack item, Level world, BlockPos pos)
     {
         return shearCooldownTime <= 0;
     }
 
     @Nonnull
     @Override
-    public List<ItemStack> onSheared(@Nullable PlayerEntity player, @Nonnull ItemStack item, World world, BlockPos pos, int fortune)
+    public List<ItemStack> onSheared(@Nullable Player player, @Nonnull ItemStack item, Level world, BlockPos pos, int fortune)
     {
         playSound(SoundEvents.MOOSHROOM_SHEAR, 1f, 1f);
         shearCooldownTime = 12000;
@@ -285,7 +285,7 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
     }
 
     @Override
-    public void swing(Hand hand)
+    public void swing(InteractionHand hand)
     {
         super.swing(hand);
         setAnimation(BITE_ANIMATION);
@@ -343,13 +343,13 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
     }
 
     @Override
-    public ILivingEntityData finalizeSpawn(IServerWorld level, DifficultyInstance difficulty, SpawnReason reason, @Nullable ILivingEntityData data, @Nullable CompoundNBT dataTag)
+    public ILivingEntityData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @Nullable ILivingEntityData data, @Nullable CompoundTag dataTag)
     {
         if (data == null)
         {
             // set the first spawning dfd as a baby. the rest of the group will spawn as an adult.
             data = new AgeableData(true);
-            if (reason == SpawnReason.NATURAL) setAge(DragonEggProperties.get(getType()).getGrowthTime());
+            if (reason == MobSpawnType.NATURAL) setAge(DragonEggProperties.get(getType()).getGrowthTime());
         }
 
         return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
@@ -365,15 +365,15 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
         this.shearCooldownTime = shearCooldownTime;
     }
 
-    public static <F extends MobEntity> boolean getSpawnPlacement(EntityType<F> fEntityType, IServerWorld level, SpawnReason spawnReason, BlockPos pos, Random random)
+    public static <F extends Mob> boolean getSpawnPlacement(EntityType<F> fEntityType, ServerLevelAccessor level, MobSpawnType spawnReason, BlockPos pos, Random random)
     {
         BlockState state = level.getBlockState(pos.below());
         return state.is(Blocks.GRASS_BLOCK) || (state.is(BlockTags.LEAVES) && pos.getY() < level.getSeaLevel() + 13) && level.getRawBrightness(pos, 0) > 8;
     }
 
-    public static AttributeModifierMap.MutableAttribute getAttributeMap()
+    public static AttributeSupplier.MutableAttribute getAttributeSupplier()
     {
-        return MobEntity.createMobAttributes()
+        return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 15)
                 .add(MOVEMENT_SPEED, 0.23)
                 .add(ATTACK_DAMAGE, 3);
@@ -424,7 +424,7 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
         }
 
         @Override
-        protected boolean isValidTarget(IWorldReader level, BlockPos pos)
+        protected boolean isValidTarget(LevelReader level, BlockPos pos)
         {
             BlockState state = level.getBlockState(pos);
             Block block = state.getBlock();
@@ -432,3 +432,4 @@ public class DragonFruitDrakeEntity extends TameableDragonEntity implements IFor
         }
     }
 }
+*/

@@ -1,11 +1,11 @@
 package com.github.wolfshotz.wyrmroost.client.model;
 
-import com.github.wolfshotz.wyrmroost.util.Mafs;
+/*import com.github.wolfshotz.wyrmroost.util.Mafs;
 import com.github.wolfshotz.wyrmroost.util.animation.Animation;
 import com.github.wolfshotz.wyrmroost.util.animation.IAnimatable;
-import net.minecraft.client.renderer.model.Model;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.model.Model;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.util.Mth;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,8 +18,8 @@ public class ModelAnimator
     private int prevTempTick;
     private float partialTicks;
     private IAnimatable entity;
-    private final HashMap<WRModelRenderer, BoxPosCache> boxPosCache = new HashMap<>();
-    private final HashMap<WRModelRenderer, BoxPosCache> prevPosCache = new HashMap<>();
+    private final HashMap<WRModelPart, BoxPosCache> boxPosCache = new HashMap<>();
+    private final HashMap<WRModelPart, BoxPosCache> prevPosCache = new HashMap<>();
 
     private ModelAnimator()
     {
@@ -62,19 +62,19 @@ public class ModelAnimator
         endKeyframe();
     }
 
-    public ModelAnimator rotate(WRModelRenderer box, float x, float y, float z)
+    public ModelAnimator rotate(WRModelPart box, float x, float y, float z)
     {
         getPosCache(box).addRotation(x, y, z);
         return this;
     }
 
-    public ModelAnimator move(WRModelRenderer box, float x, float y, float z)
+    public ModelAnimator move(WRModelPart box, float x, float y, float z)
     {
         getPosCache(box).addOffset(x, y, z);
         return this;
     }
 
-    private BoxPosCache getPosCache(WRModelRenderer box)
+    private BoxPosCache getPosCache(WRModelPart box)
     {
         return boxPosCache.computeIfAbsent(box, b -> new BoxPosCache());
     }
@@ -91,9 +91,9 @@ public class ModelAnimator
         {
             if (stationary)
             {
-                for (Map.Entry<WRModelRenderer, BoxPosCache> entry : prevPosCache.entrySet())
+                for (Map.Entry<WRModelPart, BoxPosCache> entry : prevPosCache.entrySet())
                 {
-                    ModelRenderer box = entry.getKey();
+                    ModelPart box = entry.getKey();
                     BoxPosCache cache = entry.getValue();
                     box.xRot += cache.getRotationX();
                     box.yRot += cache.getRotationY();
@@ -106,12 +106,12 @@ public class ModelAnimator
             else
             {
                 float tick = ((float) (animationTick - prevTempTick) + partialTicks) / (tempTick - prevTempTick);
-                float inc = MathHelper.sin(tick * Mafs.PI / 2f);
+                float inc = Mth.sin(tick * Mafs.PI / 2f);
                 float dec = 1f - inc;
 
-                for (Map.Entry<WRModelRenderer, BoxPosCache> entry : prevPosCache.entrySet())
+                for (Map.Entry<WRModelPart, BoxPosCache> entry : prevPosCache.entrySet())
                 {
-                    ModelRenderer box = entry.getKey();
+                    ModelPart box = entry.getKey();
                     BoxPosCache cache = entry.getValue();
                     box.xRot += dec * cache.getRotationX();
                     box.yRot += dec * cache.getRotationY();
@@ -121,9 +121,9 @@ public class ModelAnimator
                     box.z += dec * cache.getOffsetZ();
                 }
 
-                for (Map.Entry<WRModelRenderer, BoxPosCache> entry : boxPosCache.entrySet())
+                for (Map.Entry<WRModelPart, BoxPosCache> entry : boxPosCache.entrySet())
                 {
-                    ModelRenderer box = entry.getKey();
+                    ModelPart box = entry.getKey();
                     BoxPosCache cache = entry.getValue();
                     box.xRot += inc * cache.getRotationX();
                     box.yRot += inc * cache.getRotationY();
@@ -143,3 +143,4 @@ public class ModelAnimator
         }
     }
 }
+*/

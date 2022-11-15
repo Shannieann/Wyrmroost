@@ -1,9 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "wyrmroost:sal_log",
-    "wyrmroost:stripped_sal_log",
-    "wyrmroost:sal_wood",
-    "wyrmroost:stripped_sal_wood"
-  ]
-}

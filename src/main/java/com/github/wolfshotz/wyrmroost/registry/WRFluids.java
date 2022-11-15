@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.registry;
 
-import com.github.wolfshotz.wyrmroost.Wyrmroost;
+/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;
@@ -8,10 +8,20 @@ import net.minecraft.fluid.FlowingFluid;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.BucketItem;
 import net.minecraft.item.Item;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.SoundEvents;
+import net.minecraft.world.item.BucketItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.material.FlowingFluid;
+import net.minecraft.world.level.material.Fluid;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.WaterFluid;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
+import net.minecraftforge.fluids.capability.wrappers.FluidBlockWrapper;
 import net.minecraftforge.fml.RegistryObject;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
@@ -25,7 +35,6 @@ public abstract class WRFluids
     public static final DeferredRegister<Fluid> REGISTRY = DeferredRegister.create(ForgeRegistries.FLUIDS, Wyrmroost.MOD_ID);
 
     public static final RegistryObject<FlowingFluid> BRINE = register("brine", b -> b.color(0xCCDFDF).density(1500).viscosity(1500), b -> b.canMultiply());
-
     public static RegistryObject<FlowingFluid> register(String name, Function<Supplier<FlowingFluid>, FlowingFluidBlock> block, Consumer<FluidAttributes.Builder> builder, Consumer<ForgeFlowingFluid.Properties> propsBuilder)
     {
         AtomicReference<ForgeFlowingFluid.Properties> ref = new AtomicReference<>(); // caution on memory overhead
@@ -44,6 +53,6 @@ public abstract class WRFluids
 
     public static RegistryObject<FlowingFluid> register(String name, Consumer<FluidAttributes.Builder> builder, Consumer<ForgeFlowingFluid.Properties> propsBuilder)
     {
-        return register(name, s -> new FlowingFluidBlock(s, AbstractBlock.Properties.of(Material.WATER).noCollission().strength(100).noDrops()), builder, propsBuilder);
+        return register(name, s -> new FlowingFluidBlock(s, Block.Properties.of(Material.WATER).noCollission().strength(100).noDrops()), builder, propsBuilder);
     }
-}
+}*/

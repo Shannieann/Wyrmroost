@@ -2,13 +2,14 @@ package com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals;
 
 import com.github.wolfshotz.wyrmroost.WRConfig;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
-import net.minecraft.entity.EntityPredicate;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.goal.TargetGoal;
-import net.minecraft.entity.monster.CreeperEntity;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.util.math.AxisAlignedBB;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.target.TargetGoal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.monster.Creeper;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.phys.AABB;
 
 import java.util.EnumSet;
 import java.util.function.Predicate;
@@ -18,23 +19,16 @@ import java.util.function.Predicate;
  */
 public class DefendHomeGoal extends TargetGoal
 {
-    private static final Predicate<LivingEntity> FILTER = e -> e instanceof IMob && !(e instanceof CreeperEntity) && !e.getName().getString().equalsIgnoreCase("Ignore Me");
-
+    private static final Predicate<LivingEntity> FILTER = e -> e instanceof Enemy && !(e instanceof Creeper) && !e.getName().getString().equalsIgnoreCase("Ignore Me");
+    private static final TargetingConditions CONDITIONS = TargetingConditions.forCombat().selector(FILTER);
     private final TameableDragonEntity defender;
-    private final EntityPredicate predicate;
-
-    public DefendHomeGoal(TameableDragonEntity defender, Predicate<LivingEntity> additionalFilters)
+    public DefendHomeGoal(TameableDragonEntity defender)
     {
         super(defender, false, false);
         this.defender = defender;
-        this.predicate = new EntityPredicate().selector(FILTER.and(additionalFilters));
-        setFlags(EnumSet.of(Flag.TARGET));
+        setFlags(EnumSet.of(Goal.Flag.TARGET));
     }
 
-    public DefendHomeGoal(TameableDragonEntity defender)
-    {
-        this(defender, e -> true);
-    }
 
     @Override
     public boolean canUse()
@@ -50,7 +44,7 @@ public class DefendHomeGoal extends TargetGoal
         super.start();
 
         // alert others!
-        for (MobEntity mob : defender.level.getEntitiesOfClass(MobEntity.class, defender.getBoundingBox().inflate(WRConfig.HOME_RADIUS.get()), defender::isAlliedTo))
+        for (Mob mob : defender.level.getEntitiesOfClass(Mob.class, defender.getBoundingBox().inflate(WRConfig.HOME_RADIUS.get()), defender::isAlliedTo))
             mob.setTarget(targetMob);
     }
 
@@ -69,11 +63,11 @@ public class DefendHomeGoal extends TargetGoal
     public LivingEntity findPotentialTarget()
     {
         return defender.level.getNearestEntity(LivingEntity.class,
-                predicate,
+                CONDITIONS,
                 defender,
                 defender.getX(),
                 defender.getEyeY(),
                 defender.getZ(),
-                new AxisAlignedBB(defender.getRestrictCenter()).inflate(WRConfig.HOME_RADIUS.get()));
+                new AABB(defender.getRestrictCenter()).inflate(WRConfig.HOME_RADIUS.get()));
     }
 }

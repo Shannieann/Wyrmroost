@@ -1,16 +1,16 @@
 package com.github.wolfshotz.wyrmroost.client.screen;
 
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 public class TarragonTomeScreen extends Screen implements BookScreen
 {
     public TarragonTomeScreen()
     {
-        super(new TranslationTextComponent("tarragonTome.title"));
+        super(new TranslatableComponent("tarragonTome.title"));
     }
 
     @Override
@@ -19,7 +19,7 @@ public class TarragonTomeScreen extends Screen implements BookScreen
         return false;
     }
 
-    public static void open(PlayerEntity player, ItemStack stack)
+    public static void open(Player player, ItemStack stack)
     {
         ClientEvents.getClient().setScreen(new TarragonTomeScreen());
     }

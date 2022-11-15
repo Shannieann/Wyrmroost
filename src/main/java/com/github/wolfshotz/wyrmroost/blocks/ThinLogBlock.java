@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
-import net.minecraft.block.Block;
+/*import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.IWaterLoggable;
 import net.minecraft.block.material.MaterialColor;
@@ -8,7 +8,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.fluid.FluidState;
 import net.minecraft.fluid.Fluids;
-import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.BlockUseOnContext;
 import net.minecraft.state.BooleanProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -59,7 +59,7 @@ public class ThinLogBlock extends LogBlock implements IWaterLoggable
     }
 
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext ctx)
+    public BlockState getStateForPlacement(BlockUseOnContext ctx)
     {
         return super.getStateForPlacement(ctx).setValue(WATERLOGGED, ctx.getLevel().getFluidState(ctx.getClickedPos()).getType() == Fluids.WATER);
     }
@@ -81,3 +81,4 @@ public class ThinLogBlock extends LogBlock implements IWaterLoggable
         RenderTypeLookup.setRenderLayer(group.getStrippedWood(), RenderType.cutout());
     }
 }
+*/

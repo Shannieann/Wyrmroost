@@ -1,52 +1,67 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon;
 
-import com.github.wolfshotz.wyrmroost.client.screen.DragonControlScreen;
-import com.github.wolfshotz.wyrmroost.containers.BookContainer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.DefendHomeGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.DragonBreedGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.MoveToHomeGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.WRFollowOwnerGoal;
 import com.github.wolfshotz.wyrmroost.entities.util.EntitySerializer;
-import com.github.wolfshotz.wyrmroost.items.book.action.BookActions;
 import com.github.wolfshotz.wyrmroost.network.packets.AddPassengerPacket;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
 import com.github.wolfshotz.wyrmroost.registry.WRSounds;
-import com.github.wolfshotz.wyrmroost.util.Mafs;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.controller.BodyController;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.passive.ChickenEntity;
-import net.minecraft.entity.passive.RabbitEntity;
-import net.minecraft.entity.passive.TurtleEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.tileentity.ChestTileEntity;
-import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.MobSpawnInfo;
+import com.github.wolfshotz.wyrmroost.util.Mafs;;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.control.BodyRotationControl;
+import net.minecraft.world.entity.ai.goal.*;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.animal.Rabbit;
+import net.minecraft.world.entity.animal.Turtle;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.ChestBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 
 import javax.annotation.Nullable;
 
-import static net.minecraft.entity.ai.attributes.Attributes.*;
+import java.util.function.Supplier;
+
+import static net.minecraft.world.entity.ai.attributes.Attributes.*;
+import static net.minecraftforge.common.ForgeMod.SWIM_SPEED;
 
 public class RoostStalkerEntity extends TameableDragonEntity
 {
@@ -55,10 +70,10 @@ public class RoostStalkerEntity extends TameableDragonEntity
             .track(EntitySerializer.INT, "Variant", TameableDragonEntity::getVariant, TameableDragonEntity::setVariant));
 
     public static final int ITEM_SLOT = 0;
-    private static final DataParameter<ItemStack> ITEM = EntityDataManager.defineId(RoostStalkerEntity.class, DataSerializers.ITEM_STACK);
-    private static final DataParameter<Boolean> SCAVENGING = EntityDataManager.defineId(RoostStalkerEntity.class, DataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(RoostStalkerEntity.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<Boolean> SCAVENGING = SynchedEntityData.defineId(RoostStalkerEntity.class, EntityDataSerializers.BOOLEAN);
 
-    public RoostStalkerEntity(EntityType<? extends RoostStalkerEntity> stalker, World level)
+    public RoostStalkerEntity(EntityType<? extends RoostStalkerEntity> stalker, Level level)
     {
         super(stalker, level);
         maxUpStep = 0;
@@ -91,10 +106,10 @@ public class RoostStalkerEntity extends TameableDragonEntity
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new DragonBreedGoal(this));
         goalSelector.addGoal(9, new ScavengeGoal(1.1d));
-        goalSelector.addGoal(10, new WaterAvoidingRandomWalkingGoal(this, 1));
-        goalSelector.addGoal(11, new LookAtGoal(this, LivingEntity.class, 5f));
-        goalSelector.addGoal(12, new LookRandomlyGoal(this));
-        goalSelector.addGoal(8, new AvoidEntityGoal<PlayerEntity>(this, PlayerEntity.class, 7f, 1.15f, 1f)
+        goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
+        goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
+        goalSelector.addGoal(12, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(8, new AvoidEntityGoal<Player>(this, Player.class, 7f, 1.15f, 1f)
         {
             @Override
             public boolean canUse()
@@ -107,7 +122,7 @@ public class RoostStalkerEntity extends TameableDragonEntity
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));
         targetSelector.addGoal(4, new HurtByTargetGoal(this).setAlertOthers());
-        targetSelector.addGoal(5, new NonTamedTargetGoal<>(this, LivingEntity.class, true, target -> target instanceof ChickenEntity || target instanceof RabbitEntity || target instanceof TurtleEntity));
+        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, true, target -> target instanceof Chicken || target instanceof Rabbit || target instanceof Turtle));
     }
 
     @Override
@@ -126,9 +141,9 @@ public class RoostStalkerEntity extends TameableDragonEntity
     }
 
     @Override
-    public ActionResultType playerInteraction(PlayerEntity player, Hand hand, ItemStack stack)
+    public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
     {
-        final ActionResultType success = ActionResultType.sidedSuccess(level.isClientSide);
+        final InteractionResult success = InteractionResult.sidedSuccess(level.isClientSide);
 
         ItemStack heldItem = getItem();
         Item item = stack.getItem();
@@ -147,10 +162,10 @@ public class RoostStalkerEntity extends TameableDragonEntity
             {
                 setInLove(player);
                 stack.shrink(1);
-                return ActionResultType.SUCCESS;
+                return InteractionResult.SUCCESS;
             }
 
-            return ActionResultType.CONSUME;
+            return InteractionResult.CONSUME;
         }
 
         if (isOwnedBy(player))
@@ -181,7 +196,7 @@ public class RoostStalkerEntity extends TameableDragonEntity
             }
         }
 
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -203,19 +218,19 @@ public class RoostStalkerEntity extends TameableDragonEntity
     }
 
     @Override
-    public ItemStack getItemBySlot(EquipmentSlotType slot)
+    public ItemStack getItemBySlot(EquipmentSlot slot)
     {
-        return slot == EquipmentSlotType.MAINHAND? getItem() : super.getItemBySlot(slot);
+        return slot == EquipmentSlot.MAINHAND? getItem() : super.getItemBySlot(slot);
     }
 
-    @Override
+    /*@Override
     public void applyStaffInfo(BookContainer container)
     {
         super.applyStaffInfo(container);
 
-        container.slot(BookContainer.accessorySlot(getInventory(), ITEM_SLOT, 0, 0, -15, DragonControlScreen.SADDLE_UV))
-                .addAction(BookActions.TARGET);
-    }
+        //container.slot(BookContainer.accessorySlot(getInventory(), ITEM_SLOT, 0, 0, -15, DragonControlScreen.SADDLE_UV))
+         //       .addAction(BookActions.TARGET);
+    }*/
 
     @Override
     public boolean isInvulnerableTo(DamageSource source)
@@ -230,7 +245,13 @@ public class RoostStalkerEntity extends TameableDragonEntity
     }
 
     @Override
-    public EntitySize getDimensions(Pose pose)
+    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("idle.rooststalker", true));
+        return PlayState.CONTINUE;
+    }
+
+    @Override
+    public EntityDimensions getDimensions(Pose pose)
     {
         return getType().getDimensions().scale(getScale());
     }
@@ -243,9 +264,9 @@ public class RoostStalkerEntity extends TameableDragonEntity
 
     @Override
     // Override normal dragon body controller to allow rotations while sitting: its small enough for it, why not. :P
-    protected BodyController createBodyControl()
+    protected BodyRotationControl createBodyControl()
     {
-        return new BodyController(this);
+        return new BodyRotationControl(this);
     }
 
     public ItemStack getItem()
@@ -328,22 +349,28 @@ public class RoostStalkerEntity extends TameableDragonEntity
 
     public static void setSpawnBiomes(BiomeLoadingEvent event)
     {
-        Biome.Category category = event.getCategory();
-        if (category == Biome.Category.PLAINS || category == Biome.Category.FOREST || category == Biome.Category.EXTREME_HILLS)
-            event.getSpawns().addSpawn(EntityClassification.CREATURE, new MobSpawnInfo.Spawners(WREntities.ROOSTSTALKER.get(), 7, 2, 9));
+        Biome.BiomeCategory category = event.getCategory();
+        if (category == Biome.BiomeCategory.PLAINS || category == Biome.BiomeCategory.FOREST || category == Biome.BiomeCategory.EXTREME_HILLS)
+            event.getSpawns().addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(WREntities.ROOSTSTALKER.get(), 7, 2, 9));
     }
 
-    public static AttributeModifierMap.MutableAttribute getAttributeMap()
+    public static AttributeSupplier.Builder getAttributeSupplier()
     {
-        return MobEntity.createMobAttributes()
-                .add(MAX_HEALTH, 8)
-                .add(MOVEMENT_SPEED, 0.285)
-                .add(ATTACK_DAMAGE, 2);
+        return (Mob.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 8.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.285D)
+                .add(Attributes.ATTACK_DAMAGE, 2.0D));
+    }
+
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int p_39954_, Inventory p_39955_, Player p_39956_) {
+        return null;
     }
 
     class ScavengeGoal extends MoveToBlockGoal
     {
-        private IInventory chest;
+        private Container chest;
         private int searchDelay = 20 + getRandom().nextInt(40) + 5;
 
         public ScavengeGoal(double speed)
@@ -377,7 +404,7 @@ public class RoostStalkerEntity extends TameableDragonEntity
                 setScavenging(true);
 
                 if (chest == null) return;
-                if (chest instanceof ChestTileEntity && ((ChestTileEntity) chest).openCount == 0)
+                if (chest instanceof ChestBlockEntity && ((ChestBlockEntity) chest).openersCounter.getOpenerCount() == 0)
                     interactChest(chest, true);
                 if (!chest.isEmpty() && --searchDelay <= 0)
                 {
@@ -393,6 +420,7 @@ public class RoostStalkerEntity extends TameableDragonEntity
             }
         }
 
+
         @Override
         public void stop()
         {
@@ -406,18 +434,18 @@ public class RoostStalkerEntity extends TameableDragonEntity
          * Returns the IInventory (if applicable) of the TileEntity at the specified position
          */
         @Nullable
-        public IInventory getInventoryAtPosition()
+        public Container getInventoryAtPosition()
         {
-            IInventory inv = null;
+            Container inv = null;
             BlockState blockstate = level.getBlockState(blockPos);
             Block block = blockstate.getBlock();
-            if (blockstate.hasTileEntity())
+            if (blockstate.hasBlockEntity())
             {
-                TileEntity tileentity = level.getBlockEntity(blockPos);
-                if (tileentity instanceof IInventory)
+                BlockEntity tileentity = level.getBlockEntity(blockPos);
+                if (tileentity instanceof Container)
                 {
-                    inv = (IInventory) tileentity;
-                    if (inv instanceof ChestTileEntity && block instanceof ChestBlock)
+                    inv = (Container) tileentity;
+                    if (inv instanceof ChestBlockEntity && block instanceof ChestBlock)
                         inv = ChestBlock.getContainer((ChestBlock) block, blockstate, level, blockPos, true);
                 }
             }
@@ -429,21 +457,21 @@ public class RoostStalkerEntity extends TameableDragonEntity
          * Return true to set given position as destination
          */
         @Override
-        protected boolean isValidTarget(IWorldReader world, BlockPos pos)
+        protected boolean isValidTarget(LevelReader world, BlockPos pos)
         {
-            return level.getBlockEntity(pos) instanceof IInventory;
+            return level.getBlockEntity(pos) instanceof Container;
         }
 
         /**
          * Used to handle the chest opening animation when being used by the scavenger
          */
-        private void interactChest(IInventory intentory, boolean open)
+        private void interactChest(Container intentory, boolean open)
         {
-            if (!(intentory instanceof ChestTileEntity)) return; // not a chest, ignore it
-            ChestTileEntity chest = (ChestTileEntity) intentory;
+            if (!(intentory instanceof ChestBlockEntity)) return; // not a chest, ignore it
+            ChestBlockEntity chest = (ChestBlockEntity) intentory;
 
-            chest.openCount = open? 1 : 0;
-            chest.getLevel().blockEvent(chest.getBlockPos(), chest.getBlockState().getBlock(), 1, chest.openCount);
+            chest.openersCounter.openCount = open? 1 : 0;
+            chest.getLevel().blockEvent(chest.getBlockPos(), chest.getBlockState().getBlock(), 1, chest.openersCounter.getOpenerCount());
         }
     }
 }

@@ -1,15 +1,15 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai;
 
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
-import net.minecraft.entity.ai.controller.BodyController;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.ai.control.BodyRotationControl;
 
 /**
  * Created by com.github.WolfShotz - 8/26/19 - 16:12
  * <p>
  * Disallows rotations while sitting, sleeping, and helps control yaw while controlling
  */
-public class DragonBodyController extends BodyController
+public class DragonBodyController extends BodyRotationControl
 {
     public TameableDragonEntity dragon;
 
@@ -23,13 +23,13 @@ public class DragonBodyController extends BodyController
     public void clientTick()
     {
         // animate limbs when rotating
-        float deg = Math.min(Math.abs(dragon.yRot - dragon.yBodyRot) * 0.05f, 1f);
+        float deg = Math.min(Math.abs(dragon.getYRot() - dragon.yBodyRot) * 0.05f, 1f);
         dragon.animationSpeed += deg * (1 - dragon.animationSpeed * 2);
 
         // sync the body to the yRot; no reason to have any other random rotations.
-        dragon.yBodyRot = dragon.yRot;
+        dragon.yBodyRot = dragon.getYRot();
 
         // clamp head rotations so necks don't fucking turn inside out
-        dragon.yHeadRot = MathHelper.rotateIfNecessary(dragon.yHeadRot, dragon.yBodyRot, dragon.getMaxHeadYRot());
+        dragon.yHeadRot = Mth.rotateIfNecessary(dragon.yHeadRot, dragon.yBodyRot, dragon.getMaxHeadYRot());
     }
 }

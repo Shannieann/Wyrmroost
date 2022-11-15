@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.client.screen.widgets;
 
-import com.github.wolfshotz.wyrmroost.Wyrmroost;
+/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.screen.DragonControlScreen;
 import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookAction;
@@ -8,16 +8,17 @@ import com.github.wolfshotz.wyrmroost.network.packets.BookActionPacket;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import com.github.wolfshotz.wyrmroost.util.LerpedFloat;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.SimpleSound;
-import net.minecraft.client.audio.SoundHandler;
-import net.minecraft.client.gui.widget.button.AbstractButton;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.text.ITextComponent;
+import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.network.chat.Component;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
 
 public class BookActionButton extends AbstractButton
 {
@@ -26,7 +27,7 @@ public class BookActionButton extends AbstractButton
     public final LerpedFloat focusTime = LerpedFloat.unit();
     public boolean wasHovered = false;
 
-    public BookActionButton(DragonControlScreen screen, BookAction action, int xIn, int yIn, ITextComponent msg)
+    public BookActionButton(DragonControlScreen screen, BookAction action, int xIn, int yIn, Component msg)
     {
         super(xIn, yIn, 100, 20, msg);
         this.screen = screen;
@@ -36,7 +37,7 @@ public class BookActionButton extends AbstractButton
     @Override
     public void onPress()
     {
-        PlayerEntity player = Minecraft.getInstance().player;
+        Player player = Minecraft.getInstance().player;
         ItemStack stack = ModUtils.getHeldStack(player, WRItems.TARRAGON_TOME.get());
         if (stack != null)
         {
@@ -47,14 +48,14 @@ public class BookActionButton extends AbstractButton
     }
 
     @Override
-    public void render(MatrixStack p_230430_1_, int p_230430_2_, int p_230430_3_, float p_230430_4_)
+    public void render(PoseStack p_230430_1_, int p_230430_2_, int p_230430_3_, float p_230430_4_)
     {
         if (visible = !screen.showAccessories())
             super.render(p_230430_1_, p_230430_2_, p_230430_3_, p_230430_4_);
     }
 
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void renderButton(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         if (wasHovered != isHovered) onFocusedChanged(wasHovered = isHovered);
 
@@ -66,19 +67,24 @@ public class BookActionButton extends AbstractButton
                 getMessage().getString(),
                 x + width / 2,
                 (y + (height - 8) / 2) - (int) amount,
-                (int) MathHelper.lerp(amount, 0xffffff, 0xfffd8a));
+                (int) Mth.lerp(amount, 0xffffff, 0xfffd8a));
     }
 
     @Override
     protected void onFocusedChanged(boolean focusing)
     {
         if (focusing)
-            Minecraft.getInstance().getSoundManager().play(SimpleSound.forUI(SoundEvents.NOTE_BLOCK_BASS, -1f));
+            Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(SoundEvents.NOTE_BLOCK_BASS, -1f));
     }
 
     @Override
-    public void playDownSound(SoundHandler sounds)
+    public void playDownSound(SoundManager sounds)
     {
-        sounds.play(SimpleSound.forUI(SoundEvents.BOOK_PAGE_TURN, 1f, 1f));
+        sounds.play(SimpleSoundInstance.forUI(SoundEvents.BOOK_PAGE_TURN, 1f, 1f));
     }
-}
+
+    @Override
+    public void updateNarration(NarrationElementOutput p_169152_) {
+
+    }
+}*/

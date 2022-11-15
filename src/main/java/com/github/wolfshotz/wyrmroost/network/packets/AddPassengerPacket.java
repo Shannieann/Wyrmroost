@@ -2,10 +2,10 @@ package com.github.wolfshotz.wyrmroost.network.packets;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
-import net.minecraft.entity.Entity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
-import net.minecraftforge.fml.network.PacketDistributor;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.world.entity.Entity;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.fmllegacy.network.PacketDistributor;
 
 import java.util.function.Supplier;
 
@@ -19,13 +19,13 @@ public class AddPassengerPacket
         this.vehicleID = vehicle.getId();
     }
 
-    public AddPassengerPacket(PacketBuffer buf)
+    public AddPassengerPacket(FriendlyByteBuf buf)
     {
         passengerID = buf.readInt();
         vehicleID = buf.readInt();
     }
 
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
         buf.writeInt(passengerID);
         buf.writeInt(vehicleID);

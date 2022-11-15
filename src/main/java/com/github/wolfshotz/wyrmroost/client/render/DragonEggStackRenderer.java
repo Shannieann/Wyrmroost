@@ -1,31 +1,36 @@
 package com.github.wolfshotz.wyrmroost.client.render;
 
-import com.github.wolfshotz.wyrmroost.client.render.entity.DragonEggRenderer;
+/*import com.github.wolfshotz.wyrmroost.client.render.entity.DragonEggRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragonegg.DragonEggEntity;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
-import net.minecraft.client.renderer.ItemRenderer;
-import net.minecraft.client.renderer.model.ItemCameraTransforms;
-import net.minecraft.client.renderer.tileentity.ItemStackTileEntityRenderer;
-import net.minecraft.entity.EntityType;
-import net.minecraft.item.ItemStack;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.ResourceLocation;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.item.ItemStack;
 
-public class DragonEggStackRenderer extends ItemStackTileEntityRenderer
+public class DragonEggStackRenderer extends BlockEntityWithoutLevelRenderer
 {
-    @Override
-    public void renderByItem(ItemStack stack, ItemCameraTransforms.TransformType transform, MatrixStack ms, IRenderTypeBuffer buffer, int combinedLight, int combinedOverlay)
+    public DragonEggStackRenderer() {
+        super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
+    }
+
+    /*@Override
+    public void renderByItem(ItemStack stack, ItemTransforms.TransformType transform, PoseStack ms, MultiBufferSource buffer, int combinedLight, int combinedOverlay)
     {
-        IVertexBuilder builder = ItemRenderer.getFoilBuffer(buffer, DragonEggRenderer.MODEL.renderType(getEggTexture(stack)), false, stack.hasFoil());
+        VertexConsumer builder = ItemRenderer.getFoilBuffer(buffer, DragonEggRenderer.MODEL.renderType(getEggTexture(stack)), false, stack.hasFoil());
         DragonEggRenderer.MODEL.renderToBuffer(ms, builder, combinedLight, combinedOverlay, 1, 1, 1, 1);
     }
 
     private static ResourceLocation getEggTexture(ItemStack stack)
     {
-        CompoundNBT tag = stack.getTag();
+        CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains(DragonEggEntity.DATA_DRAGON_TYPE))
         {
             EntityType<?> type = ModUtils.getEntityTypeByKey(tag.getString(DragonEggEntity.DATA_DRAGON_TYPE));
@@ -35,3 +40,4 @@ public class DragonEggStackRenderer extends ItemStackTileEntityRenderer
         return DragonEggRenderer.DEFAULT_TEXTURE;
     }
 }
+*/

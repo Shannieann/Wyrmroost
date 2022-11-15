@@ -4,11 +4,12 @@ import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.entity.EntityType;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.config.IConfigEvent;
+import net.minecraftforge.fml.config.IConfigSpec;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,7 +33,7 @@ public class WRConfig
     public static final ForgeConfigSpec.BooleanValue DECK_THE_HALLS;
     public static final ForgeConfigSpec.BooleanValue RENDER_OUTLINES;
 
-    public static boolean canGrief(World level)
+    public static boolean canGrief(Level level)
     {
         return RESPECT_MOB_GRIEFING.get()? level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING) : DRAGON_GRIEFING.get();
     }
@@ -47,9 +48,9 @@ public class WRConfig
         return ModUtils.DECK_THE_HALLS && DECK_THE_HALLS.get();
     }
 
-    public static void loadConfig(ModConfig.ModConfigEvent event)
+    public static void loadConfig(IConfigEvent event)
     {
-        ForgeConfigSpec spec = event.getConfig().getSpec();
+        IConfigSpec spec = event.getConfig().getSpec();
         if (spec == SERVER)
         {
             try
@@ -79,7 +80,7 @@ public class WRConfig
     static // common
     {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
-        builder.comment("If your looking for more options, check `wyrmroost-client.toml` or, in `{World Name}/serverconfig/wyrmroost-server.toml`",
+        builder.comment("If your looking for more options, check `wyrmroost-client.toml` or, in `{Level Name}/serverconfig/wyrmroost-server.toml`",
                 "Wyrmroost General Options")
                 .push("general");
         DEBUG_MODE = builder.comment("Do not enable this unless you are told to!")

@@ -4,24 +4,25 @@ import com.github.wolfshotz.wyrmroost.WRConfig;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
-import net.minecraft.block.AbstractFireBlock;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.CampfireBlock;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.state.properties.BlockStateProperties;
-import net.minecraft.util.DamageSource;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.GameRules;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.BaseFireBlock;
+import net.minecraft.world.level.block.CampfireBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.phys.Vec3;
 
-public class FireBreathEntity extends BreathWeaponEntity
+/*public class FireBreathEntity extends BreathWeaponEntity
 {
-    public FireBreathEntity(EntityType<?> type, World level)
+    public FireBreathEntity(EntityType<? extends Projectile> type, Level level)
     {
         super(type, level);
     }
@@ -41,11 +42,11 @@ public class FireBreathEntity extends BreathWeaponEntity
             if (random.nextDouble() <= 0.25d) playSound(SoundEvents.FIRE_EXTINGUISH, 1, 1);
             for (int i = 0; i < 15; i++)
                 level.addParticle(ParticleTypes.SMOKE, getX(), getY(), getZ(), Mafs.nextDouble(random) * 0.2f, random.nextDouble() * 0.08f, Mafs.nextDouble(random) * 0.2f);
-            remove();
+            remove(RemovalReason.DISCARDED);
             return;
         }
 
-        Vector3d motion = getDeltaMovement();
+        Vec3 motion = getDeltaMovement();
         double x = getX() + motion.x + (random.nextGaussian() * 0.2);
         double y = getY() + motion.y + (random.nextGaussian() * 0.2) + 0.5d;
         double z = getZ() + motion.z + (random.nextGaussian() * 0.2);
@@ -70,8 +71,8 @@ public class FireBreathEntity extends BreathWeaponEntity
         {
             BlockPos offset = pos.relative(direction);
 
-            if (level.getBlockState(offset).isAir(level, offset) && (flammability == 1 || random.nextDouble() <= flammability))
-                level.setBlock(offset, AbstractFireBlock.getState(level, offset), 11);
+            if (level.getBlockState(offset).isAir() && (flammability == 1 || random.nextDouble() <= flammability))
+                level.setBlock(offset, BaseFireBlock.getState(level, offset), 11);
         }
     }
 
@@ -107,3 +108,4 @@ public class FireBreathEntity extends BreathWeaponEntity
         return true;
     }
 }
+*/

@@ -152,5 +152,8 @@
   "effect.wyrmroost.soul_weakness": "Soul Weakness",
 
   "death.attack.fireBreath0": "%s was torched by %s",
-  "death.attack.fireBreath1": "Charizard used Flamethrower on %s, It's super effective!"
+  "death.attack.fireBreath1": "Charizard used Flamethrower on %s, It's super effective!",
+
+  "narrator.button.pin": "Pin Button",
+  "tarragonTome.title": "Tarragon Tome"
 }

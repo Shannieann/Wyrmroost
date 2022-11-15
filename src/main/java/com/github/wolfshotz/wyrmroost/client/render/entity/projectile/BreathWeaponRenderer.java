@@ -2,17 +2,17 @@ package com.github.wolfshotz.wyrmroost.client.render.entity.projectile;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.projectile.DragonProjectileEntity;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import com.mojang.blaze3d.vertex.IVertexBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.Atlases;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.Sheets;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.EntityRendererManager;
-import net.minecraft.client.renderer.texture.AtlasTexture;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.entity.Entity;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.Entity;
 
 import java.util.function.Function;
 
@@ -20,13 +20,13 @@ public class BreathWeaponRenderer extends EntityRenderer<DragonProjectileEntity>
 {
     public static final ResourceLocation BLUE_FIRE = Wyrmroost.id("entity/projectiles/rr_breath/blue_fire");
 
-    public BreathWeaponRenderer(EntityRendererManager renderManager)
+    public BreathWeaponRenderer(EntityRendererProvider.Context renderManager)
     {
         super(renderManager);
     }
 
     @Override
-    public void render(DragonProjectileEntity entity, float yaw, float partialTicks, MatrixStack ms, IRenderTypeBuffer typeBuffer, int packedLine)
+    public void render(DragonProjectileEntity entity, float yaw, float partialTicks, PoseStack ms, MultiBufferSource typeBuffer, int packedLine)
     {
         if (entity.isOnFire())
         {
@@ -40,9 +40,9 @@ public class BreathWeaponRenderer extends EntityRenderer<DragonProjectileEntity>
         return null;
     }
 
-    private void renderFire(MatrixStack ms, IRenderTypeBuffer typeBuffer, Entity entity)
+    private void renderFire(PoseStack ms, MultiBufferSource typeBuffer, Entity entity)
     {
-        Function<ResourceLocation, TextureAtlasSprite> func = Minecraft.getInstance().getTextureAtlas(AtlasTexture.LOCATION_BLOCKS);
+        Function<ResourceLocation, TextureAtlasSprite> func = Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS);
         TextureAtlasSprite fireSprite1 = func.apply(BLUE_FIRE);
         ms.pushPose();
         float width = entity.getBbWidth() * 1.4F;
@@ -50,11 +50,11 @@ public class BreathWeaponRenderer extends EntityRenderer<DragonProjectileEntity>
         float x = 0.5F;
         float height = entity.getBbHeight() / width;
         float y = 0.0F;
-        ms.mulPose(getDispatcher().cameraOrientation());
+        ms.mulPose(Minecraft.getInstance().getEntityRenderDispatcher().cameraOrientation());
         ms.translate(0, 0, (-0.3f + (float) ((int) height) * 0.02f));
         float z = 0;
-        IVertexBuilder vertex = typeBuffer.getBuffer(Atlases.cutoutBlockSheet());
-        MatrixStack.Entry msEntry = ms.last();
+        VertexConsumer vertex = typeBuffer.getBuffer(Sheets.cutoutBlockSheet());
+        PoseStack.Pose msEntry = ms.last();
 
         for (int i = 0; height > 0; i++)
         {
@@ -82,7 +82,7 @@ public class BreathWeaponRenderer extends EntityRenderer<DragonProjectileEntity>
         ms.popPose();
     }
 
-    private static void vertex(MatrixStack.Entry msEntry, IVertexBuilder bufferIn, float x, float y, float z, float texU, float texV)
+    private static void vertex(PoseStack.Pose msEntry, VertexConsumer bufferIn, float x, float y, float z, float texU, float texV)
     {
         bufferIn.vertex(msEntry.pose(), x, y, z)
                 .color(255, 255, 255, 255)

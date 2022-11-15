@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/inner_stairs",
-  "textures": {
-    "side": "wyrmroost:block/polished_forah_stone",
-    "bottom": "wyrmroost:block/polished_forah_stone",
-    "top": "wyrmroost:block/polished_forah_stone"
-  }
-}

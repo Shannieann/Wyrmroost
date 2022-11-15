@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
-import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
+/*import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -11,9 +11,9 @@ import net.minecraft.util.DamageSource;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.math.vector.Vec3;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.Level;
 import net.minecraftforge.common.IForgeShearable;
 
 public class GillaBushBlock extends BushBlock implements IForgeShearable
@@ -38,11 +38,11 @@ public class GillaBushBlock extends BushBlock implements IForgeShearable
     }
 
     @Override
-    public void entityInside(BlockState state, World worldIn, BlockPos pos, Entity entity)
+    public void entityInside(BlockState state, Level worldIn, BlockPos pos, Entity entity)
     {
         if (entity instanceof LivingEntity)
         {
-            entity.makeStuckInBlock(state, new Vector3d(0.5d, 0.6d, 0.5d));
+            entity.makeStuckInBlock(state, new Vec3(0.5d, 0.6d, 0.5d));
             if (!worldIn.isClientSide && (entity.xOld != entity.getX() || entity.zOld != entity.getZ()))
             {
                 if (Math.abs(entity.getX() - entity.xOld) >= 0.003 || Math.abs(entity.getZ() - entity.zOld) >= 0.003)
@@ -51,3 +51,4 @@ public class GillaBushBlock extends BushBlock implements IForgeShearable
         }
     }
 }
+*/

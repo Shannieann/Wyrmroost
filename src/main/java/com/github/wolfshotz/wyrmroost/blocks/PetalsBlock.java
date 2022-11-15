@@ -1,10 +1,10 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
-import com.github.wolfshotz.wyrmroost.util.ModUtils;
+/*import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.item.BlockItemUseContext;
+import net.minecraft.item.BlockUseOnContext;
 import net.minecraft.state.EnumProperty;
 import net.minecraft.state.StateContainer;
 import net.minecraft.state.properties.BlockStateProperties;
@@ -14,7 +14,7 @@ import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
 import net.minecraft.world.IWorld;
-import net.minecraft.world.IWorldReader;
+import net.minecraft.world.LevelReader;
 
 import javax.annotation.Nullable;
 
@@ -44,7 +44,7 @@ public class PetalsBlock extends Block
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context)
+    public BlockState getStateForPlacement(BlockUseOnContext context)
     {
         return defaultBlockState().setValue(AXIS, context.getHorizontalDirection().getAxis());
     }
@@ -56,7 +56,7 @@ public class PetalsBlock extends Block
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos)
+    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos)
     {
         BlockState floor = worldIn.getBlockState(pos.below());
         if (!ModUtils.contains(floor.getBlock(), Blocks.ICE, Blocks.PACKED_ICE, Blocks.BARRIER, Blocks.HONEY_BLOCK, Blocks.SOUL_SAND))
@@ -69,4 +69,4 @@ public class PetalsBlock extends Block
     {
         return true;
     }
-}
+}*/
