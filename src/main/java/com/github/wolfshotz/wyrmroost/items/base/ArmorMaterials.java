@@ -1,21 +1,19 @@
 package com.github.wolfshotz.wyrmroost.items.base;
 
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
-import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.item.IArmorMaterial;
-import net.minecraft.item.Item;
-import net.minecraft.item.Rarity;
-import net.minecraft.item.crafting.Ingredient;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.SoundEvents;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.item.ArmorMaterial;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Rarity;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraftforge.common.util.Lazy;
 
 import java.util.function.Supplier;
 
-/**
- * @see net.minecraft.item.ArmorMaterial
- */
-public enum ArmorMaterials implements IArmorMaterial
+
+public enum ArmorMaterials implements ArmorMaterial
 {
     BLUE_GEODE(new int[] {3, 5, 7, 3}, 1f, 31, 25, SoundEvents.ARMOR_EQUIP_DIAMOND, WRItems.BLUE_GEODE),
     RED_GEODE(new int[] {3, 6, 8, 3}, 2.5f, 32, 25, SoundEvents.ARMOR_EQUIP_DIAMOND, WRItems.RED_GEODE),
@@ -49,13 +47,13 @@ public enum ArmorMaterials implements IArmorMaterial
     }
 
     @Override
-    public int getDurabilityForSlot(EquipmentSlotType slot)
+    public int getDurabilityForSlot(EquipmentSlot slot)
     {
         return DURABILITY_ARRAY[slot.getIndex()] * durability;
     }
 
     @Override
-    public int getDefenseForSlot(EquipmentSlotType slot)
+    public int getDefenseForSlot(EquipmentSlot slot)
     {
         return defense[slot.getIndex()];
     }

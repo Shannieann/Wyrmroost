@@ -1,64 +1,64 @@
 package com.github.wolfshotz.wyrmroost.items.book.action;
 
-import com.github.wolfshotz.wyrmroost.client.ClientEvents;
-import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
+/*import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+//import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
 import com.github.wolfshotz.wyrmroost.client.screen.TarragonTomeScreen;
-import com.github.wolfshotz.wyrmroost.containers.BookContainer;
+//import com.github.wolfshotz.wyrmroost.containers.BookContainer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ActionResultType;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.EntityRayTraceResult;
-import net.minecraft.util.math.MathHelper;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.EntityHitResult;
 
 import javax.annotation.Nullable;
 
 public class DefaultBookAction implements BookAction
 {
     @Override
-    public ActionResultType rightClick(@Nullable TameableDragonEntity dragon, PlayerEntity player, ItemStack stack)
+    public InteractionResult rightClick(@Nullable TameableDragonEntity dragon, Player player, ItemStack stack)
     {
         boolean client = player.level.isClientSide;
         if (dragon != null)
         {
-            if (!client) BookContainer.open((ServerPlayerEntity) player, dragon);
+            //if (!client) BookContainer.open((ServerPlayer) player, dragon);
         }
         else if ((dragon = clip(player)) != null)
         {
             TarragonTomeItem.bind(dragon, stack);
             if (client)
             {
-                ModUtils.playLocalSound(player.level, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundCategory.PLAYERS, 0.75f, 2f);
-                ModUtils.playLocalSound(player.level, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundCategory.PLAYERS, 0.75f, 1f);
+                ModUtils.playLocalSound(player.level, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 0.75f, 2f);
+                ModUtils.playLocalSound(player.level, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 0.75f, 1f);
             }
         }
         else if (client) TarragonTomeScreen.open(player, stack);
 
-        return ActionResultType.CONSUME;
+        return InteractionResult.CONSUME;
     }
 
     @Override
-    public void render(@Nullable TameableDragonEntity dragon, MatrixStack ms, float partialTicks)
+    public void render(@Nullable TameableDragonEntity dragon, PoseStack ms, float partialTicks)
     {
         if (dragon == null && (dragon = clip(ClientEvents.getPlayer())) != null)
             RenderHelper.renderEntityOutline(dragon,
                     255,
                     255,
                     255,
-                    (int) (MathHelper.cos((dragon.tickCount + partialTicks) * 0.2f) * 35 + 45));
+                    (int) (Mth.cos((dragon.tickCount + partialTicks) * 0.2f) * 35 + 45));
     }
 
     @Nullable
-    private TameableDragonEntity clip(PlayerEntity player)
+    private TameableDragonEntity clip(Player player)
     {
-        EntityRayTraceResult ertr = Mafs.clipEntities(player, 40, 0.75, e -> e instanceof TameableDragonEntity && ((TameableDragonEntity) e).isOwnedBy(player));
+        EntityHitResult ertr = Mafs.clipEntities(player, 40, 0.75, e -> e instanceof TameableDragonEntity && ((TameableDragonEntity) e).isOwnedBy(player));
         return ertr != null? (TameableDragonEntity) ertr.getEntity() : null;
     }
 
@@ -68,3 +68,4 @@ public class DefaultBookAction implements BookAction
         return TRANSLATE_PATH + "default";
     }
 }
+*/

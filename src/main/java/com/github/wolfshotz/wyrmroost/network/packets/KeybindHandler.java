@@ -3,11 +3,11 @@ package com.github.wolfshotz.wyrmroost.network.packets;
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.util.text.TranslationTextComponent;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -28,14 +28,14 @@ public class KeybindHandler
         this.pressed = pressed;
     }
 
-    public KeybindHandler(PacketBuffer buf)
+    public KeybindHandler(FriendlyByteBuf buf)
     {
         this.key = buf.readByte();
         this.mods = buf.readInt();
         this.pressed = buf.readBoolean();
     }
 
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
         buf.writeByte(key);
         buf.writeInt(mods);
@@ -47,7 +47,7 @@ public class KeybindHandler
         return process(context.get().getSender());
     }
 
-    public boolean process(PlayerEntity player)
+    public boolean process(Player player)
     {
 
         switch (key)
@@ -67,7 +67,7 @@ public class KeybindHandler
                 {
                     boolean b = ClientEvents.keybindFlight = !ClientEvents.keybindFlight;
                     String translate = "entity.wyrmroost.dragons.flight." + (b? "controlled" : "free");
-                    ClientEvents.getPlayer().displayClientMessage(new TranslationTextComponent(translate), true);
+                    ClientEvents.getPlayer().displayClientMessage(new TranslatableComponent(translate), true);
                 }
                 break;
             default:

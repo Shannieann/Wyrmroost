@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/inner_stairs",
-  "textures": {
-    "side": "wyrmroost:block/teal_corin_planks",
-    "bottom": "wyrmroost:block/teal_corin_planks",
-    "top": "wyrmroost:block/teal_corin_planks"
-  }
-}

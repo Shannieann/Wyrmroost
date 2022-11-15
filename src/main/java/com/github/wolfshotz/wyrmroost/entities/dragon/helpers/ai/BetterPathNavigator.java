@@ -1,15 +1,15 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai;
 
-import net.minecraft.entity.MobEntity;
-import net.minecraft.pathfinding.GroundPathNavigator;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Im not actually sure if this is a good solution or not... but it seems to be working a little bit....
  */
-public class BetterPathNavigator extends GroundPathNavigator
+public class BetterPathNavigator extends GroundPathNavigation
 {
-    public BetterPathNavigator(MobEntity entity)
+    public BetterPathNavigator(Mob entity)
     {
         super(entity, entity.level);
     }
@@ -17,8 +17,8 @@ public class BetterPathNavigator extends GroundPathNavigator
     @Override
     protected void followThePath()
     {
-        Vector3d pos = getTempMobPos();
-        Vector3d pathPos = Vector3d.atBottomCenterOf(path.getNextNodePos());
+        Vec3 pos = getTempMobPos();
+        Vec3 pathPos = Vec3.atBottomCenterOf(path.getNextNodePos());
 
         double xDiff = Math.abs(pathPos.x() - mob.getX());
         double yDiff = Math.abs(pathPos.y() - mob.getY());
@@ -33,16 +33,16 @@ public class BetterPathNavigator extends GroundPathNavigator
         doStuckDetection(pos);
     }
 
-    private boolean isPathLongEnough(Vector3d entityPosition)
+    private boolean isPathLongEnough(Vec3 entityPosition)
     {
         if (path.getNextNodeIndex() + 1 >= path.getNodeCount()) return false;
 
-        Vector3d pathPos = Vector3d.atBottomCenterOf(path.getNextNodePos());
+        Vec3 pathPos = Vec3.atBottomCenterOf(path.getNextNodePos());
         if (!entityPosition.closerThan(pathPos, maxDistanceToWaypoint)) return false;
 
-        Vector3d nextPathPos = Vector3d.atBottomCenterOf(path.getNodePos(path.getNextNodeIndex() + 1));
-        Vector3d midOfNextAndCurrent = nextPathPos.subtract(pathPos);
-        Vector3d midOfEntityAndCurrent = entityPosition.subtract(pathPos);
+        Vec3 nextPathPos = Vec3.atBottomCenterOf(path.getNodePos(path.getNextNodeIndex() + 1));
+        Vec3 midOfNextAndCurrent = nextPathPos.subtract(pathPos);
+        Vec3 midOfEntityAndCurrent = entityPosition.subtract(pathPos);
         return midOfNextAndCurrent.dot(midOfEntityAndCurrent) > 0;
     }
 }

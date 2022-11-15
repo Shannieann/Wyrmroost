@@ -2,11 +2,13 @@ package com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai;
 
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
-import net.minecraft.entity.ai.controller.LookController;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraft.world.phys.Vec3;
 
-public class LessShitLookController extends LookController
+import java.util.Optional;
+
+public class LessShitLookController extends LookControl
 {
     private final TameableDragonEntity dragon;
     private boolean stopLooking;
@@ -31,14 +33,14 @@ public class LessShitLookController extends LookController
     }
 
     @Override
-    protected float getXRotD()
+    protected Optional<Float> getXRotD()
     {
-        Vector3d mouthPos = dragon.getApproximateMouthPos();
+        Vec3 mouthPos = dragon.getApproximateMouthPos();
         double x = wantedX - mouthPos.x();
         double y = wantedY - mob.getEyeY();
         double z = wantedZ - mouthPos.z();
-        double sqrt = MathHelper.sqrt(x * x + z * z);
-        return (float) (-(MathHelper.atan2(y, sqrt) * (double)(180f / Mafs.PI)));
+        double sqrt = Mth.sqrt((float) (x * x + z * z));
+        return Optional.of((float) (-(Mth.atan2(y, sqrt) * (double)(180f / Mafs.PI))));
     }
 
     public void stopLooking()

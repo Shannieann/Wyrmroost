@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
-import com.github.wolfshotz.wyrmroost.Wyrmroost;
+/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
@@ -265,3 +265,4 @@ public class WoodGroup extends WoodType
         }
     }
 }
+*/

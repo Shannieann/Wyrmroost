@@ -2,10 +2,11 @@ package com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals;
 
 import com.github.wolfshotz.wyrmroost.WRConfig;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
-import net.minecraft.entity.EntityPredicate;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.advancements.critereon.EntityPredicate;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
+import net.minecraft.world.entity.animal.Animal;
 
 import javax.annotation.Nullable;
 import java.util.Comparator;
@@ -13,8 +14,9 @@ import java.util.EnumSet;
 
 public class DragonBreedGoal extends Goal
 {
+    private static final TargetingConditions PARTNER_TARGETING = TargetingConditions.forNonCombat().range(8.0D).ignoreLineOfSight();
     protected final TameableDragonEntity dragon;
-    protected final EntityPredicate predicate;
+    //protected final EntityPredicate predicate;
     protected TameableDragonEntity targetMate;
     protected int spawnBabyDelay;
 
@@ -22,12 +24,12 @@ public class DragonBreedGoal extends Goal
     {
         setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         this.dragon = dragon;
-        this.predicate = new EntityPredicate()
+        /*this.predicate = new EntityPredicate()
                 .range(dragon.getBbWidth() * 8)
                 .allowInvulnerable()
                 .allowSameTeam()
                 .allowUnseeable()
-                .selector(e -> ((AnimalEntity) e).canMate(dragon));
+                .selector(e -> ((Animal) e).canMate(dragon));*/
     }
 
     /**
@@ -71,7 +73,7 @@ public class DragonBreedGoal extends Goal
         dragon.getLookControl().setLookAt(targetMate, 10f, dragon.getYawRotationSpeed());
         dragon.getNavigation().moveTo(targetMate, 1);
         if (++spawnBabyDelay >= 60 && dragon.distanceTo(targetMate) < dragon.getBbWidth() * 2)
-            dragon.spawnChildFromBreeding((ServerWorld) dragon.level, targetMate);
+            dragon.spawnChildFromBreeding((ServerLevel) dragon.level, targetMate);
     }
 
     /**
@@ -81,7 +83,7 @@ public class DragonBreedGoal extends Goal
     @Nullable
     protected TameableDragonEntity getNearbyMate()
     {
-        return dragon.level.getNearbyEntities(dragon.getClass(), predicate, dragon, dragon.getBoundingBox().inflate(dragon.getBbWidth() * 8))
+        return dragon.level.getNearbyEntities(dragon.getClass(), PARTNER_TARGETING, dragon, dragon.getBoundingBox().inflate(dragon.getBbWidth() * 8))
                 .stream()
                 .min(Comparator.comparingDouble(dragon::distanceToSqr)).orElse(null);
     }

@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon;
 
-import com.github.wolfshotz.wyrmroost.client.model.entity.LesserDesertwyrmModel;
+/*import com.github.wolfshotz.wyrmroost.client.model.entity.LesserDesertwyrmModel;
 import com.github.wolfshotz.wyrmroost.items.LDWyrmItem;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
@@ -8,60 +8,62 @@ import com.github.wolfshotz.wyrmroost.registry.WRSounds;
 import com.github.wolfshotz.wyrmroost.util.animation.Animation;
 import com.github.wolfshotz.wyrmroost.util.animation.IAnimatable;
 import com.github.wolfshotz.wyrmroost.util.animation.LogicalAnimation;
-import net.minecraft.block.Block;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.material.Material;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
-import net.minecraft.entity.ai.goal.AvoidEntityGoal;
-import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.SwimGoal;
-import net.minecraft.entity.ai.goal.WaterAvoidingRandomWalkingGoal;
-import net.minecraft.entity.passive.AnimalEntity;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.FishingBobberEntity;
-import net.minecraft.inventory.InventoryHelper;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.SpawnEggItem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.network.datasync.DataParameter;
-import net.minecraft.network.datasync.DataSerializers;
-import net.minecraft.network.datasync.EntityDataManager;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.*;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.RayTraceResult;
-import net.minecraft.world.IServerWorld;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraft.world.biome.Biome;
-import net.minecraft.world.biome.MobSpawnInfo;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.Containers;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
+import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.FishingHook;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.SpawnEggItem;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.biome.Biome;
+import net.minecraft.world.level.biome.MobSpawnSettings;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.HitResult;
+import net.minecraftforge.client.event.sound.SoundEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
 
-import static net.minecraft.entity.ai.attributes.Attributes.*;
+import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 /**
  * Desertwyrm Dragon Entity
  * Seperated from AbstractDragonEntity:
  * This does not need/require much from that class and would instead create redundancies. do this instead.
- */
-public class LesserDesertwyrmEntity extends AnimalEntity implements IAnimatable
+public class LesserDesertwyrmEntity extends Animal implements IAnimatable
 {
     public static final String DATA_BURROWED = "Burrowed";
     public static final Animation BITE_ANIMATION = LogicalAnimation.create(10, null, () -> LesserDesertwyrmModel::biteAnimation);
-    private static final DataParameter<Boolean> BURROWED = EntityDataManager.defineId(LesserDesertwyrmEntity.class, DataSerializers.BOOLEAN);
-    private static final Predicate<LivingEntity> AVOIDING = t -> EntityPredicates.ATTACK_ALLOWED.test(t) && !(t instanceof LesserDesertwyrmEntity);
+    private static final EntityDataAccessor<Boolean> BURROWED = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final Predicate<LivingEntity> AVOIDING = t -> EntitySelector.LIVING_ENTITY_STILL_ALIVE.test(t) && !(t instanceof LesserDesertwyrmEntity);
 
     public Animation animation = NO_ANIMATION;
     public int animationTick;
 
-    public LesserDesertwyrmEntity(EntityType<? extends LesserDesertwyrmEntity> minutus, World level)
+    public LesserDesertwyrmEntity(EntityType<? extends LesserDesertwyrmEntity> minutus, Level level)
     {
         super(minutus, level);
     }
@@ -69,14 +71,14 @@ public class LesserDesertwyrmEntity extends AnimalEntity implements IAnimatable
     @Override
     protected void registerGoals()
     {
-        goalSelector.addGoal(1, new SwimGoal(this));
+        goalSelector.addGoal(1, new FloatGoal(this));
         goalSelector.addGoal(2, new BurrowGoal());
         goalSelector.addGoal(3, new AvoidEntityGoal<>(this, LivingEntity.class, 6f, 0.8d, 1.2d, AVOIDING));
-        goalSelector.addGoal(4, new WaterAvoidingRandomWalkingGoal(this, 1));
+        goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1));
     }
 
     @Override
-    public ItemStack getPickedResult(RayTraceResult target)
+    public ItemStack getPickedResult(HitResult target)
     {
         return new ItemStack(SpawnEggItem.byId(getType()));
     }
@@ -89,14 +91,14 @@ public class LesserDesertwyrmEntity extends AnimalEntity implements IAnimatable
     }
 
     @Override
-    public void addAdditionalSaveData(CompoundNBT compound)
+    public void addAdditionalSaveData(CompoundTag compound)
     {
         super.addAdditionalSaveData(compound);
         compound.putBoolean(DATA_BURROWED, isBurrowed());
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundNBT compound)
+    public void readAdditionalSaveData(CompoundTag compound)
     {
         super.readAdditionalSaveData(compound);
         setBurrowed(compound.getBoolean(DATA_BURROWED));
@@ -104,7 +106,6 @@ public class LesserDesertwyrmEntity extends AnimalEntity implements IAnimatable
 
     /**
      * Whether or not the Minutus is burrowed
-     */
     public boolean isBurrowed()
     {
         return entityData.get(BURROWED);
@@ -131,7 +132,6 @@ public class LesserDesertwyrmEntity extends AnimalEntity implements IAnimatable
 
     /**
      * Called to update the entity's position/logic.
-     */
     @Override
     public void tick()
     {
@@ -144,17 +144,17 @@ public class LesserDesertwyrmEntity extends AnimalEntity implements IAnimatable
         Predicate<Entity> predicateFilter = filter ->
         {
             if (filter instanceof LesserDesertwyrmEntity) return false;
-            return filter instanceof FishingBobberEntity || (filter instanceof LivingEntity && filter.getBbWidth() < 0.9f && filter.getBbHeight() < 0.9f);
+            return filter instanceof FishingHook || (filter instanceof LivingEntity && filter.getBbWidth() < 0.9f && filter.getBbHeight() < 0.9f);
         };
-        AxisAlignedBB aabb = getBoundingBox().expandTowards(0, 2, 0).inflate(0.5, 0, 0.5);
+        AABB aabb = getBoundingBox().expandTowards(0, 2, 0).inflate(0.5, 0, 0.5);
         List<Entity> entities = level.getEntities(this, aabb, predicateFilter);
         if (entities.isEmpty()) return;
 
         Optional<Entity> closest = entities.stream().min(Comparator.comparingDouble(entity -> entity.distanceTo(this)));
         Entity entity = closest.get();
-        if (entity instanceof FishingBobberEntity)
+        if (entity instanceof FishingHook)
         {
-            entity.remove();
+            entity.remove(RemovalReason.KILLED);
             setDeltaMovement(0, 0.8, 0);
             setBurrowed(false);
         }
@@ -166,29 +166,29 @@ public class LesserDesertwyrmEntity extends AnimalEntity implements IAnimatable
     }
 
     @Override
-    public ActionResultType mobInteract(PlayerEntity player, Hand hand)
+    public InteractionResult mobInteract(Player player, InteractionHand hand)
     {
         if (player.getItemInHand(hand).isEmpty())
         {
             if (!level.isClientSide)
             {
                 ItemStack stack = new ItemStack(WRItems.LDWYRM.get());
-                CompoundNBT tag = new CompoundNBT();
-                CompoundNBT subTag = serializeNBT();
+                CompoundTag tag = new CompoundTag();
+                CompoundTag subTag = serializeNBT();
                 tag.put(LDWyrmItem.DATA_CONTENTS, subTag);
                 if (hasCustomName()) stack.setHoverName(getCustomName());
                 stack.setTag(tag);
-                InventoryHelper.dropItemStack(level, getX(), getY(), getZ(), stack);
-                remove();
+                Containers.dropItemStack(level, getX(), getY(), getZ(), stack);
+                remove(RemovalReason.KILLED);
             }
-            return ActionResultType.sidedSuccess(level.isClientSide);
+            return InteractionResult.sidedSuccess(level.isClientSide);
         }
 
         return super.mobInteract(player, hand);
     }
 
     @Override
-    public float getWalkTargetValue(BlockPos pos, IWorldReader world) // Attracted to sand
+    public float getWalkTargetValue(BlockPos pos, LevelReader world) // Attracted to sand
     {
         if (level.getBlockState(pos).getMaterial() == Material.SAND) return 10f;
         return super.getWalkTargetValue(pos, level);
@@ -202,7 +202,7 @@ public class LesserDesertwyrmEntity extends AnimalEntity implements IAnimatable
 
     @Nullable
     @Override
-    public AgeableEntity getBreedOffspring(ServerWorld level, AgeableEntity p_241840_2_)
+    public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob p_241840_2_)
     {
         return null;
     }
@@ -281,22 +281,22 @@ public class LesserDesertwyrmEntity extends AnimalEntity implements IAnimatable
         setAnimationTick(0);
     }
 
-    public static <F extends MobEntity> boolean getSpawnPlacement(EntityType<F> fEntityType, IServerWorld level, SpawnReason reason, BlockPos pos, Random random)
+    public static <F extends Mob> boolean getSpawnPlacement(EntityType<F> fEntityType, ServerLevelAccessor level, MobSpawnType reason, BlockPos pos, Random random)
     {
-        if (reason == SpawnReason.SPAWNER) return true;
+        if (reason == MobSpawnType.SPAWNER) return true;
         Block block = level.getBlockState(pos.below()).getBlock();
         return block == Blocks.SAND && level.getRawBrightness(pos, 0) > 8;
     }
 
     public static void setSpawnBiomes(BiomeLoadingEvent event)
     {
-        if (event.getCategory() == Biome.Category.DESERT)
-            event.getSpawns().addSpawn(EntityClassification.AMBIENT, new MobSpawnInfo.Spawners(WREntities.LESSER_DESERTWYRM.get(), 11, 1, 3));
+        if (event.getCategory() == Biome.BiomeCategory.DESERT)
+            event.getSpawns().addSpawn(MobCategory.AMBIENT, new MobSpawnSettings.SpawnerData(WREntities.LESSER_DESERTWYRM.get(), 11, 1, 3));
     }
 
-    public static AttributeModifierMap.MutableAttribute getAttributeMap()
+    public static AttributeSupplier.Builder getAttributeSupplier()
     {
-        return MobEntity.createMobAttributes()
+        return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 4)
                 .add(MOVEMENT_SPEED, 0.4)
                 .add(ATTACK_DAMAGE, 4);
@@ -308,19 +308,14 @@ public class LesserDesertwyrmEntity extends AnimalEntity implements IAnimatable
 
         public BurrowGoal()
         {
-            setFlags(EnumSet.of(Flag.MOVE, Flag.JUMP, Flag.LOOK));
+            setFlags(EnumSet.of(Goal.Flag.MOVE, Flag.JUMP, Flag.LOOK));
         }
 
-        /**
-         * Returns whether the EntityAIBase should begin execution.
-         */
-        @Override
         public boolean canUse()
         {
             return !isBurrowed() && belowIsSand();
         }
 
-        @Override
         public boolean canContinueToUse()
         {
             return belowIsSand() && (isBurrowed() || burrowTicks > 0);
@@ -345,3 +340,4 @@ public class LesserDesertwyrmEntity extends AnimalEntity implements IAnimatable
         }
     }
 }
+*/

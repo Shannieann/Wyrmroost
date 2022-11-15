@@ -1,25 +1,25 @@
 package com.github.wolfshotz.wyrmroost.util;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.Direction;
-import net.minecraft.util.SoundCategory;
-import net.minecraft.util.SoundEvent;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
-import net.minecraft.world.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
-import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import net.minecraftforge.registries.DeferredRegister;
@@ -89,7 +89,7 @@ public final class ModUtils
      * @return An ItemStack if it conatains the specified item, null otherwise
      */
     @Nullable
-    public static ItemStack getHeldStack(PlayerEntity player, Item item)
+    public static ItemStack getHeldStack(Player player, Item item)
     {
         ItemStack main = player.getMainHandItem();
         ItemStack off = player.getOffhandItem();
@@ -115,32 +115,32 @@ public final class ModUtils
      * @param volume so help me god
      * @param pitch  the pitch of the sound. lower values = sulfur hexafloride, higher values = dying chipmunk
      */
-    public static void playLocalSound(World level, BlockPos pos, SoundEvent sound, float volume, float pitch)
+    public static void playLocalSound(Level level, BlockPos pos, SoundEvent sound, float volume, float pitch)
     {
-        playLocalSound(level, pos, sound, SoundCategory.NEUTRAL, volume, pitch);
+        playLocalSound(level, pos, sound, SoundSource.NEUTRAL, volume, pitch);
     }
 
-    public static void playLocalSound(World level, BlockPos pos, SoundEvent sound, SoundCategory category, float volume, float pitch)
+    public static void playLocalSound(Level level, BlockPos pos, SoundEvent sound, SoundSource category, float volume, float pitch)
     {
         level.playLocalSound(pos.getX(), pos.getY(), pos.getZ(), sound, category, volume, pitch, false);
     }
 
     /**
-     * Get all (approximate) {@link BlockPos}'s in an {@link AxisAlignedBB}
+     * Get all (approximate) {@link BlockPos}'s in an {@link AABB}
      * <p>
      * Iterable Version - for statements ftw
      *
      * @param aabb please tell me your not asking what this is for
      */
-    public static Iterable<BlockPos> eachPositionIn(AxisAlignedBB aabb)
+    public static Iterable<BlockPos> eachPositionIn(AABB aabb)
     {
         return BlockPos.betweenClosed(
-                MathHelper.floor(aabb.minX),
-                MathHelper.floor(aabb.minY),
-                MathHelper.floor(aabb.minZ),
-                MathHelper.ceil(aabb.maxX),
-                MathHelper.ceil(aabb.maxY),
-                MathHelper.ceil(aabb.maxZ));
+                Mth.floor(aabb.minX),
+                Mth.floor(aabb.minY),
+                Mth.floor(aabb.minZ),
+                Mth.ceil(aabb.maxX),
+                Mth.ceil(aabb.maxY),
+                Mth.ceil(aabb.maxZ));
     }
 
     /**
@@ -176,7 +176,7 @@ public final class ModUtils
      * @param initialY the y starting position of the inventory
      * @param slotFactory the thing to do the thing.
      */
-    public static <T extends Slot> void createPlayerContainerSlots(PlayerInventory playerInv, int initialX, int initialY, SlotFunction<T> slotFactory, Consumer<T> consumer)
+    public static <T extends Slot> void createPlayerContainerSlots(Inventory playerInv, int initialX, int initialY, SlotFunction<T> slotFactory, Consumer<T> consumer)
     {
         PlayerInvWrapper inv = new PlayerInvWrapper(playerInv);
         createContainerSlots(inv, 9, initialX, initialY, 9, 3, slotFactory, consumer); // Player inv

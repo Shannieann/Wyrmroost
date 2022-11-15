@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.util;
 
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.Mth;
 
 public class LerpedFloat
 {
@@ -65,7 +65,7 @@ public class LerpedFloat
 
         public Clamped(float start, float min, float max)
         {
-            super(MathHelper.clamp(start, min, max));
+            super(Mth.clamp(start, min, max));
             this.min = min;
             this.max = max;
         }
@@ -78,14 +78,14 @@ public class LerpedFloat
         @Override
         public void set(float value)
         {
-            super.set(MathHelper.clamp(value, min, max));
+            super.set(Mth.clamp(value, min, max));
         }
 
         @Override
         public void add(float value)
         {
             super.add(value);
-            current = MathHelper.clamp(current, min, max);
+            current = Mth.clamp(current, min, max);
         }
 
         public float getMin()

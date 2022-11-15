@@ -1,13 +1,13 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
-import net.minecraft.block.*;
-import net.minecraft.item.BlockItemUseContext;
+/*import net.minecraft.block.*;
+import net.minecraft.item.BlockUseOnContext;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.IWorldReader;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.world.LevelReader;
+import net.minecraft.world.Level;
+import net.minecraft.world.server.ServerLevel;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -33,7 +33,7 @@ public class GrowingPlantBlock extends AbstractTopPlantBlock
     @Override
     public boolean isValidBonemealTarget(IBlockReader worldIn, BlockPos pos, BlockState state, boolean isClient)
     {
-        return (!hasMaxHeight() || getHeight((IWorldReader) worldIn, pos) < maxGrowthHeight) && super.isValidBonemealTarget(worldIn, pos, state, isClient);
+        return (!hasMaxHeight() || getHeight((LevelReader) worldIn, pos) < maxGrowthHeight) && super.isValidBonemealTarget(worldIn, pos, state, isClient);
     }
 
     @Override
@@ -43,9 +43,9 @@ public class GrowingPlantBlock extends AbstractTopPlantBlock
     }
 
     @Override
-    public void performBonemeal(ServerWorld level, Random rand, BlockPos pos, BlockState state)
+    public void performBonemeal(ServerLevel level, Random rand, BlockPos pos, BlockState state)
     {
-        BlockPos.Mutable mutable = pos.mutable().move(growthDirection);
+        BlockPos.MutableBlockPos mutable = pos.mutable().move(growthDirection);
         int i = 0;
         int amount = getBlocksToGrowWhenBonemealed(rand);
         if (hasMaxHeight()) amount = Math.min(amount, maxGrowthHeight - getHeight(level, pos));
@@ -58,7 +58,7 @@ public class GrowingPlantBlock extends AbstractTopPlantBlock
     }
 
     @Override
-    public boolean canSurvive(BlockState state, IWorldReader worldIn, BlockPos pos)
+    public boolean canSurvive(BlockState state, LevelReader worldIn, BlockPos pos)
     {
         BlockPos below = pos.relative(growthDirection.getOpposite());
         BlockState belowState = worldIn.getBlockState(below);
@@ -74,11 +74,11 @@ public class GrowingPlantBlock extends AbstractTopPlantBlock
 
     @Nullable
     @Override
-    public BlockState getStateForPlacement(BlockItemUseContext context)
+    public BlockState getStateForPlacement(BlockUseOnContext context)
     {
         if (hasMaxHeight())
         {
-            World level = context.getLevel();
+            Level level = context.getLevel();
             BlockPos pos = context.getClickedPos().relative(growthDirection.getOpposite());
             if (getHeight(level, pos, true) + 1 >= maxGrowthHeight) return defaultBlockState().setValue(AGE, 25);
         }
@@ -102,15 +102,15 @@ public class GrowingPlantBlock extends AbstractTopPlantBlock
         return maxGrowthHeight != 0;
     }
 
-    public int getHeight(IWorldReader level, BlockPos pos)
+    public int getHeight(LevelReader level, BlockPos pos)
     {
         return getHeight(level, pos, true) + getHeight(level, pos, false) - 1;
     }
 
-    public int getHeight(IWorldReader level, BlockPos pos, boolean below)
+    public int getHeight(LevelReader level, BlockPos pos, boolean below)
     {
         Direction dir = below? growthDirection.getOpposite() : growthDirection;
-        BlockPos.Mutable mutable = pos.mutable();
+        BlockPos.MutableBlockPos mutable = pos.mutable();
         BlockState state = level.getBlockState(mutable);
         int i = 0;
         for (; i < maxGrowthHeight + 1 && (state.is(getBodyBlock()) || state.is(this)); ++i)
@@ -122,4 +122,4 @@ public class GrowingPlantBlock extends AbstractTopPlantBlock
     {
         return maxGrowthHeight;
     }
-}
+}*/

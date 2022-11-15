@@ -1,12 +1,12 @@
 package com.github.wolfshotz.wyrmroost.client.screen;
 
-import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
+/*import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.util.animation.Animation;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.button.Button;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.TextComponent;
 
 public class DebugScreen extends Screen
 {
@@ -15,7 +15,7 @@ public class DebugScreen extends Screen
 
     public DebugScreen(TameableDragonEntity dragon)
     {
-        super(new StringTextComponent("debug_screen"));
+        super(new TextComponent("debug_screen"));
 
         this.dragon = dragon;
     }
@@ -23,14 +23,14 @@ public class DebugScreen extends Screen
     @Override
     protected void init()
     {
-        addButton(new Button(0, 0, 50, 20, new StringTextComponent("Pause Game"), b -> paused = !paused));
+        addButton(new Button(0, 0, 50, 20, new TextComponent("Pause Game"), b -> paused = !paused));
 
         Animation[] animations = dragon.getAnimations();
         if (animations != null && animations.length > 0)
             for (int i = 0; i < animations.length; i++)
             {
                 Animation animation = animations[i];
-                addButton(new Button((i * 50) + (width / 2) - (animations.length * 25), 200, 50, 12, new StringTextComponent("Anim: " + i), b ->
+                addButton(new Button((i * 50) + (width / 2) - (animations.length * 25), 200, 50, 12, new TextComponent("Anim: " + i), b ->
                 {
                     dragon.setAnimation(animation);
                     onClose();
@@ -39,7 +39,7 @@ public class DebugScreen extends Screen
     }
 
     @Override
-    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         renderBackground(ms);
         super.render(ms, mouseX, mouseY, partialTicks);
@@ -69,3 +69,4 @@ public class DebugScreen extends Screen
         Minecraft.getInstance().setScreen(new DebugScreen(dragon));
     }
 }
+*/

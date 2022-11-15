@@ -3,11 +3,11 @@ package com.github.wolfshotz.wyrmroost.client.particle.data;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
-import net.minecraft.network.PacketBuffer;
-import net.minecraft.particles.IParticleData;
-import net.minecraft.particles.ParticleType;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleType;
+import net.minecraft.network.FriendlyByteBuf;
 
-public class ColoredParticleData implements IParticleData
+public class ColoredParticleData implements ParticleOptions
 {
     private final ParticleType<?> type;
     private final int rgb;
@@ -36,7 +36,7 @@ public class ColoredParticleData implements IParticleData
     }
 
     @Override
-    public void writeToNetwork(PacketBuffer buffer)
+    public void writeToNetwork(FriendlyByteBuf buffer)
     {
         buffer.writeInt(rgb);
     }

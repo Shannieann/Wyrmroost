@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/slab",
-  "textures": {
-    "side": "wyrmroost:block/sal_planks",
-    "bottom": "wyrmroost:block/sal_planks",
-    "top": "wyrmroost:block/sal_planks"
-  }
-}

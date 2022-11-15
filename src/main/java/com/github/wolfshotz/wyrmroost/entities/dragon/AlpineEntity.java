@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon;
 
-import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+/*import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.client.model.entity.AlpineModel;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.DragonBreedGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.FlyerWanderGoal;
@@ -17,17 +17,17 @@ import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import com.github.wolfshotz.wyrmroost.util.animation.Animation;
 import com.github.wolfshotz.wyrmroost.util.animation.LogicalAnimation;
 import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.passive.BeeEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.Player;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.util.DamageSource;
-import net.minecraft.util.Hand;
+import net.minecraft.util.InteractionHand;
 import net.minecraft.util.SoundEvent;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.world.World;
+import net.minecraft.world.Level;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 
 import javax.annotation.Nullable;
@@ -48,7 +48,7 @@ public class AlpineEntity extends TameableDragonEntity
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public final LerpedFloat flightTimer = LerpedFloat.unit();
 
-    public AlpineEntity(EntityType<? extends TameableDragonEntity> dragon, World level)
+    public AlpineEntity(EntityType<? extends TameableDragonEntity> dragon, Level level)
     {
         super(dragon, level);
     }
@@ -63,11 +63,11 @@ public class AlpineEntity extends TameableDragonEntity
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new DragonBreedGoal(this));
         goalSelector.addGoal(8, new FlyerWanderGoal(this, 1, 0.01f));
-        goalSelector.addGoal(9, new LookAtGoal(this, LivingEntity.class, 10));
-        goalSelector.addGoal(10, new LookRandomlyGoal(this));
+        goalSelector.addGoal(9, new LookAtPlayerGoal(this, LivingEntity.class, 10));
+        goalSelector.addGoal(10, new RandomLookAroundGoal(this));
 
         targetSelector.addGoal(0, new HurtByTargetGoal(this));
-        targetSelector.addGoal(1, new NonTamedTargetGoal<>(this, BeeEntity.class, false, e -> ((BeeEntity) e).hasNectar()));
+        targetSelector.addGoal(1, new NonTameRandomTargetGoal<>(this, BeeEntity.class, false, e -> ((BeeEntity) e).hasNectar()));
     }
 
     @Override
@@ -134,7 +134,7 @@ public class AlpineEntity extends TameableDragonEntity
             if (bee.hasNectar() && bee.isLeashed())
             {
                 Entity holder = bee.getLeashHolder();
-                if (holder instanceof PlayerEntity) tame(true, (PlayerEntity) holder);
+                if (holder instanceof Player) tame(true, (Player) holder);
             }
         }
         return flag;
@@ -153,9 +153,9 @@ public class AlpineEntity extends TameableDragonEntity
     }
 
     @Override
-    public EntitySize getDimensions(Pose pose)
+    public EntityDimensions getDimensions(Pose pose)
     {
-        EntitySize size = getType().getDimensions().scale(getScale());
+        EntityDimensions size = getType().getDimensions().scale(getScale());
         return size.scale(1, isInSittingPose() || isSleeping()? 0.7f : 1);
     }
 
@@ -197,7 +197,7 @@ public class AlpineEntity extends TameableDragonEntity
     }
 
     @Override
-    public void swing(Hand hand)
+    public void swing(InteractionHand hand)
     {
         setAnimation(BITE_ANIMATION);
         playSound(SoundEvents.GENERIC_EAT, 1, 1, true);
@@ -223,7 +223,7 @@ public class AlpineEntity extends TameableDragonEntity
     }
 
     @Override
-    protected float getStandingEyeHeight(Pose poseIn, EntitySize sizeIn)
+    protected float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn)
     {
         return sizeIn.height * (isFlying()? 0.8f : 1.25f);
     }
@@ -255,9 +255,9 @@ public class AlpineEntity extends TameableDragonEntity
         return ANIMATIONS;
     }
 
-    public static AttributeModifierMap.MutableAttribute getAttributeMap()
+    public static AttributeSupplier.MutableAttribute getAttributeSupplier()
     {
-        return MobEntity.createMobAttributes()
+        return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 40)
                 .add(MOVEMENT_SPEED, 0.22)
                 .add(KNOCKBACK_RESISTANCE, 1)
@@ -266,3 +266,4 @@ public class AlpineEntity extends TameableDragonEntity
                 .add(WREntities.Attributes.PROJECTILE_DAMAGE.get(), 1);
     }
 }
+*/

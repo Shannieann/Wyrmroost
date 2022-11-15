@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
-import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
+/*import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraftforge.common.ToolType;
@@ -185,3 +185,4 @@ public class StoneGroup
         }
     }
 }
+*/

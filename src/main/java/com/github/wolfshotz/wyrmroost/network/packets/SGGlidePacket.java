@@ -1,11 +1,11 @@
 package com.github.wolfshotz.wyrmroost.network.packets;
 
-import com.github.wolfshotz.wyrmroost.Wyrmroost;
+/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.dragon.SilverGliderEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraftforge.fmllegacy.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -13,7 +13,7 @@ public class SGGlidePacket
 {
     private final boolean gliding;
 
-    public SGGlidePacket(PacketBuffer buffer)
+    public SGGlidePacket(FriendlyByteBuf buffer)
     {
         this.gliding = buffer.readBoolean();
     }
@@ -23,14 +23,14 @@ public class SGGlidePacket
         this.gliding = gliding;
     }
 
-    public void encode(PacketBuffer buf)
+    public void encode(FriendlyByteBuf buf)
     {
         buf.writeBoolean(gliding);
     }
 
     public boolean handle(Supplier<NetworkEvent.Context> context)
     {
-        ServerPlayerEntity reciever = context.get().getSender();
+        ServerPlayer reciever = context.get().getSender();
         if (reciever != null && !reciever.getPassengers().isEmpty())
         {
             Entity entity = reciever.getPassengers().get(0);
@@ -48,3 +48,4 @@ public class SGGlidePacket
         Wyrmroost.NETWORK.sendToServer(new SGGlidePacket(gliding));
     }
 }
+*/

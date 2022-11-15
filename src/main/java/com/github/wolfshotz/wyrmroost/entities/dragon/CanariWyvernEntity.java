@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon;
 
-import com.github.wolfshotz.wyrmroost.client.model.entity.CanariWyvernModel;
+/*import com.github.wolfshotz.wyrmroost.client.model.entity.CanariWyvernModel;
 import com.github.wolfshotz.wyrmroost.containers.BookContainer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.*;
 import com.github.wolfshotz.wyrmroost.entities.util.EntitySerializer;
@@ -13,19 +13,19 @@ import com.github.wolfshotz.wyrmroost.util.animation.LogicalAnimation;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.MobEntity;
-import net.minecraft.entity.ai.RandomPositionGenerator;
-import net.minecraft.entity.ai.attributes.AttributeModifierMap;
+import net.minecraft.entity.Mob;
+import net.minecraft.entity.ai.RandomPos;
+import net.minecraft.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.entity.ai.controller.BodyController;
 import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.Player;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.MobEffectInstance;
 import net.minecraft.potion.Effects;
 import net.minecraft.util.*;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
+import net.minecraft.util.math.vector.Vec3;
+import net.minecraft.world.Level;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -44,9 +44,9 @@ public class CanariWyvernEntity extends TameableDragonEntity
     public static final Animation THREAT_ANIMATION = LogicalAnimation.create(40, CanariWyvernEntity::threatAnimation, () -> CanariWyvernModel::threatAnimation);
     public static final Animation ATTACK_ANIMATION = LogicalAnimation.create(15, null, () -> CanariWyvernModel::attackAnimation);
 
-    public PlayerEntity pissedOffTarget;
+    public Player pissedOffTarget;
 
-    public CanariWyvernEntity(EntityType<? extends TameableDragonEntity> dragon, World level)
+    public CanariWyvernEntity(EntityType<? extends TameableDragonEntity> dragon, Level level)
     {
         super(dragon, level);
     }
@@ -62,8 +62,8 @@ public class CanariWyvernEntity extends TameableDragonEntity
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new DragonBreedGoal(this));
         goalSelector.addGoal(8, new FlyerWanderGoal(this, 1));
-        goalSelector.addGoal(9, new LookAtGoal(this, LivingEntity.class, 8f));
-        goalSelector.addGoal(10, new LookRandomlyGoal(this));
+        goalSelector.addGoal(9, new LookAtPlayerGoal(this, LivingEntity.class, 8f));
+        goalSelector.addGoal(10, new RandomLookAroundGoal(this));
 
         targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
@@ -120,16 +120,16 @@ public class CanariWyvernEntity extends TameableDragonEntity
     }
 
     @Override
-    public ActionResultType playerInteraction(PlayerEntity player, Hand hand, ItemStack stack)
+    public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
     {
-        ActionResultType result = super.playerInteraction(player, hand, stack);
+        InteractionResult result = super.playerInteraction(player, hand, stack);
         if (result.consumesAction()) return result;
 
         if (!isTame() && isFood(stack) && (isPissed() || player.isCreative() || isHatchling()))
         {
             eat(stack);
             if (!level.isClientSide) tame(getRandom().nextDouble() < 0.2, player);
-            return ActionResultType.sidedSuccess(level.isClientSide);
+            return InteractionResult.sidedSuccess(level.isClientSide);
         }
 
         if (isOwnedBy(player) && player.getPassengers().size() < 3 && !player.isShiftKeyDown() && !isLeashed())
@@ -138,10 +138,10 @@ public class CanariWyvernEntity extends TameableDragonEntity
             setFlying(false);
             clearAI();
             startRiding(player, true);
-            return ActionResultType.sidedSuccess(level.isClientSide);
+            return InteractionResult.sidedSuccess(level.isClientSide);
         }
 
-        return ActionResultType.PASS;
+        return InteractionResult.PASS;
     }
 
     @Override
@@ -161,7 +161,7 @@ public class CanariWyvernEntity extends TameableDragonEntity
                 default:
                     break;
             }
-            ((LivingEntity) entity).addEffect(new EffectInstance(Effects.POISON, i * 20));
+            ((LivingEntity) entity).addEffect(new MobEffectInstance(Effects.POISON, i * 20));
             return true;
         }
         return false;
@@ -242,9 +242,9 @@ public class CanariWyvernEntity extends TameableDragonEntity
         return pissedOffTarget != null;
     }
 
-    public static AttributeModifierMap.MutableAttribute getAttributeMap()
+    public static AttributeSupplier.MutableAttribute getAttributeSupplier()
     {
-        return MobEntity.createMobAttributes()
+        return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 12)
                 .add(MOVEMENT_SPEED, 0.2)
                 .add(FLYING_SPEED, 0.1)
@@ -253,7 +253,7 @@ public class CanariWyvernEntity extends TameableDragonEntity
 
     public class ThreatenGoal extends Goal
     {
-        public PlayerEntity target;
+        public Player target;
 
         public ThreatenGoal()
         {
@@ -279,7 +279,7 @@ public class CanariWyvernEntity extends TameableDragonEntity
             {
                 if (getNavigation().isDone())
                 {
-                    Vector3d vec3d = RandomPositionGenerator.getPosAvoid(CanariWyvernEntity.this, 16, 7, target.position());
+                    Vec3 vec3d = RandomPos.getPosAvoid(CanariWyvernEntity.this, 16, 7, target.position());
                     if (vec3d != null) getNavigation().moveTo(vec3d.x, vec3d.y, vec3d.z, 1.5);
                 }
             }
@@ -326,7 +326,7 @@ public class CanariWyvernEntity extends TameableDragonEntity
         public boolean canContinueToUse()
         {
             LivingEntity target = getTarget();
-            return target != null && target.isAlive() && isWithinRestriction(target.blockPosition()) && EntityPredicates.ATTACK_ALLOWED.test(target);
+            return target != null && target.isAlive() && isWithinRestriction(target.blockPosition()) && EntitySelector.ATTACK_ALLOWED.test(target);
         }
 
         @Override
@@ -357,4 +357,4 @@ public class CanariWyvernEntity extends TameableDragonEntity
             attackDelay = 0;
         }
     }
-}
+}*/

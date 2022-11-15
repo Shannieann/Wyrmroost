@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.containers.util;
 
-import net.minecraft.inventory.IInventory;
+/*import net.minecraft.world.Container;
 import net.minecraftforge.items.IItemHandler;
 
 public class DynamicSlot extends SlotBuilder
@@ -15,7 +15,7 @@ public class DynamicSlot extends SlotBuilder
         this.anchorY = y;
     }
 
-    public DynamicSlot(IInventory inventory, int index, int x, int y)
+    public DynamicSlot(Container inventory, int index, int x, int y)
     {
         super(inventory, index, x, y);
         this.anchorX = x;
@@ -33,4 +33,4 @@ public class DynamicSlot extends SlotBuilder
         this.x = anchorX + x;
         this.y = anchorY + y;
     }
-}
+}*/

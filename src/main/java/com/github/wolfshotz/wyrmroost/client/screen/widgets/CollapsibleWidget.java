@@ -1,19 +1,19 @@
 package com.github.wolfshotz.wyrmroost.client.screen.widgets;
 
-import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+/*import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.containers.util.DynamicSlot;
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.gui.widget.Widget;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.util.text.StringTextComponent;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.gui.components.AbstractWidget;
+import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
-public class CollapsibleWidget extends Widget
-{
+public class CollapsibleWidget extends AbstractWidget {
     public static final byte TOP = 1;
     public static final byte BOTTOM = 2;
     public static final byte LEFT = 4;
@@ -28,7 +28,7 @@ public class CollapsibleWidget extends Widget
 
     public CollapsibleWidget(int u0, int v0, int width, int height, byte direction, ResourceLocation spriteSheet)
     {
-        super(0, 0, width, height, StringTextComponent.EMPTY);
+        super(0, 0, width, height, TextComponent.EMPTY);
         this.u0 = u0;
         this.v0 = v0;
         this.direction = direction;
@@ -36,10 +36,10 @@ public class CollapsibleWidget extends Widget
     }
 
     @Override
-    public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        ClientEvents.getClient().getTextureManager().bind(spriteSheet);
-        RenderSystem.color4f(1f, 1f, 1f, 1f);
+        ClientEvents.getClient().getTextureManager().bindForSetup(spriteSheet);
+        RenderSystem.clearColor(1f, 1f, 1f, 1f);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         blit(ms, x, y, u0, v0, width, height);
@@ -91,4 +91,10 @@ public class CollapsibleWidget extends Widget
     {
         return false;
     }
+
+    @Override
+    public void updateNarration(NarrationElementOutput p_169152_) {
+
+    }
 }
+*/

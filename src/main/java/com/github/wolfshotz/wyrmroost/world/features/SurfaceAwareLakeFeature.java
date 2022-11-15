@@ -1,10 +1,10 @@
 package com.github.wolfshotz.wyrmroost.world.features;
 
-import net.minecraft.block.Blocks;
+/*import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.SectionPos;
-import net.minecraft.world.ISeedReader;
+import net.minecraft.world.WorldGenLevel;
 import net.minecraft.world.LightType;
 import net.minecraft.world.gen.ChunkGenerator;
 import net.minecraft.world.gen.feature.BlockStateFeatureConfig;
@@ -21,7 +21,7 @@ public class SurfaceAwareLakeFeature extends Feature<BlockStateFeatureConfig>
     }
 
     @Override
-    public boolean place(ISeedReader level, ChunkGenerator generator, Random random, BlockPos pos, BlockStateFeatureConfig config)
+    public boolean place(WorldGenLevel level, ChunkGenerator generator, Random random, BlockPos pos, BlockStateFeatureConfig config)
     {
         while (pos.getY() > 5 && level.isEmptyBlock(pos)) pos = pos.below();
 
@@ -155,4 +155,4 @@ public class SurfaceAwareLakeFeature extends Feature<BlockStateFeatureConfig>
             }
         }
     }
-}
+}*/

@@ -1,8 +1,8 @@
 package com.github.wolfshotz.wyrmroost.entities.util;
 
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.Entity;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.logging.log4j.util.TriConsumer;
 
@@ -18,7 +18,7 @@ public class EntitySerializer<E extends Entity>
 {
     public static final NBTBridge<Boolean> BOOL = bridge((key, nbt, value) -> nbt.putBoolean(key, value), (key, nbt) -> nbt.getBoolean(key));
     public static final NBTBridge<Integer> INT = bridge((key, nbt, value) -> nbt.putInt(key, value), (key, nbt) -> nbt.getInt(key));
-    public static final NBTBridge<CompoundNBT> NBT = bridge((key, nbt, value) -> nbt.put(key, value), (key, nbt) -> nbt.getCompound(key));
+    public static final NBTBridge<CompoundTag> NBT = bridge((key, nbt, value) -> nbt.put(key, value), (key, nbt) -> nbt.getCompound(key));
     public static final NBTBridge<BlockPos> POS = bridge((key, nbt, value) -> nbt.putLong(key, value.asLong()), (key, nbt) -> BlockPos.of(nbt.getLong(key)));
 
     final Entry<?, E>[] entries;
@@ -28,12 +28,12 @@ public class EntitySerializer<E extends Entity>
         this.entries = entries;
     }
 
-    public void serialize(E entity, CompoundNBT nbt)
+    public void serialize(E entity, CompoundTag nbt)
     {
         for (Entry<?, E> entry : entries) entry.serialize(entity, nbt);
     }
 
-    public void deserialize(E entity, CompoundNBT tag)
+    public void deserialize(E entity, CompoundTag tag)
     {
         for (Entry<?, E> entry : entries) entry.deserialize(entity, tag);
     }
@@ -53,7 +53,7 @@ public class EntitySerializer<E extends Entity>
         return new EntitySerializer<>(builder.build());
     }
 
-    private static <T> NBTBridge<T> bridge(TriConsumer<String, CompoundNBT, T> setter, BiFunction<String, CompoundNBT, T> getter)
+    private static <T> NBTBridge<T> bridge(TriConsumer<String, CompoundTag, T> setter, BiFunction<String, CompoundTag, T> getter)
     {
         return new NBTBridge<>(setter, getter);
     }
@@ -73,12 +73,12 @@ public class EntitySerializer<E extends Entity>
             this.read = read;
         }
 
-        private void serialize(E entity, CompoundNBT nbt)
+        private void serialize(E entity, CompoundTag nbt)
         {
             bridge.setter.accept(key, nbt, write.apply(entity));
         }
 
-        private void deserialize(E entity, CompoundNBT nbt)
+        private void deserialize(E entity, CompoundTag nbt)
         {
             read.accept(entity, bridge.getter.apply(key, nbt));
         }
@@ -86,11 +86,11 @@ public class EntitySerializer<E extends Entity>
 
     public static class NBTBridge<T>
     {
-        private final TriConsumer<String, CompoundNBT, T> setter;
-        private final BiFunction<String, CompoundNBT, T> getter;
+        private final TriConsumer<String, CompoundTag, T> setter;
+        private final BiFunction<String, CompoundTag, T> getter;
         private NBTBridge<Optional<T>> optional;
 
-        private NBTBridge(TriConsumer<String, CompoundNBT, T> setter, BiFunction<String, CompoundNBT, T> getter)
+        private NBTBridge(TriConsumer<String, CompoundTag, T> setter, BiFunction<String, CompoundTag, T> getter)
         {
             this.setter = setter;
             this.getter = getter;

@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
-import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
+/*import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -11,7 +11,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.shapes.ISelectionContext;
 import net.minecraft.util.math.shapes.VoxelShape;
 import net.minecraft.world.IBlockReader;
-import net.minecraft.world.World;
+import net.minecraft.world.Level;
 import net.minecraftforge.common.IForgeShearable;
 
 public class CrevasseCottonBlock extends BushBlock implements IForgeShearable
@@ -30,7 +30,7 @@ public class CrevasseCottonBlock extends BushBlock implements IForgeShearable
     }
 
     @Override
-    public void entityInside(BlockState state, World level, BlockPos pos, Entity entity)
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity)
     {
         if (level.isClientSide)
         {
@@ -47,3 +47,4 @@ public class CrevasseCottonBlock extends BushBlock implements IForgeShearable
         }
     }
 }
+*/

@@ -1,29 +1,29 @@
 package com.github.wolfshotz.wyrmroost.entities.projectile;
 
-import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
+/*import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.ServerPlayerEntity;
-import net.minecraft.network.play.server.SEntityVelocityPacket;
-import net.minecraft.particles.BlockParticleData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.BlockParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 public class WindGustEntity extends DragonProjectileEntity
 {
-    public WindGustEntity(EntityType<? extends DragonProjectileEntity> type, World level)
+    public WindGustEntity(EntityType<? extends DragonProjectileEntity> type, Level level)
     {
         super(type, level);
     }
 
-    public WindGustEntity(TameableDragonEntity shooter, Vector3d position, Vector3d acceleration)
+    public WindGustEntity(TameableDragonEntity shooter, Vec3 position, Vec3 acceleration)
     {
         super(WREntities.WIND_GUST.get(), shooter, position, acceleration);
         life = 20;
@@ -42,10 +42,10 @@ public class WindGustEntity extends DragonProjectileEntity
         if (level.isClientSide)
         {
             double multiplier = Math.min(tickCount / 5d, 4d);
-            Vector3d motion = getDeltaMovement().reverse().multiply(0.1, 0.1, 0.1);
+            Vec3 motion = getDeltaMovement().reverse().multiply(0.1, 0.1, 0.1);
             for (int i = 0; i < 30; i++)
             {
-                Vector3d vec3d = position().add(getDeltaMovement()).add(Mafs.nextDouble(random) * multiplier, Mafs.nextDouble(random) * multiplier, Mafs.nextDouble(random) * multiplier);
+                Vec3 vec3d = position().add(getDeltaMovement()).add(Mafs.nextDouble(random) * multiplier, Mafs.nextDouble(random) * multiplier, Mafs.nextDouble(random) * multiplier);
                 double xMot = motion.x + Mafs.nextDouble(random) * 0.1;
                 double yMot = motion.y + Mafs.nextDouble(random) * 0.1;
                 double zMot = motion.z + Mafs.nextDouble(random) * 0.1;
@@ -61,8 +61,8 @@ public class WindGustEntity extends DragonProjectileEntity
         {
             entity.push(acceleration.x() * 5, 1 + acceleration.y() * 3, acceleration.z() * 5);
             entity.hurt(getDamageSource("windGust"), 3);
-            if (entity instanceof ServerPlayerEntity)
-                ((ServerWorld) level).getChunkSource().broadcastAndSend(entity, new SEntityVelocityPacket(entity));
+            if (entity instanceof ServerPlayer)
+                ((ServerLevel) level).getChunkSource().broadcastAndSend(entity, new ClientboundSetEntityMotionPacket(entity));
         }
     }
 
@@ -70,13 +70,13 @@ public class WindGustEntity extends DragonProjectileEntity
     public void onBlockImpact(BlockPos pos, Direction direction)
     {
         final int PARTICLE_COUNT = 75;
-        BlockParticleData blockParticle = new BlockParticleData(ParticleTypes.BLOCK, level.getBlockState(pos));
+        BlockParticleOption blockParticle = new BlockParticleOption(ParticleTypes.BLOCK, level.getBlockState(pos));
         pos = pos.relative(direction);
         if (level.isClientSide)
         {
             for (int i = 0; i < PARTICLE_COUNT; i++)
             {
-                Vector3d motion = new Vector3d(1, 1, 0);
+                Vec3 motion = new Vec3(1, 1, 0);
                 if (direction.getAxis().getPlane() == Direction.Plane.VERTICAL) motion = motion.yRot(0.5f * Mafs.PI);
                 else motion = motion.yRot(direction.toYRot() / 180f * Mafs.PI);
                 motion = motion.multiply(Mafs.nextDouble(random) * 0.8, Mafs.nextDouble(random) * 0.8, Mafs.nextDouble(random) * 0.8);
@@ -93,7 +93,7 @@ public class WindGustEntity extends DragonProjectileEntity
             }
         }
 
-        remove();
+        remove(RemovalReason.DISCARDED);
     }
 
     @Override
@@ -105,3 +105,4 @@ public class WindGustEntity extends DragonProjectileEntity
     @Override
     protected EffectType getEffectType() { return EffectType.COLLIDING; }
 }
+*/

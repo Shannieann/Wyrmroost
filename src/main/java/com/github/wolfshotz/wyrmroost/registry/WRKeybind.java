@@ -3,22 +3,22 @@ package com.github.wolfshotz.wyrmroost.registry;
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.network.packets.KeybindHandler;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.settings.KeyBinding;
-import net.minecraft.client.util.InputMappings;
+import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.minecraftforge.client.settings.KeyModifier;
-import net.minecraftforge.fml.client.registry.ClientRegistry;
+import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 
 /**
  * @see org.lwjgl.glfw.GLFW
  */
-public class WRKeybind extends KeyBinding
+public class WRKeybind extends KeyMapping
 {
     private static final String CATEGORY = "keyCategory.wyrmroost";
 
-    public static final KeyBinding FLIGHT_DESCENT = new KeyBinding("key.flight_descent", GLFW.GLFW_KEY_LEFT_CONTROL, CATEGORY);
+    public static final KeyMapping FLIGHT_DESCENT = new KeyMapping("key.flight_descent", GLFW.GLFW_KEY_LEFT_CONTROL, CATEGORY);
 
     private final byte behaviorId;
     private final boolean sendsPacket;
@@ -26,7 +26,7 @@ public class WRKeybind extends KeyBinding
 
     public WRKeybind(String name, int keyCode, byte behaviorId, boolean sendsPacket)
     {
-        super(name, KeyConflictContext.IN_GAME, KeyModifier.NONE, InputMappings.Type.KEYSYM.getOrCreate(keyCode), CATEGORY);
+        super(name, KeyConflictContext.IN_GAME, KeyModifier.NONE, InputConstants.Type.KEYSYM.getOrCreate(keyCode), CATEGORY);
         this.behaviorId = behaviorId;
         this.sendsPacket = sendsPacket;
     }

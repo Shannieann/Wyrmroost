@@ -1,17 +1,17 @@
 package com.github.wolfshotz.wyrmroost.client.screen;
 
-import com.github.wolfshotz.wyrmroost.Wyrmroost;
+/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
-import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screen.Screen;
-import net.minecraft.client.gui.widget.TextFieldWidget;
-import net.minecraft.client.gui.widget.button.Button;
+import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.model.EntityModel;
+import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.LivingRenderer;
-import net.minecraft.client.renderer.entity.model.EntityModel;
-import net.minecraft.client.renderer.model.ModelRenderer;
-import net.minecraft.util.text.StringTextComponent;
+import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.network.chat.TextComponent;
 
 import java.lang.reflect.Field;
 import java.nio.file.Files;
@@ -28,15 +28,15 @@ public class AnimateScreen extends Screen
     public static AnimateScreen last;
 
     public final TameableDragonEntity dragon;
-    private final Map<String, ModelRenderer> boxes;
+    private final Map<String, ModelPart> boxes;
     private final List<TransformationWidget> transformations = new ArrayList<>();
     private ReloadWidget reloader;
-    private TextFieldWidget boxAdder;
+    private EditBox boxAdder;
     private String error;
 
     protected AnimateScreen(TameableDragonEntity dragon)
     {
-        super(new StringTextComponent("Debug: Animate Screen"));
+        super(new TextComponent("Debug: Animate Screen"));
 
         this.dragon = dragon;
         this.boxes = referBoxList();
@@ -50,20 +50,20 @@ public class AnimateScreen extends Screen
         if (reloader != null) reloader = new ReloadWidget();
         error = null;
 
-        addButton(new Button(0, 0, 33, 20, new StringTextComponent("Clear"), b ->
+        addButton(new Button(0, 0, 33, 20, new TextComponent("Clear"), b ->
         {
             onClose();
             last = null;
         }));
-        addButton(new Button(34, 0, 20, 20, new StringTextComponent("+"), b -> addTransformer(true), (b, m, x, y) -> renderTooltip(m, new StringTextComponent("Add Rotation Box"), x, y)));
-        addButton(new Button(55, 0, 20, 20, new StringTextComponent("<+>"), b -> addTransformer(false), (b, m, x, y) -> renderTooltip(m, new StringTextComponent("Add Position Box"), x, y)));
-        addButton(new Button(77, 0, 80, 20, new StringTextComponent("Print Positions"), b -> printPositions()));
-        addButton(new Button(160, 0, 90, 20, new StringTextComponent("Reload Positions"), b ->
+        addButton(new Button(34, 0, 20, 20, new TextComponent("+"), b -> addTransformer(true), (b, m, x, y) -> renderTooltip(m, new TextComponent("Add Rotation Box"), x, y)));
+        addButton(new Button(55, 0, 20, 20, new TextComponent("<+>"), b -> addTransformer(false), (b, m, x, y) -> renderTooltip(m, new TextComponent("Add Position Box"), x, y)));
+        addButton(new Button(77, 0, 80, 20, new TextComponent("Print Positions"), b -> printPositions()));
+        addButton(new Button(160, 0, 90, 20, new TextComponent("Reload Positions"), b ->
         {
             if (reloader == null) addWidget(reloader = new ReloadWidget());
         }));
 
-        addWidget(boxAdder = new TextFieldWidget(font, 1, 22, 100, 9, new StringTextComponent("")));
+        addWidget(boxAdder = new EditBox(font, 1, 22, 100, 9, new TextComponent("")));
     }
 
     private void printPositions()
@@ -80,19 +80,19 @@ public class AnimateScreen extends Screen
         }
     }
 
-    private Map<String, ModelRenderer> referBoxList()
+    private Map<String, ModelPart> referBoxList()
     {
         EntityRenderer<?> renderer = Minecraft.getInstance().getEntityRenderDispatcher().getRenderer(dragon);
-        if (renderer instanceof LivingRenderer<?, ?>)
+        if (renderer instanceof LivingEntityRenderer<?, ?>)
         {
-            EntityModel<?> model = ((LivingRenderer<?, ?>) renderer).getModel();
+            EntityModel<?> model = ((LivingEntityRenderer<?, ?>) renderer).getModel();
             return Arrays.stream(model.getClass().getFields())
-                    .filter(f -> ModelRenderer.class.isAssignableFrom(f.getType()))
+                    .filter(f -> ModelPart.class.isAssignableFrom(f.getType()))
                     .collect(Collectors.toMap(Field::getName, f ->
                     {
                         try
                         {
-                            return (ModelRenderer) f.get(model);
+                            return (ModelPart) f.get(model);
                         }
                         catch (Throwable e)
                         {
@@ -104,7 +104,7 @@ public class AnimateScreen extends Screen
     }
 
     @Override
-    public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
         super.render(ms, mouseX, mouseY, partialTicks);
         transformations.forEach(b -> b.render(ms, mouseX, mouseY, partialTicks));
@@ -141,7 +141,7 @@ public class AnimateScreen extends Screen
     public void addTransformer(boolean rotate)
     {
         String name = boxAdder.getValue();
-        ModelRenderer box = boxes.get(name);
+        ModelPart box = boxes.get(name);
         if (box == null)
         {
             error = "No box found for the name: \"" + name + "\"";
@@ -159,17 +159,17 @@ public class AnimateScreen extends Screen
         Minecraft.getInstance().setScreen(last);
     }
 
-    public class TransformationWidget extends TextFieldWidget
+    public class TransformationWidget extends EditBox
     {
         private final String name;
-        private final ModelRenderer box;
+        private final ModelPart box;
         private Button closeButton;
         private final boolean rotate;
         private float xT, yT, zT;
 
-        public TransformationWidget(String name, ModelRenderer box, boolean rotateOrMove)
+        public TransformationWidget(String name, ModelPart box, boolean rotateOrMove)
         {
-            super(font, 60, 0, 90, 13, new StringTextComponent(""));
+            super(font, 60, 0, 90, 13, new TextComponent(""));
             this.box = box;
             this.name = name;
             this.rotate = rotateOrMove;
@@ -189,7 +189,7 @@ public class AnimateScreen extends Screen
 
         public void init()
         {
-            addButton(closeButton = new Button(x + 92, y, 13, 13, new StringTextComponent("X"), b ->
+            addButton(closeButton = new Button(x + 92, y, 13, 13, new TextComponent("X"), b ->
             {
                 close();
                 int i = transformations.indexOf(this);
@@ -221,14 +221,14 @@ public class AnimateScreen extends Screen
         }
 
         @Override
-        public void render(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+        public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks)
         {
             closeButton.visible = visible;
             super.render(ms, mouseX, mouseY, partialTicks);
         }
 
         @Override
-        public void renderButton(MatrixStack ms, int mouseX, int mouseY, float partialTicks)
+        public void renderButton(PoseStack ms, int mouseX, int mouseY, float partialTicks)
         {
             super.renderButton(ms, mouseX, mouseY, partialTicks);
             font.drawShadow(ms, name, 1, y + 3f, 0xFFFFFF);
@@ -280,7 +280,7 @@ public class AnimateScreen extends Screen
         }
     }
 
-    public class ReloadWidget extends TextFieldWidget
+    public class ReloadWidget extends EditBox
     {
         private Button closeButton;
         private Button parseButton;
@@ -288,7 +288,7 @@ public class AnimateScreen extends Screen
 
         public ReloadWidget()
         {
-            super(font, AnimateScreen.this.width / 2 - 100, AnimateScreen.this.height / 2 - 22, 200, 45, new StringTextComponent(""));
+            super(font, AnimateScreen.this.width / 2 - 100, AnimateScreen.this.height / 2 - 22, 200, 45, new TextComponent(""));
             setValue("Insert Path to file...");
             setMaxLength(Integer.MAX_VALUE);
             init();
@@ -296,9 +296,9 @@ public class AnimateScreen extends Screen
 
         public void init()
         {
-            addButton(closeButton = new Button(x + width + 5, y + 1, 20, 20, new StringTextComponent("X"), b -> close()));
-            addButton(parseButton = new Button(x + width / 2 - 40, y + height + 10, 80, 20, new StringTextComponent("Parse"), b -> parseAndReload()));
-            addButton(pathButton = new Button(x + width + 5, y + 23, 60, 20, new StringTextComponent("Get Path"), b -> setValue(System.getProperty("user.home") + "/Desktop/")));
+            addButton(closeButton = new Button(x + width + 5, y + 1, 20, 20, new TextComponent("X"), b -> close()));
+            addButton(parseButton = new Button(x + width / 2 - 40, y + height + 10, 80, 20, new TextComponent("Parse"), b -> parseAndReload()));
+            addButton(pathButton = new Button(x + width + 5, y + 23, 60, 20, new TextComponent("Get Path"), b -> setValue(System.getProperty("user.home") + "/Desktop/")));
         }
 
         private void parseAndReload()
@@ -353,3 +353,4 @@ public class AnimateScreen extends Screen
         }
     }
 }
+*/

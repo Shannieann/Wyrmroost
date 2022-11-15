@@ -1,13 +1,13 @@
 package com.github.wolfshotz.wyrmroost.blocks;
 
-import net.minecraft.block.*;
+/*import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.Player;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Direction;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
+import net.minecraft.world.Level;
 import net.minecraftforge.common.ToolType;
 
 import javax.annotation.Nullable;
@@ -30,7 +30,7 @@ public class LogBlock extends RotatedPillarBlock
 
     @Nullable
     @Override
-    public BlockState getToolModifiedState(BlockState state, World level, BlockPos pos, PlayerEntity player, ItemStack stack, ToolType toolType)
+    public BlockState getToolModifiedState(BlockState state, Level level, BlockPos pos, Player player, ItemStack stack, ToolType toolType)
     {
         return toolType == ToolType.AXE && stripped != null?
                 stripped.get().defaultBlockState().setValue(RotatedPillarBlock.AXIS, state.getValue(RotatedPillarBlock.AXIS)) :
@@ -45,4 +45,4 @@ public class LogBlock extends RotatedPillarBlock
                 .harvestTool(ToolType.AXE)
                 .sound(SoundType.WOOD);
     }
-}
+}*/

@@ -1,69 +1,53 @@
 package com.github.wolfshotz.wyrmroost.registry;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import com.github.wolfshotz.wyrmroost.blocks.*;
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
-import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import com.github.wolfshotz.wyrmroost.world.features.OseriTreeFeature;
-import com.github.wolfshotz.wyrmroost.world.features.TreeGen;
-import net.minecraft.block.*;
-import net.minecraft.block.material.Material;
-import net.minecraft.block.material.MaterialColor;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.RenderTypeLookup;
-import net.minecraft.item.BlockItem;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.ITag.INamedTag;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.util.Direction;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GrassColors;
-import net.minecraft.world.IBlockDisplayReader;
-import net.minecraft.world.biome.BiomeColors;
-import net.minecraftforge.common.ToolType;
-import net.minecraftforge.fml.RegistryObject;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.item.*;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraftforge.fmllegacy.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static net.minecraft.block.AbstractBlock.Properties;
 
-public class WRBlocks
-{
-    public static final ItemGroup BLOCKS_ITEM_GROUP = new ItemGroup("wyrmroost_dimension")
-    {
-        @Override
-        public ItemStack makeIcon()
-        {
-            return new ItemStack(PURPLE_GEODE_BLOCK.get());
-        }
-    };
 
+public class WRBlocks {
+    //public static final CreativeModeTab BLOCKS_ITEM_GROUP = new CreativeModeTab("wyrmroost_dimension") {
+      //  @Override
+        //public ItemStack makeIcon() {
+           // return new ItemStack(Items.DIAMOND);
+       // }
+    //};
+
+    //public static final List<BlockExtension> EXTENSIONS = new ArrayList<>();
+
+    // I'm redoing these for 1.17.1 port
     public static final DeferredRegister<Block> REGISTRY = DeferredRegister.create(ForgeRegistries.BLOCKS, Wyrmroost.MOD_ID);
-    public static final List<BlockExtension> EXTENSIONS = new ArrayList<>();
+    //public static final RegistryObject<Block> PLATINUM_ORE = register("platinum_ore", () -> new Block(mineable(Material.STONE, ToolType.PICKAXE, 1, 3f, SoundType.STONE)));
+    //public static final RegistryObject<Block> PLATINUM_BLOCK = register("platinum_block", () -> new Block(mineable(Material.METAL, ToolType.PICKAXE, 1, 5f, SoundType.METAL)));
 
-    public static final RegistryObject<Block> PLATINUM_ORE = register("platinum_ore", () -> new Block(mineable(Material.STONE, ToolType.PICKAXE, 1, 3f, SoundType.STONE)));
-    public static final RegistryObject<Block> PLATINUM_BLOCK = register("platinum_block", () -> new Block(mineable(Material.METAL, ToolType.PICKAXE, 1, 5f, SoundType.METAL)));
-
-    public static final RegistryObject<Block> BLUE_GEODE_ORE = register("blue_geode_ore", () -> new EXPBlock(3, 7, mineable(Material.STONE, ToolType.PICKAXE, 2, 3f, SoundType.STONE)));
-    public static final RegistryObject<Block> BLUE_GEODE_BLOCK = register("blue_geode_block", () -> new Block(mineable(Material.METAL, ToolType.PICKAXE, 2, 5f, SoundType.METAL)));
-    public static final RegistryObject<Block> RED_GEODE_ORE = register("red_geode_ore", () -> new EXPBlock(4, 8, mineable(Material.STONE, ToolType.PICKAXE, 3, 3f, SoundType.NETHER_ORE)));
-    public static final RegistryObject<Block> RED_GEODE_BLOCK = register("red_geode_block", () -> new Block(mineable(Material.METAL, ToolType.PICKAXE, 3, 5f, SoundType.METAL)));
-    public static final RegistryObject<Block> PURPLE_GEODE_ORE = register("purple_geode_ore", () -> new EXPBlock(8, 11, mineable(Material.METAL, ToolType.PICKAXE, 4, 5f, SoundType.GILDED_BLACKSTONE)));
-    public static final RegistryObject<Block> PURPLE_GEODE_BLOCK = register("purple_geode_block", () -> new Block(mineable(Material.METAL, ToolType.PICKAXE, 4, 7f, SoundType.METAL)));
-
-    // biomes
+    //public static final Block DIAMOND_ORE = register("diamond_ore", new OreBlock(BlockBehaviour.Properties.of(Material.STONE).requiresCorrectToolForDrops().strength(3.0F, 3.0F), UniformInt.of(3, 7)));
+    //public static final RegistryObject<Block> BLUE_GEODE_BLOCK = register("blue_geode_block", () -> new Block(mineable(Material.METAL, ToolType.PICKAXE, 2, 5f, SoundType.METAL)));
+    //public static final RegistryObject<Block> RED_GEODE_ORE = register("red_geode_ore", () -> new EXPBlock(4, 8, mineable(Material.STONE, ToolType.PICKAXE, 3, 3f, SoundType.NETHER_ORE)));
+    //public static final RegistryObject<Block> RED_GEODE_BLOCK = register("red_geode_block", () -> new Block(mineable(Material.METAL, ToolType.PICKAXE, 3, 5f, SoundType.METAL)));
+    //public static final RegistryObject<Block> PURPLE_GEODE_ORE = register("purple_geode_ore", () -> new EXPBlock(8, 11, mineable(Material.METAL, ToolType.PICKAXE, 4, 5f, SoundType.GILDED_BLACKSTONE)));
+    //public static final RegistryObject<Block> PURPLE_GEODE_BLOCK = register("purple_geode_block", () -> new Block(mineable(Material.METAL, ToolType.PICKAXE, 4, 7f, SoundType.METAL)));
+    /*
+     biomes
     public static final RegistryObject<Block> KARPO_BUSH = register("karpo_bush", () -> new BushBlock(replaceablePlant()), extend().cutoutRenderer().flammability(60, 100).tint(WRBlocks::grassTint));
 
     // tincture weald
@@ -164,23 +148,19 @@ public class WRBlocks
     public static final RegistryObject<Block> EMBER_BLOCK = register("ember_block", EmberBlock::new);
     public static final RegistryObject<Block> EMBERS = register("embers", EmberLayerBlock::new);
 
-    public static RegistryObject<Block> register(String name, Supplier<Block> block)
-    {
+    public static RegistryObject<Block> register(String name, Supplier<Block> block) {
         return register(name, block, extend());
     }
 
-    public static RegistryObject<Block> register(String name, Supplier<Block> block, BlockExtension extension)
-    {
+    public static RegistryObject<Block> register(String name, Supplier<Block> block, BlockExtension extension) {
         RegistryObject<Block> delegate = REGISTRY.register(name, block);
         if (extension.itemFactory != null) WRItems.register(name, () -> extension.itemFactory.apply(delegate.get()));
-        if (extension.requiresSetup())
-        {
+        if (extension.requiresSetup()) {
             extension.block = delegate;
             EXTENSIONS.add(extension);
         }
         return delegate;
     }
-
     public static Properties properties(Material material, SoundType sound)
     {
         return Properties
@@ -197,7 +177,7 @@ public class WRBlocks
 
     public static Properties plant()
     {
-        return properties(Material.PLANT, SoundType.GRASS).noCollission();
+        return properties(Material.PLANT, SoundType.GRASS);
     }
 
     public static Properties replaceablePlant()
@@ -237,42 +217,40 @@ public class WRBlocks
                 .strength(hardness, resistance)
                 .sound(sound);
     }
-
     public static class Tags
     {
-        public static final Map<INamedTag<Block>, INamedTag<Item>> ITEM_BLOCK_TAGS = new HashMap<>();
+        public static final Map<Tag<Block>, Tag<Item>> ITEM_BLOCK_TAGS = new HashMap<>();
 
-        public static final INamedTag<Block> ORES_GEODE = forge("ores/geode");
-        public static final INamedTag<Block> ORES_PLATINUM = forge("ores/platinum");
+        public static final Tag<Block> ORES_GEODE = forge("ores/geode");
+        public static final Tag<Block> ORES_PLATINUM = forge("ores/platinum");
 
-        public static final INamedTag<Block> STORAGE_BLOCKS_GEODE = forge("storage_blocks/geode");
-        public static final INamedTag<Block> STORAGE_BLOCKS_PLATINUM = forge("storage_blocks/platinum");
-        public static final INamedTag<Block> OSERI_LOGS = tag("oseri_logs");
-        public static final INamedTag<Block> SAL_LOGS = tag("sal_logs");
-        public static final INamedTag<Block> PRISMARINE_CORIN_LOGS = tag("corin_logs");
-        public static final INamedTag<Block> SILVER_CORIN_LOGS = tag("silver_corin_logs");
-        public static final INamedTag<Block> TEAL_CORIN_LOGS = tag("teal_corin_logs");
-        public static final INamedTag<Block> RED_CORIN_LOGS = tag("red_corin_logs");
-        public static final INamedTag<Block> DYING_CORIN_LOGS = tag("dying_corin_logs");
-
-        static INamedTag<Block> forge(String path)
+        public static final Tag<Block> STORAGE_BLOCKS_GEODE = forge("storage_blocks/geode");
+        public static final Tag<Block> STORAGE_BLOCKS_PLATINUM = forge("storage_blocks/platinum");
+        public static final Tag<Block> OSERI_LOGS = tag("oseri_logs");
+        public static final Tag<Block> SAL_LOGS = tag("sal_logs");
+        public static final Tag<Block> PRISMARINE_CORIN_LOGS = tag("corin_logs");
+        public static final Tag<Block> SILVER_CORIN_LOGS = tag("silver_corin_logs");
+        public static final Tag<Block> TEAL_CORIN_LOGS = tag("teal_corin_logs");
+        public static final Tag<Block> RED_CORIN_LOGS = tag("red_corin_logs");
+        public static final Tag<Block> DYING_CORIN_LOGS = tag("dying_corin_logs");
+        static Tag<Block> forge(String path)
         {
             return getFor("forge:" + path);
         }
 
-        public static INamedTag<Block> tag(String path)
+        public static Tag<Block> tag(String path)
         {
             return getFor(Wyrmroost.MOD_ID + ":" + path);
         }
 
-        public static INamedTag<Block> getFor(String path)
+        public static Tag<Block> getFor(String path)
         {
-            INamedTag<Block> tag = BlockTags.bind(path);
+            Tag<Block> tag = BlockTags.bind(path);
             ITEM_BLOCK_TAGS.put(tag, ItemTags.bind(path));
             return tag;
         }
 
-        public static INamedTag<Item> getItemTagFor(INamedTag<Block> blockTag)
+        public static Tag<Item> getItemTagFor(Tag<Block> blockTag)
         {
             return ITEM_BLOCK_TAGS.get(blockTag);
         }
@@ -282,7 +260,6 @@ public class WRBlocks
     {
         return new BlockExtension();
     }
-
     public static int grassTint(BlockState state, @Nullable IBlockDisplayReader level, @Nullable BlockPos pos, int tint)
     {
         return level == null || pos == null? GrassColors.get(0.5, 1) : BiomeColors.getAverageGrassColor(level, pos);
@@ -339,7 +316,7 @@ public class WRBlocks
         {
             if (ModUtils.isClient())
             {
-                if (renderType != null) RenderTypeLookup.setRenderLayer(block.get(), renderType.get().get());
+                if (renderType != null) RenderType.setRenderLayer(block.get(), renderType.get().get());
                 if (tintFunc != null)
                 {
                     Block b = block.get();
@@ -347,14 +324,10 @@ public class WRBlocks
                     ClientEvents.getClient().getItemColors().register((s, i) -> tintFunc.getTint(b.defaultBlockState(), null, null, i), b.asItem());
                 }
             }
-            if (flammability != null)
-                ((FireBlock) Blocks.FIRE).setFlammable(block.get(), flammability[0], flammability[1]);
         }
     }
 
-    /**
-     * Small helper interface to avoid having to double-wrap suppliers
-     */
+
     public interface IBlockTint
     {
         /**
@@ -362,7 +335,7 @@ public class WRBlocks
          * @param level     Nullable: possible to get the world from the client but not recommended; could be in ITEM context.
          * @param pos       Nullable: could be in ITEM context.
          * @param tintIndex the index of the tint.
-         */
-        int getTint(BlockState state, @Nullable IBlockDisplayReader level, @Nullable BlockPos pos, int tintIndex);
+        int getTint(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int tintIndex);
     }
+}*/
 }

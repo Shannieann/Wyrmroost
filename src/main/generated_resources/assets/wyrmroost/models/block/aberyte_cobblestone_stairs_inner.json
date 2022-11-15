@@ -1,8 +1,0 @@
-{
-  "parent": "minecraft:block/inner_stairs",
-  "textures": {
-    "side": "wyrmroost:block/aberyte_cobblestone",
-    "bottom": "wyrmroost:block/aberyte_cobblestone",
-    "top": "wyrmroost:block/aberyte_cobblestone"
-  }
-}

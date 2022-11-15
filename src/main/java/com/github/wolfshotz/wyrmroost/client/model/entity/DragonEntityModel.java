@@ -1,17 +1,16 @@
 package com.github.wolfshotz.wyrmroost.client.model.entity;
 
-import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import com.github.wolfshotz.wyrmroost.client.model.WREntityModel;
+/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.DragonArmorItem;
-import com.mojang.blaze3d.matrix.MatrixStack;
-import net.minecraft.client.renderer.IRenderTypeBuffer;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
-import net.minecraft.util.ResourceLocation;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,18 +31,18 @@ public abstract class DragonEntityModel<T extends TameableDragonEntity> extends 
     }
 
     @Override
-    public void scale(T entity, MatrixStack ms, float partialTicks)
+    public void scale(T entity, PoseStack ms, float partialTicks)
     {
         float scale = entity.getScale();
         ms.scale(scale, scale, scale);
     }
 
-    public void renderEyes(ResourceLocation texture, MatrixStack ms, IRenderTypeBuffer buffer)
+    public void renderEyes(ResourceLocation texture, PoseStack ms, MultiBufferSource buffer)
     {
         renderToBuffer(ms, buffer.getBuffer(RenderHelper.getAdditiveGlow(texture)), 15728640, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
     }
 
-    public void renderArmorOverlay(MatrixStack ms, IRenderTypeBuffer buffer, int light)
+    public void renderArmorOverlay(PoseStack ms, MultiBufferSource buffer, int light)
     {
         ItemStack armor = entity.getArmorStack();
         if (!armor.isEmpty())
@@ -67,3 +66,4 @@ public abstract class DragonEntityModel<T extends TameableDragonEntity> extends 
         return ARMOR_TEXTURES.computeIfAbsent(path, p -> Wyrmroost.id(FOLDER + p + ".png"));
     }
 }
+*/
