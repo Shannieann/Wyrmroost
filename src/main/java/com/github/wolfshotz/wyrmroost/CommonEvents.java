@@ -1,33 +1,23 @@
 package com.github.wolfshotz.wyrmroost;
 
-import com.github.wolfshotz.wyrmroost.client.model.entity.RoostStalkerModel;
-import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.RoostStalkerRenderer;
+import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.CanariWyvernRenderer;
 import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.RoostStalkerRenderer2;
 import com.github.wolfshotz.wyrmroost.items.LazySpawnEggItem;
 import com.github.wolfshotz.wyrmroost.items.base.ArmorBase;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
-import com.github.wolfshotz.wyrmroost.registry.WRItems;
-import com.github.wolfshotz.wyrmroost.registry.WRWorld;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import com.github.wolfshotz.wyrmroost.world.MobSpawnManager;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
-import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fmlserverevents.FMLServerAboutToStartEvent;
 
 /**
  * Reflection is shit and we shouldn't use it
@@ -53,7 +43,7 @@ public class CommonEvents {
         //forgeBus.addListener(VillagerHelper::addWandererTrades);
         //forgeBus.addListener(CommonEvents::preCropGrowth);
         //forgeBus.addListener(EventPriority.HIGH, WRWorld::onBiomeLoad);
-        forgeBus.addListener(((FMLServerAboutToStartEvent e) -> MobSpawnManager.close()));
+        //forgeBus.addListener(((ServerAboutToStartEvent e) -> MobSpawnManager.close()));
     }
 
     // ====================
@@ -92,6 +82,7 @@ public class CommonEvents {
 
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event){
         event.registerEntityRenderer(WREntities.ROOSTSTALKER.get(), RoostStalkerRenderer2::new);
+        event.registerEntityRenderer(WREntities.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
     }
 
     /*@Deprecated  todo: remove in 1.17

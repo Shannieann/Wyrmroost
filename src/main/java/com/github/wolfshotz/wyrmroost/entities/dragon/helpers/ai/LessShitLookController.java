@@ -46,6 +46,5 @@ public class LessShitLookController extends LookControl
     public void stopLooking()
     {
         this.stopLooking = true;
-        this.hasWanted = false;
     }
 }

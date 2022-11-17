@@ -1,42 +1,5 @@
 package com.github.wolfshotz.wyrmroost.entities.projectile;
 
-import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
-import com.github.wolfshotz.wyrmroost.registry.WREffects;
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
-import com.github.wolfshotz.wyrmroost.registry.WRItems;
-import com.github.wolfshotz.wyrmroost.util.Mafs;
-import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import net.minecraft.ChatFormatting;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ItemParticleOption;
-import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.network.protocol.Packet;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionResult;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ThrowableItemProjectile;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.HitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
-
-import javax.annotation.Nullable;
-import java.util.UUID;
-
 /*public class SoulCrystalEntity extends ThrowableItemProjectile
 {
     public static final String DATA_DRAGON = "DragonData";

@@ -49,7 +49,7 @@ public class FlyerMoveController extends MoveControl
             {
                 speed = (float) (dragon.getAttributeValue(Attributes.FLYING_SPEED) * speedModifier);
 
-                if (!dragon.getLookControl().isHasWanted())
+                if (!dragon.getLookControl().isLookingAtTarget())
                     dragon.getLookControl().setLookAt(wantedX, wantedY, wantedZ, dragon.getHeadRotSpeed(), 75);
                 if (y != 0) dragon.setYya(y > 0? speed : -speed);
             }

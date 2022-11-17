@@ -26,7 +26,6 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.*;
-import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -93,7 +92,7 @@ public class ClientEvents
 
     private static void stitchTextures(TextureStitchEvent.Pre evt)
     {
-        if (evt.getMap().location() == TextureAtlas.LOCATION_BLOCKS)
+        if (evt.getAtlas().location() == TextureAtlas.LOCATION_BLOCKS)
             evt.addSprite(BreathWeaponRenderer.BLUE_FIRE);
     }
 

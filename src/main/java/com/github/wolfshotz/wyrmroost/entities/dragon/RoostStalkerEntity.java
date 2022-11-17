@@ -54,7 +54,10 @@ import net.minecraftforge.event.world.BiomeLoadingEvent;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.builder.ILoopType;
+import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
 
 import javax.annotation.Nullable;
 
@@ -109,7 +112,7 @@ public class RoostStalkerEntity extends TameableDragonEntity
         goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
         goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
         goalSelector.addGoal(12, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(8, new AvoidEntityGoal<Player>(this, Player.class, 7f, 1.15f, 1f)
+        goalSelector.addGoal(8, new AvoidEntityGoal<>(this, Player.class, 7f, 1.15f, 1f)
         {
             @Override
             public boolean canUse()
@@ -139,16 +142,39 @@ public class RoostStalkerEntity extends TameableDragonEntity
                 eat(item);
         }
     }
+    @Override
+    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
+        if (event.isMoving()){
+            if (hasCustomName() && getCustomName().getContents().equalsIgnoreCase("sir")){
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("sir.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
+                return PlayState.CONTINUE;
+            }
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("walk.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        } else if (isSleeping()){
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("sleep.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        } else if (isInSittingPose()){
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("idle.2.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("idle.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
+        return PlayState.CONTINUE;
+    }
+    @Override
+    public void registerControllers(AnimationData data) {
+        data.addAnimationController(new AnimationController<>(this, "controller", 10, this::predicate));
+    }
+
 
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
     {
         final InteractionResult success = InteractionResult.sidedSuccess(level.isClientSide);
 
-        ItemStack heldItem = getItem();
-        Item item = stack.getItem();
+        ItemStack heldItem = player.getItemInHand(hand);
 
-        if (!isTame() && Tags.Items.EGGS.contains(item))
+        if (!isTame() && heldItem.is(Tags.Items.EGGS))
         {
             eat(stack);
             if (tame(getRandom().nextDouble() < 0.25, player)) getAttribute(MAX_HEALTH).setBaseValue(20d);
@@ -242,12 +268,6 @@ public class RoostStalkerEntity extends TameableDragonEntity
     public boolean isBreedingItem(ItemStack stack)
     {
         return stack.getItem() == Items.GOLD_NUGGET;
-    }
-
-    @Override
-    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("idle.rooststalker", true));
-        return PlayState.CONTINUE;
     }
 
     @Override

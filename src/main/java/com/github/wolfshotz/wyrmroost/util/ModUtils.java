@@ -19,7 +19,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityProvider;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.PlayerInvWrapper;
 import net.minecraftforge.registries.DeferredRegister;
@@ -37,6 +37,8 @@ import java.util.stream.Collectors;
 public final class ModUtils
 {
     private ModUtils() {} // NU CONSTRUCTOR
+
+    public static final String TEXTURE_FOLDER = "textures/entity/dragon/";
 
     public static final Direction[] DIRECTIONS = Direction.values(); // cached directions cus vanilla didn't do it
     public static final Direction[] HORIZONTALS = new Direction[] {Direction.NORTH, Direction.EAST, Direction.SOUTH, Direction.WEST};

@@ -1,13 +1,16 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals;
 
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
-import net.minecraft.core.BlockPos;
+import com.github.wolfshotz.wyrmroost.util.Mafs;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
-import net.minecraft.world.entity.ai.util.RandomPos;
+import net.minecraft.world.entity.ai.util.AirAndWaterRandomPos;
+import net.minecraft.world.entity.ai.util.AirRandomPos;
+import net.minecraft.world.entity.ai.util.HoverRandomPos;
+import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
-import java.util.Random;
 
 public class FlyerWanderGoal extends WaterAvoidingRandomStrollGoal
 {
@@ -52,10 +55,8 @@ public class FlyerWanderGoal extends WaterAvoidingRandomStrollGoal
 
         if (dragon.isFlying() || (!dragon.isLeashed() && dragon.getRandom().nextFloat() <= probability + 0.02))
         {
-            if ((dragon.hasDataParameter(TameableDragonEntity.SLEEPING) && !dragon.level.isDay()) || dragon.getRandom().nextFloat() <= probability) {
-                BlockPos bPos = RandomPos.generateRandomPosTowardDirection(dragon, 20, new Random(), new BlockPos(dragon.getPosition(0.0f)));
-                position = new Vec3(bPos.getX(), 0, bPos.getZ());
-            }
+            if ((dragon.hasDataParameter(TameableDragonEntity.SLEEPING) && !dragon.level.isDay()) || dragon.getRandom().nextFloat() <= probability)
+                position = LandRandomPos.getPos(dragon, 20, 25);
             else
             {
                 Vec3 vec3d = dragon.getLookAngle();
@@ -63,12 +64,11 @@ public class FlyerWanderGoal extends WaterAvoidingRandomStrollGoal
                     vec3d = Vec3.atLowerCornerOf(dragon.getRestrictCenter()).subtract(dragon.position()).normalize();
 
                 int yOffset = dragon.getAltitude() > 40? 10 : 0;
-                BlockPos bPos2 = RandomPos.generateRandomPosTowardDirection(dragon, 50, new Random(), new BlockPos(dragon.getPosition(0.0f)));
-                position = new Vec3(bPos2.getX(), bPos2.getY(), bPos2.getZ());
+                position = AirAndWaterRandomPos.getPos(dragon, 50, 30, vec3d.z, Mafs.PI / 2, 10, yOffset);
             }
             if (position != null && position.y > dragon.getY() + dragon.getBbHeight() && !dragon.isFlying()) dragon.setFlying(true);
         }
 
         return position == null? super.getPosition() : position;
-    }
 }
+

@@ -1,13 +1,9 @@
 package com.github.wolfshotz.wyrmroost.registry;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import com.github.wolfshotz.wyrmroost.client.model.entity.RoostStalkerModel;
-import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.RoostStalkerRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.*;
 import com.github.wolfshotz.wyrmroost.items.LazySpawnEggItem;
 import com.google.common.collect.ImmutableSet;
-import net.minecraft.client.model.Model;
-import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.entity.*;
@@ -15,14 +11,12 @@ import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fmllegacy.RegistryObject;
-import net.minecraftforge.fmllegacy.network.FMLPlayMessages;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraftforge.network.PlayMessages;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
@@ -91,16 +85,16 @@ public class WREntities<E extends Entity> extends EntityType<E>
             .dragonEgg(new DragonEggProperties(0.25f, 0.35f, 9600))
             .renderModel(() -> DragonFruitDrakeModel::new)
             .build();
-
+*/
     public static final RegistryObject<EntityType<CanariWyvernEntity>> CANARI_WYVERN = creature("canari_wyvern", CanariWyvernEntity::new)
             .size(0.65f, 0.85f)
             .attributes(CanariWyvernEntity::getAttributeSupplier)
-            .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, TameableDragonEntity::canFlyerSpawn)
+            .spawnPlacement(/*SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, TameableDragonEntity::canFlyerSpawn*/)
             .spawnEgg(0x1D1F28, 0x492E0E)
-            .dragonEgg(new DragonEggProperties(0.175f, 0.275f, 6000).setConditions(c -> c.level.getBlockState(c.blockPosition().below()).getBlock() == Blocks.JUNGLE_LEAVES))
-            .renderModel(() -> CanariWyvernModel::new)
+            //.dragonEgg(new DragonEggProperties(0.175f, 0.275f, 6000).setConditions(c -> c.level.getBlockState(c.blockPosition().below()).getBlock() == Blocks.JUNGLE_LEAVES))
+            //.renderModel(() -> CanariWyvernModel::new)
             .build();
-
+/*
     public static final RegistryObject<EntityType<RoyalRedEntity>> ROYAL_RED = creature("royal_red", RoyalRedEntity::new)
             .size(3f, 3.9f)
             .attributes(RoyalRedEntity::getAttributeSupplier)
@@ -172,7 +166,7 @@ public class WREntities<E extends Entity> extends EntityType<E>
     @Nullable public final SpawnPlacementEntry<E> spawnPlacement;
     //@Nullable public final DragonEggProperties eggProperties;
 
-    public WREntities(EntityType.EntityFactory<E> factory, MobCategory group, boolean serialize, boolean summon, boolean fireImmune, boolean spawnsFarFromPlayer, ImmutableSet<Block> immuneTo, EntityDimensions size, int trackingRange, int tickRate, Predicate<EntityType<?>> velocityUpdateSupplier, ToIntFunction<EntityType<?>> trackingRangeSupplier, ToIntFunction<EntityType<?>> updateIntervalSupplier, BiFunction<FMLPlayMessages.SpawnEntity, Level, E> customClientFactory, Supplier<AttributeSupplier> attributes, SpawnPlacementEntry<E> spawnPlacement/*, DragonEggProperties props*/)
+    public WREntities(EntityType.EntityFactory<E> factory, MobCategory group, boolean serialize, boolean summon, boolean fireImmune, boolean spawnsFarFromPlayer, ImmutableSet<Block> immuneTo, EntityDimensions size, int trackingRange, int tickRate, Predicate<EntityType<?>> velocityUpdateSupplier, ToIntFunction<EntityType<?>> trackingRangeSupplier, ToIntFunction<EntityType<?>> updateIntervalSupplier, BiFunction<PlayMessages.SpawnEntity, Level, E> customClientFactory, Supplier<AttributeSupplier> attributes, SpawnPlacementEntry<E> spawnPlacement/*, DragonEggProperties props*/)
     {
         super(factory, group, serialize, summon, fireImmune, spawnsFarFromPlayer, immuneTo, size, trackingRange, tickRate, velocityUpdateSupplier, trackingRangeSupplier, updateIntervalSupplier, customClientFactory);
         this.attributes = attributes;
@@ -208,15 +202,15 @@ public class WREntities<E extends Entity> extends EntityType<E>
         }
     }
 
-    public static class Tags
+   /* public static class Tags
     {
         public static final Tag<EntityType<?>> SOUL_BEARERS = bind("soul_bearers");
 
         private static Tag<EntityType<?>> bind(String name)
         {
-            return EntityTypeTags.bind(Wyrmroost.MOD_ID + ":" + name);
+            return EntityTypeTags.create(Wyrmroost.MOD_ID + ":" + name);
         }
-    }
+    }*/
 
     private static class Builder<T extends Entity>
     {
@@ -235,7 +229,7 @@ public class WREntities<E extends Entity> extends EntityType<E>
         //private DragonEggProperties dragonEggProperties;
         private Supplier<AttributeSupplier> attributes = null;
         private SpawnPlacementEntry<T> spawnPlacement;
-        private BiFunction<FMLPlayMessages.SpawnEntity, Level, T> customClientFactory;
+        private BiFunction<PlayMessages.SpawnEntity, Level, T> customClientFactory;
 
         private RegistryObject<EntityType<T>> registered;
 
@@ -301,7 +295,7 @@ public class WREntities<E extends Entity> extends EntityType<E>
             return this;
         }
 
-        private Builder<T> clientFactory(BiFunction<FMLPlayMessages.SpawnEntity, Level, T> clientFactory)
+        private Builder<T> clientFactory(BiFunction<PlayMessages.SpawnEntity, Level, T> clientFactory)
         {
             this.customClientFactory = clientFactory;
             return this;

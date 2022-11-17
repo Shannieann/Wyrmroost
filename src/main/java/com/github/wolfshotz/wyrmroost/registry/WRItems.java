@@ -9,15 +9,13 @@ import com.github.wolfshotz.wyrmroost.items.base.ToolMaterials;
 //import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.TextComponent;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.Tag;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.Item.Properties;
-import net.minecraftforge.fmllegacy.RegistryObject;
+import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 

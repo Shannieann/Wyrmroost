@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.world;
 
-import com.github.wolfshotz.wyrmroost.Wyrmroost;
+/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -140,7 +140,7 @@ public class MobSpawnManager
     public static class Record
     {
         public static final Codec<List<Record>> CODEC = Codec.list(RecordCodecBuilder.create(o -> o.group(
-                Registry.ENTITY_TYPE.fieldOf("entity_type").forGetter(e -> e.entity),
+                Registry.ENTITY_TYPE_REGISTRY.fieldOf("entity_type").forGetter(e -> e.entity),
                 Biome.BiomeCategory.CODEC.optionalFieldOf("biome_category").forGetter(e -> e.category),
                 ResourceLocation.CODEC.listOf().optionalFieldOf("biomes").xmap(e -> e.orElse(ImmutableList.of()), Optional::of).forGetter(e -> e.biomes),
                 ResourceLocation.CODEC.listOf().optionalFieldOf("biome_blacklist").xmap(e -> e.map(ImmutableSet::copyOf).orElse(ImmutableSet.of()), s -> Optional.of(ImmutableList.copyOf(s))).forGetter(e -> e.biomeBlacklist),
@@ -175,3 +175,4 @@ public class MobSpawnManager
         }
     }
 }
+*/
