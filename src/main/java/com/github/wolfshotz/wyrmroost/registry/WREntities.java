@@ -1,16 +1,25 @@
 package com.github.wolfshotz.wyrmroost.registry;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
+import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+import com.github.wolfshotz.wyrmroost.client.render.entity.EmptyRenderer;
+import com.github.wolfshotz.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.*;
+import com.github.wolfshotz.wyrmroost.entities.dragonegg.DragonEggEntity;
+import com.github.wolfshotz.wyrmroost.entities.dragonegg.DragonEggProperties;
+import com.github.wolfshotz.wyrmroost.entities.projectile.GeodeTippedArrowEntity;
+import com.github.wolfshotz.wyrmroost.entities.projectile.SoulCrystalEntity;
 import com.github.wolfshotz.wyrmroost.items.LazySpawnEggItem;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.registries.RegistryObject;
@@ -48,23 +57,22 @@ public class WREntities<E extends Entity> extends EntityType<E>
             .renderModel(() -> OverworldDrakeModel::new)
             .trackingRange(10)
             .build();
-
+*/
     public static final RegistryObject<EntityType<SilverGliderEntity>> SILVER_GLIDER = creature("silver_glider", SilverGliderEntity::new)
             .size(1.5f, 0.75f)
             .attributes(SilverGliderEntity::getAttributeSupplier)
-            .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SilverGliderEntity::getSpawnPlacement)
+            //.spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SilverGliderEntity::getSpawnPlacement)
             .spawnEgg(0xC8C8C8, 0xC4C4C4)
             .dragonEgg(new DragonEggProperties(0.2f, 0.35f, 12000))
-            .renderModel(() -> SilverGliderModel::new)
             .trackingRange(8)
-            .build();*/
+            .build();
 
     public static final RegistryObject<EntityType<RoostStalkerEntity>> ROOSTSTALKER = creature("roost_stalker", RoostStalkerEntity::new)
             .size(0.65f, 0.5f)
             .spawnPlacement()
             .spawnEgg(0x52100D, 0x959595)
             .attributes(() -> RoostStalkerEntity.getAttributeSupplier())
-            //.dragonEgg(new DragonEggProperties(0.175f, 0.3f, 6000))
+            .dragonEgg(new DragonEggProperties(0.175f, 0.3f, 6000))
             .build();
 
     /*public static final RegistryObject<EntityType<ButterflyLeviathanEntity>> BUTTERFLY_LEVIATHAN = ofGroup("butterfly_leviathan", ButterflyLeviathanEntity::new, MobCategory.WATER_CREATURE)
@@ -91,7 +99,7 @@ public class WREntities<E extends Entity> extends EntityType<E>
             .attributes(CanariWyvernEntity::getAttributeSupplier)
             .spawnPlacement(/*SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, TameableDragonEntity::canFlyerSpawn*/)
             .spawnEgg(0x1D1F28, 0x492E0E)
-            //.dragonEgg(new DragonEggProperties(0.175f, 0.275f, 6000).setConditions(c -> c.level.getBlockState(c.blockPosition().below()).getBlock() == Blocks.JUNGLE_LEAVES))
+            .dragonEgg(new DragonEggProperties(0.175f, 0.275f, 6000).setConditions(c -> c.level.getBlockState(c.blockPosition().below()).getBlock() == Blocks.JUNGLE_LEAVES))
             //.renderModel(() -> CanariWyvernModel::new)
             .build();
 /*
@@ -122,9 +130,8 @@ public class WREntities<E extends Entity> extends EntityType<E>
             .renderModel(() -> AlpineModel::new)
             .trackingRange(9)
             .build();
-
+*/
     public static final RegistryObject<EntityType<DragonEggEntity>> DRAGON_EGG = WREntities.<DragonEggEntity>ofGroup("dragon_egg", DragonEggEntity::new, MobCategory.MISC)
-            .renderer(() -> DragonEggRenderer::new)
             .noSummon()
             .clientFactory(DragonEggEntity::new)
             .trackingRange(4)
@@ -133,12 +140,12 @@ public class WREntities<E extends Entity> extends EntityType<E>
 
     public static final RegistryObject<EntityType<GeodeTippedArrowEntity>> GEODE_TIPPED_ARROW = WREntities.<GeodeTippedArrowEntity>ofGroup("geode_tipped_arrow", GeodeTippedArrowEntity::new, MobCategory.MISC)
             .size(0.5f, 0.5f)
-            .renderer(() -> GeodeTippedArrowRenderer::new)
+            //.renderer(() -> GeodeTippedArrowRenderer::new)
             .clientFactory(GeodeTippedArrowEntity::new)
             .trackingRange(4)
             .packetInterval(10)
             .build();
-
+/*
     public static final RegistryObject<EntityType<FireBreathEntity>> FIRE_BREATH = WREntities.<FireBreathEntity>ofGroup("fire_breath", FireBreathEntity::new, MobCategory.MISC)
             .size(0.75f, 0.75f)
             .renderer(() -> BreathWeaponRenderer::new)
@@ -154,24 +161,23 @@ public class WREntities<E extends Entity> extends EntityType<E>
             .noSummon()
             .packetInterval(10)
             .build();
-
+*/
     public static final RegistryObject<EntityType<SoulCrystalEntity>> SOUL_CRYSTAL = WREntities.<SoulCrystalEntity>ofGroup("soul_crystal", SoulCrystalEntity::new, MobCategory.MISC)
             .size(0.25f, 0.25f)
-            .renderer(() -> ClientEvents::spriteRenderer)
             .trackingRange(4)
             .packetInterval(10)
-            .build(); */
+            .build();
 
     @Nullable public final Supplier<AttributeSupplier> attributes;
     @Nullable public final SpawnPlacementEntry<E> spawnPlacement;
-    //@Nullable public final DragonEggProperties eggProperties;
+    @Nullable public final DragonEggProperties eggProperties;
 
-    public WREntities(EntityType.EntityFactory<E> factory, MobCategory group, boolean serialize, boolean summon, boolean fireImmune, boolean spawnsFarFromPlayer, ImmutableSet<Block> immuneTo, EntityDimensions size, int trackingRange, int tickRate, Predicate<EntityType<?>> velocityUpdateSupplier, ToIntFunction<EntityType<?>> trackingRangeSupplier, ToIntFunction<EntityType<?>> updateIntervalSupplier, BiFunction<PlayMessages.SpawnEntity, Level, E> customClientFactory, Supplier<AttributeSupplier> attributes, SpawnPlacementEntry<E> spawnPlacement/*, DragonEggProperties props*/)
+    public WREntities(EntityType.EntityFactory<E> factory, MobCategory group, boolean serialize, boolean summon, boolean fireImmune, boolean spawnsFarFromPlayer, ImmutableSet<Block> immuneTo, EntityDimensions size, int trackingRange, int tickRate, Predicate<EntityType<?>> velocityUpdateSupplier, ToIntFunction<EntityType<?>> trackingRangeSupplier, ToIntFunction<EntityType<?>> updateIntervalSupplier, BiFunction<PlayMessages.SpawnEntity, Level, E> customClientFactory, Supplier<AttributeSupplier> attributes, SpawnPlacementEntry<E> spawnPlacement, DragonEggProperties props)
     {
         super(factory, group, serialize, summon, fireImmune, spawnsFarFromPlayer, immuneTo, size, trackingRange, tickRate, velocityUpdateSupplier, trackingRangeSupplier, updateIntervalSupplier, customClientFactory);
         this.attributes = attributes;
         this.spawnPlacement = spawnPlacement;
-        //this.eggProperties = props;
+        this.eggProperties = props;
     }
 
 
@@ -202,15 +208,15 @@ public class WREntities<E extends Entity> extends EntityType<E>
         }
     }
 
-   /* public static class Tags
+    public static class Tags
     {
-        public static final Tag<EntityType<?>> SOUL_BEARERS = bind("soul_bearers");
+        public static final TagKey<EntityType<?>> SOUL_BEARERS = bind("soul_bearers");
 
-        private static Tag<EntityType<?>> bind(String name)
+        private static TagKey<EntityType<?>> bind(String name)
         {
             return EntityTypeTags.create(Wyrmroost.MOD_ID + ":" + name);
         }
-    }*/
+    }
 
     private static class Builder<T extends Entity>
     {
@@ -226,7 +232,7 @@ public class WREntities<E extends Entity> extends EntityType<E>
         private int packetInterval = 3;
         private boolean updatesVelocity = true;
         private EntityDimensions size = EntityDimensions.scalable(0.6f, 1.8f);
-        //private DragonEggProperties dragonEggProperties;
+        private DragonEggProperties dragonEggProperties;
         private Supplier<AttributeSupplier> attributes = null;
         private SpawnPlacementEntry<T> spawnPlacement;
         private BiFunction<PlayMessages.SpawnEntity, Level, T> customClientFactory;
@@ -327,15 +333,15 @@ public class WREntities<E extends Entity> extends EntityType<E>
             return spawnPlacement(ON_GROUND, Animal::checkMobSpawnRules);
         }
 
-        /*private Builder<T> dragonEgg(DragonEggProperties props)
+        private Builder<T> dragonEgg(DragonEggProperties props)
         {
             this.dragonEggProperties = props;
             return this;
-        }*/
+        }
 
         private RegistryObject<EntityType<T>> build()
         {
-            return registered = REGISTRY.register(name, () -> new WREntities<>(factory, category, serialize, summon, fireImmune, canSpawnFarFromPlayer, immuneTo, size, trackingRange, packetInterval, t -> updatesVelocity, t -> trackingRange, t -> packetInterval, customClientFactory, attributes, spawnPlacement/*, dragonEggProperties*/));
+            return registered = REGISTRY.register(name, () -> new WREntities<>(factory, category, serialize, summon, fireImmune, canSpawnFarFromPlayer, immuneTo, size, trackingRange, packetInterval, t -> updatesVelocity, t -> trackingRange, t -> packetInterval, customClientFactory, attributes, spawnPlacement, dragonEggProperties));
         }
     }
 

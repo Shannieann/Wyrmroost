@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.client.render.entity.projectile;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
+import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.projectile.GeodeTippedArrowEntity;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
@@ -28,4 +28,3 @@ public class GeodeTippedArrowRenderer extends ArrowRenderer<GeodeTippedArrowEnti
         return BLUE;
     }
 }
-*/

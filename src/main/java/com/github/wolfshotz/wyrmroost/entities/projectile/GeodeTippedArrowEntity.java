@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.entities.projectile;
 
-/*import com.github.wolfshotz.wyrmroost.items.GeodeTippedArrowItem;
+import com.github.wolfshotz.wyrmroost.items.GeodeTippedArrowItem;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import net.minecraft.network.FriendlyByteBuf;
@@ -11,9 +11,9 @@ import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.fmllegacy.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fmllegacy.network.FMLPlayMessages;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.PlayMessages;
 
 public class GeodeTippedArrowEntity extends AbstractArrow implements IEntityAdditionalSpawnData
 {
@@ -31,7 +31,7 @@ public class GeodeTippedArrowEntity extends AbstractArrow implements IEntityAddi
         this.item = (GeodeTippedArrowItem) item;
     }
 
-    public GeodeTippedArrowEntity(FMLPlayMessages.SpawnEntity packet, Level level)
+    public GeodeTippedArrowEntity(PlayMessages.SpawnEntity packet, Level level)
     {
         super(WREntities.GEODE_TIPPED_ARROW.get(), level);
 
@@ -69,4 +69,4 @@ public class GeodeTippedArrowEntity extends AbstractArrow implements IEntityAddi
     public void readSpawnData(FriendlyByteBuf additionalData)
     {
     }
-}*/
+}

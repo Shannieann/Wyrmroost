@@ -43,8 +43,8 @@ public class WRItems
     public static final DeferredRegister<Item> REGISTRY = DeferredRegister.create(ForgeRegistries.ITEMS, Wyrmroost.MOD_ID);
 
     //public static final RegistryObject<Item> LDWYRM = register("desert_wyrm", LDWyrmItem::new);
-    //public static final RegistryObject<Item> DRAGON_EGG = register("dragon_egg", DragonEggItem::new);
-    //public static final RegistryObject<Item> SOUL_CRYSTAL = register("soul_crystal", SoulCrystalItem::new);
+    public static final RegistryObject<Item> DRAGON_EGG = register("dragon_egg", DragonEggItem::new);
+    public static final RegistryObject<Item> SOUL_CRYSTAL = register("soul_crystal", SoulCrystalItem::new);
     //public static final RegistryObject<Item> TARRAGON_TOME = register("tarragon_tome", TarragonTomeItem::new);
     //public static final RegistryObject<Item> COIN_DRAGON = register("coin_dragon", CoinDragonItem::new);
     public static final RegistryObject<Item> TRUMPET = register("trumpet", TrumpetItem::new);
@@ -64,7 +64,7 @@ public class WRItems
     public static final RegistryObject<Item> BLUE_GEODE_CHESTPLATE = register("blue_geode_chestplate", () -> new ArmorBase(ArmorMaterials.BLUE_GEODE, EquipmentSlot.CHEST));
     public static final RegistryObject<Item> BLUE_GEODE_LEGGINGS = register("blue_geode_leggings", () -> new ArmorBase(ArmorMaterials.BLUE_GEODE, EquipmentSlot.LEGS));
     public static final RegistryObject<Item> BLUE_GEODE_BOOTS = register("blue_geode_boots", () -> new ArmorBase(ArmorMaterials.BLUE_GEODE, EquipmentSlot.FEET));
-    //public static final RegistryObject<Item> BLUE_GEODE_ARROW = register("blue_geode_tipped_arrow", () -> new GeodeTippedArrowItem(3));
+    public static final RegistryObject<Item> BLUE_GEODE_ARROW = register("blue_geode_tipped_arrow", () -> new GeodeTippedArrowItem(3));
 
     public static final RegistryObject<Item> RED_GEODE_SWORD = register("red_geode_sword", () -> new SwordItem(ToolMaterials.RED_GEODE, 6, -2.4f, builder()));
     public static final RegistryObject<Item> RED_GEODE_PICKAXE = register("red_geode_pickaxe", () -> new PickaxeItem(ToolMaterials.RED_GEODE, 4, -2.8f, builder()));
@@ -75,7 +75,7 @@ public class WRItems
     public static final RegistryObject<Item> RED_GEODE_CHESTPLATE = register("red_geode_chestplate", () -> new ArmorBase(ArmorMaterials.RED_GEODE, EquipmentSlot.CHEST));
     public static final RegistryObject<Item> RED_GEODE_LEGGINGS = register("red_geode_leggings", () -> new ArmorBase(ArmorMaterials.RED_GEODE, EquipmentSlot.LEGS));
     public static final RegistryObject<Item> RED_GEODE_BOOTS = register("red_geode_boots", () -> new ArmorBase(ArmorMaterials.RED_GEODE, EquipmentSlot.FEET));
-    //public static final RegistryObject<Item> RED_GEODE_ARROW = register("red_geode_tipped_arrow", () -> new GeodeTippedArrowItem(3.5));
+    public static final RegistryObject<Item> RED_GEODE_ARROW = register("red_geode_tipped_arrow", () -> new GeodeTippedArrowItem(3.5));
 
     public static final RegistryObject<Item> PURPLE_GEODE_SWORD = register("purple_geode_sword", () -> new SwordItem(ToolMaterials.PURPLE_GEODE, 8, -2.4f, builder()));
     public static final RegistryObject<Item> PURPLE_GEODE_PICKAXE = register("purple_geode_pickaxe", () -> new PickaxeItem(ToolMaterials.PURPLE_GEODE, 6, -3f, builder()));
@@ -86,7 +86,7 @@ public class WRItems
     public static final RegistryObject<Item> PURPLE_GEODE_CHESTPLATE = register("purple_geode_chestplate", () -> new ArmorBase(ArmorMaterials.PURPLE_GEODE, EquipmentSlot.CHEST));
     public static final RegistryObject<Item> PURPLE_GEODE_LEGGINGS = register("purple_geode_leggings", () -> new ArmorBase(ArmorMaterials.PURPLE_GEODE, EquipmentSlot.LEGS));
     public static final RegistryObject<Item> PURPLE_GEODE_BOOTS = register("purple_geode_boots", () -> new ArmorBase(ArmorMaterials.PURPLE_GEODE, EquipmentSlot.FEET));
-    //public static final RegistryObject<Item> PURPLE_GEODE_ARROW = register("purple_geode_tipped_arrow", () -> new GeodeTippedArrowItem(4));
+    public static final RegistryObject<Item> PURPLE_GEODE_ARROW = register("purple_geode_tipped_arrow", () -> new GeodeTippedArrowItem(4));
 
     public static final RegistryObject<Item> PLATINUM_SWORD = register("platinum_sword", () -> new SwordItem(ToolMaterials.PLATINUM, 5, -2.4f, builder()));
     public static final RegistryObject<Item> PLATINUM_PICKAXE = register("platinum_pickaxe", () -> new PickaxeItem(ToolMaterials.PLATINUM, 3, -2.8f, builder()));

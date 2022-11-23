@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.entities.dragonegg;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
+import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.DragonEggItem;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
@@ -26,9 +26,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.fmllegacy.common.registry.IEntityAdditionalSpawnData;
-import net.minecraftforge.fmllegacy.network.FMLPlayMessages;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
+import net.minecraftforge.network.NetworkHooks;
+import net.minecraftforge.network.PlayMessages;
 
 public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnData
 {
@@ -58,7 +58,7 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
         this.hatchTime = hatchTime;
     }
 
-    public DragonEggEntity(FMLPlayMessages.SpawnEntity packet, Level level)
+    public DragonEggEntity(PlayMessages.SpawnEntity packet, Level level)
     {
         super(WREntities.DRAGON_EGG.get(), level);
         this.containedDragon = ModUtils.getEntityTypeByKey(packet.getAdditionalData().readUtf());
@@ -196,6 +196,7 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
      * - Set the dragons growing age to a baby <P>
      * - Set the position of that dragon to the position of this egg <P>
      * - Remove this entity (the egg) and play any effects
+     * */
     public void hatch()
     {
         if (!level.isClientSide)
@@ -246,6 +247,7 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
 
     /**
      * Called When the dragon type of the egg is not what it should be.
+     * */
     private void safeError()
     {
         Wyrmroost.LOG.error("THIS ISNT A DRAGON WTF KIND OF ABOMINATION IS THIS HATCHING?!?! Unknown Entity Type for Dragon Egg @ {}", blockPosition());
@@ -313,4 +315,3 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
     {
     }
 }
-*/

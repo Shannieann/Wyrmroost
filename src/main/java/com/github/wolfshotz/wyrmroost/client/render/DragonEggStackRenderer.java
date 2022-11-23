@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.client.render;
 
-/*import com.github.wolfshotz.wyrmroost.client.render.entity.DragonEggRenderer;
+import com.github.wolfshotz.wyrmroost.client.render.entity.DragonEggRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragonegg.DragonEggEntity;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -21,7 +21,7 @@ public class DragonEggStackRenderer extends BlockEntityWithoutLevelRenderer
         super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
     }
 
-    /*@Override
+    @Override
     public void renderByItem(ItemStack stack, ItemTransforms.TransformType transform, PoseStack ms, MultiBufferSource buffer, int combinedLight, int combinedOverlay)
     {
         VertexConsumer builder = ItemRenderer.getFoilBuffer(buffer, DragonEggRenderer.MODEL.renderType(getEggTexture(stack)), false, stack.hasFoil());
@@ -40,4 +40,3 @@ public class DragonEggStackRenderer extends BlockEntityWithoutLevelRenderer
         return DragonEggRenderer.DEFAULT_TEXTURE;
     }
 }
-*/

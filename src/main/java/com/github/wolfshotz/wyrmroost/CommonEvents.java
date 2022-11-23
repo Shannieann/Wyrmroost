@@ -1,11 +1,16 @@
 package com.github.wolfshotz.wyrmroost;
 
+import com.github.wolfshotz.wyrmroost.client.render.entity.DragonEggRenderer;
 import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.CanariWyvernRenderer;
 import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.RoostStalkerRenderer2;
+import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.SilverGliderRenderer;
+import com.github.wolfshotz.wyrmroost.client.render.entity.projectile.GeodeTippedArrowRenderer;
 import com.github.wolfshotz.wyrmroost.items.LazySpawnEggItem;
 import com.github.wolfshotz.wyrmroost.items.base.ArmorBase;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.world.WREntitySpawning;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
@@ -61,6 +66,7 @@ public class CommonEvents {
 
             //for (WRBlocks.BlockExtension extension : WRBlocks.EXTENSIONS) extension.callBack();
             //WRBlocks.EXTENSIONS.clear();
+            WREntitySpawning.registerEntitySpawning();
         });
     }
 
@@ -83,6 +89,12 @@ public class CommonEvents {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event){
         event.registerEntityRenderer(WREntities.ROOSTSTALKER.get(), RoostStalkerRenderer2::new);
         event.registerEntityRenderer(WREntities.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
+        event.registerEntityRenderer(WREntities.SILVER_GLIDER.get(), SilverGliderRenderer::new);
+
+        event.registerEntityRenderer(WREntities.SOUL_CRYSTAL.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(WREntities.GEODE_TIPPED_ARROW.get(), GeodeTippedArrowRenderer::new);
+        event.registerEntityRenderer(WREntities.DRAGON_EGG.get(), DragonEggRenderer::new);
+
     }
 
     /*@Deprecated  todo: remove in 1.17

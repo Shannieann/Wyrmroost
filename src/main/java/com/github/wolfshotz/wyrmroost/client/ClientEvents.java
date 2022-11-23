@@ -153,10 +153,6 @@ public class ClientEvents
         return getClient().getFrameTime();
     }
 
-    /*public static <T extends Entity & ItemSupplier> ThrownItemRenderer<T> spriteRenderer(EntityRenderer m)
-    {
-        return new ThrownItemRenderer<T>(m, getClient().getItemRenderer());
-    }*/
 
     public static double getViewCollision(double wanted, Entity entity)
     {

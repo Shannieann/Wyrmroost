@@ -1,14 +1,11 @@
 package com.github.wolfshotz.wyrmroost.client.sound;
 
-/*import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.audio.TickableSound;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.SoundSource;
-import net.minecraft.util.SoundEvents;
 
 public class FlyingSound extends AbstractTickableSoundInstance
 {
@@ -52,4 +49,3 @@ public class FlyingSound extends AbstractTickableSoundInstance
         Minecraft.getInstance().getSoundManager().play(new FlyingSound(dragon));
     }
 }
-*/

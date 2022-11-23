@@ -68,7 +68,7 @@ public class Wyrmroost
         network.messageBuilder(KeybindHandler.class, ++index, NetworkDirection.PLAY_TO_SERVER).encoder(KeybindHandler::encode).decoder(KeybindHandler::new).consumer(KeybindHandler::handle).add();
         network.messageBuilder(RenameEntityPacket.class, ++index, NetworkDirection.PLAY_TO_SERVER).encoder(RenameEntityPacket::encode).decoder(RenameEntityPacket::new).consumer(RenameEntityPacket::handle).add();
         //network.messageBuilder(BookActionPacket.class, ++index, NetworkDirection.PLAY_TO_SERVER).encoder(BookActionPacket::encode).decoder(BookActionPacket::new).consumer(BookActionPacket::handle).add();
-        //network.messageBuilder(SGGlidePacket.class, ++index, NetworkDirection.PLAY_TO_SERVER).encoder(SGGlidePacket::encode).decoder(SGGlidePacket::new).consumer(SGGlidePacket::handle).add();
+        network.messageBuilder(SGGlidePacket.class, ++index, NetworkDirection.PLAY_TO_SERVER).encoder(SGGlidePacket::encode).decoder(SGGlidePacket::new).consumer(SGGlidePacket::handle).add();
         network.messageBuilder(AddPassengerPacket.class, ++index, NetworkDirection.PLAY_TO_CLIENT).encoder(AddPassengerPacket::encode).decoder(AddPassengerPacket::new).consumer(AddPassengerPacket::handle).add();
 
         NETWORK = network;

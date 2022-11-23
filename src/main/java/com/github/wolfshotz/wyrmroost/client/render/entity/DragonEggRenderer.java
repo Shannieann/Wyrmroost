@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.client.render.entity;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
+import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.dragonegg.DragonEggEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -22,7 +22,7 @@ import java.util.Map;
 public class DragonEggRenderer extends EntityRenderer<DragonEggEntity>
 {
     public static final ResourceLocation DEFAULT_TEXTURE = Wyrmroost.id("textures/entity/dragon/dragon_egg.png");
-    //public static final Model MODEL = new Model();
+    public static final Model MODEL = new Model();
 
     private static final Map<EntityType<?>, ResourceLocation> TEXTURE_MAP = new HashMap<>();
 
@@ -38,8 +38,8 @@ public class DragonEggRenderer extends EntityRenderer<DragonEggEntity>
         scale(entity, ms);
         ms.translate(0, -1.5, 0);
         //MODEL.animate(entity, partialTicks);
-        //VertexConsumer builder = buffer.getBuffer(MODEL.renderType(getTextureLocation(entity)));
-        //MODEL.renderToBuffer(ms, builder, packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
+        VertexConsumer builder = buffer.getBuffer(MODEL.renderType(getTextureLocation(entity)));
+        MODEL.renderToBuffer(ms, builder, packedLightIn, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
         ms.popPose();
 
         super.render(entity, entityYaw, partialTicks, ms, buffer, packedLightIn);
@@ -70,7 +70,7 @@ public class DragonEggRenderer extends EntityRenderer<DragonEggEntity>
     /**
      * Render Custom egg sizes / shapes. <P>
      * If none is defined, then calculate the model size according to egg size
-
+    */
     private void scale(DragonEggEntity entity, PoseStack ms)
     {
         EntityDimensions size = entity.getDimensions();
@@ -80,11 +80,21 @@ public class DragonEggRenderer extends EntityRenderer<DragonEggEntity>
     /**
      * WREggTemplate - Ukan
      * Created using Tabula 7.0.1
-
+    */
     // HAS TO BE REPLACED
-    /*public static class Model extends EntityModel<DragonEggEntity>
+    public static class Model extends EntityModel<DragonEggEntity>
     {
-        public WRModelPart base;
+        @Override
+        public void setupAnim(DragonEggEntity p_102618_, float p_102619_, float p_102620_, float p_102621_, float p_102622_, float p_102623_) {
+
+        }
+
+        @Override
+        public void renderToBuffer(PoseStack p_103111_, VertexConsumer p_103112_, int p_103113_, int p_103114_, float p_103115_, float p_103116_, float p_103117_, float p_103118_) {
+
+        }
+
+        public ModelPart base;/*
         public ModelPart two;
         public ModelPart three;
         public ModelPart four;
@@ -117,19 +127,18 @@ public class DragonEggRenderer extends EntityRenderer<DragonEggEntity>
         public void setupAnim(DragonEggEntity entityIn, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch)
         {
         }
-
         public void animate(DragonEggEntity entity, float partialTicks)
         {
             float time = entity.wiggleTime.get(partialTicks);
             base.xRot = time * entity.wiggleDirection.getStepX();
             base.zRot = time * entity.wiggleDirection.getStepZ();
         }
-
         @Override
         public void renderToBuffer(PoseStack ms, VertexConsumer buffer, int packedLightIn, int packedOverlayIn, float red, float green, float blue, float alpha)
         {
             base.render(ms, buffer, packedLightIn, packedOverlayIn, red, green, blue, alpha);
             base.reset();
         }
-    }
-}*/
+    }*/
+}
+}

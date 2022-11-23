@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon;
 
-/*import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.DragonBreedGoal;
+import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.DragonBreedGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.FlyerWanderGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.WRAvoidEntityGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.WRFollowOwnerGoal;
@@ -23,7 +23,9 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.TemptGoal;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
@@ -32,6 +34,10 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -87,6 +93,14 @@ public class SilverGliderEntity extends TameableDragonEntity
         goalSelector.addGoal(8, new FlyerWanderGoal(this, 1));
         goalSelector.addGoal(9, new LookAtPlayerGoal(this, LivingEntity.class, 7f));
         goalSelector.addGoal(10, new RandomLookAroundGoal(this));
+    }
+    @Override
+    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
+        return null; // Todo Implement animations
+    }
+    @Override
+    public void registerControllers(AnimationData data) {
+
     }
 
     @Override
@@ -277,6 +291,13 @@ public class SilverGliderEntity extends TameableDragonEntity
                 .add(FLYING_SPEED, 0.12);
     }
 
+    @Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int p_39954_, Inventory p_39955_, Player p_39956_) {
+        return null;
+    }
+
+
     public class SwoopGoal extends Goal
     {
         private BlockPos pos;
@@ -311,4 +332,3 @@ public class SilverGliderEntity extends TameableDragonEntity
         }
     }
 }
-*/

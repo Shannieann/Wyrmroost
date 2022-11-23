@@ -1,11 +1,11 @@
 package com.github.wolfshotz.wyrmroost.network.packets;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
+import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.dragon.SilverGliderEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -27,6 +27,12 @@ public class SGGlidePacket
     {
         buf.writeBoolean(gliding);
     }
+    public static SGGlidePacket decode(FriendlyByteBuf buf)
+    {
+        SGGlidePacket pkt = new SGGlidePacket(buf.readBoolean());
+
+        return pkt;
+    }
 
     public boolean handle(Supplier<NetworkEvent.Context> context)
     {
@@ -37,9 +43,11 @@ public class SGGlidePacket
             if (entity instanceof SilverGliderEntity)
             {
                 ((SilverGliderEntity) entity).isGliding = gliding;
+                context.get().setPacketHandled(true);
                 return true;
             }
         }
+        context.get().setPacketHandled(true);
         return false;
     }
 
@@ -48,4 +56,3 @@ public class SGGlidePacket
         Wyrmroost.NETWORK.sendToServer(new SGGlidePacket(gliding));
     }
 }
-*/

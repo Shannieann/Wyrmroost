@@ -144,7 +144,7 @@ public class RoostStalkerEntity extends TameableDragonEntity
     }
     @Override
     public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        if (event.isMoving()){
+        if (event.isMoving() && !isSleeping() && !isInSittingPose()){
             if (hasCustomName() && getCustomName().getContents().equalsIgnoreCase("sir")){
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("sir.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;

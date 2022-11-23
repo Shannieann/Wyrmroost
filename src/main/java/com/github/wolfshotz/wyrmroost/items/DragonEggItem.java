@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.items;
 
-/*import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.client.render.DragonEggStackRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.entities.dragonegg.DragonEggEntity;
@@ -134,4 +134,3 @@ public class DragonEggItem extends Item
         return stack;
     }
 }
-*/

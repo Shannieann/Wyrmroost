@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.items;
 
-/*import com.github.wolfshotz.wyrmroost.entities.projectile.GeodeTippedArrowEntity;
+import com.github.wolfshotz.wyrmroost.entities.projectile.GeodeTippedArrowEntity;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -26,4 +26,3 @@ public class GeodeTippedArrowItem extends ArrowItem
         return arrow;
     }
 }
-*/

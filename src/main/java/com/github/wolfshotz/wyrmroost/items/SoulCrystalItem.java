@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.items;
 
-/*import com.github.wolfshotz.wyrmroost.entities.projectile.SoulCrystalEntity;
+import com.github.wolfshotz.wyrmroost.entities.projectile.SoulCrystalEntity;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Random;
 
 import static com.github.wolfshotz.wyrmroost.entities.projectile.SoulCrystalEntity.*;
+
 
 @SuppressWarnings("ConstantConditions")
 public class SoulCrystalItem extends Item
@@ -130,4 +131,3 @@ public class SoulCrystalItem extends Item
         return 1;
     }
 }
-*/

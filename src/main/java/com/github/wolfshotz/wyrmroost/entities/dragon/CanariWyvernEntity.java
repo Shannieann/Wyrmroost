@@ -1,10 +1,13 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon;
 
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.DragonBodyController;
+import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.FlyerMoveController;
+import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.FlyerPathNavigator;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.*;
 import com.github.wolfshotz.wyrmroost.entities.util.EntitySerializer;
 import com.github.wolfshotz.wyrmroost.registry.WRSounds;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
+import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -15,12 +18,18 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
+import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.ai.util.AirRandomPos;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.entity.ai.util.HoverRandomPos;
 import net.minecraft.world.entity.ai.util.RandomPos;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -29,7 +38,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
-import org.checkerframework.checker.units.qual.A;
 import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -71,7 +79,7 @@ public class CanariWyvernEntity extends TameableDragonEntity
         goalSelector.addGoal(5, new ThreatenGoal());
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new DragonBreedGoal(this));
-        goalSelector.addGoal(8, new FlyerWanderGoal(this));
+        goalSelector.addGoal(8, new FlyerWanderGoal(this, 1));
         goalSelector.addGoal(9, new LookAtPlayerGoal(this, LivingEntity.class, 8f));
         goalSelector.addGoal(10, new RandomLookAroundGoal(this));
 
@@ -81,20 +89,30 @@ public class CanariWyvernEntity extends TameableDragonEntity
         targetSelector.addGoal(3, new HurtByTargetGoal(this));
     }
 
+    //TODO fix whatever this is
     @Override
     public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
         if (event.isMoving()) {
-            if (isOnGround()) { // todo: optimize. getAltitude() uses a while loop, there's probably a way to only have to use it once.
-                if (isSleeping()) {
-                    event.getController().setAnimation(new AnimationBuilder().addAnimation("sleep.canari", ILoopType.EDefaultLoopTypes.LOOP));
-                    return PlayState.CONTINUE;
-                }
-                event.getController().setAnimation(new AnimationBuilder().addAnimation("walk.canari", ILoopType.EDefaultLoopTypes.LOOP));
+            if (isPissed()){
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("hold.threat.canari", ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
             }
-        }
-        if (!isOnGround()){
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("flap.canari", ILoopType.EDefaultLoopTypes.LOOP));
+            else if (getRandom().nextFloat() < 0.001){
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("preen.canari", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+                return PlayState.CONTINUE;
+            }
+            else if (isFlying()){
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("flap.canari", ILoopType.EDefaultLoopTypes.LOOP));
+                return PlayState.CONTINUE;
+            }
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("walk.canari", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+
+        } else if (isSleeping() && !isFlying()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("sleep.canari", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        } else if (isInSittingPose()){
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("sit.canari", ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
         event.getController().setAnimation(new AnimationBuilder().addAnimation("idle.canari", ILoopType.EDefaultLoopTypes.LOOP));
@@ -112,6 +130,11 @@ public class CanariWyvernEntity extends TameableDragonEntity
     public void registerControllers(AnimationData data) {
         data.addAnimationController(new AnimationController(this, "controller", 8, this::predicate));
         data.addAnimationController(new AnimationController(this, "attackController", 8, this::attackPredicate));
+    }
+
+    @Override
+    protected PathNavigation createNavigation(Level levelIn) {
+        return new FlyerPathNavigator(this);
     }
 
     @Override
@@ -136,18 +159,6 @@ public class CanariWyvernEntity extends TameableDragonEntity
         entityData.define(VARIANT, 0);
     }
 
-    @Override
-    public void aiStep()
-    {
-        super.aiStep();
-
-        if (!level.isClientSide && !isPissed() && !isSleeping() && !isFlying() && !isRiding())
-        {
-            double rand = getRandom().nextDouble();
-            //if (rand < 0.001) AnimationPacket.send(this, FLAP_WINGS_ANIMATION); // todo ADD
-            //else if (rand < 0.002) AnimationPacket.send(this, PREEN_ANIMATION);
-        }
-    }
 
     public void flapWingsAnimation(int time)
     {
@@ -187,6 +198,7 @@ public class CanariWyvernEntity extends TameableDragonEntity
         return InteractionResult.PASS;
     }
 
+
     @Override
     public boolean doHurtTarget(Entity entity)
     {
@@ -210,6 +222,7 @@ public class CanariWyvernEntity extends TameableDragonEntity
         return false;
     }
 
+
     @Override
     public boolean isInvulnerableTo(DamageSource source)
     {
@@ -222,6 +235,7 @@ public class CanariWyvernEntity extends TameableDragonEntity
         super.applyStaffInfo(container);
         container.addAction(BookActions.TARGET);
     }*/
+
 
     @Override
     public boolean shouldSleep()
@@ -281,6 +295,7 @@ public class CanariWyvernEntity extends TameableDragonEntity
         return pissedOffTarget != null;
     }
 
+
     public static AttributeSupplier.Builder getAttributeSupplier()
     {
         return Mob.createMobAttributes()
@@ -325,8 +340,8 @@ public class CanariWyvernEntity extends TameableDragonEntity
             {
                 if (getNavigation().isDone())
                 {
-                    //Vec3 vec3d = RandomPos.getPosAvoid(CanariWyvernEntity.this, 16, 7, target.position()); todo ADD
-                    //if (vec3d != null) getNavigation().moveTo(vec3d.x, vec3d.y, vec3d.z, 1.5);
+                    Vec3 vec3d = DefaultRandomPos.getPosAway(CanariWyvernEntity.this, 16, 7, target.position());
+                    if (vec3d != null) getNavigation().moveTo(vec3d.x, vec3d.y, vec3d.z, 1.5);
                 }
             }
             else
@@ -335,7 +350,6 @@ public class CanariWyvernEntity extends TameableDragonEntity
                 if (!isPissed())
                 {
                     pissedOffTarget = target;
-                    //AnimationPacket.send(CanariWyvernEntity.this, THREAT_ANIMATION);
                     clearAI();
                 }
 
@@ -394,7 +408,6 @@ public class CanariWyvernEntity extends TameableDragonEntity
                 swing(InteractionHand.MAIN_HAND);
                 //AnimationPacket.send(CanariWyvernEntity.this, ATTACK_ANIMATION);
                 doHurtTarget(target);
-                swinging = false;
             }
         }
 
