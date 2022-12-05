@@ -1,4 +1,4 @@
-package com.github.wolfshotz.wyrmroost.client.renderer;
+package com.github.wolfshotz.wyrmroost.client.render;
 
 // I'm removing this maybe temporarily for the port. This just doesn't port over well, also I'm probably soft-rewriting a lot of other things
 // Also having the renderer and model separate just feels cleaner to me but idk, I'm probably gonna bring this back at some point.

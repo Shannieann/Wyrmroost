@@ -1,7 +1,7 @@
 package com.github.wolfshotz.wyrmroost.items.book.action;
 
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
-import com.github.wolfshotz.wyrmroost.client.renderer.RenderHelper;
+import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
 import com.github.wolfshotz.wyrmroost.client.screen.TarragonTomeScreen;
 import com.github.wolfshotz.wyrmroost.containers.BookContainer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;

@@ -1,4 +1,4 @@
-package com.github.wolfshotz.wyrmroost.client.renderer.entity.dragon;
+package com.github.wolfshotz.wyrmroost.client.render.entity.dragon;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.dragon.RoostStalkerEntity;
