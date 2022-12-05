@@ -17,6 +17,7 @@ import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -31,20 +32,21 @@ import java.util.function.ToIntFunction;
 import static net.minecraft.world.entity.SpawnPlacements.Type.ON_GROUND;
 
 @SuppressWarnings("unchecked")
-public class WREntities<E extends Entity> extends EntityType<E>
+public class WREntityTypes<E extends Entity> extends EntityType<E>
 {
     public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.ENTITIES, Wyrmroost.MOD_ID);
 
-    /*public static final RegistryObject<EntityType<LesserDesertwyrmEntity>> LESSER_DESERTWYRM = creature("lesser_desertwyrm", LesserDesertwyrmEntity::new)
+    public static final RegistryObject<EntityType<LesserDesertwyrmEntity>> LESSER_DESERTWYRM =
+            creature("lesser_desertwyrm", LesserDesertwyrmEntity::new)
             .size(0.6f, 0.2f)
             .attributes(LesserDesertwyrmEntity::getAttributeSupplier)
-            .spawnPlacement(ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, LesserDesertwyrmEntity::getSpawnPlacement)
+            .spawnPlacement(ON_GROUND, LesserDesertwyrmEntity::getSpawnPlacement)
             .spawnEgg(0xD6BCBC, 0xDEB6C7)
-            .renderModel(() -> LesserDesertwyrmModel::new)
             .packetInterval(5)
             .build();
-*/
-    public static final RegistryObject<EntityType<OverworldDrakeEntity>> OVERWORLD_DRAKE = creature("overworld_drake", OverworldDrakeEntity::new)
+
+    public static final RegistryObject<EntityType<OverworldDrakeEntity>> OVERWORLD_DRAKE =
+            creature("overworld_drake", OverworldDrakeEntity::new)
             .size(2.376f, 2.58f)
             .attributes(OverworldDrakeEntity::getAttributeSupplier)
             .spawnPlacement()
@@ -52,7 +54,8 @@ public class WREntities<E extends Entity> extends EntityType<E>
             .dragonEgg(new DragonEggProperties(0.35f, 0.6f, 18000))
             .trackingRange(10)
             .build();
-    public static final RegistryObject<EntityType<SilverGliderEntity>> SILVER_GLIDER = creature("silver_glider", SilverGliderEntity::new)
+    public static final RegistryObject<EntityType<SilverGliderEntity>> SILVER_GLIDER =
+            creature("silver_glider", SilverGliderEntity::new)
             .size(1.5f, 0.75f)
             .attributes(SilverGliderEntity::getAttributeSupplier)
             //.spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SilverGliderEntity::getSpawnPlacement)
@@ -61,11 +64,12 @@ public class WREntities<E extends Entity> extends EntityType<E>
             .trackingRange(8)
             .build();
 
-    public static final RegistryObject<EntityType<RoostStalkerEntity>> ROOSTSTALKER = creature("roost_stalker", RoostStalkerEntity::new)
+    public static final RegistryObject<EntityType<RoostStalkerEntity>> ROOSTSTALKER =
+            creature("roost_stalker", RoostStalkerEntity::new)
             .size(0.65f, 0.5f)
             .spawnPlacement()
             .spawnEgg(0x52100D, 0x959595)
-            .attributes(() -> RoostStalkerEntity.getAttributeSupplier())
+            .attributes(RoostStalkerEntity::getAttributeSupplier)
             .dragonEgg(new DragonEggProperties(0.175f, 0.3f, 6000))
             .build();
 
@@ -124,14 +128,14 @@ public class WREntities<E extends Entity> extends EntityType<E>
             .trackingRange(9)
             .build();
 */
-    public static final RegistryObject<EntityType<DragonEggEntity>> DRAGON_EGG = WREntities.<DragonEggEntity>ofGroup("dragon_egg", DragonEggEntity::new, MobCategory.MISC)
+    public static final RegistryObject<EntityType<DragonEggEntity>> DRAGON_EGG = WREntityTypes.<DragonEggEntity>ofGroup("dragon_egg", DragonEggEntity::new, MobCategory.MISC)
             .noSummon()
             .clientFactory(DragonEggEntity::new)
             .trackingRange(4)
             .packetInterval(5)
             .build();
 
-    public static final RegistryObject<EntityType<GeodeTippedArrowEntity>> GEODE_TIPPED_ARROW = WREntities.<GeodeTippedArrowEntity>ofGroup("geode_tipped_arrow", GeodeTippedArrowEntity::new, MobCategory.MISC)
+    public static final RegistryObject<EntityType<GeodeTippedArrowEntity>> GEODE_TIPPED_ARROW = WREntityTypes.<GeodeTippedArrowEntity>ofGroup("geode_tipped_arrow", GeodeTippedArrowEntity::new, MobCategory.MISC)
             .size(0.5f, 0.5f)
             //.renderer(() -> GeodeTippedArrowRenderer::new)
             .clientFactory(GeodeTippedArrowEntity::new)
@@ -139,14 +143,14 @@ public class WREntities<E extends Entity> extends EntityType<E>
             .packetInterval(10)
             .build();
 
-    public static final RegistryObject<EntityType<FireBreathEntity>> FIRE_BREATH = WREntities.<FireBreathEntity>ofGroup("fire_breath", FireBreathEntity::new, MobCategory.MISC)
+    public static final RegistryObject<EntityType<FireBreathEntity>> FIRE_BREATH = WREntityTypes.<FireBreathEntity>ofGroup("fire_breath", FireBreathEntity::new, MobCategory.MISC)
             .size(0.75f, 0.75f)
             .noSave()
             .noSummon()
             .packetInterval(10)
             .build();
 /*
-    public static final RegistryObject<EntityType<WindGustEntity>> WIND_GUST = WREntities.<WindGustEntity>ofGroup("wind_gust", WindGustEntity::new, MobCategory.MISC)
+    public static final RegistryObject<EntityType<WindGustEntity>> WIND_GUST = WREntityTypes.<WindGustEntity>ofGroup("wind_gust", WindGustEntity::new, MobCategory.MISC)
             .size(4, 4)
             .renderer(() -> EmptyRenderer::new)
             .noSave()
@@ -154,7 +158,7 @@ public class WREntities<E extends Entity> extends EntityType<E>
             .packetInterval(10)
             .build();
 */
-    public static final RegistryObject<EntityType<SoulCrystalEntity>> SOUL_CRYSTAL = WREntities.<SoulCrystalEntity>ofGroup("soul_crystal", SoulCrystalEntity::new, MobCategory.MISC)
+    public static final RegistryObject<EntityType<SoulCrystalEntity>> SOUL_CRYSTAL = WREntityTypes.<SoulCrystalEntity>ofGroup("soul_crystal", SoulCrystalEntity::new, MobCategory.MISC)
             .size(0.25f, 0.25f)
             .trackingRange(4)
             .packetInterval(10)
@@ -164,7 +168,7 @@ public class WREntities<E extends Entity> extends EntityType<E>
     @Nullable public final SpawnPlacementEntry<E> spawnPlacement;
     @Nullable public final DragonEggProperties eggProperties;
 
-    public WREntities(EntityType.EntityFactory<E> factory, MobCategory group, boolean serialize, boolean summon, boolean fireImmune, boolean spawnsFarFromPlayer, ImmutableSet<Block> immuneTo, EntityDimensions size, int trackingRange, int tickRate, Predicate<EntityType<?>> velocityUpdateSupplier, ToIntFunction<EntityType<?>> trackingRangeSupplier, ToIntFunction<EntityType<?>> updateIntervalSupplier, BiFunction<PlayMessages.SpawnEntity, Level, E> customClientFactory, Supplier<AttributeSupplier> attributes, SpawnPlacementEntry<E> spawnPlacement, DragonEggProperties props)
+    public WREntityTypes(EntityType.EntityFactory<E> factory, MobCategory group, boolean serialize, boolean summon, boolean fireImmune, boolean spawnsFarFromPlayer, ImmutableSet<Block> immuneTo, EntityDimensions size, int trackingRange, int tickRate, Predicate<EntityType<?>> velocityUpdateSupplier, ToIntFunction<EntityType<?>> trackingRangeSupplier, ToIntFunction<EntityType<?>> updateIntervalSupplier, BiFunction<PlayMessages.SpawnEntity, Level, E> customClientFactory, Supplier<AttributeSupplier> attributes, SpawnPlacementEntry<E> spawnPlacement, DragonEggProperties props)
     {
         super(factory, group, serialize, summon, fireImmune, spawnsFarFromPlayer, immuneTo, size, trackingRange, tickRate, velocityUpdateSupplier, trackingRangeSupplier, updateIntervalSupplier, customClientFactory);
         this.attributes = attributes;
@@ -314,9 +318,9 @@ public class WREntities<E extends Entity> extends EntityType<E>
             return this;
         }
 
-        private <F extends Mob> Builder<T> spawnPlacement(SpawnPlacements.Type type, SpawnPlacements.SpawnPredicate<F> predicate)
+        private <F extends Mob> Builder<T> spawnPlacement(SpawnPlacements.Type spawnPlacementType, SpawnPlacements.SpawnPredicate<F> predicate)
         {
-            this.spawnPlacement = new SpawnPlacementEntry<T>(type, ((SpawnPlacements.SpawnPredicate<T>) predicate));
+            this.spawnPlacement = new SpawnPlacementEntry<T>(spawnPlacementType, ((SpawnPlacements.SpawnPredicate<T>) predicate));
             return this;
         }
 
@@ -333,14 +337,23 @@ public class WREntities<E extends Entity> extends EntityType<E>
 
         private RegistryObject<EntityType<T>> build()
         {
-            return registered = REGISTRY.register(name, () -> new WREntities<>(factory, category, serialize, summon, fireImmune, canSpawnFarFromPlayer, immuneTo, size, trackingRange, packetInterval, t -> updatesVelocity, t -> trackingRange, t -> packetInterval, customClientFactory, attributes, spawnPlacement, dragonEggProperties));
+            return registered = REGISTRY.register(name, () -> new WREntityTypes<>(factory, category, serialize, summon, fireImmune, canSpawnFarFromPlayer, immuneTo, size, trackingRange, packetInterval, t -> updatesVelocity, t -> trackingRange, t -> packetInterval, customClientFactory, attributes, spawnPlacement, dragonEggProperties));
         }
     }
 
     private static class SpawnPlacementEntry<E extends Entity>
     {
+        //final Heightmap.Types heightMap;
         final SpawnPlacements.Type placement;
         final SpawnPlacements.SpawnPredicate<E> predicate;
+/*
+        SpawnPlacementEntry(Heightmap.Types heightMap, SpawnPlacements.Type placement, SpawnPlacements.SpawnPredicate<E> predicate) {
+            this.heightMap = heightMap;
+            this.placement = placement;
+            this.predicate = predicate;
+        }
+
+ */
 
         SpawnPlacementEntry(SpawnPlacements.Type placement, SpawnPlacements.SpawnPredicate<E> predicate) {
             this.placement = placement;
