@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.client.screen;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
+import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.screen.widgets.BookActionButton;
 import com.github.wolfshotz.wyrmroost.client.screen.widgets.CollapsibleWidget;
 import com.github.wolfshotz.wyrmroost.client.screen.widgets.PinButton;
@@ -38,8 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class DragonControlScreen extends AbstractContainerScreen<BookContainer> implements BookScreen
-{
+public class DragonControlScreen extends AbstractContainerScreen<BookContainer> implements BookScreen {
     public static final ResourceLocation SPRITES = Wyrmroost.id("textures/gui/container/dragon_inventory.png");
     public static final Vec2 SADDLE_UV = new Vec2(194, 18);
     public static final Vec2 ARMOR_UV = new Vec2(194, 34);
@@ -55,8 +54,7 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
     public float dragY;
     public float scale;
 
-    public DragonControlScreen(BookContainer container, Inventory inventory, Component title)
-    {
+    public DragonControlScreen(BookContainer container, Inventory inventory, Component title) {
         super(container, inventory, title);
         this.imageWidth = 193;
         this.imageHeight = 97;
@@ -65,8 +63,7 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
     }
 
     @Override
-    protected void init()
-    {
+    protected void init() {
         super.init();
         this.centerX = width / 2;
         this.centerY = height / 2;
@@ -81,15 +78,13 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
         initButtons();
     }
 
-    protected void initButtons()
-    {
+    protected void initButtons() {
         addRenderableWidget(pin);
 
         int size = menu.actions.size();
         int xRadius = width / 3;
         int yRadius = height / 3;
-        for (int i = 0; i < size; i++)
-        {
+        for (int i = 0; i < size; i++) {
             BookAction action = menu.actions.get(i);
             Component name = action.getTranslation(menu.dragon);
             double deg = 2 * Math.PI * i / size - Math.toRadians(90);
@@ -98,6 +93,7 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
             addRenderableWidget(new BookActionButton(this, action, x, y, name));
         }
     }
+
     @Override
     protected <T extends GuiEventListener & NarratableEntry> T addWidget(T widget) {
         if (widget instanceof CollapsibleWidget) collapsibles.add((CollapsibleWidget) widget);
@@ -106,26 +102,24 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
 
 
     @Override
-    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks)
-    {
+    public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks) {
         double scale = this.scale * 2;
         boolean showAccessories = showAccessories();
 
         renderBackground(ms);
         renderEntity(ms, mouseX, mouseY);
         if (showAccessories) fill(ms, 0, 0, width, height, 0xd0101010);
+        ms.pushPose();
         super.render(ms, mouseX, mouseY, partialTicks);
 
         renderTooltip(ms, mouseX, mouseY);
-        if (!showAccessories && withinBoundary(mouseX, mouseY, centerX, centerY, scale, scale) && minecraft.player.getInventory().getSelected().isEmpty() && hoveredSlot == null)
-        {
+        if (!showAccessories && withinBoundary(mouseX, mouseY, centerX, centerY, scale, scale) && minecraft.player.getInventory().getSelected().isEmpty() && hoveredSlot == null) {
             renderComponentTooltip(ms, menu.toolTips, mouseX, mouseY);
             renderEffects(ms, menu.dragon.getActiveEffects().stream().filter(e -> e.isVisible() && e.getDuration() > 0).collect(Collectors.toList()), mouseX - 124, mouseY - 16);
         }
     }
 
-    private void renderEffects(PoseStack ms, List<MobEffectInstance> effects, int x, int y)
-    {
+    private void renderEffects(PoseStack ms, List<MobEffectInstance> effects, int x, int y) {
         if (effects.isEmpty()) return;
 
         ms.pushPose();
@@ -135,18 +129,15 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
         minecraft.getTextureManager().bindForSetup(SPRITES);
 
         // backgrounds and labels
-        for (int i = 0; i < effects.size(); i++)
-        {
+        for (int i = 0; i < effects.size(); i++) {
             RenderSystem.clearColor(1f, 1f, 1f, 1f);
             int yOff = y + (i * 33);
             blit(ms, x, yOff, 122, 174, 120, 32);
         }
 
-        for (int i = 0; i < effects.size(); i++)
-        {
+        for (int i = 0; i < effects.size(); i++) {
             MobEffectInstance instance = effects.get(i);
-            if (instance.showIcon())
-            {
+            if (instance.showIcon()) {
                 String s = I18n.get(instance.getEffect().getDescriptionId());
                 int amp = instance.getAmplifier();
                 int yOff = y + (i * 33);
@@ -161,8 +152,7 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
         MobEffectTextureManager sheet = minecraft.getMobEffectTextures();
 
         // icons
-        for (int i = 0; i < effects.size(); i++)
-        {
+        for (int i = 0; i < effects.size(); i++) {
             MobEffect effect = effects.get(i).getEffect();
             TextureAtlasSprite atlas = sheet.get(effect);
             int yOff = y + (i * 32);
@@ -173,42 +163,35 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
     }
 
     @Override
-    protected void renderBg(PoseStack ms, float partialTicks, int mouseX, int mouseY)
-    {
+    protected void renderBg(PoseStack ms, float partialTicks, int mouseX, int mouseY) {
         float time = collapsedTime.get(partialTicks);
         float speed = 0.35f * partialTicks;
-        boolean flag = pin.pinned() || pin.isHovered() || hoveringWidget();
+        boolean flag = pin.pinned() || pin.isHovered || hoveringWidget();
 
-        collapsedTime.add(flag? speed : -speed);
+        collapsedTime.add(flag ? speed : -speed);
         pin.y = (int) (height - (time * 28));
 
-        for (CollapsibleWidget w : collapsibles)
-        {
-            if (w.visible())
-            {
+        for (CollapsibleWidget w : collapsibles) {
+            if (w.visible()) {
                 w.move(1 - time, width, height);
                 w.render(ms, mouseX, mouseY, partialTicks);
             }
         }
     }
 
-    private boolean hoveringWidget()
-    {
+    private boolean hoveringWidget() {
         for (CollapsibleWidget collapsible : collapsibles) if (collapsible.collapses()) return true;
         return false;
     }
 
     @Override
-    protected void renderLabels(PoseStack ms, int mouseX, int mouseY)
-    {
+    protected void renderLabels(PoseStack ms, int mouseX, int mouseY) {
     }
 
     @Override
-    public void renderSlot(PoseStack ms, Slot slot)
-    {
+    public void renderSlot(PoseStack ms, Slot slot) {
         boolean flag = false;
-        if (slot instanceof Slot3D)
-        {
+        if (slot instanceof Slot3D) {
             Slot3D uiSlot = (Slot3D) slot;
             double scale = this.scale / 22f;
             float xRot = (dragX + 270f) / 180f * Mafs.PI;
@@ -221,26 +204,23 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
 
             flag = true;
             RenderSystem.applyModelViewMatrix();
-            RenderSystem.translated(0, 0, -vector.x);
+            ms.translate(0, 0, -vector.x);
             uiSlot.setPos((int) vector.y - 8, (int) vector.z - 8);
-            if (!slot.hasItem() && uiSlot.iconUV != null)
-            {
-                RenderSystem.color3f(colZ, colZ, colZ);
+            if (!slot.hasItem() && uiSlot.iconUV != null) {
+                RenderSystem.setShaderColor(colZ, colZ, colZ, 1.0f);
                 setBlitOffset(250);
-                getMinecraft().getTextureManager().bind(SPRITES);
+                getMinecraft().getTextureManager().bindForSetup(SPRITES);
                 uiSlot.blitBackgroundIcon(this, ms, uiSlot.x, uiSlot.y);
             }
         }
 
         super.renderSlot(ms, slot);
-        if (flag) RenderSystem.popMatrix();
+        if (flag) ms.popPose();
     }
 
     @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button)
-    {
-        if (button == GLFW.GLFW_MOUSE_BUTTON_2 && (hoveredSlot == null || !hoveredSlot.hasItem()) && minecraft.player.getInventory().getSelected().isEmpty())
-        {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == GLFW.GLFW_MOUSE_BUTTON_2 && (hoveredSlot == null || !hoveredSlot.hasItem()) && minecraft.player.getInventory().getSelected().isEmpty()) {
             pin.onPress();
             pin.playDownSound(minecraft.getSoundManager());
             return true;
@@ -249,10 +229,8 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
     }
 
     @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY)
-    {
-        if (button == GLFW.GLFW_MOUSE_BUTTON_1)
-        {
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (button == GLFW.GLFW_MOUSE_BUTTON_1) {
             this.dragX = Mth.wrapDegrees(this.dragX + (float) dragX);
             this.dragY = Mth.wrapDegrees(this.dragY + (float) dragY);
         }
@@ -260,26 +238,22 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta)
-    {
+    public boolean mouseScrolled(double mouseX, double mouseY, double scrollDelta) {
         this.scale = Mth.clamp(this.scale + (float) scrollDelta, 4f, 60f);
         return super.mouseScrolled(mouseX, mouseY, scrollDelta);
     }
 
     @Override
-    protected boolean hasClickedOutside(double mouseX, double mouseY, int leftPos, int topPos, int button)
-    {
+    protected boolean hasClickedOutside(double mouseX, double mouseY, int leftPos, int topPos, int button) {
         return !withinBoundary(mouseX, mouseY, centerX, height - (imageHeight / 2f), imageWidth / 2f, imageHeight / 2f) &&
                 !withinBoundary(mouseX, mouseY, centerX, centerY, scale * 3, scale * 3);
     }
 
-    public boolean showAccessories()
-    {
+    public boolean showAccessories() {
         return collapsedTime.get() > 0 || !minecraft.player.getInventory().getSelected().isEmpty();
     }
 
-    public void renderEntity(PoseStack ms, int mouseX, int mouseY)
-    {
+    public void renderEntity(PoseStack ms, int mouseX, int mouseY) {
         TameableDragonEntity dragon = menu.dragon;
         float x = centerX;
         float y = centerY + ((dragon.getBbHeight() / 2) * scale) - scale;
@@ -293,8 +267,8 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
 
         RenderSystem.applyModelViewMatrix();
         ms.pushPose();
-        RenderSystem.translate(x, y, 1100f);
-        RenderSystem.scalef(1f, 1f, -1f);
+        ms.translate(x, y, 1100f);
+        ms.scale(1f, 1f, -1f);
         ms.translate(0, 0, 1000d);
         ms.scale(scale, scale, scale);
         Quaternion quaternion = Vector3f.ZP.rotationDegrees(180f);
@@ -321,11 +295,11 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
         dragon.yHeadRotO = oOldYHead;
         dragon.yHeadRot = oYHead;
         ms.popPose();
-        RenderSystem.popMatrix();
+        ms.popPose();
     }
 
-    public static boolean withinBoundary(double mouseX, double mouseY, double pointX, double pointY, double boundaryX, double boundaryY)
-    {
+    public static boolean withinBoundary(double mouseX, double mouseY, double pointX, double pointY, double boundaryX, double boundaryY) {
         return (mouseX < pointX + boundaryX && mouseX > pointX - boundaryX) && (mouseY < pointY + boundaryY && mouseY > pointY - boundaryY);
     }
-}*/
+}
+

@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.items.book.action;
 
-/*import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
@@ -51,6 +51,7 @@ public class TargetBookAction implements BookAction
     @Nullable
     private EntityHitResult clip(Player player, TameableDragonEntity dragon)
     {
+        if (dragon == null) return null;
         return Mafs.clipEntities(player,
                 40,
                 0.35,
@@ -63,4 +64,3 @@ public class TargetBookAction implements BookAction
         return TRANSLATE_PATH + "target";
     }
 }
-*/

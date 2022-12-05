@@ -1,32 +1,64 @@
 package com.github.wolfshotz.wyrmroost.registry;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import net.minecraft.world.level.block.*;
+import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+import com.github.wolfshotz.wyrmroost.util.ModUtils;
+import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
+import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockAndTintGetter;
+import net.minecraft.world.level.GrassColor;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.OreBlock;
+import net.minecraft.world.level.block.SoundType;
+import net.minecraft.world.level.block.state.BlockBehaviour;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
+
+import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 
 public class WRBlocks {
-    //public static final CreativeModeTab BLOCKS_ITEM_GROUP = new CreativeModeTab("wyrmroost_dimension") {
-      //  @Override
-        //public ItemStack makeIcon() {
-           // return new ItemStack(Items.DIAMOND);
-       // }
-    //};
+    public static final CreativeModeTab BLOCKS_ITEM_GROUP = new CreativeModeTab("wyrmroost_dimension") {
+        @Override
+        public ItemStack makeIcon() {
+            return new ItemStack(BLUE_GEODE_BLOCK.get());
+        }
+    };
 
-    //public static final List<BlockExtension> EXTENSIONS = new ArrayList<>();
+    public static final List<BlockExtension> EXTENSIONS = new ArrayList<>();
 
     // I'm redoing these for 1.17.1 port
     public static final DeferredRegister<Block> REGISTRY = DeferredRegister.create(ForgeRegistries.BLOCKS, Wyrmroost.MOD_ID);
-    //public static final RegistryObject<Block> PLATINUM_ORE = register("platinum_ore", () -> new Block(mineable(Material.STONE, ToolType.PICKAXE, 1, 3f, SoundType.STONE)));
-    //public static final RegistryObject<Block> PLATINUM_BLOCK = register("platinum_block", () -> new Block(mineable(Material.METAL, ToolType.PICKAXE, 1, 5f, SoundType.METAL)));
-
-    //public static final Block DIAMOND_ORE = register("diamond_ore", new OreBlock(BlockBehaviour.Properties.of(Material.STONE).requiresCorrectToolForDrops().strength(3.0F, 3.0F), UniformInt.of(3, 7)));
-    //public static final RegistryObject<Block> BLUE_GEODE_BLOCK = register("blue_geode_block", () -> new Block(mineable(Material.METAL, ToolType.PICKAXE, 2, 5f, SoundType.METAL)));
-    //public static final RegistryObject<Block> RED_GEODE_ORE = register("red_geode_ore", () -> new EXPBlock(4, 8, mineable(Material.STONE, ToolType.PICKAXE, 3, 3f, SoundType.NETHER_ORE)));
-    //public static final RegistryObject<Block> RED_GEODE_BLOCK = register("red_geode_block", () -> new Block(mineable(Material.METAL, ToolType.PICKAXE, 3, 5f, SoundType.METAL)));
-    //public static final RegistryObject<Block> PURPLE_GEODE_ORE = register("purple_geode_ore", () -> new EXPBlock(8, 11, mineable(Material.METAL, ToolType.PICKAXE, 4, 5f, SoundType.GILDED_BLACKSTONE)));
-    //public static final RegistryObject<Block> PURPLE_GEODE_BLOCK = register("purple_geode_block", () -> new Block(mineable(Material.METAL, ToolType.PICKAXE, 4, 7f, SoundType.METAL)));
+    public static final RegistryObject<Block> PLATINUM_ORE = register("platinum_ore", () -> new Block(mineable(Material.STONE, 3f, SoundType.STONE)));
+    public static final RegistryObject<Block> PLATINUM_BLOCK = register("platinum_block", () -> new Block(mineable(Material.METAL, 5f, SoundType.METAL)));
+    public static final RegistryObject<Block> BLUE_GEODE_ORE = register("blue_geode_ore", () -> new OreBlock(mineable(Material.STONE, 3f, SoundType.NETHER_ORE), UniformInt.of(3, 7)));
+    public static final RegistryObject<Block> BLUE_GEODE_BLOCK = register("blue_geode_block", () -> new Block(mineable(Material.METAL, 5f, SoundType.METAL)));
+    public static final RegistryObject<Block> RED_GEODE_ORE = register("red_geode_ore", () -> new OreBlock(mineable(Material.STONE, 3f, SoundType.NETHER_ORE), UniformInt.of(4, 8)));
+    public static final RegistryObject<Block> RED_GEODE_BLOCK = register("red_geode_block", () -> new Block(mineable(Material.METAL, 5f, SoundType.METAL)));
+    public static final RegistryObject<Block> PURPLE_GEODE_ORE = register("purple_geode_ore", () -> new OreBlock(mineable(Material.METAL, 5f, SoundType.GILDED_BLACKSTONE), UniformInt.of(8, 11)));
+    public static final RegistryObject<Block> PURPLE_GEODE_BLOCK = register("purple_geode_block", () -> new Block(mineable(Material.METAL, 7f, SoundType.METAL)));
     /*
      biomes
     public static final RegistryObject<Block> KARPO_BUSH = register("karpo_bush", () -> new BushBlock(replaceablePlant()), extend().cutoutRenderer().flammability(60, 100).tint(WRBlocks::grassTint));
@@ -128,7 +160,7 @@ public class WRBlocks {
     public static final RegistryObject<Block> ASH = register("ash", () -> new SnowBlock(properties(Material.SAND, SoundType.SAND).strength(0.1f)));
     public static final RegistryObject<Block> EMBER_BLOCK = register("ember_block", EmberBlock::new);
     public static final RegistryObject<Block> EMBERS = register("embers", EmberLayerBlock::new);
-
+*/
     public static RegistryObject<Block> register(String name, Supplier<Block> block) {
         return register(name, block, extend());
     }
@@ -142,31 +174,31 @@ public class WRBlocks {
         }
         return delegate;
     }
-    public static Properties properties(Material material, SoundType sound)
+    public static BlockBehaviour.Properties properties(Material material, SoundType sound)
     {
-        return Properties
+        return BlockBehaviour.Properties
                 .of(material)
                 .sound(sound);
     }
 
-    public static Properties properties(Material material, MaterialColor color, SoundType sound)
+    public static BlockBehaviour.Properties properties(Material material, MaterialColor color, SoundType sound)
     {
-        return Properties
+        return BlockBehaviour.Properties
                 .of(material, color)
                 .sound(sound);
     }
 
-    public static Properties plant()
+    public static BlockBehaviour.Properties plant()
     {
         return properties(Material.PLANT, SoundType.GRASS);
     }
 
-    public static Properties replaceablePlant()
+    public static BlockBehaviour.Properties replaceablePlant()
     {
         return properties(Material.REPLACEABLE_PLANT, SoundType.GRASS).noCollission();
     }
 
-    public static Properties leaves()
+    public static BlockBehaviour.Properties leaves()
     {
         return properties(Material.LEAVES, SoundType.GRASS)
                 .strength(0.2f)
@@ -177,61 +209,50 @@ public class WRBlocks {
                 .isViewBlocking((s, r, p) -> false);
     }
 
-    public static Properties mineable(Material material, ToolType harvestTool, int harvestLevel, float hardnessResistance, SoundType sound)
-    {
-        return Properties
-                .of(material)
-                .harvestTool(harvestTool)
-                .harvestLevel(harvestLevel)
-                .requiresCorrectToolForDrops()
-                .strength(hardnessResistance)
-                .sound(sound);
-    }
 
-    public static Properties mineable(Material material, ToolType harvestTool, int harvestLevel, float hardness, float resistance, SoundType sound)
+    public static BlockBehaviour.Properties mineable(Material material, float resistance, SoundType sound)
     {
-        return Properties
+        return BlockBehaviour.Properties
                 .of(material)
-                .harvestTool(harvestTool)
-                .harvestLevel(harvestLevel)
+                //.harvestLevel(harvestLevel)
                 .requiresCorrectToolForDrops()
-                .strength(hardness, resistance)
+                .strength(resistance)
                 .sound(sound);
     }
     public static class Tags
     {
-        public static final Map<Tag<Block>, Tag<Item>> ITEM_BLOCK_TAGS = new HashMap<>();
+        public static final Map<TagKey<Block>, TagKey<Item>> ITEM_BLOCK_TAGS = new HashMap<>();
 
-        public static final Tag<Block> ORES_GEODE = forge("ores/geode");
-        public static final Tag<Block> ORES_PLATINUM = forge("ores/platinum");
+        public static final TagKey<Block> ORES_GEODE = forge("ores/geode");
+        public static final TagKey<Block> ORES_PLATINUM = forge("ores/platinum");
 
-        public static final Tag<Block> STORAGE_BLOCKS_GEODE = forge("storage_blocks/geode");
-        public static final Tag<Block> STORAGE_BLOCKS_PLATINUM = forge("storage_blocks/platinum");
-        public static final Tag<Block> OSERI_LOGS = tag("oseri_logs");
-        public static final Tag<Block> SAL_LOGS = tag("sal_logs");
-        public static final Tag<Block> PRISMARINE_CORIN_LOGS = tag("corin_logs");
-        public static final Tag<Block> SILVER_CORIN_LOGS = tag("silver_corin_logs");
-        public static final Tag<Block> TEAL_CORIN_LOGS = tag("teal_corin_logs");
-        public static final Tag<Block> RED_CORIN_LOGS = tag("red_corin_logs");
-        public static final Tag<Block> DYING_CORIN_LOGS = tag("dying_corin_logs");
-        static Tag<Block> forge(String path)
+        public static final TagKey<Block> STORAGE_BLOCKS_GEODE = forge("storage_blocks/geode");
+        public static final TagKey<Block> STORAGE_BLOCKS_PLATINUM = forge("storage_blocks/platinum");
+        public static final TagKey<Block> OSERI_LOGS = tag("oseri_logs");
+        public static final TagKey<Block> SAL_LOGS = tag("sal_logs");
+        public static final TagKey<Block> PRISMARINE_CORIN_LOGS = tag("corin_logs");
+        public static final TagKey<Block> SILVER_CORIN_LOGS = tag("silver_corin_logs");
+        public static final TagKey<Block> TEAL_CORIN_LOGS = tag("teal_corin_logs");
+        public static final TagKey<Block> RED_CORIN_LOGS = tag("red_corin_logs");
+        public static final TagKey<Block> DYING_CORIN_LOGS = tag("dying_corin_logs");
+        static TagKey<Block> forge(String path)
         {
             return getFor("forge:" + path);
         }
 
-        public static Tag<Block> tag(String path)
+        public static TagKey<Block> tag(String path)
         {
             return getFor(Wyrmroost.MOD_ID + ":" + path);
         }
 
-        public static Tag<Block> getFor(String path)
+        public static TagKey<Block> getFor(String path)
         {
-            Tag<Block> tag = BlockTags.bind(path);
+            TagKey<Block> tag = BlockTags.create(new ResourceLocation(path));
             ITEM_BLOCK_TAGS.put(tag, ItemTags.bind(path));
             return tag;
         }
 
-        public static Tag<Item> getItemTagFor(Tag<Block> blockTag)
+        public static TagKey<Item> getItemTagFor(Tag<Block> blockTag)
         {
             return ITEM_BLOCK_TAGS.get(blockTag);
         }
@@ -241,9 +262,9 @@ public class WRBlocks {
     {
         return new BlockExtension();
     }
-    public static int grassTint(BlockState state, @Nullable IBlockDisplayReader level, @Nullable BlockPos pos, int tint)
+    public static int grassTint(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int tint)
     {
-        return level == null || pos == null? GrassColors.get(0.5, 1) : BiomeColors.getAverageGrassColor(level, pos);
+        return level == null || pos == null? GrassColor.get(0.5, 1) : BiomeColors.getAverageGrassColor(level, pos);
     }
 
     public static class BlockExtension
@@ -297,7 +318,7 @@ public class WRBlocks {
         {
             if (ModUtils.isClient())
             {
-                if (renderType != null) RenderType.setRenderLayer(block.get(), renderType.get().get());
+                if (renderType != null) ItemBlockRenderTypes.setRenderLayer(block.get(), renderType.get().get());
                 if (tintFunc != null)
                 {
                     Block b = block.get();
@@ -316,7 +337,8 @@ public class WRBlocks {
          * @param level     Nullable: possible to get the world from the client but not recommended; could be in ITEM context.
          * @param pos       Nullable: could be in ITEM context.
          * @param tintIndex the index of the tint.
+         * */
         int getTint(BlockState state, @Nullable BlockAndTintGetter level, @Nullable BlockPos pos, int tintIndex);
+
     }
-}*/
 }

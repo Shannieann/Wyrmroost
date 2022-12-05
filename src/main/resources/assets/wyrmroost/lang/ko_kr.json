@@ -117,17 +117,17 @@
   "item.wyrmroost.soul_crystal": "드래곤 영혼 수정",
   "item.wyrmroost.soul_crystal.jeidesc": "정동석의 신비한 속성에 스며들어, 당신이 맡긴 드래곤의 영혼을 담을 수 있는 잠재력을 가지고 있습니다. 드래곤의 영혼은 %s로 당신을 이끌 수 있습니다...",
 
-  "item.wyrmroost.dragon_staff": "드래곤 스태프",
-  "item.wyrmroost.dragon_staff.desc": "드래곤을 때려요!",
-  "item.wyrmroost.dragon_staff.bound": "바인딩: %s",
-  "item.wyrmroost.dragon_staff.action": "행동: %s",
-  "item.wyrmroost.dragon_staff.action.default": "GUI 열기",
-  "item.wyrmroost.dragon_staff.action.inventory": "인벤토리 접속",
-  "item.wyrmroost.dragon_staff.action.home.set": "주 위치 설정",
-  "item.wyrmroost.dragon_staff.action.home.remove": "주 위치 제거",
-  "item.wyrmroost.dragon_staff.action.targeting": "대상 명령",
-  "item.wyrmroost.dragon_staff.action.sit.come": "따르기",
-  "item.wyrmroost.dragon_staff.action.sit.stay": "머무르기",
+  "item.wyrmroost.tarragon_tome": "드래곤 스태프",
+  "item.wyrmroost.tarragon_tome.desc": "드래곤을 때려요!",
+  "item.wyrmroost.tarragon_tome.bound": "바인딩: %s",
+  "item.wyrmroost.tarragon_tome.action": "행동: %s",
+  "item.wyrmroost.tarragon_tome.action.default": "GUI 열기",
+  "item.wyrmroost.tarragon_tome.action.inventory": "인벤토리 접속",
+  "item.wyrmroost.tarragon_tome.action.home.set": "주 위치 설정",
+  "item.wyrmroost.tarragon_tome.action.home.remove": "주 위치 제거",
+  "item.wyrmroost.tarragon_tome.action.targeting": "대상 명령",
+  "item.wyrmroost.tarragon_tome.action.sit.come": "따르기",
+  "item.wyrmroost.tarragon_tome.action.sit.stay": "머무르기",
 
   "item.wyrmroost.drake_backplate": "드레이크 등갑"
 }

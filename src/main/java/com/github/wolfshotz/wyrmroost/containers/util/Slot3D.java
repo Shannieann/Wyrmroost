@@ -1,11 +1,11 @@
 package com.github.wolfshotz.wyrmroost.containers.util;
 
-/*import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.IItemHandler;
 
 /**
  * T H R E E  D E E
  * E.
-
+*/
 public class Slot3D extends DynamicSlot
 {
     public final int anchorZ;
@@ -23,4 +23,3 @@ public class Slot3D extends DynamicSlot
         this.z = z;
     }
 }
-*/

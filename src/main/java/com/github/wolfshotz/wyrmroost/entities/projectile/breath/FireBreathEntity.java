@@ -20,7 +20,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 
-/*public class FireBreathEntity extends BreathWeaponEntity
+public class FireBreathEntity extends BreathWeaponEntity
 {
     public FireBreathEntity(EntityType<? extends Projectile> type, Level level)
     {
@@ -108,4 +108,3 @@ import net.minecraft.world.phys.Vec3;
         return true;
     }
 }
-*/

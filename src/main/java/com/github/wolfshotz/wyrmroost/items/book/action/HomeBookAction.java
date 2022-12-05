@@ -1,7 +1,5 @@
 package com.github.wolfshotz.wyrmroost.items.book.action;
 
-/*import com.github.wolfshotz.wyrmroost.client.ClientEvents;
-//import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
@@ -15,10 +13,10 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.BlockHitResult;
-import net.minecraft.world.phys.HitResult;
 
 import javax.annotation.Nullable;
+
+//import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
 
 public class HomeBookAction implements BookAction
 {
@@ -60,13 +58,14 @@ public class HomeBookAction implements BookAction
     @Override
     public void render(TameableDragonEntity dragon, PoseStack ms, float partialTicks)
     {
-        HitResult rtr = ClientEvents.getClient().hitResult;
+        /*HitResult rtr = ClientEvents.getClient().hitResult;
+        int ticks = (dragon == null)? 0 : dragon.tickCount;
         if (rtr instanceof BlockHitResult)
             RenderHelper.drawBlockPos(ms,
                     ((BlockHitResult) rtr).getBlockPos(),
-                    Math.cos((dragon.tickCount + partialTicks) * 0.2) * 4.5 + 4.5,
+                    Math.cos((ticks + partialTicks) * 0.2) * 4.5 + 4.5,
                     0x4d0000ff,
-                    true);
+                    true);*/
     }
 
     @Override
@@ -77,4 +76,3 @@ public class HomeBookAction implements BookAction
         return TRANSLATE_PATH + "home.set";
     }
 }
-*/

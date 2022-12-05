@@ -1,7 +1,6 @@
 package com.github.wolfshotz.wyrmroost.client.screen;
 
-/*import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
-import com.github.wolfshotz.wyrmroost.util.animation.Animation;
+import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -23,9 +22,9 @@ public class DebugScreen extends Screen
     @Override
     protected void init()
     {
-        addButton(new Button(0, 0, 50, 20, new TextComponent("Pause Game"), b -> paused = !paused));
+        addRenderableWidget(new Button(0, 0, 50, 20, new TextComponent("Pause Game"), b -> paused = !paused));
 
-        Animation[] animations = dragon.getAnimations();
+        /*Animation[] animations = dragon.getAnimations();
         if (animations != null && animations.length > 0)
             for (int i = 0; i < animations.length; i++)
             {
@@ -35,7 +34,7 @@ public class DebugScreen extends Screen
                     dragon.setAnimation(animation);
                     onClose();
                 }));
-            }
+            }*/
     }
 
     @Override
@@ -69,4 +68,3 @@ public class DebugScreen extends Screen
         Minecraft.getInstance().setScreen(new DebugScreen(dragon));
     }
 }
-*/

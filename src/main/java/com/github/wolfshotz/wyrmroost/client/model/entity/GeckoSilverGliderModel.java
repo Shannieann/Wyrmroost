@@ -1,7 +1,6 @@
 package com.github.wolfshotz.wyrmroost.client.model.entity;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import com.github.wolfshotz.wyrmroost.entities.dragon.CanariWyvernEntity;
 import com.github.wolfshotz.wyrmroost.entities.dragon.SilverGliderEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -14,7 +13,7 @@ import static com.github.wolfshotz.wyrmroost.util.ModUtils.TEXTURE_FOLDER;
 
 public class GeckoSilverGliderModel<T extends SilverGliderEntity> extends AnimatedGeoModel<T> {
 
-    private static final ResourceLocation modelResource = new ResourceLocation(Wyrmroost.MOD_ID, "geo/canari_wyvern.geo.json");
+    private static final ResourceLocation modelResource = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/canari_wyvern.geo.json");
     private static final ResourceLocation animationResource = new ResourceLocation(Wyrmroost.MOD_ID, "animations/canari_wyvern.animation.json");
 
     @Override

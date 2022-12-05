@@ -1,8 +1,7 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon;
 
-/*import com.github.wolfshotz.wyrmroost.WRConfig;
+import com.github.wolfshotz.wyrmroost.WRConfig;
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
-import com.github.wolfshotz.wyrmroost.client.model.entity.OverworldDrakeModel;
 import com.github.wolfshotz.wyrmroost.client.screen.DragonControlScreen;
 import com.github.wolfshotz.wyrmroost.client.screen.widgets.CollapsibleWidget;
 import com.github.wolfshotz.wyrmroost.containers.BookContainer;
@@ -12,48 +11,54 @@ import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.*;
 import com.github.wolfshotz.wyrmroost.entities.util.EntitySerializer;
 import com.github.wolfshotz.wyrmroost.items.DragonArmorItem;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookActions;
-import com.github.wolfshotz.wyrmroost.network.packets.AnimationPacket;
-import com.github.wolfshotz.wyrmroost.network.packets.KeybindHandler;
 import com.github.wolfshotz.wyrmroost.registry.WRSounds;
 import com.github.wolfshotz.wyrmroost.util.LerpedFloat;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import com.github.wolfshotz.wyrmroost.util.animation.Animation;
-import com.github.wolfshotz.wyrmroost.util.animation.LogicalAnimation;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.block.ChestBlock;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.player.Player;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.datasync.EntityDataAccessor;
-import net.minecraft.network.datasync.EntityDataSerializers;
-import net.minecraft.network.datasync.SynchedEntityData;
-import net.minecraft.network.play.server.SEntityVelocityPacket;
-import net.minecraft.potion.MobEffectInstance;
-import net.minecraft.potion.Effects;
+import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.BlockTags;
-import net.minecraft.util.*;
-import net.minecraft.util.math.AABB;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.Level;
-import net.minecraft.world.biome.Biome;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.server.ServerChunkProvider;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.ChestBlock;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.Tags;
-import org.lwjgl.glfw.GLFW;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
 
 import javax.annotation.Nullable;
 
-import static net.minecraft.entity.ai.attributes.Attributes.*;
+import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-/**
- * Created by com.github.WolfShotz 7/10/19 - 22:18
 public class OverworldDrakeEntity extends TameableDragonEntity
 {
     private static final EntitySerializer<OverworldDrakeEntity> SERIALIZER = TameableDragonEntity.SERIALIZER.concat(b -> b
@@ -70,10 +75,10 @@ public class OverworldDrakeEntity extends TameableDragonEntity
     private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(OverworldDrakeEntity.class, EntityDataSerializers.BOOLEAN);
 
     // Dragon Entity Animations
-    public static final Animation GRAZE_ANIMATION = LogicalAnimation.create(35, OverworldDrakeEntity::grazeAnimation, () -> OverworldDrakeModel::grazeAnimation);
-    public static final Animation HORN_ATTACK_ANIMATION = LogicalAnimation.create(15, OverworldDrakeEntity::hornAttackAnimation, () -> OverworldDrakeModel::hornAttackAnimation);
-    public static final Animation ROAR_ANIMATION = LogicalAnimation.create(86, OverworldDrakeEntity::hornAttackAnimation, () -> OverworldDrakeModel::roarAnimation);
-    public static final Animation[] ANIMATIONS = new Animation[]{GRAZE_ANIMATION, HORN_ATTACK_ANIMATION, ROAR_ANIMATION};
+    //public static final Animation GRAZE_ANIMATION = LogicalAnimation.create(35, OverworldDrakeEntity::grazeAnimation, () -> OverworldDrakeModel::grazeAnimation);
+    //public static final Animation HORN_ATTACK_ANIMATION = LogicalAnimation.create(15, OverworldDrakeEntity::hornAttackAnimation, () -> OverworldDrakeModel::hornAttackAnimation);
+    //public static final Animation ROAR_ANIMATION = LogicalAnimation.create(86, OverworldDrakeEntity::hornAttackAnimation, () -> OverworldDrakeModel::roarAnimation);
+    //public static final Animation[] ANIMATIONS = new Animation[]{GRAZE_ANIMATION, HORN_ATTACK_ANIMATION, ROAR_ANIMATION};
 
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public LivingEntity thrownPassenger;
@@ -112,7 +117,7 @@ public class OverworldDrakeEntity extends TameableDragonEntity
         super.registerGoals();
 
         goalSelector.addGoal(4, new MoveToHomeGoal(this));
-        goalSelector.addGoal(5, new ControlledAttackGoal(this, 1.425, true, () -> AnimationPacket.send(this, HORN_ATTACK_ANIMATION)));
+        goalSelector.addGoal(5, new ControlledAttackGoal(this, 1.425, true /*AnimationPacket.send(this, HORN_ATTACK_ANIMATION)*/));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new DragonBreedGoal(this));
         goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this, 1));
@@ -123,7 +128,7 @@ public class OverworldDrakeEntity extends TameableDragonEntity
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));
         targetSelector.addGoal(4, new HurtByTargetGoal(this));
-        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Player.class, true, EntitySelector.ATTACK_ALLOWED::test));
+        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Player.class, true, EntitySelector.ENTITY_STILL_ALIVE::test));
     }
 
     @Override
@@ -137,12 +142,12 @@ public class OverworldDrakeEntity extends TameableDragonEntity
         if (thrownPassenger != null)
         {
             thrownPassenger.setDeltaMovement(Mafs.nextDouble(getRandom()), 0.1 + getRandom().nextDouble(), Mafs.nextDouble(getRandom()));
-            ((ServerChunkProvider) level.getChunkSource()).broadcastAndSend(thrownPassenger, new SEntityVelocityPacket(thrownPassenger)); // notify client
+            ((ServerChunkCache) level.getChunkSource()).broadcastAndSend(thrownPassenger, new ClientboundSetEntityMotionPacket(thrownPassenger)); // notify client
             thrownPassenger = null;
         }
 
-        if (!level.isClientSide && getTarget() == null && !isInSittingPose() && !isSleeping() && level.getBlockState(blockPosition().below()).getBlock() == Blocks.GRASS_BLOCK && getRandom().nextDouble() < (isBaby() || getHealth() < getMaxHealth()? 0.005 : 0.001))
-            AnimationPacket.send(this, GRAZE_ANIMATION);
+        if (!level.isClientSide && getTarget() == null && !isInSittingPose() && !isSleeping() && level.getBlockState(blockPosition().below()).getBlock() == Blocks.GRASS_BLOCK && getRandom().nextDouble() < (isBaby() || getHealth() < getMaxHealth()? 0.005 : 0.001));
+            //AnimationPacket.send(this, GRAZE_ANIMATION); TODO READD
     }
 
     public void roarAnimation(int time)
@@ -152,7 +157,7 @@ public class OverworldDrakeEntity extends TameableDragonEntity
         {
             for (LivingEntity entity : getEntitiesNearby(15, e -> !isAlliedTo(e))) // Dont get too close now ;)
             {
-                entity.addEffect(new MobEffectInstance(Effects.MOVEMENT_SLOWDOWN, 200));
+                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200));
                 if (distanceToSqr(entity) <= 10)
                 {
                     double angle = Mafs.getAngle(getX(), getZ(), entity.getX(), entity.getZ()) * Math.PI / 180;
@@ -167,7 +172,7 @@ public class OverworldDrakeEntity extends TameableDragonEntity
         if (time == 8)
         {
             LivingEntity target = getTarget();
-            if (target != null) yRot = yBodyRot = (float) Mafs.getAngle(this, target) + 90f;
+            if (target != null) setYRot(yBodyRot = (float) Mafs.getAngle(this, target) + 90f);
             playSound(SoundEvents.IRON_GOLEM_ATTACK, 1, 0.5f, true);
             AABB box = getOffsetBox(getBbWidth()).inflate(-0.075);
             attackInBox(box);
@@ -266,7 +271,7 @@ public class OverworldDrakeEntity extends TameableDragonEntity
         }
     }
 
-    @Override
+    /*@Override
     public void recievePassengerKeybind(int key, int mods, boolean pressed)
     {
         if (key == KeybindHandler.MOUNT_KEY && pressed && noAnimations())
@@ -274,7 +279,7 @@ public class OverworldDrakeEntity extends TameableDragonEntity
             if ((mods & GLFW.GLFW_MOD_CONTROL) != 0) setAnimation(ROAR_ANIMATION);
             else setAnimation(HORN_ATTACK_ANIMATION);
         }
-    }
+    }*/ // TODO READD
 
     @Override
     public EntityDimensions getDimensions(Pose pose)
@@ -317,23 +322,23 @@ public class OverworldDrakeEntity extends TameableDragonEntity
         boolean flag = getTarget() != null;
         setSprinting(flag);
 
-        if (flag && prev != target && target.getType() == EntityType.PLAYER && !isTame() && noAnimations())
-            AnimationPacket.send(this, OverworldDrakeEntity.ROAR_ANIMATION);
+        /*if (flag && prev != target && target.getType() == EntityType.PLAYER && !isTame() && noAnimations())
+            AnimationPacket.send(this, OverworldDrakeEntity.ROAR_ANIMATION);*/ // TODO ADD
     }
 
-    @Override
+    /*@Override
     public boolean isImmobile()
     {
-        return getAnimation() == ROAR_ANIMATION || super.isImmobile();
-    }
+        return  || super.isImmobile(); TODO READD
+    }*/
 
     @Override
     public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
         if (backView)
-            event.getInfo().move(ClientEvents.getViewCollision(-0.5, this), 0.75, 0);
+            event.getCamera().move(ClientEvents.getViewCollision(-0.5, this), 0.75, 0);
         else
-            event.getInfo().move(ClientEvents.getViewCollision(-3, this), 0.3, 0);
+            event.getCamera().move(ClientEvents.getViewCollision(-3, this), 0.3, 0);
     }
 
     @Override
@@ -400,7 +405,12 @@ public class OverworldDrakeEntity extends TameableDragonEntity
     @Override
     public boolean isFood(ItemStack stack)
     {
-        return stack.getItem().is(Tags.Items.CROPS_WHEAT);
+        return stack.is(Tags.Items.CROPS_WHEAT);
+    }
+
+    @Override
+    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
+        return null;
     }
 
     public boolean hasChest()
@@ -425,17 +435,13 @@ public class OverworldDrakeEntity extends TameableDragonEntity
     public int determineVariant()
     {
         if (getRandom().nextDouble() < 0.008) return -1;
-        if (level.getBiome(blockPosition()).getBiomeCategory() == Biome.BiomeCategory.SAVANNA) return 1;
+
+        if (Biome.getBiomeCategory(level.getBiome(blockPosition())) == Biome.BiomeCategory.SAVANNA) return 1;
         return 0;
     }
 
-    @Override
-    public Animation[] getAnimations()
-    {
-        return ANIMATIONS;
-    }
 
-    public static AttributeSupplier.MutableAttribute getAttributeSupplier()
+    public static AttributeSupplier.Builder getAttributeSupplier()
     {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 70)
@@ -445,5 +451,15 @@ public class OverworldDrakeEntity extends TameableDragonEntity
                 .add(ATTACK_KNOCKBACK, 2.85)
                 .add(ATTACK_DAMAGE, 8);
     }
+
+    //@org.jetbrains.annotations.Nullable
+    //@Override
+    //public AbstractContainerMenu createMenu(int p_39954_, Inventory p_39955_, Player p_39956_) {
+        //return null;
+    //}
+
+    @Override
+    public void registerControllers(AnimationData data) {
+
+    }
 }
-*/

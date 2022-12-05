@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.client.screen;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
+import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -50,15 +50,15 @@ public class AnimateScreen extends Screen
         if (reloader != null) reloader = new ReloadWidget();
         error = null;
 
-        addButton(new Button(0, 0, 33, 20, new TextComponent("Clear"), b ->
+        addRenderableWidget(new Button(0, 0, 33, 20, new TextComponent("Clear"), b ->
         {
             onClose();
             last = null;
         }));
-        addButton(new Button(34, 0, 20, 20, new TextComponent("+"), b -> addTransformer(true), (b, m, x, y) -> renderTooltip(m, new TextComponent("Add Rotation Box"), x, y)));
-        addButton(new Button(55, 0, 20, 20, new TextComponent("<+>"), b -> addTransformer(false), (b, m, x, y) -> renderTooltip(m, new TextComponent("Add Position Box"), x, y)));
-        addButton(new Button(77, 0, 80, 20, new TextComponent("Print Positions"), b -> printPositions()));
-        addButton(new Button(160, 0, 90, 20, new TextComponent("Reload Positions"), b ->
+        addRenderableWidget(new Button(34, 0, 20, 20, new TextComponent("+"), b -> addTransformer(true), (b, m, x, y) -> renderTooltip(m, new TextComponent("Add Rotation Box"), x, y)));
+        addRenderableWidget(new Button(55, 0, 20, 20, new TextComponent("<+>"), b -> addTransformer(false), (b, m, x, y) -> renderTooltip(m, new TextComponent("Add Position Box"), x, y)));
+        addRenderableWidget(new Button(77, 0, 80, 20, new TextComponent("Print Positions"), b -> printPositions()));
+        addRenderableWidget(new Button(160, 0, 90, 20, new TextComponent("Reload Positions"), b ->
         {
             if (reloader == null) addWidget(reloader = new ReloadWidget());
         }));
@@ -189,9 +189,9 @@ public class AnimateScreen extends Screen
 
         public void init()
         {
-            addButton(closeButton = new Button(x + 92, y, 13, 13, new TextComponent("X"), b ->
+            addRenderableWidget(closeButton = new Button(x + 92, y, 13, 13, new TextComponent("X"), b ->
             {
-                close();
+                onClose();
                 int i = transformations.indexOf(this);
                 transformations.remove(this);
                 transformations.subList(i, transformations.size()).forEach(TransformationWidget::reposition);
@@ -213,12 +213,12 @@ public class AnimateScreen extends Screen
             }
         }
 
-        public void close()
+        /*public void close()
         {
             children.remove(this);
             buttons.remove(closeButton);
             children.remove(closeButton);
-        }
+        }*/
 
         @Override
         public void render(PoseStack ms, int mouseX, int mouseY, float partialTicks)
@@ -296,9 +296,9 @@ public class AnimateScreen extends Screen
 
         public void init()
         {
-            addButton(closeButton = new Button(x + width + 5, y + 1, 20, 20, new TextComponent("X"), b -> close()));
-            addButton(parseButton = new Button(x + width / 2 - 40, y + height + 10, 80, 20, new TextComponent("Parse"), b -> parseAndReload()));
-            addButton(pathButton = new Button(x + width + 5, y + 23, 60, 20, new TextComponent("Get Path"), b -> setValue(System.getProperty("user.home") + "/Desktop/")));
+            addRenderableWidget(closeButton = new Button(x + width + 5, y + 1, 20, 20, new TextComponent("X"), b -> onClose()));
+            addRenderableWidget(parseButton = new Button(x + width / 2 - 40, y + height + 10, 80, 20, new TextComponent("Parse"), b -> parseAndReload()));
+            addRenderableWidget(pathButton = new Button(x + width + 5, y + 23, 60, 20, new TextComponent("Get Path"), b -> setValue(System.getProperty("user.home") + "/Desktop/")));
         }
 
         private void parseAndReload()
@@ -326,7 +326,7 @@ public class AnimateScreen extends Screen
                     }
                 }
                 error = null;
-                close();
+                onClose();
             }
             catch (NoSuchFileException e)
             {
@@ -340,7 +340,7 @@ public class AnimateScreen extends Screen
             }
         }
 
-        public void close()
+        /*public void close()
         {
             children.remove(parseButton);
             children.remove(closeButton);
@@ -350,7 +350,6 @@ public class AnimateScreen extends Screen
             buttons.remove(pathButton);
             children.remove(this);
             reloader = null;
-        }
+        }*/
     }
 }
-*/

@@ -6,20 +6,24 @@ import com.github.wolfshotz.wyrmroost.items.*;
 import com.github.wolfshotz.wyrmroost.items.base.ArmorBase;
 import com.github.wolfshotz.wyrmroost.items.base.ArmorMaterials;
 import com.github.wolfshotz.wyrmroost.items.base.ToolMaterials;
-//import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
+import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.Item.Properties;
-import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
+
+//import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
 
 public class WRItems
 {
@@ -45,7 +49,7 @@ public class WRItems
     //public static final RegistryObject<Item> LDWYRM = register("desert_wyrm", LDWyrmItem::new);
     public static final RegistryObject<Item> DRAGON_EGG = register("dragon_egg", DragonEggItem::new);
     public static final RegistryObject<Item> SOUL_CRYSTAL = register("soul_crystal", SoulCrystalItem::new);
-    //public static final RegistryObject<Item> TARRAGON_TOME = register("tarragon_tome", TarragonTomeItem::new);
+    public static final RegistryObject<Item> TARRAGON_TOME = register("tarragon_tome", TarragonTomeItem::new);
     //public static final RegistryObject<Item> COIN_DRAGON = register("coin_dragon", CoinDragonItem::new);
     public static final RegistryObject<Item> TRUMPET = register("trumpet", TrumpetItem::new);
 
@@ -146,20 +150,20 @@ public class WRItems
         return new FoodProperties.Builder().nutrition(nutrition).saturationMod(saturation);
     }
 
-    /*public static class Tags
+    public static class Tags
     {
-        public static final Tag<Item> GEMS_GEODE = forge("gems/geodes");
-        public static final Tag<Item> DRAGON_MEATS = tag("dragon_meats");
-        public static final Tag<Item> INGOTS_PLATINUM = forge("ingots/platinum");
+        public static final TagKey<Item> GEMS_GEODE = forge("gems/geodes");
+        public static final TagKey<Item> DRAGON_MEATS = tag("dragon_meats");
+        public static final TagKey<Item> INGOTS_PLATINUM = forge("ingots/platinum");
 
-        private static Tag<Item> tag(String path)
+        private static TagKey<Item> tag(String path)
         {
             return ItemTags.bind(Wyrmroost.MOD_ID + ":" + path);
         }
 
-        private static Tag<Item> forge(String path)
+        private static TagKey<Item> forge(String path)
         {
             return ItemTags.bind("forge:" + path);
         }
-    }*/
+    }
 }

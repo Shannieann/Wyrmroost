@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.items.book.action;
 
-/*import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -23,4 +23,3 @@ public class SitBookAction implements BookAction
         return TRANSLATE_PATH + "sit.stay";
     }
 }
-*/

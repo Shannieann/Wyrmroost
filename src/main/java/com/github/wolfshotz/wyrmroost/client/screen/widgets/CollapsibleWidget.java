@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.client.screen.widgets;
 
-/*import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.containers.util.DynamicSlot;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -65,7 +65,7 @@ public class CollapsibleWidget extends AbstractWidget {
 
     public boolean collapses()
     {
-        return isHovered();
+        return isHovered;
     }
 
     public void move(float amount, int maxWidth, int maxHeight)
@@ -97,4 +97,3 @@ public class CollapsibleWidget extends AbstractWidget {
 
     }
 }
-*/

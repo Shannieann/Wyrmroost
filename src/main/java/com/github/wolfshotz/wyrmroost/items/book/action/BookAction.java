@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
 
 public interface BookAction
 {
-    String TRANSLATE_PATH = "item.wyrmroost.dragon_staff.action.";
+    String TRANSLATE_PATH = "item.wyrmroost.tarragon_tome.action.";
 
     default InteractionResult clickBlock(@Nullable TameableDragonEntity dragon, UseOnContext context)
     {

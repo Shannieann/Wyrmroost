@@ -2,17 +2,16 @@ package com.github.wolfshotz.wyrmroost.entities.dragon;
 
 import com.github.wolfshotz.wyrmroost.WRConfig;
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
-
-//import com.github.wolfshotz.wyrmroost.client.sound.FlyingSound;
 import com.github.wolfshotz.wyrmroost.client.sound.FlyingSound;
+import com.github.wolfshotz.wyrmroost.containers.BookContainer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.*;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.WRSitGoal;
-//import com.github.wolfshotz.wyrmroost.entities.dragonegg.DragonEggProperties;
 import com.github.wolfshotz.wyrmroost.entities.dragonegg.DragonEggProperties;
 import com.github.wolfshotz.wyrmroost.entities.util.EntitySerializer;
 import com.github.wolfshotz.wyrmroost.items.DragonArmorItem;
 import com.github.wolfshotz.wyrmroost.items.DragonEggItem;
+import com.github.wolfshotz.wyrmroost.items.book.action.BookActions;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
 import com.github.wolfshotz.wyrmroost.registry.WRKeybind;
 import com.github.wolfshotz.wyrmroost.registry.WRSounds;
@@ -22,7 +21,6 @@ import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.client.renderer.EffectInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -31,6 +29,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
@@ -38,19 +37,19 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
-import net.minecraft.util.*;
+import net.minecraft.util.Mth;
 import net.minecraft.world.*;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.attributes.*;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
-import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -59,19 +58,19 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
-import net.minecraft.world.level.*;
+import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.common.Tags;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraftforge.event.entity.living.BabyEntitySpawnEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -79,7 +78,6 @@ import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
-import software.bernie.shadowed.eliotlash.mclib.utils.MathHelper;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -91,6 +89,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 /**
  * Created by com.github.WolfShotz 7/10/19 - 21:36
  * This is where the magic happens. Here be our Dragons!
+ * Woah this mod is super old - Livin' In Luggery
  */public abstract class TameableDragonEntity extends TamableAnimal implements IAnimatable, MenuProvider
 {
     public static final EntitySerializer<TameableDragonEntity> SERIALIZER = EntitySerializer.builder(b -> b
@@ -259,20 +258,15 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
     {
         if (isFlying() == fly) return;
         entityData.set(FLYING, fly);
-        Path prev = navigation.getPath();
         if (fly)
         {
             // make sure NOT to switch the navigator if liftoff fails
-            setOnGround(false);
             if (liftOff()) navigation = new FlyerPathNavigator(this);
-            else return;
         }
         else {
-            setOnGround(true);
             navigation = new BetterPathNavigator(this);
         }
 
-        navigation.moveTo(prev, 1);
     }
 
     public boolean hasArmor()
@@ -588,7 +582,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
     public boolean shouldFly()
     {
-        return canFly() && getAltitude() > getFlightThreshold();
+        return canFly() && getAltitude() > 1;
     }
 
     @Override
@@ -1323,22 +1317,22 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
         return false;
     }
 
-    /*public void applyStaffInfo(BookContainer container)
+    public void applyStaffInfo(BookContainer container)
     {
         container.addAction(BookActions.HOME, BookActions.SIT)
                 .addTooltip(getName())
-                .addTooltip(new StringTextComponent(Character.toString('\u2764'))
-                        .withStyle(TextFormatting.RED)
-                        .append(new StringTextComponent(String.format(" %s / %s", (int) (getHealth() / 2), (int) getMaxHealth() / 2))
-                                .withStyle(TextFormatting.WHITE)));
+                .addTooltip(new TextComponent(Character.toString('\u2764'))
+                        .withStyle(ChatFormatting.RED)
+                        .append(new TextComponent(String.format(" %s / %s", (int) (getHealth() / 2), (int) getMaxHealth() / 2))
+                                .withStyle(ChatFormatting.WHITE)));
 
         if (hasEntityDataAccessor(GENDER))
         {
             boolean isMale = isMale();
-            container.addTooltip(new TranslationTextComponent("entity.wyrmroost.dragons.gender." + (isMale? "male" : "female"))
-                    .withStyle(isMale? TextFormatting.DARK_AQUA : TextFormatting.RED));
+            container.addTooltip(new TranslatableComponent("entity.wyrmroost.dragons.gender." + (isMale? "male" : "female"))
+                    .withStyle(isMale? ChatFormatting.DARK_AQUA : ChatFormatting.RED));
         }
-    }*/
+    }
 
     @Override
     public Component getDisplayName()
@@ -1346,11 +1340,12 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
         return super.getDisplayName();
     }
 
-    /*@Override
-    public Container createMenu(int id, Inventory playersInv, Player player)
+    @Override
+    public AbstractContainerMenu createMenu(int id, Inventory playersInv, Player player)
     {
+        System.out.println(new BookContainer(id, playersInv, this));
         return new BookContainer(id, playersInv, this);
-    }*/
+    }
 
     public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad)
     {

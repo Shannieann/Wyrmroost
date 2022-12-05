@@ -1,19 +1,14 @@
 package com.github.wolfshotz.wyrmroost.items.book;
 
-/*import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.client.render.TarragonTomeRenderer;
-import com.github.wolfshotz.wyrmroost.client.screen.BookScreen;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookAction;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookActions;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
-import com.github.wolfshotz.wyrmroost.util.LerpedFloat;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import com.github.wolfshotz.wyrmroost.util.animation.IAnimatable;
-import net.minecraft.core.Direction;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.util.*;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -25,25 +20,40 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
-import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.client.IItemRenderProperties;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Random;
+import java.util.function.Consumer;
 
-public class TarragonTomeItem extends Item
+public class TarragonTomeItem extends Item implements IAnimatable
 {
     public static final String DATA_DRAGON_ID = "BoundDragon"; // int
     public static final String DATA_ACTION = "Action";
-    private static final Random random = new Random();
+
+    public AnimationFactory factory = GeckoLibUtil.createFactory(this);
+    //private static final Random random = new Random();
+
+    @Override
+    public void initializeClient(Consumer<IItemRenderProperties> consumer) {
+        consumer.accept(new IItemRenderProperties() {
+            private final BlockEntityWithoutLevelRenderer renderer = new TarragonTomeRenderer();
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getItemStackRenderer() {
+                return renderer;
+            }
+        });
+    }
     public TarragonTomeItem()
     {
-        super(WRItems.builder().stacksTo(1).rarity(Rarity.RARE).setISTER(() -> TarragonTomeRenderer::new));
+        super(WRItems.builder().stacksTo(1).rarity(Rarity.RARE));
     }
 
-    @Nullable
+    /*@Nullable
     @Override
     public ICapabilityProvider initCapabilities(ItemStack stack, @Nullable CompoundTag nbt)
     {
@@ -54,8 +64,7 @@ public class TarragonTomeItem extends Item
     public void inventoryTick(ItemStack stack, Level level, Entity entity, int invIndex, boolean holding)
     {
         if (holding || invIndex == 0) ((Animations) ModUtils.getCapability(IAnimatable.CapImpl.CAPABILITY, stack)).tick();
-    }
-    
+    }*/
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)
     {
@@ -115,20 +124,31 @@ public class TarragonTomeItem extends Item
         if (tag != null && tag.contains(DATA_DRAGON_ID))
         {
             Entity entity = level.getEntity(tag.getInt(DATA_DRAGON_ID));
+
             if (entity instanceof TameableDragonEntity) return (TameableDragonEntity) entity;
         }
 
         return null;
     }
 
-    private static void clear(@Nullable CompoundTag tag)
+    public static void clear(@Nullable CompoundTag tag)
     {
         if (tag == null) return;
         tag.remove(DATA_DRAGON_ID);
         tag.remove(DATA_ACTION);
     }
 
-    public static class Animations extends IAnimatable.CapImpl implements ICapabilityProvider
+    @Override
+    public void registerControllers(AnimationData data) {
+
+    }
+
+    @Override
+    public AnimationFactory getFactory() {
+        return factory;
+    }
+
+    /*public static class Animations extends IAnimatable.CapImpl implements ICapabilityProvider
     {
         private final LazyOptional<IAnimatable> instance = LazyOptional.of(() -> this);
         public final LerpedFloat flipTime = new LerpedFloat();
@@ -155,6 +175,5 @@ public class TarragonTomeItem extends Item
         {
             return CapImpl.CAPABILITY.orEmpty(cap, instance);
         }
-    }
+    }*/
 }
-*/

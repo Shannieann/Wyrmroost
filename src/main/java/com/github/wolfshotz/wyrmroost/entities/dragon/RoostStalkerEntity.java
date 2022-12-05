@@ -1,15 +1,18 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon;
 
+import com.github.wolfshotz.wyrmroost.client.screen.DragonControlScreen;
+import com.github.wolfshotz.wyrmroost.containers.BookContainer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.DefendHomeGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.DragonBreedGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.MoveToHomeGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.WRFollowOwnerGoal;
 import com.github.wolfshotz.wyrmroost.entities.util.EntitySerializer;
+import com.github.wolfshotz.wyrmroost.items.book.action.BookActions;
 import com.github.wolfshotz.wyrmroost.network.packets.AddPassengerPacket;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
 import com.github.wolfshotz.wyrmroost.registry.WRSounds;
-import com.github.wolfshotz.wyrmroost.util.Mafs;;
+import com.github.wolfshotz.wyrmroost.util.Mafs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -33,10 +36,7 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.Rabbit;
 import net.minecraft.world.entity.animal.Turtle;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -48,7 +48,6 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.Tags;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -61,10 +60,9 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 
 import javax.annotation.Nullable;
 
-import java.util.function.Supplier;
+import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 
-import static net.minecraft.world.entity.ai.attributes.Attributes.*;
-import static net.minecraftforge.common.ForgeMod.SWIM_SPEED;
+;
 
 public class RoostStalkerEntity extends TameableDragonEntity
 {
@@ -249,14 +247,14 @@ public class RoostStalkerEntity extends TameableDragonEntity
         return slot == EquipmentSlot.MAINHAND? getItem() : super.getItemBySlot(slot);
     }
 
-    /*@Override
+    @Override
     public void applyStaffInfo(BookContainer container)
     {
         super.applyStaffInfo(container);
 
-        //container.slot(BookContainer.accessorySlot(getInventory(), ITEM_SLOT, 0, 0, -15, DragonControlScreen.SADDLE_UV))
-         //       .addAction(BookActions.TARGET);
-    }*/
+        container.slot(BookContainer.accessorySlot(getInventory(), ITEM_SLOT, 0, 0, -15, DragonControlScreen.SADDLE_UV))
+                .addAction(BookActions.TARGET);
+    }
 
     @Override
     public boolean isInvulnerableTo(DamageSource source)
@@ -382,11 +380,7 @@ public class RoostStalkerEntity extends TameableDragonEntity
                 .add(Attributes.ATTACK_DAMAGE, 2.0D));
     }
 
-    @Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int p_39954_, Inventory p_39955_, Player p_39956_) {
-        return null;
-    }
+
 
     class ScavengeGoal extends MoveToBlockGoal
     {

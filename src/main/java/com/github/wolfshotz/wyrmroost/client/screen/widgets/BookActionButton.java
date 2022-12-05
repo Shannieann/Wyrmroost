@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.client.screen.widgets;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
+import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.screen.DragonControlScreen;
 import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookAction;
@@ -87,4 +87,4 @@ public class BookActionButton extends AbstractButton
     public void updateNarration(NarrationElementOutput p_169152_) {
 
     }
-}*/
+}

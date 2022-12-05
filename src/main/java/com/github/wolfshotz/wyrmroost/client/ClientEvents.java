@@ -1,10 +1,15 @@
 package com.github.wolfshotz.wyrmroost.client;
 
 //import com.github.wolfshotz.wyrmroost.client.render.TarragonTomeRenderer;
+
+import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
 import com.github.wolfshotz.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.LazySpawnEggItem;
-import com.github.wolfshotz.wyrmroost.registry.*;
+import com.github.wolfshotz.wyrmroost.registry.WRIO;
+import com.github.wolfshotz.wyrmroost.registry.WRItems;
+import com.github.wolfshotz.wyrmroost.registry.WRKeybind;
+import com.github.wolfshotz.wyrmroost.registry.WRParticles;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
@@ -13,19 +18,18 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.ItemSupplier;
-import net.minecraft.world.item.DyeableArmorItem;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.*;
+import net.minecraftforge.client.event.ColorHandlerEvent;
+import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
+import net.minecraftforge.client.event.TextureStitchEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -49,11 +53,11 @@ public class ClientEvents
         bus.addListener(ClientEvents::stitchTextures);
         bus.addListener(ClientEvents::itemColors);
         bus.addListener(ClientEvents::bakeParticles);
-        bus.addListener(ClientEvents::bakeModels);
+        //bus.addListener(ClientEvents::bakeModels);
 
-        //forgeBus.addListener(RenderHelper::renderWorld);
-        //forgeBus.addListener(RenderHelper::renderOverlay);
-        //forgeBus.addListener(RenderHelper::renderEntities);
+        forgeBus.addListener(RenderHelper::renderWorld);
+        forgeBus.addListener(RenderHelper::renderOverlay);
+        forgeBus.addListener(RenderHelper::renderEntities);
         forgeBus.addListener(ClientEvents::cameraPerspective);
 
         //WRDimensionRenderInfo.init();
@@ -72,10 +76,9 @@ public class ClientEvents
         ThinLogBlock.setCutoutRendering(WRBlocks.TEAL_CORIN_WOOD);
         ThinLogBlock.setCutoutRendering(WRBlocks.SILVER_CORIN_WOOD);
         ThinLogBlock.setCutoutRendering(WRBlocks.PRISMARINE_CORIN_WOOD);*/
-
+        WRIO.screenSetup();
         event.enqueueWork(() ->
         {
-            //WRIO.screenSetup();
 
             //WoodType.values().filter(w -> w.name().contains(Wyrmroost.MOD_ID)).forEach(Atlases::addWoodType);
 
@@ -105,10 +108,10 @@ public class ClientEvents
         handler.register((stack, index) -> ((DyeableLeatherItem) stack.getItem()).getColor(stack), WRItems.LEATHER_DRAGON_ARMOR.get());
     }
 
-    private static void bakeModels(ModelRegistryEvent event)
+    /*private static void bakeModels(ModelRegistryEvent event)
     {
-        //ModelLoader.addSpecialModel(TarragonTomeRenderer.SPRITE_MODEL_LOCATION);
-    }
+        ForgeModelBakery.addSpecialModel(TarragonTomeRenderer.SPRITE_MODEL_LOCATION);
+    }*/
 
     // =====================
     //      Forge Bus

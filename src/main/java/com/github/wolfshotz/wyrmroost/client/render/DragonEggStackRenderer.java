@@ -5,10 +5,11 @@ import com.github.wolfshotz.wyrmroost.entities.dragonegg.DragonEggEntity;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Minecraft;
+import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.blockentity.BlockEntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -17,9 +18,12 @@ import net.minecraft.world.item.ItemStack;
 
 public class DragonEggStackRenderer extends BlockEntityWithoutLevelRenderer
 {
-    public DragonEggStackRenderer() {
-        super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
+    public DragonEggStackRenderer(BlockEntityRenderDispatcher pBlockEntityRenderDispatcher, EntityModelSet pEntityModelSet) {
+        super(pBlockEntityRenderDispatcher, pEntityModelSet);
     }
+    //public DragonEggStackRenderer() {
+        //super(Minecraft.getInstance().getBlockEntityRenderDispatcher(), Minecraft.getInstance().getEntityModels());
+    //}
 
     @Override
     public void renderByItem(ItemStack stack, ItemTransforms.TransformType transform, PoseStack ms, MultiBufferSource buffer, int combinedLight, int combinedOverlay)

@@ -29,7 +29,6 @@ public class FlyerMoveController extends MoveControl
             operation = Operation.WAIT;
             return;
         }
-        if (dragon.getAltitude() <= dragon.getFlightThreshold() + 1) dragon.setFlying(false);
         if (operation == Operation.MOVE_TO)
         {
             double x = wantedX - dragon.getX();
@@ -41,7 +40,7 @@ public class FlyerMoveController extends MoveControl
                 dragon.setZza(0f);
                 return;
             }
-            if (y > dragon.getFlightThreshold() + 1) dragon.setFlying(true);
+            if (y > 1) dragon.setFlying(true);
             float speed;
 
             if (dragon.isFlying())

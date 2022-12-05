@@ -1,9 +1,9 @@
 package com.github.wolfshotz.wyrmroost.items.book.action;
 
-/*import com.github.wolfshotz.wyrmroost.client.ClientEvents;
-//import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
+import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
 import com.github.wolfshotz.wyrmroost.client.screen.TarragonTomeScreen;
-//import com.github.wolfshotz.wyrmroost.containers.BookContainer;
+import com.github.wolfshotz.wyrmroost.containers.BookContainer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
@@ -20,26 +20,27 @@ import net.minecraft.world.phys.EntityHitResult;
 
 import javax.annotation.Nullable;
 
+
 public class DefaultBookAction implements BookAction
 {
     @Override
     public InteractionResult rightClick(@Nullable TameableDragonEntity dragon, Player player, ItemStack stack)
     {
-        boolean client = player.level.isClientSide;
-        if (dragon != null)
+        boolean client = player.getLevel().isClientSide();
+        if (dragon != null && !player.getLevel().isClientSide())
         {
-            //if (!client) BookContainer.open((ServerPlayer) player, dragon);
+            BookContainer.open((ServerPlayer) player, dragon, stack);
         }
         else if ((dragon = clip(player)) != null)
         {
             TarragonTomeItem.bind(dragon, stack);
             if (client)
             {
-                ModUtils.playLocalSound(player.level, player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 0.75f, 2f);
-                ModUtils.playLocalSound(player.level, player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 0.75f, 1f);
+                ModUtils.playLocalSound(player.getLevel(), player.blockPosition(), SoundEvents.ENCHANTMENT_TABLE_USE, SoundSource.PLAYERS, 0.75f, 2f);
+                ModUtils.playLocalSound(player.getLevel(), player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 0.75f, 1f);
             }
         }
-        else if (client) TarragonTomeScreen.open(player, stack);
+        else if (client) TarragonTomeScreen.open();
 
         return InteractionResult.CONSUME;
     }
@@ -68,4 +69,3 @@ public class DefaultBookAction implements BookAction
         return TRANSLATE_PATH + "default";
     }
 }
-*/

@@ -2,7 +2,6 @@ package com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals;
 
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
-import com.mojang.math.Vector3d;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.util.AirRandomPos;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
@@ -32,7 +31,7 @@ public class FlyerWanderGoal extends WaterAvoidingRandomStrollGoal
     {
         if (dragon.isInSittingPose()) return false;
         if (dragon.canBeControlledByRider()) return false;
-        if (!dragon.isFlying()) return false;
+        if (!dragon.isFlying() && dragon.hasEntityDataAccessor(TameableDragonEntity.SLEEPING) && !dragon.level.isDay()) return false;
         Vec3 vec3d = getPosition();
         if (vec3d != null)
         {
@@ -65,7 +64,7 @@ public class FlyerWanderGoal extends WaterAvoidingRandomStrollGoal
             }
             if (position != null && position.y > dragon.getY() + dragon.getBbHeight() && !dragon.isFlying()) dragon.setFlying(true);
         }
-
         return position == null? super.getPosition() : position;
     }
+
 }

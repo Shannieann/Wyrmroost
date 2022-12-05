@@ -1,8 +1,10 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai;
 
+import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.phys.Vec3;
+import org.lwjgl.system.CallbackI;
 
 /**
  * Im not actually sure if this is a good solution or not... but it seems to be working a little bit....
@@ -13,6 +15,7 @@ public class BetterPathNavigator extends GroundPathNavigation
     {
         super(entity, entity.level);
     }
+
 
     @Override
     protected void followThePath()

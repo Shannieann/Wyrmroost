@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.network.packets;
 
-/*import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
+import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookAction;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookActions;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
@@ -8,7 +8,7 @@ import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.fmllegacy.network.NetworkEvent;
+import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
@@ -43,4 +43,3 @@ public class BookActionPacket
         return false;
     }
 }
-*/

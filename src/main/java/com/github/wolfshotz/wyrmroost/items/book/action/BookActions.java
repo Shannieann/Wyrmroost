@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.items.book.action;
 
-/*import java.util.ArrayList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class BookActions
@@ -18,4 +18,3 @@ public class BookActions
         return newAction;
     }
 }
-*/

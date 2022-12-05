@@ -1,25 +1,35 @@
 package com.github.wolfshotz.wyrmroost;
 
 import com.github.wolfshotz.wyrmroost.client.render.entity.DragonEggRenderer;
-import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.CanariWyvernRenderer;
-import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.RoostStalkerRenderer2;
-import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.SilverGliderRenderer;
+import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.*;
+import com.github.wolfshotz.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
 import com.github.wolfshotz.wyrmroost.client.render.entity.projectile.GeodeTippedArrowRenderer;
+import com.github.wolfshotz.wyrmroost.client.screen.AnimateScreen;
+import com.github.wolfshotz.wyrmroost.client.screen.DebugScreen;
+import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.LazySpawnEggItem;
 import com.github.wolfshotz.wyrmroost.items.base.ArmorBase;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
-import com.github.wolfshotz.wyrmroost.world.WREntitySpawning;
+import com.github.wolfshotz.wyrmroost.util.Mafs;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
+import com.github.wolfshotz.wyrmroost.world.WREntitySpawning;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.phys.EntityHitResult;
 import net.minecraftforge.client.event.EntityRenderersEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
@@ -42,7 +52,7 @@ public class CommonEvents {
         //bus.addListener(WRConfig::loadConfig);
         //bus.addGenericListener(Item.class, CommonEvents::remap);
 
-        //forgeBus.addListener(CommonEvents::debugStick);
+        forgeBus.addListener(CommonEvents::debugStick);
         forgeBus.addListener(CommonEvents::onChangeEquipment);
         forgeBus.addListener(CommonEvents::loadLoot);
         //forgeBus.addListener(VillagerHelper::addWandererTrades);
@@ -87,20 +97,24 @@ public class CommonEvents {
    // }
 
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event){
+
         event.registerEntityRenderer(WREntities.ROOSTSTALKER.get(), RoostStalkerRenderer2::new);
         event.registerEntityRenderer(WREntities.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
         event.registerEntityRenderer(WREntities.SILVER_GLIDER.get(), SilverGliderRenderer::new);
+        event.registerEntityRenderer(WREntities.OVERWORLD_DRAKE.get(), OWDrakeRenderer::new);
+        event.registerEntityRenderer(WREntities.ROYAL_RED.get(), RoyalRedRenderer::new);
 
         event.registerEntityRenderer(WREntities.SOUL_CRYSTAL.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(WREntities.GEODE_TIPPED_ARROW.get(), GeodeTippedArrowRenderer::new);
         event.registerEntityRenderer(WREntities.DRAGON_EGG.get(), DragonEggRenderer::new);
+        event.registerEntityRenderer(WREntities.FIRE_BREATH.get(), BreathWeaponRenderer::new);
 
     }
 
     /*@Deprecated  todo: remove in 1.17
    public static void remap(RegistryEvent.MissingMappings<Item> event) {
         for (RegistryEvent.MissingMappings.Mapping<Item> mapping : event.getMappings(Wyrmroost.MOD_ID)) {
-            if (mapping.key.equals(Wyrmroost.id("dragon_staff"))) mapping.remap(WRItems.TARRAGON_TOME.get());
+            if (mapping.key.equals(Wyrmroost.id("tarragon_tome"))) mapping.remap(WRItems.TARRAGON_TOME.get());
         }
     }*/
 
@@ -108,7 +122,7 @@ public class CommonEvents {
     //      Forge Bus
     // =====================
 
-    /*public static void debugStick(PlayerInteractEvent.RightClickItem event)
+    public static void debugStick(PlayerInteractEvent.RightClickItem event)
     {
         if (!WRConfig.DEBUG_MODE.get()) return;
         Player player = event.getPlayer();
@@ -130,10 +144,10 @@ public class CommonEvents {
             if (player.isShiftKeyDown()) dragon.tame(true, player);
             else
             {
-                if (dragon.level.isClientSide) /*DebugScreen.open(dragon); AnimateScreen.open(dragon);
+                if (dragon.level.isClientSide) DebugScreen.open(dragon); AnimateScreen.open(dragon);
             }
         }
-    }*/
+    }
 
     public static void onChangeEquipment(LivingEquipmentChangeEvent event) {
         ArmorBase initial;

@@ -1,12 +1,14 @@
 package com.github.wolfshotz.wyrmroost.containers;
 
-/*import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+import com.github.wolfshotz.wyrmroost.client.screen.DragonControlScreen;
 import com.github.wolfshotz.wyrmroost.client.screen.widgets.CollapsibleWidget;
 import com.github.wolfshotz.wyrmroost.containers.util.DynamicSlot;
 import com.github.wolfshotz.wyrmroost.containers.util.Slot3D;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookAction;
+import com.github.wolfshotz.wyrmroost.registry.WRIO;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
@@ -17,8 +19,9 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.fmllegacy.network.NetworkHooks;
+import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
@@ -38,7 +41,7 @@ public class BookContainer extends AbstractContainerMenu
 
     public BookContainer(int id, Inventory playerInv, TameableDragonEntity dragon)
     {
-        super(WRIO.DRAGON_STAFF.get(), id);
+        super(WRIO.TARRAGON_TOME.get(), id);
         this.dragon = dragon;
         this.playerInv = playerInv;
 
@@ -48,6 +51,7 @@ public class BookContainer extends AbstractContainerMenu
 
         dragon.applyStaffInfo(this);
     }
+
 
     @Override
     public boolean stillValid(Player player)
@@ -103,8 +107,9 @@ public class BookContainer extends AbstractContainerMenu
         return new BookContainer(id, playerInv, fromBytes(buf));
     }
 
-    public static void open(ServerPlayer player, TameableDragonEntity dragon)
+    public static void open(ServerPlayer player, TameableDragonEntity dragon, ItemStack stack)
     {
+
         NetworkHooks.openGui(player, dragon, b -> toBytes(dragon, b));
     }
 
@@ -156,4 +161,3 @@ public class BookContainer extends AbstractContainerMenu
     }
 
 }
-*/

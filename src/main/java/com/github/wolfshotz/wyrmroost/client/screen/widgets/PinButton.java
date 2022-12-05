@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.client.screen.widgets;
 
-/*import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.client.screen.DragonControlScreen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -22,7 +22,7 @@ public class PinButton extends AbstractButton
     {
         ClientEvents.getClient().getTextureManager().bindForSetup(DragonControlScreen.SPRITES);
         RenderSystem.clearColor(1f, 1f, 1f, 1f);
-        blit(ms, x, y, isHovered()? 230 : 212, pinned? 18 : 0, width, height);
+        blit(ms, x, y, isHovered? 230 : 212, pinned? 18 : 0, width, height);
     }
 
     @Override
@@ -50,4 +50,3 @@ public class PinButton extends AbstractButton
     public void updateNarration(NarrationElementOutput p_169152_) {
     }
 }
-*/

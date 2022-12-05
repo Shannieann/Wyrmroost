@@ -27,13 +27,6 @@ public class SGGlidePacket
     {
         buf.writeBoolean(gliding);
     }
-    public static SGGlidePacket decode(FriendlyByteBuf buf)
-    {
-        SGGlidePacket pkt = new SGGlidePacket(buf.readBoolean());
-
-        return pkt;
-    }
-
     public boolean handle(Supplier<NetworkEvent.Context> context)
     {
         ServerPlayer reciever = context.get().getSender();

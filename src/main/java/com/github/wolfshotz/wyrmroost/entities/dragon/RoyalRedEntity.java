@@ -1,10 +1,8 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon;
 
-/*import com.github.wolfshotz.wyrmroost.WRConfig;
+import com.github.wolfshotz.wyrmroost.WRConfig;
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
-import com.github.wolfshotz.wyrmroost.client.model.entity.RoyalRedModel;
 import com.github.wolfshotz.wyrmroost.client.screen.DragonControlScreen;
-import com.github.wolfshotz.wyrmroost.client.sound.BreathSound;
 import com.github.wolfshotz.wyrmroost.containers.BookContainer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.LessShitLookController;
@@ -13,19 +11,16 @@ import com.github.wolfshotz.wyrmroost.entities.projectile.breath.FireBreathEntit
 import com.github.wolfshotz.wyrmroost.entities.util.EntitySerializer;
 import com.github.wolfshotz.wyrmroost.items.DragonArmorItem;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookActions;
-import com.github.wolfshotz.wyrmroost.network.packets.AnimationPacket;
 import com.github.wolfshotz.wyrmroost.network.packets.KeybindHandler;
 import com.github.wolfshotz.wyrmroost.registry.WREntities;
 import com.github.wolfshotz.wyrmroost.registry.WRSounds;
 import com.github.wolfshotz.wyrmroost.util.LerpedFloat;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
-import com.github.wolfshotz.wyrmroost.util.animation.Animation;
-import com.github.wolfshotz.wyrmroost.util.animation.LogicalAnimation;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.util.*;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -50,9 +45,14 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import org.apache.commons.lang3.ArrayUtils;
-import org.lwjgl.glfw.GLFW;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
 
 import javax.annotation.Nullable;
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.EnumSet;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
@@ -69,10 +69,10 @@ public class RoyalRedEntity extends TameableDragonEntity
     public static final int ARMOR_SLOT = 0;
     private static final int MAX_KNOCKOUT_TIME = 3600; // 3 minutes
 
-    public static final Animation ROAR_ANIMATION = LogicalAnimation.create(70, RoyalRedEntity::roarAnimation, () -> RoyalRedModel::roarAnimation);
-    public static final Animation SLAP_ATTACK_ANIMATION = LogicalAnimation.create(30, RoyalRedEntity::slapAttackAnimation, () -> RoyalRedModel::slapAttackAnimation);
-    public static final Animation BITE_ATTACK_ANIMATION = LogicalAnimation.create(15, RoyalRedEntity::biteAttackAnimation, () -> RoyalRedModel::biteAttackAnimation);
-    public static final Animation[] ANIMATIONS = new Animation[]{ROAR_ANIMATION, SLAP_ATTACK_ANIMATION, BITE_ATTACK_ANIMATION};
+    //public static final Animation ROAR_ANIMATION = LogicalAnimation.create(70, RoyalRedEntity::roarAnimation, () -> RoyalRedModel::roarAnimation);
+    //public static final Animation SLAP_ATTACK_ANIMATION = LogicalAnimation.create(30, RoyalRedEntity::slapAttackAnimation, () -> RoyalRedModel::slapAttackAnimation);
+    //public static final Animation BITE_ATTACK_ANIMATION = LogicalAnimation.create(15, RoyalRedEntity::biteAttackAnimation, () -> RoyalRedModel::biteAttackAnimation);
+    //public static final Animation[] ANIMATIONS = new Animation[]{ROAR_ANIMATION, SLAP_ATTACK_ANIMATION, BITE_ATTACK_ANIMATION};
 
     public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
@@ -155,8 +155,8 @@ public class RoyalRedEntity extends TameableDragonEntity
 
             if (breathTimer.get() == 1) level.addFreshEntity(new FireBreathEntity(this));
 
-            if (noAnimations() && !isKnockedOut() && !isSleeping() && !isBreathingFire() && isJuvenile() && getRandom().nextDouble() < 0.0004)
-                AnimationPacket.send(this, ROAR_ANIMATION);
+            //if (noAnimations() && !isKnockedOut() && !isSleeping() && !isBreathingFire() && isJuvenile() && getRandom().nextDouble() < 0.0004)
+                //AnimationPacket.send(this, ROAR_ANIMATION);
 
             if (isKnockedOut() && --knockOutTime <= 0) setKnockedOut(false);
         }
@@ -183,7 +183,7 @@ public class RoyalRedEntity extends TameableDragonEntity
                     if (tame(getRandom().nextInt(knockOutTime) < MAX_KNOCKOUT_TIME * 0.2d, player))
                     {
                         setKnockedOut(false);
-                        AnimationPacket.send(this, ROAR_ANIMATION);
+                        //AnimationPacket.send(this, ROAR_ANIMATION);
                     }
                     else knockOutTime += 600; // add 30 seconds to knockout time
                     eat(stack);
@@ -238,8 +238,8 @@ public class RoyalRedEntity extends TameableDragonEntity
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key)
     {
-        if (level.isClientSide && key.equals(BREATHING_FIRE) && isBreathingFire())
-            BreathSound.play(this);
+        if (level.isClientSide && key.equals(BREATHING_FIRE) && isBreathingFire());
+            //BreathSound.play(this);
         else super.onSyncedDataUpdated(key);
     }
 
@@ -252,12 +252,12 @@ public class RoyalRedEntity extends TameableDragonEntity
     @Override
     public void recievePassengerKeybind(int key, int mods, boolean pressed)
     {
-        if (!noAnimations()) return;
+        //if (!noAnimations()) return;
 
         if (key == KeybindHandler.MOUNT_KEY && pressed && !isBreathingFire())
         {
-            if ((mods & GLFW.GLFW_MOD_CONTROL) != 0) setAnimation(ROAR_ANIMATION);
-            else meleeAttack();
+            //if ((mods & GLFW.GLFW_MOD_CONTROL) != 0) setAnimation(ROAR_ANIMATION);
+            //else meleeAttack();
         }
 
         if (key == KeybindHandler.ALT_MOUNT_KEY && canBreatheFire()) setBreathingFire(pressed);
@@ -268,11 +268,11 @@ public class RoyalRedEntity extends TameableDragonEntity
         return ageProgress() > 0.75f;
     }
 
-    public void meleeAttack()
+    /*public void meleeAttack()
     {
         if (!level.isClientSide)
             AnimationPacket.send(this, isFlying() || getRandom().nextBoolean()? BITE_ATTACK_ANIMATION : SLAP_ATTACK_ANIMATION);
-    }
+    }*/
 
     @Override
     public Vec3 getApproximateMouthPos()
@@ -304,9 +304,9 @@ public class RoyalRedEntity extends TameableDragonEntity
     public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
         if (backView)
-            event.getInfo().move(ClientEvents.getViewCollision(-8.5, this), 0, 0);
+            event.getCamera().move(ClientEvents.getViewCollision(-8.5, this), 0, 0);
         else
-            event.getInfo().move(ClientEvents.getViewCollision(-5, this), -0.75, 0);
+            event.getCamera().move(ClientEvents.getViewCollision(-5, this), -0.75, 0);
     }
 
     @Override
@@ -318,6 +318,9 @@ public class RoyalRedEntity extends TameableDragonEntity
     @Override
     public int determineVariant()
     {
+        LocalDate currentDate = LocalDate.now();
+        if (currentDate.getMonth().equals(Month.APRIL) && currentDate.getDayOfMonth() == 1)
+            return 99;
         return getRandom().nextDouble() < 0.03? -1 : 0;
     }
 
@@ -427,6 +430,11 @@ public class RoyalRedEntity extends TameableDragonEntity
     }
 
     @Override
+    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
+        return null;
+    }
+
+    @Override
     public boolean shouldSleep()
     {
         return !isKnockedOut() && super.shouldSleep();
@@ -465,11 +473,6 @@ public class RoyalRedEntity extends TameableDragonEntity
         return 1.5f * getScale();
     }
 
-    @Override
-    public Animation[] getAnimations()
-    {
-        return ANIMATIONS;
-    }
 
     @Override
     public Attribute[] getScaledAttributes()
@@ -489,6 +492,17 @@ public class RoyalRedEntity extends TameableDragonEntity
                 .add(ATTACK_DAMAGE, 12)
                 .add(FLYING_SPEED, 0.121)
                 .add(WREntities.Attributes.PROJECTILE_DAMAGE.get(), 4);
+    }
+
+    /*@org.jetbrains.annotations.Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int p_39954_, Inventory p_39955_, Player p_39956_) {
+        return null;
+    }*/
+
+    @Override
+    public void registerControllers(AnimationData data) {
+
     }
 
     class AttackGoal extends Goal
@@ -526,11 +540,11 @@ public class RoyalRedEntity extends TameableDragonEntity
             if (isBreathingFire != shouldBreatheFire) setBreathingFire(isBreathingFire = shouldBreatheFire);
 
             if (getRandom().nextDouble() < 0.001 || distFromTarget > 900) setFlying(true);
-            else if (distFromTarget <= 24 && noAnimations() && !isBreathingFire && canSeeTarget)
+            else if (distFromTarget <= 24 /*&& noAnimations()*/ && !isBreathingFire && canSeeTarget)
             {
                 yBodyRot = (float) Mafs.getAngle(RoyalRedEntity.this, target) + 90;
                 setYRot(yBodyRot);
-                meleeAttack();
+                //meleeAttack();
             }
 
             if (getNavigation().isDone() || age % 10 == 0)
@@ -541,4 +555,4 @@ public class RoyalRedEntity extends TameableDragonEntity
             }
         }
     }
-}*/
+}

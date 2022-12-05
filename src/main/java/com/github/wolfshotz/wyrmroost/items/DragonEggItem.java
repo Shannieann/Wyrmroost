@@ -1,15 +1,12 @@
 package com.github.wolfshotz.wyrmroost.items;
 
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
-import com.github.wolfshotz.wyrmroost.client.render.DragonEggStackRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.entities.dragonegg.DragonEggEntity;
 import com.github.wolfshotz.wyrmroost.entities.dragonegg.DragonEggProperties;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import net.minecraft.ChatFormatting;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -25,22 +22,20 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import net.minecraftforge.client.IItemRenderProperties;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 public class DragonEggItem extends Item
 {
-    private static final BlockEntityWithoutLevelRenderer renderer = new DragonEggStackRenderer();
+    //private static final BlockEntityWithoutLevelRenderer renderer = new DragonEggStackRenderer(null, null);
     public DragonEggItem()
     {
         super(WRItems.builder().stacksTo(1));
     }
 
-    @Override
+    /*@Override
     public void initializeClient(Consumer<IItemRenderProperties> consumer) {
         consumer.accept(new IItemRenderProperties() {
             @Override
@@ -48,7 +43,7 @@ public class DragonEggItem extends Item
                 return renderer;
             }
         });
-    }
+    }*/
 
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity)

@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.client.render;
 
-/*import com.github.wolfshotz.wyrmroost.WRConfig;
+import com.github.wolfshotz.wyrmroost.WRConfig;
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
@@ -8,8 +8,8 @@ import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import com.mojang.math.Matrix3f;
 import com.mojang.math.Matrix4f;
@@ -34,9 +34,8 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderLevelLastEvent;
 import net.minecraftforge.client.event.RenderLivingEvent;
-import net.minecraftforge.client.event.RenderWorldLastEvent;
-import org.lwjgl.opengl.GL11;
 
 import java.util.OptionalDouble;
 
@@ -62,7 +61,7 @@ public class RenderHelper extends RenderType
     @SuppressWarnings("ConstantConditions")
     private RenderHelper()
     {
-        super(null, null, 0, 0, false, false, null, null); // dummy
+        super(null, null, null, 0, false, false, null, null); // dummy
     }
 
     public static RenderType getAdditiveGlow(ResourceLocation locationIn)
@@ -84,7 +83,7 @@ public class RenderHelper extends RenderType
 
     public static RenderType getThiccLines(double thickness)
     {
-        return create("thickened_lines", DefaultVertexFormat.POSITION_COLOR, GL11.GL_LINES, 256, CompositeState.builder()
+        return create("thickened_lines", DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.LINES, 256, CompositeState.builder()
                 .setLineState(new LineStateShard(OptionalDouble.of(thickness)))
                 .setTransparencyState(TRANSLUCENT_TRANSPARENCY)
                 .setWriteMaskState(COLOR_WRITE)
@@ -95,14 +94,14 @@ public class RenderHelper extends RenderType
 
     private static final ResourceLocation GUI_ICONS = Wyrmroost.id("textures/gui/overlay/icons.png");
 
-    public static void renderWorld(RenderWorldLastEvent evt)
+    public static void renderWorld(RenderLevelLastEvent evt)
     {
-        PoseStack ms = evt.getMatrixStack();
-        float partialTicks = evt.getPartialTicks();
+        PoseStack ms = evt.getPoseStack();
+        float partialTicks = evt.getPartialTick();
 
         ms.pushPose();
 
-        if (WRConfig.DEBUG_MODE.get()) DebugRendering.render(ms, partialTicks);
+        //if (WRConfig.DEBUG_MODE.get()) DebugRendering.render(ms, partialTicks);
         renderBook(ms, partialTicks);
 
         ms.popPose();
@@ -110,12 +109,12 @@ public class RenderHelper extends RenderType
 
     public static void renderOverlay(RenderGameOverlayEvent evt)
     {
-        if (evt.getType() == RenderGameOverlayEvent.ElementType.HOTBAR)
+        if (evt.getType() == RenderGameOverlayEvent.ElementType.CHAT)
         {
             Entity vehicle = ClientEvents.getPlayer().getVehicle();
             if (vehicle instanceof TameableDragonEntity && ((TameableDragonEntity) vehicle).isFlying())
             {
-                ClientEvents.getClient().textureManager.bind(GUI_ICONS);
+                ClientEvents.getClient().textureManager.bindForSetup(GUI_ICONS);
                 int y = ClientEvents.getClient().getWindow().getScreenHeight() / 2 - 24;
                 int yOff = ClientEvents.keybindFlight? 24 : 0;
                 GuiComponent.blit(evt.getMatrixStack(), 0, y, 0, yOff, 24, 24, 64, 64);
@@ -130,7 +129,6 @@ public class RenderHelper extends RenderType
         float red = ((argb >> 16) & 0xFF) / 255f;
         float green = ((argb >> 8) & 0xFF) / 255f;
         float blue = (argb & 0xFF) / 255f;
-
         shape.forAllEdges((x1, y1, z1, x2, y2, z2) ->
         {
             buffer.vertex(matrix, (float) (x1 + x), (float) (y1 + y), (float) (z1 + z)).color(red, green, blue, alpha).endVertex();
@@ -173,7 +171,9 @@ public class RenderHelper extends RenderType
                 getShape? level.getBlockState(pos).getShape(level, pos) : Shapes.block(),
                 pos.getX() - view.x, pos.getY() - view.y, pos.getZ() - view.z,
                 argb);
-        impl.endBatch();
+        ms.pushPose();
+        impl.endLastBatch();
+        //impl.endBatch();
     }
 
     public static void counterClockwiseCuboid(Matrix4f matrix, VertexConsumer buffer, float fromX, float fromY, float fromZ, float toX, float toY, float toZ, float red, float green, float blue, float alpha)
@@ -222,17 +222,17 @@ public class RenderHelper extends RenderType
     public static void mirrorX(PoseStack matrixStack)
     {
         matrixStack.last().pose().multiply(flipX);
-//        matrixStack.last().normal().multiplyBackward(flipXNormal);
-//        matrixStack.last().normal().mul(flipXNormal);
+        matrixStack.last().normal().multiplyBackward(flipXNormal);
+        matrixStack.last().normal().mul(flipXNormal);
     }
 
     // todo: find a better, shaders friendly way to do this
     public static void renderEntities(RenderLivingEvent.Pre<? super LivingEntity, ?> event)
     {
         LivingEntity entity = event.getEntity();
-        PoseStack ms = event.getMatrixStack();
+        PoseStack ms = event.getPoseStack();
         LivingEntityRenderer<? super LivingEntity, ?> renderer = event.getRenderer();
-        float partialTicks = event.getPartialRenderTick();
+        float partialTicks = event.getPartialTick();
 
         int color = ENTITY_OUTLINE_MAP.removeInt(entity);
         if (color != 0)
@@ -271,4 +271,3 @@ public class RenderHelper extends RenderType
     }
 }
 
-*/

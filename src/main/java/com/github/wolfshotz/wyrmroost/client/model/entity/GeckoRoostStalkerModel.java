@@ -20,7 +20,7 @@ import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
 public class GeckoRoostStalkerModel<T extends RoostStalkerEntity> extends AnimatedGeoModel<T> {
 
-	private static final ResourceLocation modelResource = new ResourceLocation(Wyrmroost.MOD_ID, "geo/roost_stalker.geo.json");
+	private static final ResourceLocation modelResource = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/roost_stalker.geo.json");
 	private static final ResourceLocation textureResource = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/body.png");
 	private static final ResourceLocation specialTexture = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/body_spe.png");
 	private static final ResourceLocation animationResource = new ResourceLocation(Wyrmroost.MOD_ID, "animations/roost_stalker.animation.json");

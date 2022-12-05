@@ -1,15 +1,12 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon;
 
+import com.github.wolfshotz.wyrmroost.containers.BookContainer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.DragonBodyController;
-import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.FlyerMoveController;
-import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.FlyerPathNavigator;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.*;
 import com.github.wolfshotz.wyrmroost.entities.util.EntitySerializer;
+import com.github.wolfshotz.wyrmroost.items.book.action.BookActions;
 import com.github.wolfshotz.wyrmroost.registry.WRSounds;
-import com.github.wolfshotz.wyrmroost.util.Mafs;
-import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -18,22 +15,14 @@ import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
-import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
-import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
-import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.ai.util.AirRandomPos;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.ai.util.HoverRandomPos;
-import net.minecraft.world.entity.ai.util.RandomPos;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -48,7 +37,6 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 
 import javax.annotation.Nullable;
-
 import java.util.EnumSet;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
@@ -67,6 +55,7 @@ public class CanariWyvernEntity extends TameableDragonEntity
     public CanariWyvernEntity(EntityType<? extends TameableDragonEntity> dragon, Level level)
     {
         super(dragon, level);
+
     }
 
     @Override
@@ -92,19 +81,15 @@ public class CanariWyvernEntity extends TameableDragonEntity
     //TODO fix whatever this is
     @Override
     public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        if (event.isMoving()) {
-            if (isPissed()){
-                event.getController().setAnimation(new AnimationBuilder().addAnimation("hold.threat.canari", ILoopType.EDefaultLoopTypes.LOOP));
-                return PlayState.CONTINUE;
-            }
-            else if (getRandom().nextFloat() < 0.001){
-                event.getController().setAnimation(new AnimationBuilder().addAnimation("preen.canari", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
-                return PlayState.CONTINUE;
-            }
-            else if (isFlying()){
-                event.getController().setAnimation(new AnimationBuilder().addAnimation("flap.canari", ILoopType.EDefaultLoopTypes.LOOP));
-                return PlayState.CONTINUE;
-            }
+        if (isFlying() && !isPassenger()){
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("flap.canari", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+        else if (isPissed()){
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("hold.threat.canari", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+        else if (event.isMoving()) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation("walk.canari", ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
 
@@ -113,6 +98,11 @@ public class CanariWyvernEntity extends TameableDragonEntity
             return PlayState.CONTINUE;
         } else if (isInSittingPose()){
             event.getController().setAnimation(new AnimationBuilder().addAnimation("sit.canari", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+        else if (getRandom().nextFloat() < 0.001){
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("preen.canari", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+            spawnAtLocation(new ItemStack(Items.FEATHER), 0.5f);
             return PlayState.CONTINUE;
         }
         event.getController().setAnimation(new AnimationBuilder().addAnimation("idle.canari", ILoopType.EDefaultLoopTypes.LOOP));
@@ -132,10 +122,6 @@ public class CanariWyvernEntity extends TameableDragonEntity
         data.addAnimationController(new AnimationController(this, "attackController", 8, this::attackPredicate));
     }
 
-    @Override
-    protected PathNavigation createNavigation(Level levelIn) {
-        return new FlyerPathNavigator(this);
-    }
 
     @Override
     protected BodyRotationControl createBodyControl()
@@ -160,18 +146,6 @@ public class CanariWyvernEntity extends TameableDragonEntity
     }
 
 
-    public void flapWingsAnimation(int time)
-    {
-        if (time == 5 || time == 12) playSound(SoundEvents.PHANTOM_FLAP, 0.7f, 2, true);
-        if (!level.isClientSide && time == 9 && getRandom().nextDouble() <= 0.25)
-            spawnAtLocation(new ItemStack(Items.FEATHER), 0.5f);
-    }
-
-    public void threatAnimation(int time)
-    {
-        if (isPissed())
-            setYRot(yBodyRot = yHeadRot = (float) Mafs.getAngle(CanariWyvernEntity.this, pissedOffTarget) - 270f);
-    }
 
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
@@ -229,12 +203,12 @@ public class CanariWyvernEntity extends TameableDragonEntity
         return source == DamageSource.MAGIC || super.isInvulnerableTo(source);
     }
 
-    /*@Override
+    @Override
     public void applyStaffInfo(BookContainer container)
     {
         super.applyStaffInfo(container);
         container.addAction(BookActions.TARGET);
-    }*/
+    }
 
 
     @Override
@@ -305,11 +279,11 @@ public class CanariWyvernEntity extends TameableDragonEntity
                 .add(ATTACK_DAMAGE, 3);
     }
 
-    @org.jetbrains.annotations.Nullable
+    /*@org.jetbrains.annotations.Nullable
     @Override
     public AbstractContainerMenu createMenu(int p_39954_, Inventory p_39955_, Player p_39956_) {
         return null;
-    }
+    }*/
 
 
     public class ThreatenGoal extends Goal
