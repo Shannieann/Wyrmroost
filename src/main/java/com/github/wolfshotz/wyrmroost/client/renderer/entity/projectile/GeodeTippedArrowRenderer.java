@@ -1,4 +1,4 @@
-package com.github.wolfshotz.wyrmroost.client.render.entity.projectile;
+package com.github.wolfshotz.wyrmroost.client.renderer.entity.projectile;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.projectile.GeodeTippedArrowEntity;

@@ -1,4 +1,4 @@
-package com.github.wolfshotz.wyrmroost.client.render.entity.dragon;
+package com.github.wolfshotz.wyrmroost.client.renderer.entity.dragon;
 
 import com.github.wolfshotz.wyrmroost.client.model.entity.GeckoOWDrakeModel;
 import com.github.wolfshotz.wyrmroost.entities.dragon.OverworldDrakeEntity;

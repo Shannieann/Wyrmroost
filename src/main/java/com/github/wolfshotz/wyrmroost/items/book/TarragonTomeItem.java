@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.items.book;
 
-import com.github.wolfshotz.wyrmroost.client.render.TarragonTomeRenderer;
+import com.github.wolfshotz.wyrmroost.client.renderer.TarragonTomeRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookAction;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookActions;

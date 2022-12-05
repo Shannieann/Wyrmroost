@@ -1,6 +1,6 @@
-package com.github.wolfshotz.wyrmroost.client.render;
+package com.github.wolfshotz.wyrmroost.client.renderer;
 
-import com.github.wolfshotz.wyrmroost.client.render.entity.DragonEggRenderer;
+import com.github.wolfshotz.wyrmroost.client.renderer.entity.DragonEggRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragonegg.DragonEggEntity;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;

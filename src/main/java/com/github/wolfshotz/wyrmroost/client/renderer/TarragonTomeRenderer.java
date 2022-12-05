@@ -1,4 +1,4 @@
-package com.github.wolfshotz.wyrmroost.client.render;
+package com.github.wolfshotz.wyrmroost.client.renderer;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.model.TarragonTomeModel;

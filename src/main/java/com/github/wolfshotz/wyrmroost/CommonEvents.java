@@ -1,9 +1,9 @@
 package com.github.wolfshotz.wyrmroost;
 
-import com.github.wolfshotz.wyrmroost.client.render.entity.DragonEggRenderer;
-import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.*;
-import com.github.wolfshotz.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
-import com.github.wolfshotz.wyrmroost.client.render.entity.projectile.GeodeTippedArrowRenderer;
+import com.github.wolfshotz.wyrmroost.client.renderer.entity.DragonEggRenderer;
+import com.github.wolfshotz.wyrmroost.client.renderer.entity.dragon.*;
+import com.github.wolfshotz.wyrmroost.client.renderer.entity.projectile.BreathWeaponRenderer;
+import com.github.wolfshotz.wyrmroost.client.renderer.entity.projectile.GeodeTippedArrowRenderer;
 import com.github.wolfshotz.wyrmroost.client.screen.AnimateScreen;
 import com.github.wolfshotz.wyrmroost.client.screen.DebugScreen;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;

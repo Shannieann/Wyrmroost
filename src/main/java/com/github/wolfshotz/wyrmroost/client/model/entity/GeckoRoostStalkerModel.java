@@ -4,7 +4,7 @@ package com.github.wolfshotz.wyrmroost.client.model.entity;// Made with Blockben
 
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.DragonEyesLayer;
+import com.github.wolfshotz.wyrmroost.client.renderer.entity.dragon.DragonEyesLayer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.RoostStalkerEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;

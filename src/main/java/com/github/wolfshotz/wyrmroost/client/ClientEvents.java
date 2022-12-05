@@ -2,8 +2,8 @@ package com.github.wolfshotz.wyrmroost.client;
 
 //import com.github.wolfshotz.wyrmroost.client.render.TarragonTomeRenderer;
 
-import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
-import com.github.wolfshotz.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
+import com.github.wolfshotz.wyrmroost.client.renderer.RenderHelper;
+import com.github.wolfshotz.wyrmroost.client.renderer.entity.projectile.BreathWeaponRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.LazySpawnEggItem;
 import com.github.wolfshotz.wyrmroost.registry.WRIO;
