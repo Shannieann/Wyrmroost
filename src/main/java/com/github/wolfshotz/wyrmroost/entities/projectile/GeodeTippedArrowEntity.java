@@ -1,7 +1,7 @@
 package com.github.wolfshotz.wyrmroost.entities.projectile;
 
 import com.github.wolfshotz.wyrmroost.items.GeodeTippedArrowItem;
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
@@ -27,13 +27,13 @@ public class GeodeTippedArrowEntity extends AbstractArrow implements IEntityAddi
 
     public GeodeTippedArrowEntity(Level level, Item item)
     {
-        super(WREntities.GEODE_TIPPED_ARROW.get(), level);
+        super(WREntityTypes.GEODE_TIPPED_ARROW.get(), level);
         this.item = (GeodeTippedArrowItem) item;
     }
 
     public GeodeTippedArrowEntity(PlayMessages.SpawnEntity packet, Level level)
     {
-        super(WREntities.GEODE_TIPPED_ARROW.get(), level);
+        super(WREntityTypes.GEODE_TIPPED_ARROW.get(), level);
 
         FriendlyByteBuf buf = packet.getAdditionalData();
         Entity shooter = level.getEntity(buf.readInt());

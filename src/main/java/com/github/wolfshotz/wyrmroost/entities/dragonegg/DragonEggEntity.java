@@ -3,7 +3,7 @@ package com.github.wolfshotz.wyrmroost.entities.dragonegg;
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.DragonEggItem;
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import com.github.wolfshotz.wyrmroost.util.LerpedFloat;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
@@ -53,14 +53,14 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
 
     public DragonEggEntity(EntityType<TameableDragonEntity> type, int hatchTime, Level level)
     {
-        super(WREntities.DRAGON_EGG.get(), level);
+        super(WREntityTypes.DRAGON_EGG.get(), level);
         this.containedDragon = type;
         this.hatchTime = hatchTime;
     }
 
     public DragonEggEntity(PlayMessages.SpawnEntity packet, Level level)
     {
-        super(WREntities.DRAGON_EGG.get(), level);
+        super(WREntityTypes.DRAGON_EGG.get(), level);
         this.containedDragon = ModUtils.getEntityTypeByKey(packet.getAdditionalData().readUtf());
     }
 

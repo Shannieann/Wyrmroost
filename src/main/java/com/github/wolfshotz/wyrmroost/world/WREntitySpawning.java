@@ -1,7 +1,7 @@
 package com.github.wolfshotz.wyrmroost.world;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.SpawnPlacements;
@@ -27,11 +27,11 @@ public class WREntitySpawning {
     }
 
     public static void registerEntitySpawning(){
-        SpawnPlacements.register(WREntities.ROOSTSTALKER.get(),
+        SpawnPlacements.register(WREntityTypes.ROOSTSTALKER.get(),
                 SpawnPlacements.Type.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Animal::checkAnimalSpawnRules);
-        SpawnPlacements.register(WREntities.CANARI_WYVERN.get(),
+        SpawnPlacements.register(WREntityTypes.CANARI_WYVERN.get(),
                 SpawnPlacements.Type.ON_GROUND,
                 Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
                 Animal::checkAnimalSpawnRules);
@@ -39,11 +39,11 @@ public class WREntitySpawning {
 
 
     public static void onEntitySpawn(final BiomeLoadingEvent event) {
-        addEntityToSpecificBiomes(event, WREntities.ROOSTSTALKER.get(),
+        addEntityToSpecificBiomes(event, WREntityTypes.ROOSTSTALKER.get(),
                 5, 2, 4, Biomes.PLAINS);
-        addEntityToSpecificBiomes(event, WREntities.ROOSTSTALKER.get(),
+        addEntityToSpecificBiomes(event, WREntityTypes.ROOSTSTALKER.get(),
                 4, 1, 3, Biomes.FOREST);
-        addEntityToSpecificBiomes(event, WREntities.CANARI_WYVERN.get(),
+        addEntityToSpecificBiomes(event, WREntityTypes.CANARI_WYVERN.get(),
                 9, 2, 5, Biomes.SWAMP);
     }
     @SafeVarargs

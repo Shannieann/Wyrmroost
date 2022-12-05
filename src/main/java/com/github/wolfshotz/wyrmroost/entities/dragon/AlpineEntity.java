@@ -10,7 +10,7 @@ import com.github.wolfshotz.wyrmroost.entities.projectile.WindGustEntity;
 import com.github.wolfshotz.wyrmroost.entities.util.EntitySerializer;
 import com.github.wolfshotz.wyrmroost.network.packets.AnimationPacket;
 import com.github.wolfshotz.wyrmroost.network.packets.KeybindHandler;
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import com.github.wolfshotz.wyrmroost.registry.WRSounds;
 import com.github.wolfshotz.wyrmroost.util.LerpedFloat;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
@@ -103,7 +103,7 @@ public class AlpineEntity extends TameableDragonEntity
         if (time == 0) playSound(WRSounds.ENTITY_ALPINE_ROAR.get(), 3f, 1f);
         else if (time == 25)
         {
-            for (LivingEntity entity : getEntitiesNearby(20, e -> e.getType() == WREntities.ALPINE.get()))
+            for (LivingEntity entity : getEntitiesNearby(20, e -> e.getType() == WREntityTypes.ALPINE.get()))
             {
                 AlpineEntity alpine = ((AlpineEntity) entity);
                 if (alpine.noAnimations() && alpine.isIdling() && !alpine.isSleeping())
@@ -263,7 +263,7 @@ public class AlpineEntity extends TameableDragonEntity
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, 3)
                 .add(FLYING_SPEED, 0.185f)
-                .add(WREntities.Attributes.PROJECTILE_DAMAGE.get(), 1);
+                .add(WREntityTypes.Attributes.PROJECTILE_DAMAGE.get(), 1);
     }
 }
 */

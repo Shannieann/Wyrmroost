@@ -2,7 +2,7 @@ package com.github.wolfshotz.wyrmroost.data;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import net.minecraft.data.DataGenerator;
@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.github.wolfshotz.wyrmroost.registry.WREntities.*;
+import static com.github.wolfshotz.wyrmroost.registry.WREntityTypes.*;
 
 public class TagData
 {
@@ -215,7 +215,7 @@ public class TagData
 
         private void bindSoulBearers()
         {
-            TagsProvider.TagAppender builder = tag(WREntities.Tags.SOUL_BEARERS);
+            TagsProvider.TagAppender builder = tag(WREntityTypes.Tags.SOUL_BEARERS);
 
             // wyrmroost
             builder.add(OVERWORLD_DRAKE.get(),

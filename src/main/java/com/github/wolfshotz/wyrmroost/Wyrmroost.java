@@ -31,8 +31,8 @@ public class Wyrmroost
         if (ModUtils.isClient()) ClientEvents.init();
 
         //bus.register(CapabilityEvent.class);
-        WREntities.REGISTRY.register(bus);
-        WREntities.Attributes.REGISTRY.register(bus);
+        WREntityTypes.REGISTRY.register(bus);
+        WREntityTypes.Attributes.REGISTRY.register(bus);
         WRBlocks.REGISTRY.register(bus);
         //WRBlockEntities.REGISTRY.register(bus);
         WRItems.REGISTRY.register(bus);

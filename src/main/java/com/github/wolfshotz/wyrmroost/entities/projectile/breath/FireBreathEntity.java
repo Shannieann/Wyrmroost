@@ -2,7 +2,7 @@ package com.github.wolfshotz.wyrmroost.entities.projectile.breath;
 
 import com.github.wolfshotz.wyrmroost.WRConfig;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -29,7 +29,7 @@ public class FireBreathEntity extends BreathWeaponEntity
 
     public FireBreathEntity(TameableDragonEntity shooter)
     {
-        super(WREntities.FIRE_BREATH.get(), shooter);
+        super(WREntityTypes.FIRE_BREATH.get(), shooter);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class FireBreathEntity extends BreathWeaponEntity
     {
         if (level.isClientSide) return;
 
-        float damage = (float) shooter.getAttributeValue(WREntities.Attributes.PROJECTILE_DAMAGE.get());
+        float damage = (float) shooter.getAttributeValue(WREntityTypes.Attributes.PROJECTILE_DAMAGE.get());
         if (level.isRainingAt(entity.blockPosition())) damage *= 0.75f;
 
         if (entity.fireImmune()) damage *= 0.25; // impact damage

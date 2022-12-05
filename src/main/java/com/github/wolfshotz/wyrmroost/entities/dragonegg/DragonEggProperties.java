@@ -1,6 +1,6 @@
 package com.github.wolfshotz.wyrmroost.entities.dragonegg;
 
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
 
@@ -72,7 +72,7 @@ public class DragonEggProperties
     */
     public static DragonEggProperties get(EntityType<?> type)
     {
-        DragonEggProperties props = ((WREntities<?>) type).eggProperties;
+        DragonEggProperties props = ((WREntityTypes<?>) type).eggProperties;
         if (props == null)
             throw new NullPointerException(String.format("Missing Egg Properties for entity: %s, Wolf did a hickup go scream at him", type.getRegistryName()));
         return props;

@@ -9,7 +9,7 @@ import com.github.wolfshotz.wyrmroost.client.screen.DebugScreen;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.LazySpawnEggItem;
 import com.github.wolfshotz.wyrmroost.items.base.ArmorBase;
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import com.github.wolfshotz.wyrmroost.world.WREntitySpawning;
@@ -71,8 +71,8 @@ public class CommonEvents {
         {
             LazySpawnEggItem.addEggsToMap();
 
-            //for (EntityType<?> entry : ModUtils.getRegistryEntries(WREntities.REGISTRY))
-             //   if (entry instanceof WREntities) ((WREntities<?>) entry).callBack();
+            //for (EntityType<?> entry : ModUtils.getRegistryEntries(WREntityTypes.REGISTRY))
+             //   if (entry instanceof WREntityTypes) ((WREntityTypes<?>) entry).callBack();
 
             //for (WRBlocks.BlockExtension extension : WRBlocks.EXTENSIONS) extension.callBack();
             //WRBlocks.EXTENSIONS.clear();
@@ -82,9 +82,9 @@ public class CommonEvents {
 
     @SuppressWarnings("unchecked")
     public static void bindEntityAttributes(EntityAttributeCreationEvent event) {
-        for (EntityType<?> entry : ModUtils.getRegistryEntries(WREntities.REGISTRY)) {
-            if (entry instanceof WREntities) {
-                WREntities<LivingEntity> e = (WREntities<LivingEntity>) entry;
+        for (EntityType<?> entry : ModUtils.getRegistryEntries(WREntityTypes.REGISTRY)) {
+            if (entry instanceof WREntityTypes) {
+                WREntityTypes<LivingEntity> e = (WREntityTypes<LivingEntity>) entry;
                 if (e.attributes != null){
                     event.put(e, e.attributes.get());
                 }
@@ -98,16 +98,16 @@ public class CommonEvents {
 
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event){
 
-        event.registerEntityRenderer(WREntities.ROOSTSTALKER.get(), RoostStalkerRenderer2::new);
-        event.registerEntityRenderer(WREntities.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
-        event.registerEntityRenderer(WREntities.SILVER_GLIDER.get(), SilverGliderRenderer::new);
-        event.registerEntityRenderer(WREntities.OVERWORLD_DRAKE.get(), OWDrakeRenderer::new);
-        event.registerEntityRenderer(WREntities.ROYAL_RED.get(), RoyalRedRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.ROOSTSTALKER.get(), RoostStalkerRenderer2::new);
+        event.registerEntityRenderer(WREntityTypes.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.SILVER_GLIDER.get(), SilverGliderRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.OVERWORLD_DRAKE.get(), OWDrakeRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.ROYAL_RED.get(), RoyalRedRenderer::new);
 
-        event.registerEntityRenderer(WREntities.SOUL_CRYSTAL.get(), ThrownItemRenderer::new);
-        event.registerEntityRenderer(WREntities.GEODE_TIPPED_ARROW.get(), GeodeTippedArrowRenderer::new);
-        event.registerEntityRenderer(WREntities.DRAGON_EGG.get(), DragonEggRenderer::new);
-        event.registerEntityRenderer(WREntities.FIRE_BREATH.get(), BreathWeaponRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.SOUL_CRYSTAL.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.GEODE_TIPPED_ARROW.get(), GeodeTippedArrowRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.DRAGON_EGG.get(), DragonEggRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.FIRE_BREATH.get(), BreathWeaponRenderer::new);
 
     }
 
