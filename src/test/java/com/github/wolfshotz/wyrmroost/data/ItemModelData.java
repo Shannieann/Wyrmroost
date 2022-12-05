@@ -1,7 +1,6 @@
 package com.github.wolfshotz.wyrmroost.data;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import net.minecraft.client.renderer.block.model.BlockModel;
@@ -99,7 +98,6 @@ class ItemModelData extends ItemModelProvider
         for (Item item : registered)
         {
             if (item instanceof SpawnEggItem) getBuilderFor(item).parent(spawnEggTemplate);
-            else if (item instanceof TarragonTomeItem) continue;
             else if (item instanceof BlockItem)
             {
                 Block block = ((BlockItem) item).getBlock();

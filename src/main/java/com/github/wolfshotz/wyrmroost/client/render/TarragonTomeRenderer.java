@@ -1,11 +1,13 @@
 package com.github.wolfshotz.wyrmroost.client.render;
 
+import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.model.TarragonTomeModel;
 import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
 
@@ -17,7 +19,7 @@ public class TarragonTomeRenderer extends GeoItemRenderer<TarragonTomeItem>
     }
     //private final BookModel model;
     //private static final ResourceLocation MODEL_TEXTURE = Wyrmroost.id("textures/item/tarragon_tome_model.png");
-    //public static final ModelResourceLocation SPRITE_MODEL_LOCATION = new ModelResourceLocation(Wyrmroost.id("models/tarragon_tome"));
+    public static final ModelResourceLocation SPRITE_MODEL_LOCATION = new ModelResourceLocation(Wyrmroost.id("models/tarragon_tome"), "inventory");
 /*
     public TarragonTomeRenderer(BlockEntityRenderDispatcher dispatcher, EntityModelSet set) {
         super(dispatcher, set);
@@ -31,7 +33,7 @@ public class TarragonTomeRenderer extends GeoItemRenderer<TarragonTomeItem>
             case GROUND, FIXED, GUI -> {
                 //System.out.println(SPRITE_MODEL_LOCATION);
                 ms.pushPose();
-                Minecraft.getInstance().getItemRenderer().render(stack, transforms, false, ms, buffer, light, overlay, );
+                Minecraft.getInstance().getItemRenderer().render(stack, transforms, false, ms, buffer, light, overlay, Minecraft.getInstance().getModelManager().getModel(SPRITE_MODEL_LOCATION));
                 ms.popPose();
             }
             default -> super.renderByItem(stack, transforms, ms, buffer, light, overlay);
