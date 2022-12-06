@@ -1,6 +1,5 @@
 package com.github.wolfshotz.wyrmroost.world;
 
-import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.config.WRServerConfig;
 import com.github.wolfshotz.wyrmroost.entities.dragon.LesserDesertwyrmEntity;
 import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
@@ -15,26 +14,20 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.BiomeDictionary;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.*;
 
-@Mod.EventBusSubscriber(modid = Wyrmroost.MOD_ID)
 public class WREntitySpawning {
     public static void registerSpawnPlacementTypes() {
         SpawnPlacements.register(WREntityTypes.LESSER_DESERTWYRM.get(), SpawnPlacements.Type.IN_WATER, Heightmap.Types.MOTION_BLOCKING, LesserDesertwyrmEntity::getSpawnPlacement);
     }
 
-    @SubscribeEvent
     public static void onBiomeLoading(BiomeLoadingEvent event) {
         ResourceLocation biomeName = event.getName();
         if (biomeName == null) return;
         ResourceKey<Biome> biomeKey = ResourceKey.create(ForgeRegistries.Keys.BIOMES, biomeName);
-        if (biomeName == null)
-            return;
-        if (WRServerConfig.SERVER.ENTITIES.ALPINE.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.ALPINE.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.ALPINE.spawningConfig.biomeWhitelist, biomeKey)) {
+        if (WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.LESSER_DESERTWYRM.get(), WRServerConfig.SERVER.ENTITIES.ALPINE.spawningConfig, MobCategory.CREATURE, event);
         }
     }
