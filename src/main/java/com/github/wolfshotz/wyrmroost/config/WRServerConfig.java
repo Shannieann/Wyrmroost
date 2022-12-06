@@ -147,7 +147,7 @@ public final class WRServerConfig {
                     2,
                     1,
                     3,
-                    Collections.singletonList("MOUNTAIN"),
+                    Collections.singletonList("HILLS"),
                     Collections.singletonList("")
             );
             builder.pop();
@@ -162,7 +162,7 @@ public final class WRServerConfig {
                     2,
                     1,
                     3,
-                    Collections.singletonList("WATER"),
+                    Collections.singletonList("OCEAN"),
                     Collections.singletonList("")
             );
             builder.pop();
@@ -221,7 +221,7 @@ public final class WRServerConfig {
                     20,
                     1,
                     3,
-                    Collections.singletonList("DESERT"),
+                    Collections.singletonList("SANDY,DRY,HOT"),
                     Collections.singletonList("")
             );
             builder.pop();
@@ -266,7 +266,7 @@ public final class WRServerConfig {
                     2,
                     1,
                     3,
-                    Collections.singletonList("MOUNTAINS"),
+                    Collections.singletonList("HILLS"),
                     Collections.singletonList("")
             );
             builder.pop();
