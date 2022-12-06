@@ -196,12 +196,19 @@ public class LesserDesertwyrmEntity extends Animal implements IAnimatable
     }
 
     //Attracted to sand
+    /*
+
+
     @Override
     public float getWalkTargetValue(BlockPos pos, LevelReader world)
     {
         if (level.getBlockState(pos).getMaterial() == Material.SAND) return 10f;
         return super.getWalkTargetValue(pos, level);
     }
+ */
+
+
+
 
     //Remove LDWs during the  if far away
     @Override
