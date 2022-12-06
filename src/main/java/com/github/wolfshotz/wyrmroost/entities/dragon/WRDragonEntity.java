@@ -3,10 +3,11 @@ package com.github.wolfshotz.wyrmroost.entities.dragon;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.PathfinderMob;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -17,7 +18,7 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
-public class WRDragonEntity extends PathfinderMob implements IAnimatable {
+public class WRDragonEntity extends TamableAnimal implements IAnimatable {
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     private static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.STRING);
@@ -42,7 +43,7 @@ public class WRDragonEntity extends PathfinderMob implements IAnimatable {
      */
     private static final EntityDataAccessor<Integer> MOVING_STATE = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.INT);
 
-    protected WRDragonEntity(EntityType<? extends PathfinderMob> pEntityType, Level pLevel) {
+    protected WRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
     }
 
@@ -84,7 +85,7 @@ public class WRDragonEntity extends PathfinderMob implements IAnimatable {
             event.getController().setAnimation(new AnimationBuilder().addAnimation("death", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
             return PlayState.CONTINUE;
         }
-        //Attacking:
+        //TODO: Attacking triggers a Goal that sets the attack as a one shot ability... rework this goal, then.
         int attackingState = this.getAttackingState();
         if (attackingState != 0) {
             for (int state = 1; state <= 4; state++){
@@ -122,6 +123,12 @@ public class WRDragonEntity extends PathfinderMob implements IAnimatable {
             return PlayState.CONTINUE;
         }
         return PlayState.STOP;
+    }
+
+    @Nullable
+    @Override
+    public AgeableMob getBreedOffspring(ServerLevel pLevel, AgeableMob pOtherParent) {
+        return null;
     }
 
     @Override
@@ -172,5 +179,10 @@ public class WRDragonEntity extends PathfinderMob implements IAnimatable {
     public void setMovingState(int movingState)
     {
         entityData.set(MOVING_STATE, movingState);
+    }
+
+    @Override
+    public boolean canBeLeashed(Player pPlayer) {
+        return false;
     }
 }

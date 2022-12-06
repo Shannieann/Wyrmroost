@@ -90,7 +90,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
  * Created by com.github.WolfShotz 7/10/19 - 21:36
  * This is where the magic happens. Here be our Dragons!
  * Woah this mod is super old - Livin' In Luggery
- */public abstract class TameableDragonEntity extends TamableAnimal implements IAnimatable, MenuProvider
+ */public abstract class TameableDragonEntity extends WRDragonEntity implements IAnimatable, MenuProvider
 {
     public static final EntitySerializer<TameableDragonEntity> SERIALIZER = EntitySerializer.builder(b -> b
             .track(EntitySerializer.POS.optional(), "HomePos", t -> Optional.ofNullable(t.getHomePos()), (d, v) -> d.setHomePos(v.orElse(null)))
@@ -1394,5 +1394,10 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
     public static boolean canFlyerSpawn(EntityType<? extends TameableDragonEntity> type, LevelAccessor level, MobSpawnType reason, BlockPos pos, Random random)
     {
         return level.getBlockState(pos.below()).getFluidState().isEmpty();
+    }
+
+    @Override
+    public boolean canBeLeashed(Player pPlayer) {
+        return !this.isLeashed();
     }
 }
