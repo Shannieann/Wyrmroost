@@ -26,7 +26,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -40,6 +39,7 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -52,7 +52,7 @@ public class LesserDesertwyrmEntity extends Animal implements IAnimatable
     //    public static final Animation BITE_ANIMATION = LogicalAnimation.create(10, null, () -> LesserDesertwyrmModel::biteAnimation);
     private static final EntityDataAccessor<Boolean> BURROWED = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.BOOLEAN);
     private int burrowTicks = 30;
-    private AnimationFactory factory = new AnimationFactory(this);
+    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
 //    public Animation animation = NO_ANIMATION;
 //    public int animationTick;
