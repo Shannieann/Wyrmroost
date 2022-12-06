@@ -48,7 +48,6 @@ public class CommonEvents {
         bus.addListener(CommonEvents::commonSetup);
         bus.addListener(CommonEvents::bindEntityAttributes);
         //bus.addListener(CommonEvents::registerLayers);
-        bus.addListener(CommonEvents::registerRenderers);
         //bus.addListener(WRConfig::loadConfig);
         //bus.addGenericListener(Item.class, CommonEvents::remap);
 
@@ -95,21 +94,6 @@ public class CommonEvents {
     //public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event){
    //     event.registerLayerDefinition(RoostStalkerModel.LAYER_LOCATION, RoostStalkerModel::createBodyLayer);
    // }
-
-    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event){
-
-        event.registerEntityRenderer(WREntityTypes.ROOSTSTALKER.get(), RoostStalkerRenderer2::new);
-        event.registerEntityRenderer(WREntityTypes.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
-        event.registerEntityRenderer(WREntityTypes.SILVER_GLIDER.get(), SilverGliderRenderer::new);
-        event.registerEntityRenderer(WREntityTypes.OVERWORLD_DRAKE.get(), OWDrakeRenderer::new);
-        event.registerEntityRenderer(WREntityTypes.ROYAL_RED.get(), RoyalRedRenderer::new);
-
-        event.registerEntityRenderer(WREntityTypes.SOUL_CRYSTAL.get(), ThrownItemRenderer::new);
-        event.registerEntityRenderer(WREntityTypes.GEODE_TIPPED_ARROW.get(), GeodeTippedArrowRenderer::new);
-        event.registerEntityRenderer(WREntityTypes.DRAGON_EGG.get(), DragonEggRenderer::new);
-        event.registerEntityRenderer(WREntityTypes.FIRE_BREATH.get(), BreathWeaponRenderer::new);
-
-    }
 
     /*@Deprecated  todo: remove in 1.17
    public static void remap(RegistryEvent.MissingMappings<Item> event) {
