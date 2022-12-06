@@ -47,32 +47,14 @@ import java.util.function.Predicate;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-public class LesserDesertwyrmEntity extends WRDragonEntity implements IAnimatable
+public class LesserDesertwyrmEntity extends WRDragonEntity
 {
     private int burrowTicks = 30;
     private static final EntityDataAccessor<Boolean> BURROWED = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
-
     public LesserDesertwyrmEntity(EntityType<? extends LesserDesertwyrmEntity> type, Level worldIn)
     {
         super(type, worldIn);
-    }
-
-    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        //TODO: Link to SuperClass Logic
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation", ILoopType.EDefaultLoopTypes.LOOP));
-        return PlayState.CONTINUE;
-    }
-
-    @Override
-    public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController(this, "controller", 0, this::predicate));
-    }
-
-    @Override
-    public AnimationFactory getFactory() {
-        return this.factory;
     }
 
     @Override
