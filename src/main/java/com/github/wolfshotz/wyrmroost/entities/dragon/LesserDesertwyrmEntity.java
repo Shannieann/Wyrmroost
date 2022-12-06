@@ -8,7 +8,6 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.Containers;
@@ -21,7 +20,6 @@ import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
-import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.FishingHook;
 import net.minecraft.world.item.ItemStack;
@@ -35,6 +33,8 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.builder.ILoopType;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
@@ -47,24 +47,22 @@ import java.util.function.Predicate;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-public class LesserDesertwyrmEntity extends Animal implements IAnimatable
+public class LesserDesertwyrmEntity extends WRDragonEntity implements IAnimatable
 {
-    //    public static final Animation BITE_ANIMATION = LogicalAnimation.create(10, null, () -> LesserDesertwyrmModel::biteAnimation);
-    private static final EntityDataAccessor<Boolean> BURROWED = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.BOOLEAN);
     private int burrowTicks = 30;
-    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
+    private static final EntityDataAccessor<Boolean> BURROWED = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.BOOLEAN);
 
-//    public Animation animation = NO_ANIMATION;
-//    public int animationTick;
+    private AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     public LesserDesertwyrmEntity(EntityType<? extends LesserDesertwyrmEntity> type, Level worldIn)
     {
         super(type, worldIn);
     }
 
-
     public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        return PlayState.STOP;
+        //TODO: Link to SuperClass Logic
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("animation", ILoopType.EDefaultLoopTypes.LOOP));
+        return PlayState.CONTINUE;
     }
 
     @Override
@@ -118,6 +116,7 @@ public class LesserDesertwyrmEntity extends Animal implements IAnimatable
 
     @Override
     protected void registerGoals()
+    //TODO: Animate all goals
     {
         goalSelector.addGoal(1, new FloatGoal(this));
         goalSelector.addGoal(2, new WRBurrowGoal());
@@ -166,10 +165,15 @@ public class LesserDesertwyrmEntity extends Animal implements IAnimatable
             entity.discard();
             this.setDeltaMovement(0, 0.8, 0);
             this.setBurrowed(false);
+            //Hiss if a fishing rod removes it from sand
+            //TODO: Link to Goal
+//            setAnimationState(3);
+
         }
         //If the entity is a living entity, attack it...
         else {
-            //if (getAnimation() != BITE_ANIMATION) setAnimation(BITE_ANIMATION);
+            //TODO: Link to Goal
+//            setAnimationState(2);
             doHurtTarget(entity);
         }
     }
@@ -215,13 +219,6 @@ public class LesserDesertwyrmEntity extends Animal implements IAnimatable
     public boolean removeWhenFarAway(double distanceToClosestPlayer)
     {
         return !level.isDay();
-    }
-
-    @Nullable
-    @Override
-    public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob mob)
-    {
-        return null;
     }
 
     @Override
@@ -318,6 +315,7 @@ public class LesserDesertwyrmEntity extends Animal implements IAnimatable
     }
      */
     //Burrow Goal:
+    //TODO: Extend Animated Goal
     class WRBurrowGoal extends Goal
     {
         public WRBurrowGoal()
@@ -344,6 +342,7 @@ public class LesserDesertwyrmEntity extends Animal implements IAnimatable
         {
             if (burrowTicks > 0 && --burrowTicks == 0) {
                 setBurrowed(true);
+//                setAnimationState(1);
             }
         }
 
