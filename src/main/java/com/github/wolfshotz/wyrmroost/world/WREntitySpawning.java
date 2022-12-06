@@ -45,6 +45,11 @@ public class WREntitySpawning {
                 4, 1, 3, Biomes.FOREST);
         addEntityToSpecificBiomes(event, WREntityTypes.CANARI_WYVERN.get(),
                 9, 2, 5, Biomes.SWAMP);
+        addEntityToSpecificBiomes(event, WREntityTypes.CANARI_WYVERN.get(),
+                9, 2, 5, Biomes.SWAMP);
+        addEntityToSpecificBiomes(event, WREntityTypes.LESSER_DESERTWYRM.get(),
+                3, 1, 3, Biomes.DESERT);
+
     }
     @SafeVarargs
     private static void addEntityToSpecificBiomes(BiomeLoadingEvent event, EntityType<?> type,
