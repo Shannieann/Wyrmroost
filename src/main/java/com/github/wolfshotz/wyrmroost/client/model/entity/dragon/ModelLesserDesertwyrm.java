@@ -7,18 +7,22 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class ModelLesserDesertwyrm extends AnimatedGeoModel<LesserDesertwyrmEntity>
 {
+    private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/lesser_desertwyrm/lesser_desertwyrm.geo.json");
+    private static final ResourceLocation TEXTURE_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/lesser_desertwyrm/lesser_desertwyrm.png");
+    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/lesser_desertwyrm/lesser_desertwyrm.json");
+
     @Override
     public ResourceLocation getModelLocation(LesserDesertwyrmEntity object) {
-        return new ResourceLocation(Wyrmroost.MOD_ID,"geo/entity/dragon/lesser_desertwyrm/lesser_desertwyrm.geo.json");
+        return MODEL_RESOURCE;
     }
 
     @Override
     public ResourceLocation getTextureLocation(LesserDesertwyrmEntity object) {
-        return new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/dragon/lesser_desertwyrm/lesser_desertwyrm.png");
+        return TEXTURE_RESOURCE;
     }
 
     @Override
     public ResourceLocation getAnimationFileLocation(LesserDesertwyrmEntity animatable) {
-        return new ResourceLocation(Wyrmroost.MOD_ID,"animations/entity/dragon/lesser_desertwyrm/lesser_desertwyrm.json");
+        return ANIMATION_RESOURCE;
     }
 }
