@@ -28,7 +28,7 @@ public class WREntitySpawning {
         if (biomeName == null) return;
         ResourceKey<Biome> biomeKey = ResourceKey.create(ForgeRegistries.Keys.BIOMES, biomeName);
         if (WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.biomeWhitelist, biomeKey)) {
-            registerEntityWorldSpawn(WREntityTypes.LESSER_DESERTWYRM.get(), WRServerConfig.SERVER.ENTITIES.ALPINE.spawningConfig, MobCategory.CREATURE, event);
+            registerEntityWorldSpawn(WREntityTypes.LESSER_DESERTWYRM.get(), WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig, MobCategory.CREATURE, event);
         }
     }
 
