@@ -218,7 +218,7 @@ public final class WRServerConfig {
         LesserDesertwyrm(final ForgeConfigSpec.Builder builder) {
             builder.push("lesser_desertwyrm");
             spawningConfig = new SpawningConfig(builder,
-                    20,
+                    2,
                     1,
                     3,
                     Collections.singletonList("SANDY,DRY,HOT"),
