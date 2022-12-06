@@ -3,6 +3,8 @@ package com.github.wolfshotz.wyrmroost.config;
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.google.common.collect.ImmutableList;
 import net.minecraftforge.common.ForgeConfigSpec;
+
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
@@ -203,9 +205,9 @@ public final class WRServerConfig {
         DragonfruitDrake(final ForgeConfigSpec.Builder builder) {
             builder.push("dragonfruit_drake");
             spawningConfig = new SpawningConfig(builder,
-                    2,
-                    1,
+                    20,
                     3,
+                    6,
                     Collections.singletonList("JUNGLE"),
                     Collections.singletonList("")
             );
@@ -218,7 +220,7 @@ public final class WRServerConfig {
         LesserDesertwyrm(final ForgeConfigSpec.Builder builder) {
             builder.push("lesser_desertwyrm");
             spawningConfig = new SpawningConfig(builder,
-                    2,
+                    3,
                     1,
                     3,
                     Collections.singletonList("SANDY,DRY,HOT"),
@@ -233,10 +235,10 @@ public final class WRServerConfig {
         OverworldDrake(final ForgeConfigSpec.Builder builder) {
             builder.push("overworld_drake");
             spawningConfig = new SpawningConfig(builder,
-                    2,
+                    4,
                     1,
-                    3,
-                    Collections.singletonList("PLAINS"),
+                    4,
+                    Arrays.asList("SAVANNA", "PLAINS"),
                     Collections.singletonList("")
             );
             builder.pop();
@@ -248,10 +250,10 @@ public final class WRServerConfig {
         Rooststalker(final ForgeConfigSpec.Builder builder) {
             builder.push("rooststalker");
             spawningConfig = new SpawningConfig(builder,
-                    2,
+                    7,
                     1,
-                    3,
-                    Collections.singletonList("PLAINS"),
+                    4,
+                    Arrays.asList("FOREST", "PLAINS"),
                     Collections.singletonList("")
             );
             builder.pop();
@@ -278,10 +280,10 @@ public final class WRServerConfig {
         SilverGlider(final ForgeConfigSpec.Builder builder) {
             builder.push("silver_glider");
             spawningConfig = new SpawningConfig(builder,
-                    2,
+                    15,
                     1,
-                    3,
-                    Collections.singletonList("BEACH"),
+                    6,
+                    Arrays.asList("OCEAN", "BEACH"),
                     Collections.singletonList("")
             );
             builder.pop();
