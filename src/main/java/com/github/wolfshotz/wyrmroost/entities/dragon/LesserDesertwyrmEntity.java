@@ -122,7 +122,7 @@ public class LesserDesertwyrmEntity extends Animal implements IAnimatable
         goalSelector.addGoal(1, new FloatGoal(this));
         goalSelector.addGoal(2, new WRBurrowGoal());
         goalSelector.addGoal(3, new AvoidEntityGoal<>(this, LivingEntity.class, 6f, 0.8d, 1.2d,
-                entity -> (EntitySelector.NO_CREATIVE_OR_SPECTATOR.test((Player) entity))));
+                EntitySelector.NO_CREATIVE_OR_SPECTATOR::test));
         goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1));
     }
 
