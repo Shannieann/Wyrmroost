@@ -38,40 +38,45 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
 
     public static final RegistryObject<EntityType<LesserDesertwyrmEntity>> LESSER_DESERTWYRM =
             creature("lesser_desertwyrm", LesserDesertwyrmEntity::new)
-            .size(0.6f, 0.2f)
-            .attributes(LesserDesertwyrmEntity::getAttributeSupplier)
-            .spawnEgg(0xD6BCBC, 0xDEB6C7)
-            .packetInterval(5)
-            .build();
+                    .size(0.6f, 0.2f)
+                    .attributes(LesserDesertwyrmEntity::getAttributeSupplier)
+                    .spawnPlacement(ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, LesserDesertwyrmEntity::getSpawnPlacement)
+                    .spawnEgg(0xD6BCBC, 0xDEB6C7)
+                    .packetInterval(5)
+                    .build();
 
     public static final RegistryObject<EntityType<OverworldDrakeEntity>> OVERWORLD_DRAKE =
             creature("overworld_drake", OverworldDrakeEntity::new)
-            .size(2.376f, 2.58f)
-            .attributes(OverworldDrakeEntity::getAttributeSupplier)
-            .spawnEgg(0x788716, 0x3E623E)
-            .dragonEgg(new DragonEggProperties(0.35f, 0.6f, 18000))
-            .trackingRange(10)
-            .build();
+                    .size(2.376f, 2.58f)
+                    .attributes(OverworldDrakeEntity::getAttributeSupplier)
+                    .spawnPlacement()
+                    .spawnEgg(0x788716, 0x3E623E)
+                    .dragonEgg(new DragonEggProperties(0.35f, 0.6f, 18000))
+                    .trackingRange(10)
+                    .build();
     public static final RegistryObject<EntityType<SilverGliderEntity>> SILVER_GLIDER =
             creature("silver_glider", SilverGliderEntity::new)
-            .size(1.5f, 0.75f)
-            .attributes(SilverGliderEntity::getAttributeSupplier)
-            .spawnEgg(0xC8C8C8, 0xC4C4C4)
-            .dragonEgg(new DragonEggProperties(0.2f, 0.35f, 12000))
-            .trackingRange(8)
-            .build();
+                    .size(1.5f, 0.75f)
+                    .attributes(SilverGliderEntity::getAttributeSupplier)
+                    .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SilverGliderEntity::getSpawnPlacement)
+                    .spawnEgg(0xC8C8C8, 0xC4C4C4)
+                    .dragonEgg(new DragonEggProperties(0.2f, 0.35f, 12000))
+                    .trackingRange(8)
+                    .build();
 
     public static final RegistryObject<EntityType<RoostStalkerEntity>> ROOSTSTALKER =
             creature("roost_stalker", RoostStalkerEntity::new)
-            .size(0.65f, 0.5f)
-            .spawnEgg(0x52100D, 0x959595)
-            .attributes(RoostStalkerEntity::getAttributeSupplier)
-            .dragonEgg(new DragonEggProperties(0.175f, 0.3f, 6000))
-            .build();
+                    .size(0.65f, 0.5f)
+                    .attributes(RoostStalkerEntity::getAttributeSupplier)
+                    .spawnPlacement()
+                    .spawnEgg(0x52100D, 0x959595)
+                    .dragonEgg(new DragonEggProperties(0.175f, 0.3f, 6000))
+                    .build();
 
     /*public static final RegistryObject<EntityType<ButterflyLeviathanEntity>> BUTTERFLY_LEVIATHAN = ofGroup("butterfly_leviathan", ButterflyLeviathanEntity::new, MobCategory.WATER_CREATURE)
             .size(4f, 3f)
             .attributes(ButterflyLeviathanEntity::getAttributeSupplier)
+            .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.OCEAN_FLOOR_WG, ButterflyLeviathanEntity::getSpawnPlacement)
             .spawnEgg(0x17283C, 0x7A6F5A)
             .dragonEgg(new DragonEggProperties(0.5f, 0.8f, 40000).setConditions(Entity::isInWater))
             .renderModel(() -> ButterflyLeviathanModel::new)
@@ -81,6 +86,7 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
     public static final RegistryObject<EntityType<DragonFruitDrakeEntity>> DRAGON_FRUIT_DRAKE = creature("dragon_fruit_drake", DragonFruitDrakeEntity::new)
             .size(1.5f, 1.9f)
             .attributes(DragonFruitDrakeEntity::getAttributeSupplier)
+            .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, DragonFruitDrakeEntity::getSpawnPlacement)
             .spawnEgg(0xe05c9a, 0x788716)
             .dragonEgg(new DragonEggProperties(0.25f, 0.35f, 9600))
             .renderModel(() -> DragonFruitDrakeModel::new)
@@ -89,6 +95,7 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
     public static final RegistryObject<EntityType<CanariWyvernEntity>> CANARI_WYVERN = creature("canari_wyvern", CanariWyvernEntity::new)
             .size(0.65f, 0.85f)
             .attributes(CanariWyvernEntity::getAttributeSupplier)
+            .spawnPlacement(/*SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, TameableDragonEntity::canFlyerSpawn*/)
             .spawnEgg(0x1D1F28, 0x492E0E)
             .dragonEgg(new DragonEggProperties(0.175f, 0.275f, 6000).setConditions(c -> c.level.getBlockState(c.blockPosition().below()).getBlock() == Blocks.JUNGLE_LEAVES))
             //.renderModel(() -> CanariWyvernModel::new)
@@ -97,7 +104,7 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
     public static final RegistryObject<EntityType<RoyalRedEntity>> ROYAL_RED = creature("royal_red", RoyalRedEntity::new)
             .size(3f, 3.9f)
             .attributes(RoyalRedEntity::getAttributeSupplier)
-            .spawnEgg(0x8a0900, 0x0)
+            //.spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, TameableDragonEntity::canFlyerSpawn)            .spawnEgg(0x8a0900, 0x0)
             .dragonEgg(new DragonEggProperties(0.45f, 0.7f, 72000))
             .fireImmune()
             .trackingRange(11)
@@ -106,6 +113,7 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
     public static final RegistryObject<EntityType<CoinDragonEntity>> COIN_DRAGON = creature("coin_dragon", CoinDragonEntity::new)
             .size(0.35f, 0.435f)
             .renderModel(() -> CoinDragonModel::new)
+            .spawnPlacement()
             .attributes(CoinDragonEntity::getAttributeSupplier)
             .trackingRange(2)
             .build();

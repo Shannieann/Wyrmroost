@@ -20,7 +20,7 @@ import java.util.*;
 
 public class WREntitySpawning {
     public static void registerSpawnPlacementTypes() {
-        SpawnPlacements.register(WREntityTypes.LESSER_DESERTWYRM.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, LesserDesertwyrmEntity::getSpawnPlacement);
+//        SpawnPlacements.register(WREntityTypes.LESSER_DESERTWYRM.get(), SpawnPlacements.Type.ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, LesserDesertwyrmEntity::getSpawnPlacement);
     }
 
     public static void onBiomeLoading(BiomeLoadingEvent event) {
