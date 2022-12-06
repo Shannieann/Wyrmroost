@@ -75,7 +75,7 @@ public class CommonEvents {
 
             //for (WRBlocks.BlockExtension extension : WRBlocks.EXTENSIONS) extension.callBack();
             //WRBlocks.EXTENSIONS.clear();
-            WREntitySpawning.registerEntitySpawning();
+            WREntitySpawning.registerSpawnPlacementTypes();
         });
     }
 

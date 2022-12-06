@@ -1,14 +1,17 @@
 package com.github.wolfshotz.wyrmroost;
 
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
+import com.github.wolfshotz.wyrmroost.config.WRServerConfig;
 import com.github.wolfshotz.wyrmroost.network.packets.*;
 import com.github.wolfshotz.wyrmroost.registry.*;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
+import com.github.wolfshotz.wyrmroost.world.WREntitySpawning;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkRegistry;
@@ -45,7 +48,7 @@ public class Wyrmroost
 
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, WRConfig.COMMON);
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, WRConfig.CLIENT);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, WRConfig.SERVER);
+        ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, WRServerConfig.SERVER_CONFIG);
     }
 
     public static ResourceLocation id(String path)
