@@ -6,6 +6,7 @@ import com.github.wolfshotz.wyrmroost.client.render.entity.projectile.BreathWeap
 import com.github.wolfshotz.wyrmroost.client.render.entity.projectile.GeodeTippedArrowRenderer;
 import com.github.wolfshotz.wyrmroost.client.screen.AnimateScreen;
 import com.github.wolfshotz.wyrmroost.client.screen.DebugScreen;
+import com.github.wolfshotz.wyrmroost.config.WRServerConfig;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.LazySpawnEggItem;
 import com.github.wolfshotz.wyrmroost.items.base.ArmorBase;
@@ -14,13 +15,17 @@ import com.github.wolfshotz.wyrmroost.util.Mafs;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import com.github.wolfshotz.wyrmroost.world.WREntitySpawning;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.phys.EntityHitResult;
@@ -30,9 +35,11 @@ import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.registries.ForgeRegistries;
 
 /**
  * Reflection is shit and we shouldn't use it
@@ -54,6 +61,8 @@ public class CommonEvents {
         forgeBus.addListener(CommonEvents::debugStick);
         forgeBus.addListener(CommonEvents::onChangeEquipment);
         forgeBus.addListener(CommonEvents::loadLoot);
+        forgeBus.addListener(CommonEvents::onBiomeLoading);
+
         //forgeBus.addListener(VillagerHelper::addWandererTrades);
         //forgeBus.addListener(CommonEvents::preCropGrowth);
         //forgeBus.addListener(EventPriority.HIGH, WRWorld::onBiomeLoad);
@@ -133,6 +142,10 @@ public class CommonEvents {
         }
     }
 
+    public static void onBiomeLoading(BiomeLoadingEvent event) {
+        WREntitySpawning.onBiomeLoading(event);
+    }
+
     public static void onChangeEquipment(LivingEquipmentChangeEvent event) {
         ArmorBase initial;
         if (event.getTo().getItem() instanceof ArmorBase) initial = (ArmorBase) event.getTo().getItem();
@@ -151,6 +164,7 @@ public class CommonEvents {
                     .build());
     }
 }
+
 
    /* public static void preCropGrowth(BlockEvent.CropGrowEvent.Pre event)
     {
