@@ -2,7 +2,7 @@ package com.github.wolfshotz.wyrmroost.items;
 
 /*import com.github.wolfshotz.wyrmroost.Wyrmroost;
 //import com.github.wolfshotz.wyrmroost.entities.dragon.CoinDragonEntity;
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import net.minecraft.ChatFormatting;
@@ -41,7 +41,7 @@ public class CoinDragonItem extends Item
     public InteractionResult useOn(UseOnContext context)
     {
         Level level = context.getLevel();
-        //CoinDragonEntity entity = WREntities.COIN_DRAGON.get().create(level);
+        //CoinDragonEntity entity = WREntityTypes.COIN_DRAGON.get().create(level);
         BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
         ItemStack stack = context.getItemInHand();
         Player player = context.getPlayer();

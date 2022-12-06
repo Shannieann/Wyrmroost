@@ -1,8 +1,8 @@
 package com.github.wolfshotz.wyrmroost.items;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
-//import com.github.wolfshotz.wyrmroost.entities.dragon.LesserDesertwyrmEntity;
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.Wyrmroost;
+import com.github.wolfshotz.wyrmroost.entities.dragon.LesserDesertwyrmEntity;
+import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import net.minecraft.client.renderer.item.ItemProperties;
@@ -16,7 +16,7 @@ import net.minecraft.world.level.Level;
 
 public class LDWyrmItem extends Item
 {
-    public static final String DATA_CONTENTS = "DesertWyrm"; // Should ALWAYS be a compound. If it throws a cast class exception SOMETHING fucked up.
+    public static final String DATA_CONTENTS = "DesertWyrm";
 
     public LDWyrmItem()
     {
@@ -44,7 +44,7 @@ public class LDWyrmItem extends Item
                 {
                     BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
                     CompoundTag contents = tag.getCompound(DATA_CONTENTS);
-                    LesserDesertwyrmEntity entity = WREntities.LESSER_DESERTWYRM.get().create(level);
+                    LesserDesertwyrmEntity entity = WREntityTypes.LESSER_DESERTWYRM.get().create(level);
 
                     entity.deserializeNBT(contents);
                     if (stack.hasCustomHoverName())
@@ -58,4 +58,4 @@ public class LDWyrmItem extends Item
         }
         return InteractionResult.PASS;
     }
-}*/
+}

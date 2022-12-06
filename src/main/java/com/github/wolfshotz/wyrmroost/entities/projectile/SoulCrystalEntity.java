@@ -3,7 +3,7 @@ package com.github.wolfshotz.wyrmroost.entities.projectile;
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.registry.WREffects;
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
@@ -49,7 +49,7 @@ public class SoulCrystalEntity extends ThrowableItemProjectile
 
     public SoulCrystalEntity(ItemStack stack, LivingEntity thrower, Level world)
     {
-        super(WREntities.SOUL_CRYSTAL.get(), thrower, world);
+        super(WREntityTypes.SOUL_CRYSTAL.get(), thrower, world);
 
         setItem(stack);
     }
@@ -110,7 +110,7 @@ public class SoulCrystalEntity extends ThrowableItemProjectile
 
     public static boolean isSuitableEntity(Entity entity)
     {
-        return entity instanceof TameableDragonEntity/* && entity.getType().is(WREntities.Tags.SOUL_BEARERS)*/;
+        return entity instanceof TameableDragonEntity/* && entity.getType().is(WREntityTypes.Tags.SOUL_BEARERS)*/;
     }
 
     public static InteractionResult captureDragon(@Nullable Player player, Level level, ItemStack stack, Entity target)

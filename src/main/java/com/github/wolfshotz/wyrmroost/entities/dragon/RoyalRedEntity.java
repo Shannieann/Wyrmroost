@@ -12,7 +12,7 @@ import com.github.wolfshotz.wyrmroost.entities.util.EntitySerializer;
 import com.github.wolfshotz.wyrmroost.items.DragonArmorItem;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookActions;
 import com.github.wolfshotz.wyrmroost.network.packets.KeybindHandler;
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import com.github.wolfshotz.wyrmroost.registry.WRSounds;
 import com.github.wolfshotz.wyrmroost.util.LerpedFloat;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
@@ -491,7 +491,7 @@ public class RoyalRedEntity extends TameableDragonEntity
                 .add(ATTACK_KNOCKBACK, 4)
                 .add(ATTACK_DAMAGE, 12)
                 .add(FLYING_SPEED, 0.121)
-                .add(WREntities.Attributes.PROJECTILE_DAMAGE.get(), 4);
+                .add(WREntityTypes.Attributes.PROJECTILE_DAMAGE.get(), 4);
     }
 
     /*@org.jetbrains.annotations.Nullable

@@ -3,13 +3,13 @@ package com.github.wolfshotz.wyrmroost.client;
 //import com.github.wolfshotz.wyrmroost.client.render.TarragonTomeRenderer;
 
 import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
+import com.github.wolfshotz.wyrmroost.client.render.entity.DragonEggRenderer;
+import com.github.wolfshotz.wyrmroost.client.render.entity.dragon.*;
 import com.github.wolfshotz.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
+import com.github.wolfshotz.wyrmroost.client.render.entity.projectile.GeodeTippedArrowRenderer;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.LazySpawnEggItem;
-import com.github.wolfshotz.wyrmroost.registry.WRIO;
-import com.github.wolfshotz.wyrmroost.registry.WRItems;
-import com.github.wolfshotz.wyrmroost.registry.WRKeybind;
-import com.github.wolfshotz.wyrmroost.registry.WRParticles;
+import com.github.wolfshotz.wyrmroost.registry.*;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
@@ -18,6 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.world.entity.Entity;
@@ -26,10 +27,7 @@ import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.ColorHandlerEvent;
-import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.client.event.ParticleFactoryRegisterEvent;
-import net.minecraftforge.client.event.TextureStitchEvent;
+import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
@@ -46,13 +44,14 @@ public class ClientEvents
 
     public static void init()
     {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 
-        bus.addListener(ClientEvents::clientSetup);
-        bus.addListener(ClientEvents::stitchTextures);
-        bus.addListener(ClientEvents::itemColors);
-        bus.addListener(ClientEvents::bakeParticles);
+        modBus.addListener(ClientEvents::clientSetup);
+        modBus.addListener(ClientEvents::stitchTextures);
+        modBus.addListener(ClientEvents::itemColors);
+        modBus.addListener(ClientEvents::bakeParticles);
+        modBus.addListener(ClientEvents::registerRenderers);
         //bus.addListener(ClientEvents::bakeModels);
 
         forgeBus.addListener(RenderHelper::renderWorld);
@@ -108,11 +107,21 @@ public class ClientEvents
         handler.register((stack, index) -> ((DyeableLeatherItem) stack.getItem()).getColor(stack), WRItems.LEATHER_DRAGON_ARMOR.get());
     }
 
-    /*private static void bakeModels(ModelRegistryEvent event)
-    {
-        ForgeModelBakery.addSpecialModel(TarragonTomeRenderer.SPRITE_MODEL_LOCATION);
-    }*/
+    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event){
 
+        event.registerEntityRenderer(WREntityTypes.ROOSTSTALKER.get(), RoostStalkerRenderer2::new);
+        event.registerEntityRenderer(WREntityTypes.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.SILVER_GLIDER.get(), SilverGliderRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.OVERWORLD_DRAKE.get(), OWDrakeRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.ROYAL_RED.get(), RoyalRedRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.LESSER_DESERTWYRM.get(), RenderLesserDeserwyrm::new);
+
+        event.registerEntityRenderer(WREntityTypes.SOUL_CRYSTAL.get(), ThrownItemRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.GEODE_TIPPED_ARROW.get(), GeodeTippedArrowRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.DRAGON_EGG.get(), DragonEggRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.FIRE_BREATH.get(), BreathWeaponRenderer::new);
+
+    }
     // =====================
     //      Forge Bus
     // =====================

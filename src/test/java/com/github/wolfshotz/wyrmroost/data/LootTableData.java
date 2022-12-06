@@ -1,7 +1,7 @@
 package com.github.wolfshotz.wyrmroost.data;
 
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import com.github.wolfshotz.wyrmroost.registry.WREntities;
+import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import com.github.wolfshotz.wyrmroost.registry.WRItems;
 import com.github.wolfshotz.wyrmroost.util.ModUtils;
 import com.google.common.collect.ImmutableList;
@@ -164,7 +164,7 @@ class LootTableData extends LootTableProvider
         @Override
         protected Iterable<EntityType<?>> getKnownEntities()
         {
-            return ModUtils.getRegistryEntries(WREntities.REGISTRY);
+            return ModUtils.getRegistryEntries(WREntityTypes.REGISTRY);
         }
 
         /**
@@ -190,39 +190,39 @@ class LootTableData extends LootTableProvider
         @Override
         protected void addTables()
         {
-            //add(WREntities.LESSER_DESERTWYRM.get(), LootTable.lootTable().withPool(singleRollPool().add(item(WRItems.LDWYRM.get(), 1).apply(ON_FIRE_SMELT))));
+            //add(WREntityTypes.LESSER_DESERTWYRM.get(), LootTable.lootTable().withPool(singleRollPool().add(item(WRItems.LDWYRM.get(), 1).apply(ON_FIRE_SMELT))));
 
-            add(WREntities.OVERWORLD_DRAKE.get(), LootTable.lootTable()
+            add(WREntityTypes.OVERWORLD_DRAKE.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(item(Items.LEATHER, 5, 10).apply(looting(1, 4))))
                     .withPool(singleRollPool().add(meat(WRItems.RAW_COMMON_MEAT.get(), 1, 7, 2, 3)))
                     .withPool(singleRollPool().add(item(WRItems.DRAKE_BACKPLATE.get(), 1)).when(LootItemKilledByPlayerCondition.killedByPlayer()).when(LootItemRandomChanceCondition.randomChance(0.15f)).apply(looting(0, 1))));
 
-            add(WREntities.ROOSTSTALKER.get(), LootTable.lootTable()
+            add(WREntityTypes.ROOSTSTALKER.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_LOWTIER_MEAT.get(), 0, 2, 1, 2)))
                     .withPool(singleRollPool().add(item(Items.GOLD_NUGGET, 0, 2))));
 
-            //add(WREntities.DRAGON_FRUIT_DRAKE.get(), LootTable.lootTable().withPool(singleRollPool().add(item(Items.APPLE, 0, 6))));
+            //add(WREntityTypes.DRAGON_FRUIT_DRAKE.get(), LootTable.lootTable().withPool(singleRollPool().add(item(Items.APPLE, 0, 6))));
 
-            add(WREntities.CANARI_WYVERN.get(), LootTable.lootTable()
+            add(WREntityTypes.CANARI_WYVERN.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_COMMON_MEAT.get(), 0, 2, 1, 2)))
                     .withPool(singleRollPool().add(item(Items.FEATHER, 1, 4).apply(looting(2, 6)))));
 
-            add(WREntities.SILVER_GLIDER.get(), LootTable.lootTable()
+            add(WREntityTypes.SILVER_GLIDER.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_LOWTIER_MEAT.get(), 0, 3, 1, 3))));
 
-            /*add(WREntities.BUTTERFLY_LEVIATHAN.get(), LootTable.lootTable()
+            /*add(WREntityTypes.BUTTERFLY_LEVIATHAN.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_APEX_MEAT.get(), 6, 10, 2, 4)))
                     .withPool(LootPool.lootPool().setRolls(RandomValueRange.between(1, 4)).add(item(Items.SEA_PICKLE, 0, 2).apply(looting(1, 2))).add(item(Items.SEAGRASS, 4, 14)).add(item(Items.KELP, 16, 24)))
                     .withPool(singleRollPool().add(item(Items.HEART_OF_THE_SEA, 1).when(RandomChance.randomChance(0.1f))).add(item(Items.NAUTILUS_SHELL, 1).when(RandomChance.randomChance(0.15f)))));*/
 
-            add(WREntities.ROYAL_RED.get(), LootTable.lootTable()
+            add(WREntityTypes.ROYAL_RED.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_APEX_MEAT.get(), 4, 8, 3, 5))));
 
-            /*add(WREntities.COIN_DRAGON.get(), LootTable.lootTable().withPool(singleRollPool()
+            /*add(WREntityTypes.COIN_DRAGON.get(), LootTable.lootTable().withPool(singleRollPool()
                     .add(meat(WRItems.RAW_LOWTIER_MEAT.get(), 1, 1, 0, 1))
                     .add(item(Items.GOLD_NUGGET, 4))));
 
-            add(WREntities.ALPINE.get(), LootTable.lootTable()
+            add(WREntityTypes.ALPINE.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_COMMON_MEAT.get(), 3, 7, 2, 6)))
                     .withPool(singleRollPool().add(item(Items.FEATHER, 3, 10).apply(looting(3, 11)))));*/
         }
