@@ -8,7 +8,7 @@ import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 public class RenderLesserDeserwyrm extends GeoEntityRenderer<LesserDesertwyrmEntity> {
     public RenderLesserDeserwyrm(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelLesserDesertwyrm());
-        this.shadowRadius = 0.5F;
+        this.shadowRadius = 0.0F;
     }
 
 }
