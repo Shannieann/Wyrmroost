@@ -602,7 +602,6 @@ public class RoyalRedEntity extends TameableDragonEntity
                 setBreathingFire(entity.shouldBreatheFire());
                 if (!animationStarted) {
                     animationStarted = true;
-                    //TODO: Start with this, hold something else...
                     super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME);
                 }
             }
@@ -620,8 +619,10 @@ public class RoyalRedEntity extends TameableDragonEntity
                     case 3 -> attackAnimationTime = ATTACK_ANIMATION_TIME_3;
                     default -> attackAnimationTime = 0;
                 }
-                super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime);
-                animationStarted = true;
+                if (!animationStarted) {
+                    super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime);
+                    animationStarted = true;
+                }
             }
             //TODO: ANALYZE
             if (getNavigation().isDone() || age % 10 == 0)
