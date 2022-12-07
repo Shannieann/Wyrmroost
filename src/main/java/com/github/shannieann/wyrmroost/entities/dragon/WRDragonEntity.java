@@ -69,6 +69,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     private static final int AGE_UPDATE_INTERVAL = 200;
     protected static int IDLE_ANIMATION_VARIANTS;
     protected static int ATTACK_ANIMATION_VARIANTS;
+    protected static float SITTING_ANIMATION_TIME;
+    protected static float SLEEPING_ANIMATION_TIME;
 
 
     private static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
@@ -392,6 +394,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         {
             if (sleep)
             {
+                setAnimation("sleeping");
+                setAnimationTime(SLEEPING_ANIMATION_TIME);
+                setAnimationType(3);
                 clearAI();
                 setXRot(0);
             }
@@ -758,6 +763,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void setInSittingPose(boolean flag)
     {
+        setAnimation("sitting");
+        setAnimationType(3);
+        setAnimationTime(20);
         super.setInSittingPose(flag);
         if (flag) clearAI();
     }

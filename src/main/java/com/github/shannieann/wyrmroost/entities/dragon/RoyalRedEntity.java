@@ -61,7 +61,12 @@ public class RoyalRedEntity extends TameableDragonEntity
     static {
         IDLE_ANIMATION_VARIANTS = 1;
         ATTACK_ANIMATION_VARIANTS = 3;
+        SITTING_ANIMATION_TIME = 60;
+        SLEEPING_ANIMATION_TIME = 60;
+
     }
+
+
 
     public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
@@ -74,6 +79,15 @@ public class RoyalRedEntity extends TameableDragonEntity
 
     public static final int ARMOR_SLOT = 0;
     private static final int MAX_KNOCKOUT_TIME = 3600; // 3 minutes
+
+    public static final String ROAR_ANIMATION = "roar";
+    public static final int ROAR_ANIMATION_TYPE = 2;
+    public static final float ROAR_ANIMATION_TIME = 80;
+
+    public static final String FIRE_ANIMATION = "fire";
+    public static final int FIRE_ANIMATION_TYPE = 1;
+    public static final float FIRE_ANIMATION_TIME = 20;
+
 
     public final LerpedFloat flightTimer = LerpedFloat.unit();
     public final LerpedFloat sitTimer = LerpedFloat.unit();
@@ -149,6 +163,12 @@ public class RoyalRedEntity extends TameableDragonEntity
         breathTimer.add(isBreathingFire()? 0.15f : -0.2f);
         knockOutTimer.add(isKnockedOut()? 0.05f : -0.1f);
 
+        if (isBreathingFire()) {
+            setAnimation(FIRE_ANIMATION);
+            setAnimationType(FIRE_ANIMATION_TYPE);
+            setAnimationTime(FIRE_ANIMATION_TIME);
+        }
+
         if (!level.isClientSide)
         {
             if (isBreathingFire() && getControllingPlayer() == null && getTarget() == null)
@@ -156,9 +176,12 @@ public class RoyalRedEntity extends TameableDragonEntity
 
             if (breathTimer.get() == 1) level.addFreshEntity(new FireBreathEntity(this));
 
-            //if (noAnimations() && !isKnockedOut() && !isSleeping() && !isBreathingFire() && isJuvenile() && getRandom().nextDouble() < 0.0004)
-            //AnimationPacket.send(this, ROAR_ANIMATION);
+            if (this.getAnimation().equals("base") && !this.isKnockedOut() && !this.isSleeping() && !this.isBreathingFire() && getRandom().nextDouble() < 0.0004) {
+                setAnimation(ROAR_ANIMATION);
+                setAnimationType(ROAR_ANIMATION_TYPE);
+                setAnimationTime(ROAR_ANIMATION_TIME);
 
+            }
             if (isKnockedOut() && --knockOutTime <= 0) setKnockedOut(false);
         }
     }
@@ -504,13 +527,12 @@ public class RoyalRedEntity extends TameableDragonEntity
 
     }
 
-    class RRAttackGoal extends AnimatedGoal
+    class RRAttackGoal extends Goal
     {
         private RoyalRedEntity entity;
 
         public RRAttackGoal(RoyalRedEntity entity)
         {
-            super(entity,"base",1,10);
             setFlags(EnumSet.of(Goal.Flag.MOVE, Flag.LOOK));
             this.entity = entity;
         }
@@ -568,10 +590,7 @@ public class RoyalRedEntity extends TameableDragonEntity
             }
             //We have now decided whether to breathe fire or not, if we are call the animation...
             if (isBreathingFire) {
-                //TODO: Correct animations
-                super.start(entity, "randomized fire breath animation", 2, 3);
-
-                super.start();
+                //TODO: ANIMATIONS
             }
 
 
@@ -585,9 +604,7 @@ public class RoyalRedEntity extends TameableDragonEntity
             else if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
                 yBodyRot = (float) Mafs.getAngle(RoyalRedEntity.this, target) + 90;
                 setYRot(yBodyRot);
-                //TODO: RANDOMIZE MELEE ANIMATIONS
-                super.start(entity, "randomized animation", 2, 3);
-                //TODO: Do I need to super other things? DEBUG
+                //TODO: ANIMATIONS
             }
             //TODO: ANALYZE
             if (getNavigation().isDone() || age % 10 == 0)
