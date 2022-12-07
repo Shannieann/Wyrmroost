@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public final class WRServerConfig {
+    //TODO: LANG FILE
     public static ForgeConfigSpec SERVER_CONFIG;
     private static final ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
     public static final Server SERVER;
@@ -93,7 +94,7 @@ public final class WRServerConfig {
             DRAGONFRUIT_DRAKE = new DragonfruitDrake(builder);
             LESSER_DESERTWYRM = new LesserDesertwyrm(builder);
             OVERWORLD_DRAKE = new OverworldDrake(builder);
-            ROOSTSTALKER = new Rooststalker(builder);
+            ROOSTSTALKER = new RoostStalker(builder);
             ROYAL_RED = new RoyalRed(builder);
             SILVER_GLIDER = new SilverGlider(builder);
             builder.pop();
@@ -106,7 +107,7 @@ public final class WRServerConfig {
         public final DragonfruitDrake DRAGONFRUIT_DRAKE;
         public final LesserDesertwyrm LESSER_DESERTWYRM;
         public final OverworldDrake OVERWORLD_DRAKE;
-        public final Rooststalker ROOSTSTALKER;
+        public final RoostStalker ROOSTSTALKER;
         public final RoyalRed ROYAL_RED;
         public final SilverGlider SILVER_GLIDER;
     }
@@ -246,9 +247,9 @@ public final class WRServerConfig {
         public final SpawningConfig spawningConfig;
     }
 
-    public static class Rooststalker {
-        Rooststalker(final ForgeConfigSpec.Builder builder) {
-            builder.push("rooststalker");
+    public static class RoostStalker {
+        RoostStalker(final ForgeConfigSpec.Builder builder) {
+            builder.push("roost_stalker");
             spawningConfig = new SpawningConfig(builder,
                     7,
                     1,
