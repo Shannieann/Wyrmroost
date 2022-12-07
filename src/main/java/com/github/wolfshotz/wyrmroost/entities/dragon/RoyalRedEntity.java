@@ -4,6 +4,7 @@ import com.github.wolfshotz.wyrmroost.WRConfig;
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.client.screen.DragonControlScreen;
 import com.github.wolfshotz.wyrmroost.containers.BookContainer;
+import com.github.wolfshotz.wyrmroost.entities.dragon.ai.AnimatedGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.LessShitLookController;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.*;
@@ -60,6 +61,10 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class RoyalRedEntity extends TameableDragonEntity
 {
+
+    public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
+
     private static final EntitySerializer<RoyalRedEntity> SERIALIZER = TameableDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.BOOL, "Gender", TameableDragonEntity::isMale, TameableDragonEntity::setGender)
             .track(EntitySerializer.INT, "Variant", TameableDragonEntity::getVariant, TameableDragonEntity::setVariant)
@@ -69,33 +74,20 @@ public class RoyalRedEntity extends TameableDragonEntity
     public static final int ARMOR_SLOT = 0;
     private static final int MAX_KNOCKOUT_TIME = 3600; // 3 minutes
 
-    //public static final Animation ROAR_ANIMATION = LogicalAnimation.create(70, RoyalRedEntity::roarAnimation, () -> RoyalRedModel::roarAnimation);
-    //public static final Animation SLAP_ATTACK_ANIMATION = LogicalAnimation.create(30, RoyalRedEntity::slapAttackAnimation, () -> RoyalRedModel::slapAttackAnimation);
-    //public static final Animation BITE_ATTACK_ANIMATION = LogicalAnimation.create(15, RoyalRedEntity::biteAttackAnimation, () -> RoyalRedModel::biteAttackAnimation);
-    //public static final Animation[] ANIMATIONS = new Animation[]{ROAR_ANIMATION, SLAP_ATTACK_ANIMATION, BITE_ATTACK_ANIMATION};
-
-    public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
-
     public final LerpedFloat flightTimer = LerpedFloat.unit();
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public final LerpedFloat breathTimer = LerpedFloat.unit();
     public final LerpedFloat knockOutTimer = LerpedFloat.unit();
     private int knockOutTime = 0;
 
-    public RoyalRedEntity(EntityType<? extends TameableDragonEntity> dragon, Level level)
+    public RoyalRedEntity(EntityType<? extends TameableDragonEntity> type, Level worldIn)
     {
-        super(dragon, level);
+        super(type, worldIn);
         noCulling = WRConfig.NO_CULLING.get();
 
+        //TODO: Double call?
         setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0);
         setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0);
-    }
-
-    @Override
-    public EntitySerializer<RoyalRedEntity> getSerializer()
-    {
-        return SERIALIZER;
     }
 
     @Override
@@ -112,13 +104,27 @@ public class RoyalRedEntity extends TameableDragonEntity
         entityData.define(ARMOR, ItemStack.EMPTY);
     }
 
+    public static AttributeSupplier.Builder getAttributeSupplier()
+    {
+        // base male attributes
+        return Mob.createMobAttributes()
+                .add(MAX_HEALTH, 130)
+                .add(MOVEMENT_SPEED, 0.22)
+                .add(KNOCKBACK_RESISTANCE, 1)
+                .add(FOLLOW_RANGE, 60)
+                .add(ATTACK_KNOCKBACK, 4)
+                .add(ATTACK_DAMAGE, 12)
+                .add(FLYING_SPEED, 0.121)
+                .add(WREntityTypes.Attributes.PROJECTILE_DAMAGE.get(), 4);
+    }
+
     @Override
     protected void registerGoals()
     {
         super.registerGoals();
 
         goalSelector.addGoal(4, new MoveToHomeGoal(this));
-        goalSelector.addGoal(5, new AttackGoal());
+        goalSelector.addGoal(5, new RRAttackGoal(this));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new DragonBreedGoal(this));
         goalSelector.addGoal(9, new FlyerWanderGoal(this, 1));
@@ -130,12 +136,6 @@ public class RoyalRedEntity extends TameableDragonEntity
         targetSelector.addGoal(3, new DefendHomeGoal(this));
         targetSelector.addGoal(4, new HurtByTargetGoal(this));
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, e -> e.getType() == EntityType.PLAYER || e instanceof Animal));
-    }
-
-    @Override
-    public DragonInventory createInv()
-    {
-        return new DragonInventory(this, 1);
     }
 
     @Override
@@ -156,10 +156,17 @@ public class RoyalRedEntity extends TameableDragonEntity
             if (breathTimer.get() == 1) level.addFreshEntity(new FireBreathEntity(this));
 
             //if (noAnimations() && !isKnockedOut() && !isSleeping() && !isBreathingFire() && isJuvenile() && getRandom().nextDouble() < 0.0004)
-                //AnimationPacket.send(this, ROAR_ANIMATION);
+            //AnimationPacket.send(this, ROAR_ANIMATION);
 
             if (isKnockedOut() && --knockOutTime <= 0) setKnockedOut(false);
         }
+    }
+
+    //TODO: LOCATE
+    @Override
+    public EntitySerializer<RoyalRedEntity> getSerializer()
+    {
+        return SERIALIZER;
     }
 
     @Override
@@ -197,6 +204,12 @@ public class RoyalRedEntity extends TameableDragonEntity
         return super.playerInteraction(player, hand, stack);
     }
 
+    @Override
+    public DragonInventory createInv()
+    {
+        return new DragonInventory(this, 1);
+    }
+
     public void roarAnimation(int time)
     {
         if (time == 0) playSound(WRSounds.ENTITY_ROYALRED_ROAR.get(), 3, 1, true);
@@ -205,6 +218,7 @@ public class RoyalRedEntity extends TameableDragonEntity
             entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 60));
     }
 
+    //TODO: Passenger Keybind Logic
     public void slapAttackAnimation(int time)
     {
         if (time == 7) playSound(WRSounds.ENTITY_ROYALRED_HURT.get(), 1, 1, true);
@@ -222,6 +236,7 @@ public class RoyalRedEntity extends TameableDragonEntity
             playSound(WRSounds.ENTITY_ROYALRED_HURT.get(), 2, 1, true);
         }
     }
+
 
     @Override
     public void die(DamageSource cause)
@@ -480,19 +495,7 @@ public class RoyalRedEntity extends TameableDragonEntity
         return ArrayUtils.addAll(super.getScaledAttributes(), ATTACK_KNOCKBACK);
     }
 
-    public static AttributeSupplier.Builder getAttributeSupplier()
-    {
-        // base male attributes
-        return Mob.createMobAttributes()
-                .add(MAX_HEALTH, 130)
-                .add(MOVEMENT_SPEED, 0.22)
-                .add(KNOCKBACK_RESISTANCE, 1)
-                .add(FOLLOW_RANGE, 60)
-                .add(ATTACK_KNOCKBACK, 4)
-                .add(ATTACK_DAMAGE, 12)
-                .add(FLYING_SPEED, 0.121)
-                .add(WREntityTypes.Attributes.PROJECTILE_DAMAGE.get(), 4);
-    }
+
 
     /*@org.jetbrains.annotations.Nullable
     @Override
@@ -505,12 +508,18 @@ public class RoyalRedEntity extends TameableDragonEntity
 
     }
 
-    class AttackGoal extends Goal
+    class RRAttackGoal extends AnimatedGoal
     {
-        public AttackGoal()
+        private RoyalRedEntity entity;
+
+        public RRAttackGoal(RoyalRedEntity entity)
         {
             setFlags(EnumSet.of(Goal.Flag.MOVE, Flag.LOOK));
+            this.entity = entity;
         }
+
+        @Override
+        public void start(){ }
 
         @Override
         public boolean canUse()
@@ -525,6 +534,16 @@ public class RoyalRedEntity extends TameableDragonEntity
         }
 
         @Override
+        public boolean canContinueToUse(){
+            LivingEntity target = getTarget();
+            if (target != null && target.isAlive()) {
+                if (!isWithinRestriction(target.blockPosition())) return false;
+                return TargetingConditions.forCombat().test(null, target);
+            }
+            return false;
+        }
+
+        @Override
         public void tick()
         {
             LivingEntity target = getTarget();
@@ -532,21 +551,48 @@ public class RoyalRedEntity extends TameableDragonEntity
             double degrees = Math.atan2(target.getZ() - getZ(), target.getX() - getX()) * (180 / Math.PI) - 90;
             boolean isBreathingFire = isBreathingFire();
             boolean canSeeTarget = getSensing().hasLineOfSight(target);
-
             getLookControl().setLookAt(target, 90, 90);
 
             double headAngle = Math.abs(Mth.wrapDegrees(degrees - yHeadRot));
-            boolean shouldBreatheFire = !isAtHome() && (distFromTarget > 100 || target.getY() - getY() > 3 || isFlying()) && headAngle < 30 && canBreatheFire();
-            if (isBreathingFire != shouldBreatheFire) setBreathingFire(isBreathingFire = shouldBreatheFire);
 
-            if (getRandom().nextDouble() < 0.001 || distFromTarget > 900) setFlying(true);
-            else if (distFromTarget <= 24 /*&& noAnimations()*/ && !isBreathingFire && canSeeTarget)
-            {
-                yBodyRot = (float) Mafs.getAngle(RoyalRedEntity.this, target) + 90;
-                setYRot(yBodyRot);
-                //meleeAttack();
+            //Only breathe fire if we are not at home, and we are far from target in some regard,
+            // and head angle permits it, and we are old enough to do so
+            //TODO: Distance Values, tweak?
+            boolean shouldBreatheFire =
+                            !isAtHome()
+                            && (distFromTarget > 100 || target.getY() - getY() > 3 || isFlying())
+                            && headAngle < 30
+                            && canBreatheFire();
+
+
+            //Fire logic:
+            if (isBreathingFire != shouldBreatheFire) {
+                setBreathingFire(isBreathingFire = shouldBreatheFire);
+            }
+            //We have now decided whether to breathe fire or not, if we are call the animation...
+            if (isBreathingFire) {
+                //TODO: Correct animations
+                super.start(entity, "randomized animation", 2, 3);
+
+                super.start();
             }
 
+
+            //Random chance to start flying / fly when target is far away...
+            //TODO: If we are already flying... should we check for this?
+            if (getRandom().nextDouble() < 0.001 || distFromTarget > 900) {
+                setFlying(true);
+            }
+            //If we have not started flying, and we are close to target, melee attack
+            //TODO: Remove else?
+            else if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
+                yBodyRot = (float) Mafs.getAngle(RoyalRedEntity.this, target) + 90;
+                setYRot(yBodyRot);
+                //TODO: RANDOMIZE MELEE ANIMATIONS
+                super.start(entity, "randomized animation", 2, 3);
+                //TODO: Do I need to super other things?
+            }
+            //TODO: ANALYZE
             if (getNavigation().isDone() || age % 10 == 0)
             {
                 boolean isFlyingTarget = target instanceof TameableDragonEntity && ((TameableDragonEntity) target).isFlying();
