@@ -57,13 +57,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
-    public static final EntityDataAccessor<Boolean> GENDER = SynchedEntityData.defineId(TameableDragonEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> FLYING = SynchedEntityData.defineId(TameableDragonEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(TameableDragonEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(TameableDragonEntity.class, EntityDataSerializers.INT); // todo in 1.17: make this use strings for nbt based textures
-    public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(TameableDragonEntity.class, EntityDataSerializers.ITEM_STACK);
-    public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(TameableDragonEntity.class, EntityDataSerializers.BLOCK_POS);
-    public static final EntityDataAccessor<Integer> AGE = SynchedEntityData.defineId(TameableDragonEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Boolean> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> FLYING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT); // todo in 1.17: make this use strings for nbt based textures
+    public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
+    public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
+    public static final EntityDataAccessor<Integer> AGE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     //TODO: What is this?
     private static final UUID SCALE_MOD_UUID = UUID.fromString("81a0addd-edad-47f1-9aa7-4d76774e055a");
     private static final int AGE_UPDATE_INTERVAL = 200;
@@ -126,6 +126,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return PlayState.CONTINUE;
         }
         //Else, do basic locomotion
+        //TODO: Do we want custom death animations?
         //Death
         if ((this.dead || this.getHealth() < 0.01 || this.isDeadOrDying())) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation("death", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
