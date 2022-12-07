@@ -2,6 +2,7 @@ package com.github.wolfshotz.wyrmroost.client.sound;
 
 import com.github.wolfshotz.wyrmroost.client.ClientEvents;
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.wolfshotz.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvents;

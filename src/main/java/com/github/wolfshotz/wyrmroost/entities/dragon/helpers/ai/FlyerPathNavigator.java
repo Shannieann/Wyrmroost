@@ -1,6 +1,7 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai;
 
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.wolfshotz.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
@@ -11,7 +12,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public class FlyerPathNavigator extends FlyingPathNavigation
 {
-    public FlyerPathNavigator(TameableDragonEntity entity)
+    public FlyerPathNavigator(WRDragonEntity entity)
     {
         super(entity, entity.level);
     }
@@ -22,7 +23,7 @@ public class FlyerPathNavigator extends FlyingPathNavigation
     {
         if (!isDone() && canUpdatePath())
         {
-            TameableDragonEntity dragon = ((TameableDragonEntity) mob);
+            WRDragonEntity dragon = ((WRDragonEntity) mob);
             BlockPos target = getTargetPos();
             if (target != null)
             {

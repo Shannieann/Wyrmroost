@@ -1,6 +1,7 @@
 package com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai;
 
 import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.wolfshotz.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 
@@ -11,9 +12,9 @@ import net.minecraft.world.entity.ai.control.BodyRotationControl;
  */
 public class DragonBodyController extends BodyRotationControl
 {
-    public TameableDragonEntity dragon;
+    public WRDragonEntity dragon;
 
-    public DragonBodyController(TameableDragonEntity dragon)
+    public DragonBodyController(WRDragonEntity dragon)
     {
         super(dragon);
         this.dragon = dragon;

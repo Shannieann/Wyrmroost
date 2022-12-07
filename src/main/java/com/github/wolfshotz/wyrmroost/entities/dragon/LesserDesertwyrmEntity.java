@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.Containers;
@@ -46,6 +47,12 @@ public class LesserDesertwyrmEntity extends WRDragonEntity
     public LesserDesertwyrmEntity(EntityType<? extends LesserDesertwyrmEntity> type, Level worldIn)
     {
         super(type, worldIn);
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public AgeableMob getBreedOffspring(ServerLevel pLevel, AgeableMob pOtherParent) {
+        return null;
     }
 
     @Override
@@ -208,7 +215,7 @@ public class LesserDesertwyrmEntity extends WRDragonEntity
     }
 
     @Override
-    protected float getSoundVolume()
+    public float getSoundVolume()
     {
         return 0.15f;
     }

@@ -77,52 +77,6 @@ public class CanariWyvernEntity extends TameableDragonEntity
         targetSelector.addGoal(2, new DefendHomeGoal(this));
         targetSelector.addGoal(3, new HurtByTargetGoal(this));
     }
-    /*
-    //TODO fix whatever this is
-    @Override
-    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        if (isFlying() && !isPassenger()){
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("flap.canari", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        }
-        else if (isPissed()){
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("hold.threat.canari", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        }
-        else if (event.isMoving()) {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("walk.canari", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-
-        } else if (isSleeping() && !isFlying()) {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("sleep.canari", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        } else if (isInSittingPose()){
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("sit.canari", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        }
-        else if (getRandom().nextFloat() < 0.001){
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("preen.canari", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
-            spawnAtLocation(new ItemStack(Items.FEATHER), 0.5f);
-            return PlayState.CONTINUE;
-        }
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("idle.canari", ILoopType.EDefaultLoopTypes.LOOP));
-        return PlayState.CONTINUE;
-    }
-    public <E extends IAnimatable> PlayState attackPredicate(AnimationEvent<E> event) {
-        if (this.swinging && event.getController().getAnimationState().equals(AnimationState.Stopped)) {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("left.sting.canari", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
-            this.swinging = false;
-        }
-        return PlayState.CONTINUE;
-    }
-
-    @Override
-    public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController(this, "controller", 8, this::predicate));
-        data.addAnimationController(new AnimationController(this, "attackController", 8, this::attackPredicate));
-    }
-
-     */
 
     @Override
     protected BodyRotationControl createBodyControl()

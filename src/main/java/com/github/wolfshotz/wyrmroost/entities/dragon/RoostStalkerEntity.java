@@ -11,7 +11,6 @@ import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.WRFollowO
 import com.github.wolfshotz.wyrmroost.entities.util.EntitySerializer;
 import com.github.wolfshotz.wyrmroost.items.book.action.BookActions;
 import com.github.wolfshotz.wyrmroost.network.packets.AddPassengerPacket;
-import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
 import com.github.wolfshotz.wyrmroost.registry.WRSounds;
 import com.github.wolfshotz.wyrmroost.util.Mafs;
 import net.minecraft.core.BlockPos;
@@ -42,22 +41,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
-import net.minecraft.world.level.biome.Biome;
-import net.minecraft.world.level.biome.MobSpawnSettings;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.Tags;
-import net.minecraftforge.event.world.BiomeLoadingEvent;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.builder.ILoopType;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
 
 import javax.annotation.Nullable;
 
@@ -102,7 +91,6 @@ public class RoostStalkerEntity extends TameableDragonEntity
     protected void registerGoals()
     {
         super.registerGoals();
-        goalSelector.addGoal(0,new AnimatedGoal(this,this.getAnimation(),1,20.0F));
         goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.4F));
         goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.1d, true));
         goalSelector.addGoal(5, new MoveToHomeGoal(this));
@@ -185,6 +173,7 @@ public class RoostStalkerEntity extends TameableDragonEntity
             {
                 if (!level.isClientSide && startRiding(player, true))
                 {
+                    //TODO: SIT ON HEAD ANIMATION?
                     setOrderedToSit(false);
                     AddPassengerPacket.send(this, player);
                 }
@@ -302,12 +291,6 @@ public class RoostStalkerEntity extends TameableDragonEntity
         return false;
     }
 
-    @Override
-    public boolean defendsHome()
-    {
-        return true;
-    }
-
     @Nullable
     @Override
     protected SoundEvent getAmbientSound()
@@ -375,6 +358,7 @@ public class RoostStalkerEntity extends TameableDragonEntity
             super(RoostStalkerEntity.this, speed, 16);
         }
 
+        //TODO: START?
         @Override
         public boolean canUse()
         {
@@ -472,31 +456,4 @@ public class RoostStalkerEntity extends TameableDragonEntity
             chest.getLevel().blockEvent(chest.getBlockPos(), chest.getBlockState().getBlock(), 1, chest.openersCounter.getOpenerCount());
         }
     }
-
-    /*
-    @Override
-    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        if (event.isMoving() && !isSleeping() && !isInSittingPose()){
-            if (hasCustomName() && getCustomName().getContents().equalsIgnoreCase("sir")){
-                event.getController().setAnimation(new AnimationBuilder().addAnimation("sir.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
-                return PlayState.CONTINUE;
-            }
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("walk.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        } else if (isSleeping()){
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("sleep.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        } else if (isInSittingPose()){
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("idle.2.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        }
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("idle.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
-        return PlayState.CONTINUE;
-    }
-    @Override
-    public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController<>(this, "controller", 10, this::predicate));
-    }
-
-     */
 }
