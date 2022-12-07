@@ -127,15 +127,25 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 default:
                     return PlayState.STOP;
             }
+            //TODO: RUNNING LOGIC
+            /*
             if (event.isMoving()) {
                 int movingState = this.getMovingState();
                 switch (movingState) {
-                    case 0: animation = animation + "_walk";
-                    case 1: animation = animation + "_fly";
-                    case 2: animation = animation + "_swim";
+                    case 0:
+                        animation = animation + "_walk";
+                        break;
+                    case 1:
+                        animation = animation + "_fly";
+                        break;
+                    case 2:
+                        animation = animation + "_swim";
+                        break;
                 }
 
             }
+
+             */
              event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
             return PlayState.CONTINUE;
         }
@@ -148,6 +158,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
         //This moving only plays if it's *just* moving and not doing anything else, as its only reached under those conditions...
         int movingState = this.getMovingState();
+        //TODO: RUNNING LOGIC
         if (event.isMoving()) {
             switch (movingState) {
                 case 0 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
@@ -158,7 +169,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
         //Idle:
         int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("idle_"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
+        event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle_"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
 
@@ -809,8 +820,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             //Play Animation
             //Play Sound
             //Damage Target
-        if (!this.getAnimation().equals("base")) {
-            int attackVariant = this.random.nextInt(ATTACK_ANIMATION_VARIANTS+1);
+        if (this.getAnimation().equals("base")) {
+            int attackVariant = this.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
             this.setAnimation("attack_"+attackVariant);
             this.setAnimationType(2);
             this.setAnimationTime(80);

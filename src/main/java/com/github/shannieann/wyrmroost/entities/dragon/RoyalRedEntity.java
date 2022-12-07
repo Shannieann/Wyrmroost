@@ -63,7 +63,6 @@ public class RoyalRedEntity extends TameableDragonEntity
         ATTACK_ANIMATION_VARIANTS = 3;
         SITTING_ANIMATION_TIME = 60;
         SLEEPING_ANIMATION_TIME = 60;
-
     }
 
 
@@ -88,6 +87,11 @@ public class RoyalRedEntity extends TameableDragonEntity
     public static final int FIRE_ANIMATION_TYPE = 1;
     public static final float FIRE_ANIMATION_TIME = 80;
 
+    public static final String ATTACK_ANIMATION = "attack";
+    public static final int ATTACK_ANIMATION_TYPE = 2;
+    public static final float ATTACK_ANIMATION_TIME_1 = 80;
+    public static final float ATTACK_ANIMATION_TIME_2 = 80;
+    public static final float ATTACK_ANIMATION_TIME_3 = 80;
 
     public final LerpedFloat flightTimer = LerpedFloat.unit();
     public final LerpedFloat sitTimer = LerpedFloat.unit();
@@ -577,6 +581,7 @@ public class RoyalRedEntity extends TameableDragonEntity
                     super.tick();
                 } else {
                     super.stop();
+                    animationStarted = false;
                 }
             }
 
@@ -606,6 +611,16 @@ public class RoyalRedEntity extends TameableDragonEntity
             else if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
                 this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
                 this.checkAndPerformAttack();
+                int attackVariant = entity.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
+                float attackAnimationTime;
+                switch (attackVariant) {
+                    case 1 -> attackAnimationTime = ATTACK_ANIMATION_TIME_1;
+                    case 2 -> attackAnimationTime = ATTACK_ANIMATION_TIME_2;
+                    case 3 -> attackAnimationTime = ATTACK_ANIMATION_TIME_3;
+                    default -> attackAnimationTime = 0;
+                }
+                super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, attackAnimationTime);
+                animationStarted = true;
             }
             //TODO: ANALYZE
             if (getNavigation().isDone() || age % 10 == 0)
