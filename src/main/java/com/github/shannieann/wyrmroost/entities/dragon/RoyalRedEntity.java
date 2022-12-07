@@ -4,6 +4,7 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.LessShitLookController;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.*;
@@ -85,7 +86,7 @@ public class RoyalRedEntity extends TameableDragonEntity
 
     public static final String FIRE_ANIMATION = "fire";
     public static final int FIRE_ANIMATION_TYPE = 1;
-    public static final float FIRE_ANIMATION_TIME = 20;
+    public static final float FIRE_ANIMATION_TIME = 80;
 
 
     public final LerpedFloat flightTimer = LerpedFloat.unit();
@@ -169,15 +170,14 @@ public class RoyalRedEntity extends TameableDragonEntity
             // =====================
             //       Fire Logic
             // =====================
+
+            /*
             if (isBreathingFire()) {
                 setAnimation(FIRE_ANIMATION);
                 setAnimationType(FIRE_ANIMATION_TYPE);
                 setAnimationTime(FIRE_ANIMATION_TIME);
             }
-
-            if (this.shouldBreatheFire() != this.isBreathingFire()){
-                setBreathingFire(this.shouldBreatheFire());
-            }
+             */
 
             if (isBreathingFire() && getControllingPlayer() == null && getTarget() == null)
                 setBreathingFire(false);
@@ -531,18 +531,21 @@ public class RoyalRedEntity extends TameableDragonEntity
         return null;
     }*/
 
-    class RRAttackGoal extends Goal
+    class RRAttackGoal extends AnimatedGoal
     {
         private RoyalRedEntity entity;
 
+        boolean animationStarted;
+
         public RRAttackGoal(RoyalRedEntity entity)
         {
+            super(entity);
             setFlags(EnumSet.of(Goal.Flag.MOVE, Flag.LOOK));
             this.entity = entity;
         }
 
         @Override
-        public void start(){ }
+        public void start(){}
 
         @Override
         public boolean canUse()
@@ -569,6 +572,10 @@ public class RoyalRedEntity extends TameableDragonEntity
         @Override
         public void tick()
         {
+            if (animationStarted) {
+                super.tick();
+            }
+
             LivingEntity target = getTarget();
             double distFromTarget = distanceToSqr(target);
 
@@ -581,8 +588,14 @@ public class RoyalRedEntity extends TameableDragonEntity
             if (getRandom().nextDouble() < 0.001 || distFromTarget > 900) {
                 setFlying(true);
             }
+
+            if (entity.shouldBreatheFire() != isBreathingFire){
+                setBreathingFire(entity.shouldBreatheFire());
+                super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME);
+                animationStarted = true;
+            }
             //If we have not started flying, and we are close to target, melee attack
-            if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
+            else if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
                 yBodyRot = (float) Mafs.getAngle(RoyalRedEntity.this, target) + 90;
                 setYRot(yBodyRot);
                 attackInBox(getOffsetBox(getBbWidth()).inflate(0.2), 50);
@@ -605,6 +618,7 @@ public class RoyalRedEntity extends TameableDragonEntity
             this.entity.setAggressive(false);
             this.entity.getNavigation().stop();
             this.entity.setBreathingFire(false);
+            super.stop();
         }
     }
 
