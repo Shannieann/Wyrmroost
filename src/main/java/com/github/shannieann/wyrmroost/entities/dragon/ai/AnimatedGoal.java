@@ -35,19 +35,12 @@ public class AnimatedGoal extends Goal {
     }
 
 
-    public void start(WRDragonEntity entity, String animationName, int animationType, float animationTime) {
-        this.entity = entity;
-        this.animationName = animationName;
-        this.animationType = animationType;
-        this.animationTime = animationTime;
-        this.elapsedTime = 0;
-        this.start();
-    }
-
     @Override
     public void start(){
         this.entity.setAnimation(animationName);
         this.entity.setAnimationType(animationType);
+        this.entity.setAnimationTime(animationTime);
+
     }
 
     @Override
