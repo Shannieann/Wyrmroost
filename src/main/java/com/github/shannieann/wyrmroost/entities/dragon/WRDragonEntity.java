@@ -142,9 +142,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         int movingState = this.getMovingState();
         if (event.isMoving()) {
             switch (movingState) {
-                case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
-                case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
-                case 3 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
+                case 0 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
+                case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
+                case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
             }
             return PlayState.CONTINUE;
         }
@@ -159,9 +159,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         int movingState = this.getMovingState();
         if (event.isMoving()) {
             switch (movingState) {
-                case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("base_walk", ILoopType.EDefaultLoopTypes.LOOP));
-                case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("base_fly", ILoopType.EDefaultLoopTypes.LOOP));
-                case 3 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("base_swim", ILoopType.EDefaultLoopTypes.LOOP));
+                case 0 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("base_walk", ILoopType.EDefaultLoopTypes.LOOP));
+                case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("base_fly", ILoopType.EDefaultLoopTypes.LOOP));
+                case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("base_swim", ILoopType.EDefaultLoopTypes.LOOP));
 
             }
             return PlayState.CONTINUE;
@@ -220,7 +220,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public int getMovingState()
     {
-        return entityData.get(ANIMATION_TYPE);
+        return entityData.get(MOVING_STATE);
     }
 
     public void setMovingState(int movingState)
@@ -286,7 +286,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!level.isClientSide) {
             // uhh so were falling, we should probably start flying
             boolean flying = shouldFly();
-            if (flying != isFlying()) setFlying(flying);
+            if (flying != isFlying()) {
+                setFlying(flying);
+            }
 
             // todo figure out a better target system?
             LivingEntity target = getTarget();
@@ -564,18 +566,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         if (isFlying() == fly) return;
         entityData.set(FLYING, fly);
-        if (fly)
-        {
+        if (fly) {
             if (liftOff()) {
-                navigation = new FlyerPathNavigator(this);
-                //Updates moving state to fly
                 this.setMovingState(1);
+                navigation = new FlyerPathNavigator(this);
             }
         }
         else {
-            navigation = new BetterPathNavigator(this);
-            //Updates moving state to walk
             this.setMovingState(0);
+            navigation = new BetterPathNavigator(this);
         }
     }
 

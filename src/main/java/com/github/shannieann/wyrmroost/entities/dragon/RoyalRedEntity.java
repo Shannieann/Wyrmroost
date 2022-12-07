@@ -182,6 +182,7 @@ public class RoyalRedEntity extends TameableDragonEntity
                 setBreathingFire(false);
 
             if (breathTimer.get() == 1) {
+                //TODO: Reposition fire breath start point
                 level.addFreshEntity(new FireBreathEntity(this));
             }
 
@@ -535,7 +536,7 @@ public class RoyalRedEntity extends TameableDragonEntity
         private RoyalRedEntity entity;
 
         boolean animationStarted;
-
+        int ticksUntilNextAttack;
         public RRAttackGoal(RoyalRedEntity entity)
         {
             super(entity);
@@ -596,14 +597,18 @@ public class RoyalRedEntity extends TameableDragonEntity
                 setBreathingFire(entity.shouldBreatheFire());
                 if (!animationStarted) {
                     animationStarted = true;
+                    //TODO: Start with this, hold something else...
                     super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME);
                 }
             }
+
             //If we have not started flying, and we are close to target, melee attack
             else if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
-                yBodyRot = (float) Mafs.getAngle(RoyalRedEntity.this, target) + 90;
-                setYRot(yBodyRot);
-                attackInBox(getOffsetBox(getBbWidth()).inflate(0.2), 50);
+                this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
+
+                this.checkAndPerformAttack(livingentity, d0);
+
+
             }
             //TODO: ANALYZE
             if (getNavigation().isDone() || age % 10 == 0)
@@ -625,6 +630,19 @@ public class RoyalRedEntity extends TameableDragonEntity
             this.entity.setBreathingFire(false);
             super.stop();
         }
-    }
 
+        protected void checkAndPerformAttack(LivingEntity pEnemy, double pDistToEnemySqr) {
+            if (this.ticksUntilNextAttack <= 0) {
+                this.resetAttackCooldown();
+                yBodyRot = (float) Mafs.getAngle(RoyalRedEntity.this, target) + 90;
+                setYRot(yBodyRot);
+                attackInBox(getOffsetBox(getBbWidth()).inflate(0.2), 50);
+
+            }
+
+        }
+        protected void resetAttackCooldown() {
+            this.ticksUntilNextAttack = this.adjustedTickDelay(20);
+        }
+    }
 }
