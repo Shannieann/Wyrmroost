@@ -7,10 +7,11 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class ModelRoyalRed extends AnimatedGeoModel<RoyalRedEntity>
 {
+    //TODO: Select variant by modifying string
     private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/royal_red/royal_red.geo.json");
     private static final ResourceLocation TEXTURE_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/royal_red/royal_red.png");
     //TODO: Uniform variant numbering
-    private static final ResourceLocation TEXTURE_RESOURCE_1 = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/royal_red/royal_red.png");
+    private static final ResourceLocation TEXTURE_RESOURCE_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/royal_red/royal_red_sp.png");
     private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/royal_red/royal_red.json");
 
     //TODO: All model variants
@@ -22,8 +23,8 @@ public class ModelRoyalRed extends AnimatedGeoModel<RoyalRedEntity>
     //TODO: All texture variants
     @Override
     public ResourceLocation getTextureLocation(RoyalRedEntity object) {
-        if (object.getVariant() == 1) {
-            return TEXTURE_RESOURCE_1;
+        if (object.getVariant() == -1) {
+            return TEXTURE_RESOURCE_SPECIAL;
         }
         return TEXTURE_RESOURCE;
     }
