@@ -94,7 +94,7 @@ public final class WRServerConfig {
             DRAGONFRUIT_DRAKE = new DragonfruitDrake(builder);
             LESSER_DESERTWYRM = new LesserDesertwyrm(builder);
             OVERWORLD_DRAKE = new OverworldDrake(builder);
-            ROOSTSTALKER = new RoostStalker(builder);
+            ROOST_STALKER = new RoostStalker(builder);
             ROYAL_RED = new RoyalRed(builder);
             SILVER_GLIDER = new SilverGlider(builder);
             builder.pop();
@@ -107,7 +107,7 @@ public final class WRServerConfig {
         public final DragonfruitDrake DRAGONFRUIT_DRAKE;
         public final LesserDesertwyrm LESSER_DESERTWYRM;
         public final OverworldDrake OVERWORLD_DRAKE;
-        public final RoostStalker ROOSTSTALKER;
+        public final RoostStalker ROOST_STALKER;
         public final RoyalRed ROYAL_RED;
         public final SilverGlider SILVER_GLIDER;
     }

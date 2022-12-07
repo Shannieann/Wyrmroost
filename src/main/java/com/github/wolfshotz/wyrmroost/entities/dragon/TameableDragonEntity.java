@@ -317,10 +317,13 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
         //Sleeping
         if (this.isSleeping()) {
             this.setAnimation("sleep");
+            this.setAnimationType(1);
+
         }
         //Sitting
         if (this.isInSittingPose()){
             this.setAnimation("sit");
+            this.setAnimationType(1);
         }
 
         if (level.isClientSide)

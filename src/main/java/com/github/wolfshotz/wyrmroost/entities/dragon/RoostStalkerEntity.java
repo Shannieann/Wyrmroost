@@ -102,7 +102,7 @@ public class RoostStalkerEntity extends TameableDragonEntity
     protected void registerGoals()
     {
         super.registerGoals();
-        goalSelector.addGoal(0,new AnimatedGoal(this,this.getAnimation(),1,1.0F));
+        goalSelector.addGoal(0,new AnimatedGoal(this,this.getAnimation(),1,20.0F));
         goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.4F));
         goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.1d, true));
         goalSelector.addGoal(5, new MoveToHomeGoal(this));

@@ -408,10 +408,13 @@ public class OverworldDrakeEntity extends TameableDragonEntity
         return stack.is(Tags.Items.CROPS_WHEAT);
     }
 
+    /*
     @Override
     public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
         return null;
     }
+
+     */
 
     public boolean hasChest()
     {

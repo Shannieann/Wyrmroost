@@ -38,8 +38,8 @@ public class WREntitySpawning {
         if (WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.SILVER_GLIDER.get(), WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig, MobCategory.CREATURE, event);
         }
-        if (WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.spawningConfig.biomeWhitelist, biomeKey)) {
-            registerEntityWorldSpawn(WREntityTypes.ROOSTSTALKER.get(), WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.spawningConfig, MobCategory.CREATURE, event);
+        if (WRServerConfig.SERVER.ENTITIES.ROOST_STALKER.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.ROOST_STALKER.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.ROOST_STALKER.spawningConfig.biomeWhitelist, biomeKey)) {
+            registerEntityWorldSpawn(WREntityTypes.ROOST_STALKER.get(), WRServerConfig.SERVER.ENTITIES.ROOST_STALKER.spawningConfig, MobCategory.CREATURE, event);
         }
         if (WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.CANARI_WYVERN.get(), WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig, MobCategory.CREATURE, event);

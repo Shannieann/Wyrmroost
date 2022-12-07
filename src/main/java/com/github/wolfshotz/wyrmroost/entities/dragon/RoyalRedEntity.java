@@ -509,6 +509,7 @@ public class RoyalRedEntity extends TameableDragonEntity
 
         public RRAttackGoal(RoyalRedEntity entity)
         {
+            super(entity,"base",1,10);
             setFlags(EnumSet.of(Goal.Flag.MOVE, Flag.LOOK));
             this.entity = entity;
         }

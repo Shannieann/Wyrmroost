@@ -92,10 +92,14 @@ public class SilverGliderEntity extends TameableDragonEntity
         goalSelector.addGoal(9, new LookAtPlayerGoal(this, LivingEntity.class, 7f));
         goalSelector.addGoal(10, new RandomLookAroundGoal(this));
     }
+
+    /*
     @Override
     public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
         return null; // Todo Implement animations
     }
+    */
+
     @Override
     public void registerControllers(AnimationData data) {
 

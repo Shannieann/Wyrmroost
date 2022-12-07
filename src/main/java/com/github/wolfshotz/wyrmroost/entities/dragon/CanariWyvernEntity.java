@@ -77,7 +77,7 @@ public class CanariWyvernEntity extends TameableDragonEntity
         targetSelector.addGoal(2, new DefendHomeGoal(this));
         targetSelector.addGoal(3, new HurtByTargetGoal(this));
     }
-
+    /*
     //TODO fix whatever this is
     @Override
     public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
@@ -122,6 +122,7 @@ public class CanariWyvernEntity extends TameableDragonEntity
         data.addAnimationController(new AnimationController(this, "attackController", 8, this::attackPredicate));
     }
 
+     */
 
     @Override
     protected BodyRotationControl createBodyControl()

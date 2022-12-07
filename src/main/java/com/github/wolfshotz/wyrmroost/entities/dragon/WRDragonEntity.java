@@ -35,6 +35,8 @@ public class WRDragonEntity extends TamableAnimal implements IAnimatable {
      * Case 1: Flying
      * Case 2: Swimming
      */
+    //TODO: ANIMATION TIME FLOAT DATAPARAMETER
+    //private static final EntityDataAccessor<Integer> ANIMATION_TIME = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> MOVING_STATE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
     protected WRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
