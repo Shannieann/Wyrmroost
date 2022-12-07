@@ -34,7 +34,6 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import org.apache.logging.log4j.core.jmx.Server;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -766,11 +765,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void setInSittingPose(boolean flag)
     {
-        setAnimation("sitting");
-        setAnimationType(3);
-        setAnimationTime(20);
         super.setInSittingPose(flag);
-        if (flag) clearAI();
+        if (flag) {
+            clearAI();
+            setAnimation("sitting");
+            setAnimationType(3);
+            setAnimationTime(20);
+        }
     }
 
     // =====================
