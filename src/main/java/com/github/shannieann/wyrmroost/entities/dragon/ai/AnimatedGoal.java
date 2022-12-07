@@ -10,11 +10,8 @@ public class AnimatedGoal extends Goal {
     public float animationTime;
     public float elapsedTime;
 
-    public AnimatedGoal(WRDragonEntity entity, String animationName, int animationType, float animationTime){
+    public AnimatedGoal(WRDragonEntity entity){
         this.entity = entity;
-        this.animationName = animationName;
-        this.animationType = animationType;
-        this.animationTime = animationTime;
         this.elapsedTime = 0;
     }
 
@@ -40,7 +37,13 @@ public class AnimatedGoal extends Goal {
         this.entity.setAnimation(animationName);
         this.entity.setAnimationType(animationType);
         this.entity.setAnimationTime(animationTime);
+    }
 
+    public void start(String animationName, int animationType, float animationTime){
+        this.animationName = animationName;
+        this.animationType = animationType;
+        this.animationTime= animationTime;
+        this.start();
     }
 
     @Override
@@ -52,5 +55,7 @@ public class AnimatedGoal extends Goal {
     public void stop(){
         this.entity.setAnimation("base");
         this.entity.setAnimationType(1);
+        this.entity.setAnimationTime(0);
+
     }
 }
