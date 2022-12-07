@@ -515,18 +515,12 @@ public class RoyalRedEntity extends TameableDragonEntity
     }
 
 
-
     /*@org.jetbrains.annotations.Nullable
     @Override
     public AbstractContainerMenu createMenu(int p_39954_, Inventory p_39955_, Player p_39956_) {
         return null;
     }*/
-
-    @Override
-    public void registerControllers(AnimationData data) {
-
-    }
-
+    
     class RRAttackGoal extends Goal
     {
         private RoyalRedEntity entity;
