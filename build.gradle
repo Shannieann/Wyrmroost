@@ -17,7 +17,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
 
 version = "$mc_version-$mod_version"
-group = 'com.github.wolfShotz.wyrmroost'
+group = 'com.github.Shannieann.wyrmroost'
 archivesBaseName = "$project.archiveBaseName"
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
@@ -83,11 +83,11 @@ jar {
     manifest {
         attributes([
                 "Specification-Title"     : "Wyrmroost",
-                "Specification-Vendor"    : "WolfShotz",
+                "Specification-Vendor"    : "Shannieann",
                 "Specification-Version"   : 1,
                 "Implementation-Title"    : project.name,
                 "Implementation-Version"  : "${version}",
-                "Implementation-Vendor"   : "WolfShotz",
+                "Implementation-Vendor"   : "Shannieann",
                 "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ")
         ])
     }
