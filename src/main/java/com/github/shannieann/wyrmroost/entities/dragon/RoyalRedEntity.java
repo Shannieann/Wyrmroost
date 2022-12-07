@@ -58,6 +58,10 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class RoyalRedEntity extends TameableDragonEntity
 {
+    static {
+        IDLE_ANIMATION_VARIANTS = 1;
+        ATTACK_ANIMATION_VARIANTS = 3;
+    }
 
     public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);

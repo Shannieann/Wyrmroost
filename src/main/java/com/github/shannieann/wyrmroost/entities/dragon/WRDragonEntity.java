@@ -67,6 +67,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //TODO: What is this?
     private static final UUID SCALE_MOD_UUID = UUID.fromString("81a0addd-edad-47f1-9aa7-4d76774e055a");
     private static final int AGE_UPDATE_INTERVAL = 200;
+    protected static int IDLE_ANIMATION_VARIANTS;
+    protected static int ATTACK_ANIMATION_VARIANTS;
 
 
     private static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
@@ -126,7 +128,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return PlayState.CONTINUE;
         }
         //Else, do basic locomotion
-        //TODO: Do we want custom death animations?
+        //TODO: Custom Death Animations
         //Death
         if ((this.dead || this.getHealth() < 0.01 || this.isDeadOrDying())) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation("death", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
@@ -143,8 +145,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return PlayState.CONTINUE;
         }
         //Idle:
-        //TODO: IDLE VARIANTS
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("idle", ILoopType.EDefaultLoopTypes.LOOP));
+        int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS+1);
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("idle_"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
 
@@ -788,6 +790,20 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
         }
     }
+
+
+    @Override
+    public boolean doHurtTarget(Entity entity)
+    {
+        if (!this.getAnimation().equals("base")) {
+            int attackVariant = this.random.nextInt(ATTACK_ANIMATION_VARIANTS+1);
+            this.setAnimation("attack_"+attackVariant);
+            this.setAnimationType(1);
+            this.setAnimationTime(80);
+        }
+        return super.doHurtTarget(entity);
+    }
+
     @Override
     public boolean hurt(DamageSource source, float amount)
     {
