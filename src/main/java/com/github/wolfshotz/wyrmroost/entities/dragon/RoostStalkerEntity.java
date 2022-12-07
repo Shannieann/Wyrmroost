@@ -2,6 +2,7 @@ package com.github.wolfshotz.wyrmroost.entities.dragon;
 
 import com.github.wolfshotz.wyrmroost.client.screen.DragonControlScreen;
 import com.github.wolfshotz.wyrmroost.containers.BookContainer;
+import com.github.wolfshotz.wyrmroost.entities.dragon.ai.AnimatedGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.DefendHomeGoal;
 import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.DragonBreedGoal;
@@ -62,15 +63,13 @@ import javax.annotation.Nullable;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 
-;
-
 public class RoostStalkerEntity extends TameableDragonEntity
 {
+    public static final int ITEM_SLOT = 0;
+    //TODO: What are we using this serializer for?
     public static final EntitySerializer<RoostStalkerEntity> SERIALIZER = TameableDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.BOOL, "Sleeping", TameableDragonEntity::isSleeping, TameableDragonEntity::setSleeping)
             .track(EntitySerializer.INT, "Variant", TameableDragonEntity::getVariant, TameableDragonEntity::setVariant));
-
-    public static final int ITEM_SLOT = 0;
     private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(RoostStalkerEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Boolean> SCAVENGING = SynchedEntityData.defineId(RoostStalkerEntity.class, EntityDataSerializers.BOOLEAN);
 
@@ -78,12 +77,6 @@ public class RoostStalkerEntity extends TameableDragonEntity
     {
         super(stalker, level);
         maxUpStep = 0;
-    }
-
-    @Override
-    public EntitySerializer<RoostStalkerEntity> getSerializer()
-    {
-        return SERIALIZER;
     }
 
     @Override
@@ -96,11 +89,20 @@ public class RoostStalkerEntity extends TameableDragonEntity
         entityData.define(SCAVENGING, false);
     }
 
+
+    public static AttributeSupplier.Builder getAttributeSupplier()
+    {
+        return (Mob.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 8.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.285D)
+                .add(Attributes.ATTACK_DAMAGE, 2.0D));
+    }
+
     @Override
     protected void registerGoals()
     {
         super.registerGoals();
-
+        goalSelector.addGoal(0,new AnimatedGoal(this,this.getAnimation(),1,1.0F));
         goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.4F));
         goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.1d, true));
         goalSelector.addGoal(5, new MoveToHomeGoal(this));
@@ -118,7 +120,6 @@ public class RoostStalkerEntity extends TameableDragonEntity
                 return !isTame() && !getItem().isEmpty() && super.canUse();
             }
         });
-
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));
@@ -131,6 +132,7 @@ public class RoostStalkerEntity extends TameableDragonEntity
     {
         super.aiStep();
 
+        //TODO: Could this logic be extracted to the super class?
         sleepTimer.add(isSleeping()? 0.08f : -0.15f);
 
         if (!level.isClientSide)
@@ -140,46 +142,24 @@ public class RoostStalkerEntity extends TameableDragonEntity
                 eat(item);
         }
     }
-    @Override
-    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        if (event.isMoving() && !isSleeping() && !isInSittingPose()){
-            if (hasCustomName() && getCustomName().getContents().equalsIgnoreCase("sir")){
-                event.getController().setAnimation(new AnimationBuilder().addAnimation("sir.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
-                return PlayState.CONTINUE;
-            }
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("walk.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        } else if (isSleeping()){
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("sleep.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        } else if (isInSittingPose()){
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("idle.2.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        }
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("idle.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
-        return PlayState.CONTINUE;
-    }
-    @Override
-    public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController<>(this, "controller", 10, this::predicate));
-    }
-
 
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
     {
         final InteractionResult success = InteractionResult.sidedSuccess(level.isClientSide);
+        //TODO: Isn't this the same as stack?
+        ItemStack playerItemInHand = player.getItemInHand(hand);
 
-        ItemStack heldItem = player.getItemInHand(hand);
-
-        if (!isTame() && heldItem.is(Tags.Items.EGGS))
+        //Taming
+        if (!isTame() && playerItemInHand.is(Tags.Items.EGGS))
         {
             eat(stack);
+            //TODO: Why are we changing the max health upon taming?
             if (tame(getRandom().nextDouble() < 0.25, player)) getAttribute(MAX_HEALTH).setBaseValue(20d);
-
             return success;
         }
 
+        //Breeding
         if (isTame() && isBreedingItem(stack))
         {
             if (!level.isClientSide && canFallInLove() && getAge() == 0)
@@ -188,34 +168,36 @@ public class RoostStalkerEntity extends TameableDragonEntity
                 stack.shrink(1);
                 return InteractionResult.SUCCESS;
             }
-
             return InteractionResult.CONSUME;
         }
 
+        //Player Commands
         if (isOwnedBy(player))
         {
+            //Sitting
             if (player.isShiftKeyDown())
             {
                 setOrderedToSit(!isInSittingPose());
                 return success;
             }
-
-            if (stack.isEmpty() && heldItem.isEmpty() && !isLeashed() && player.getPassengers().size() < 3)
+            //Riding
+            if (stack.isEmpty() && playerItemInHand.isEmpty() && !isLeashed() && player.getPassengers().size() < 3)
             {
                 if (!level.isClientSide && startRiding(player, true))
                 {
                     setOrderedToSit(false);
                     AddPassengerPacket.send(this, player);
                 }
-
                 return success;
             }
-
-            if ((!stack.isEmpty() && !isFood(stack)) || !heldItem.isEmpty())
+            //Give Item (or exchange)
+            //TODO: How do we take items away from Rooststalker without giving them anything in exchange?
+            if ((!stack.isEmpty() && !isFood(stack)) || !playerItemInHand.isEmpty())
             {
+                //TODO: Check setStackInSlot method's comments. We are not performing the checks for sidedness.
+                //TODO: Perhaps perform these checks before the mob interact is ever called?
                 setStackInSlot(ITEM_SLOT, stack);
-                player.setItemInHand(hand, heldItem);
-
+                player.setItemInHand(hand, playerItemInHand);
                 return success;
             }
         }
@@ -279,6 +261,7 @@ public class RoostStalkerEntity extends TameableDragonEntity
     {
         return getRandom().nextDouble() < 0.005? -1 : 0;
     }
+
 
     @Override
     // Override normal dragon body controller to allow rotations while sitting: its small enough for it, why not. :P
@@ -365,6 +348,8 @@ public class RoostStalkerEntity extends TameableDragonEntity
         return new DragonInventory(this, 1);
     }
 
+    //TODO: Safe to delete this?
+    /*
     public static void setSpawnBiomes(BiomeLoadingEvent event)
     {
         Biome.BiomeCategory category = event.getCategory();
@@ -372,15 +357,13 @@ public class RoostStalkerEntity extends TameableDragonEntity
             event.getSpawns().addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(WREntityTypes.ROOSTSTALKER.get(), 7, 2, 9));
     }
 
-    public static AttributeSupplier.Builder getAttributeSupplier()
+     */
+
+    @Override
+    public EntitySerializer<RoostStalkerEntity> getSerializer()
     {
-        return (Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 8.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.285D)
-                .add(Attributes.ATTACK_DAMAGE, 2.0D));
+        return SERIALIZER;
     }
-
-
 
     class ScavengeGoal extends MoveToBlockGoal
     {
@@ -414,7 +397,8 @@ public class RoostStalkerEntity extends TameableDragonEntity
             if (isReachedTarget())
             {
                 if (hasItem()) return;
-
+                //TODO: MISSING ANIMATION
+                setAnimation("scavenging");
                 setScavenging(true);
 
                 if (chest == null) return;
@@ -488,4 +472,31 @@ public class RoostStalkerEntity extends TameableDragonEntity
             chest.getLevel().blockEvent(chest.getBlockPos(), chest.getBlockState().getBlock(), 1, chest.openersCounter.getOpenerCount());
         }
     }
+
+    /*
+    @Override
+    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
+        if (event.isMoving() && !isSleeping() && !isInSittingPose()){
+            if (hasCustomName() && getCustomName().getContents().equalsIgnoreCase("sir")){
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("sir.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
+                return PlayState.CONTINUE;
+            }
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("walk.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        } else if (isSleeping()){
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("sleep.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        } else if (isInSittingPose()){
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("idle.2.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("idle.rooststalker", ILoopType.EDefaultLoopTypes.LOOP));
+        return PlayState.CONTINUE;
+    }
+    @Override
+    public void registerControllers(AnimationData data) {
+        data.addAnimationController(new AnimationController<>(this, "controller", 10, this::predicate));
+    }
+
+     */
 }
