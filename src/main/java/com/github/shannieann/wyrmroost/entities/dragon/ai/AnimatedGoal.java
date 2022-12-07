@@ -34,11 +34,7 @@ public class AnimatedGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        if (animationType == 2) {
-            if (elapsedTime > animationTime) {
-                return false;
-            }
-        } else if (elapsedTime > 300) {
+        if (elapsedTime > animationTime) {
             return false;
         }
         return true;

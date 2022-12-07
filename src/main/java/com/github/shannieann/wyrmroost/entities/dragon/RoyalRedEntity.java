@@ -539,7 +539,7 @@ public class RoyalRedEntity extends TameableDragonEntity
     {
         private RoyalRedEntity entity;
 
-        boolean animationStarted;
+        boolean animationPlaying;
         int ticksUntilNextAttack;
         public RRAttackGoal(RoyalRedEntity entity)
         {
@@ -576,12 +576,13 @@ public class RoyalRedEntity extends TameableDragonEntity
         @Override
         public void tick()
         {
-            if (animationStarted) {
+            //If animation is over (checked via Goal class) in AnimationLogic update the local variable for the GoalLogic
+            if (animationPlaying) {
                 if (super.canContinueToUse()) {
                     super.tick();
                 } else {
                     super.stop();
-                    animationStarted = false;
+                    animationPlaying = false;
                 }
             }
 
@@ -598,31 +599,23 @@ public class RoyalRedEntity extends TameableDragonEntity
                 setFlying(true);
             }
 
+            //GoalLogic: Do either breathe fire or melee attack
+            //Goal Logic: Option 1 - Breathe Fire
             if (entity.shouldBreatheFire() != isBreathingFire){
-                setBreathingFire(entity.shouldBreatheFire());
-                if (!animationStarted) {
-                    animationStarted = true;
+                //AnimationLogic: Only breathe fire if we can animate correspondingly...
+                if (!animationPlaying) {
+                    //GoalLogic: Start breathing fire
+                    setBreathingFire(entity.shouldBreatheFire());
+                    //AnimationLogic: Start fire breath animation...
+                    animationPlaying = true;
                     super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME);
                 }
             }
-
-            //If we have not started flying, and we are close to target, melee attack
+            //Goal Logic: Option 2 - Melee Attack
             else if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
                 this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
+                //GoalLogic: try to perform a melee attack
                 this.checkAndPerformAttack();
-                int attackVariant = entity.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
-                String attackAnimation = "attack_"+attackVariant;
-                float attackAnimationTime;
-                switch (attackVariant) {
-                    case 1 -> attackAnimationTime = ATTACK_ANIMATION_TIME_1;
-                    case 2 -> attackAnimationTime = ATTACK_ANIMATION_TIME_2;
-                    case 3 -> attackAnimationTime = ATTACK_ANIMATION_TIME_3;
-                    default -> attackAnimationTime = 0;
-                }
-                if (!animationStarted) {
-                    super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime);
-                    animationStarted = true;
-                }
             }
             //TODO: ANALYZE
             if (getNavigation().isDone() || age % 10 == 0)
@@ -647,17 +640,59 @@ public class RoyalRedEntity extends TameableDragonEntity
 
         protected void checkAndPerformAttack() {
             LivingEntity target = getTarget();
+            //GoalLogic: check we can perform an attack, timer set by AnimationLogic
             if (this.ticksUntilNextAttack <= 0) {
-                this.resetAttackCooldown();
                 yBodyRot = (float) Mafs.getAngle(RoyalRedEntity.this, target) + 90;
                 setYRot(yBodyRot);
-                attackInBox(getOffsetBox(getBbWidth()).inflate(0.2), 50);
 
+                //AnimationLogic: decide which attack variant we are using
+                int attackVariant = entity.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
+                String attackAnimation = "attack_"+attackVariant;
+                float attackAnimationTime;
+                double inflateValue;
+                int disableShieldTime;
+
+                //GoalLogic: check reset attack cooldown based on AnimationLogic, animation time
+                switch (attackVariant) {
+                    case 1:
+                        attackAnimationTime = ATTACK_ANIMATION_TIME_1;
+                        this.resetAttackCooldown(ATTACK_ANIMATION_TIME_1);
+                        inflateValue = 0.2;
+                        disableShieldTime = 50;
+                        break;
+                    case 2:
+                        attackAnimationTime = ATTACK_ANIMATION_TIME_2;
+                        this.resetAttackCooldown(ATTACK_ANIMATION_TIME_2);
+                        inflateValue = 0.2;
+                        disableShieldTime = 50;
+                        break;
+
+                    case 3:
+                        attackAnimationTime = ATTACK_ANIMATION_TIME_3;
+                        this.resetAttackCooldown(ATTACK_ANIMATION_TIME_3);
+                        inflateValue = 0.2;
+                        disableShieldTime = 50;
+                        break;
+                    default:
+                        attackAnimationTime = 0;
+                        inflateValue = 0.2;
+                        disableShieldTime = 50;
+                        break;
+                }
+
+                //AnimationLogic: Only do melee attack if we can animate correspondingly...
+                if (!animationPlaying) {
+                    animationPlaying = true;
+                    //AnimationLogic: start corresponding animation
+                    super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime);
+                    //GoalLogic: Do melee attack, with parameters coming from animation logic
+                    attackInBox(getOffsetBox(getBbWidth()).inflate(inflateValue), disableShieldTime);
+                }
             }
 
         }
-        protected void resetAttackCooldown() {
-            this.ticksUntilNextAttack = this.adjustedTickDelay(20);
+        protected void resetAttackCooldown(float attackVariant) {
+            this.ticksUntilNextAttack = this.adjustedTickDelay((int) attackVariant);
         }
     }
 }
