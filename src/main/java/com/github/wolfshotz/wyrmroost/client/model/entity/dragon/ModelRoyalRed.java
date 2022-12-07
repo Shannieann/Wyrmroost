@@ -3,16 +3,13 @@ package com.github.wolfshotz.wyrmroost.client.model.entity.dragon;
 import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.entities.dragon.RoyalRedEntity;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
-import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
 public class ModelRoyalRed extends AnimatedGeoModel<RoyalRedEntity>
 {
     private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/royal_red/royal_red.geo.json");
     private static final ResourceLocation TEXTURE_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/royal_red/royal_red.png");
+    //TODO: Uniform variant numbering
     private static final ResourceLocation TEXTURE_RESOURCE_1 = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/royal_red/royal_red.png");
     private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/royal_red/royal_red.json");
 
