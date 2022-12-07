@@ -15,9 +15,18 @@ public class AnimatedGoal extends Goal {
         this.elapsedTime = 0;
     }
 
+    public AnimatedGoal(WRDragonEntity entity, String animationName, int animationType, float animationTime){
+        this.entity = entity;
+        this.animationName = animationName;
+        this.animationType = animationType;
+        this.animationTime = animationTime;
+        this.elapsedTime = 0;
+    }
+
+
     @Override
     public boolean canUse(){
-        if (this.entity.getAnimation().equals("base")){
+        if (animationName.equals("base")){
             return false;
         }
         return true;
@@ -25,7 +34,11 @@ public class AnimatedGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        if (elapsedTime > animationTime) {
+        if (animationType == 2) {
+            if (elapsedTime > animationTime) {
+                return false;
+            }
+        } else if (elapsedTime > 300) {
             return false;
         }
         return true;
@@ -40,10 +53,9 @@ public class AnimatedGoal extends Goal {
     }
 
     public void start(String animationName, int animationType, float animationTime){
-        this.animationName = animationName;
-        this.animationType = animationType;
-        this.animationTime= animationTime;
-        this.start();
+        this.entity.setAnimation(this.animationName = animationName);
+        this.entity.setAnimationType(this.animationType = animationType);
+        this.entity.setAnimationTime(this.animationTime = animationTime);
     }
 
     @Override
@@ -56,6 +68,5 @@ public class AnimatedGoal extends Goal {
         this.entity.setAnimation("base");
         this.entity.setAnimationType(1);
         this.entity.setAnimationTime(0);
-
     }
 }

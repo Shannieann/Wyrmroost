@@ -109,7 +109,6 @@ public class RoyalRedEntity extends TameableDragonEntity
     protected void defineSynchedData()
     {
         super.defineSynchedData();
-
         entityData.define(GENDER, false);
         entityData.define(SLEEPING, false);
         entityData.define(VARIANT, 0);

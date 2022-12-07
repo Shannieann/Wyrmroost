@@ -128,7 +128,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 default:
                     return PlayState.STOP;
             }
-            event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
+             event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
             return PlayState.CONTINUE;
         }
         //Else, do basic locomotion
@@ -149,7 +149,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return PlayState.CONTINUE;
         }
         //Idle:
-        int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS+1);
+        int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
         event.getController().setAnimation(new AnimationBuilder().addAnimation("idle_"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
@@ -162,6 +162,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("base_walk", ILoopType.EDefaultLoopTypes.LOOP));
                 case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("base_fly", ILoopType.EDefaultLoopTypes.LOOP));
                 case 3 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("base_swim", ILoopType.EDefaultLoopTypes.LOOP));
+
             }
             return PlayState.CONTINUE;
         }
@@ -171,7 +172,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     protected void registerGoals()
     {
-        goalSelector.addGoal(0,new AnimatedGoal(this));
+        goalSelector.addGoal(0,new AnimatedGoal(this,this.getAnimation(),this.getAnimationType(),this.getAnimationTime()));
     }
 
 
@@ -330,6 +331,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //Sitting
         if (this.isInSittingPose()){
             this.setAnimation("sit");
+            this.setAnimationType(2);
             this.setAnimationTime(20);
         }
     }
@@ -809,7 +811,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         //TODO: Different animation
         //TODO: Different attack values
-        //TODO: hurt timers?
         //Could make a call to QueueHurtTarget
         //If QueuedHurtTarget = true, start counting on a timer..
         //If timer = desiredTimer
