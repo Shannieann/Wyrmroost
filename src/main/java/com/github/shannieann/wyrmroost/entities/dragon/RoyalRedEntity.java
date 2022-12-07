@@ -4,7 +4,6 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.LessShitLookController;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.*;
@@ -157,31 +156,49 @@ public class RoyalRedEntity extends TameableDragonEntity
     public void aiStep()
     {
         super.aiStep();
+        // =====================
+        //       Update Timers
+        // =====================
         flightTimer.add(isFlying()? 0.1f : -0.085f);
         sitTimer.add(isInSittingPose()? 0.075f : -0.1f);
         sleepTimer.add(isSleeping()? 0.035f : -0.05f);
         breathTimer.add(isBreathingFire()? 0.15f : -0.2f);
         knockOutTimer.add(isKnockedOut()? 0.05f : -0.1f);
 
-        if (isBreathingFire()) {
-            setAnimation(FIRE_ANIMATION);
-            setAnimationType(FIRE_ANIMATION_TYPE);
-            setAnimationTime(FIRE_ANIMATION_TIME);
-        }
+        if (!level.isClientSide) {
+            // =====================
+            //       Fire Logic
+            // =====================
+            if (isBreathingFire()) {
+                setAnimation(FIRE_ANIMATION);
+                setAnimationType(FIRE_ANIMATION_TYPE);
+                setAnimationTime(FIRE_ANIMATION_TIME);
+            }
 
-        if (!level.isClientSide)
-        {
+            if (this.shouldBreatheFire() != this.isBreathingFire()){
+                setBreathingFire(this.shouldBreatheFire());
+            }
+
             if (isBreathingFire() && getControllingPlayer() == null && getTarget() == null)
                 setBreathingFire(false);
 
-            if (breathTimer.get() == 1) level.addFreshEntity(new FireBreathEntity(this));
+            if (breathTimer.get() == 1) {
+                level.addFreshEntity(new FireBreathEntity(this));
+            }
+
+            // =====================
+            //       Roar Logic
+            // =====================
 
             if (this.getAnimation().equals("base") && !this.isKnockedOut() && !this.isSleeping() && !this.isBreathingFire() && getRandom().nextDouble() < 0.0004) {
                 setAnimation(ROAR_ANIMATION);
                 setAnimationType(ROAR_ANIMATION_TYPE);
                 setAnimationTime(ROAR_ANIMATION_TIME);
-
             }
+
+            // =====================
+            //       Knockout Logic
+            // =====================
             if (isKnockedOut() && --knockOutTime <= 0) setKnockedOut(false);
         }
     }
@@ -242,26 +259,6 @@ public class RoyalRedEntity extends TameableDragonEntity
             entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 60));
     }
 
-    //TODO: Passenger Keybind Logic
-    public void slapAttackAnimation(int time)
-    {
-        if (time == 7) playSound(WRSounds.ENTITY_ROYALRED_HURT.get(), 1, 1, true);
-        else if (time != 12) return;
-
-        attackInBox(getOffsetBox(getBbWidth()).inflate(0.2), 50);
-        setYRot(yHeadRot);
-    }
-
-    private void biteAttackAnimation(int time)
-    {
-        if (time == 4)
-        {
-            attackInBox(getOffsetBox(getBbWidth()).inflate(-0.3), 100);
-            playSound(WRSounds.ENTITY_ROYALRED_HURT.get(), 2, 1, true);
-        }
-    }
-
-
     @Override
     public void die(DamageSource cause)
     {
@@ -288,6 +285,7 @@ public class RoyalRedEntity extends TameableDragonEntity
         if (slot == ARMOR_SLOT) setArmor(stack);
     }
 
+    //TODO: Keybind animations
     @Override
     public void recievePassengerKeybind(int key, int mods, boolean pressed)
     {
@@ -300,11 +298,6 @@ public class RoyalRedEntity extends TameableDragonEntity
         }
 
         if (key == KeybindHandler.ALT_MOUNT_KEY && canBreatheFire()) setBreathingFire(pressed);
-    }
-
-    public boolean canBreatheFire()
-    {
-        return ageProgress() > 0.75f;
     }
 
     /*public void meleeAttack()
@@ -411,6 +404,11 @@ public class RoyalRedEntity extends TameableDragonEntity
         if (!level.isClientSide) entityData.set(BREATHING_FIRE, b);
     }
 
+    public boolean canBreatheFire()
+    {
+        return ageProgress() > 0.75f;
+    }
+
     public boolean isKnockedOut()
     {
         return entityData.get(KNOCKED_OUT);
@@ -474,6 +472,18 @@ public class RoyalRedEntity extends TameableDragonEntity
         return !isKnockedOut() && super.shouldSleep();
     }
 
+    private boolean shouldBreatheFire(){
+        //TODO: Distance Values, tweak?
+        LivingEntity target = this.getTarget();
+        if (target != null && target.isAlive()) {
+            double distFromTarget = distanceToSqr(target);
+            double degrees = Math.atan2(target.getZ() - getZ(), target.getX() - getX()) * (180 / Math.PI) - 90;
+            double headAngle = Math.abs(Mth.wrapDegrees(degrees - yHeadRot));
+            return (!isAtHome() && (distFromTarget > 100 || target.getY() - getY() > 3 || isFlying()) && headAngle < 30 && canBreatheFire());
+        }
+        return false;
+    }
+
     @Override
     public boolean defendsHome()
     {
@@ -520,7 +530,7 @@ public class RoyalRedEntity extends TameableDragonEntity
     public AbstractContainerMenu createMenu(int p_39954_, Inventory p_39955_, Player p_39956_) {
         return null;
     }*/
-    
+
     class RRAttackGoal extends Goal
     {
         private RoyalRedEntity entity;
@@ -561,32 +571,10 @@ public class RoyalRedEntity extends TameableDragonEntity
         {
             LivingEntity target = getTarget();
             double distFromTarget = distanceToSqr(target);
-            double degrees = Math.atan2(target.getZ() - getZ(), target.getX() - getX()) * (180 / Math.PI) - 90;
+
             boolean isBreathingFire = isBreathingFire();
             boolean canSeeTarget = getSensing().hasLineOfSight(target);
             getLookControl().setLookAt(target, 90, 90);
-
-            double headAngle = Math.abs(Mth.wrapDegrees(degrees - yHeadRot));
-
-            //Only breathe fire if we are not at home, and we are far from target in some regard,
-            // and head angle permits it, and we are old enough to do so
-            //TODO: Distance Values, tweak?
-            boolean shouldBreatheFire =
-                            !isAtHome()
-                            && (distFromTarget > 100 || target.getY() - getY() > 3 || isFlying())
-                            && headAngle < 30
-                            && canBreatheFire();
-
-
-            //Fire logic:
-            if (isBreathingFire != shouldBreatheFire) {
-                setBreathingFire(isBreathingFire = shouldBreatheFire);
-            }
-            //We have now decided whether to breathe fire or not, if we are call the animation...
-            if (isBreathingFire) {
-                //TODO: ANIMATIONS
-            }
-
 
             //Random chance to start flying / fly when target is far away...
             //TODO: If we are already flying... should we check for this?
@@ -594,11 +582,10 @@ public class RoyalRedEntity extends TameableDragonEntity
                 setFlying(true);
             }
             //If we have not started flying, and we are close to target, melee attack
-            //TODO: Remove else?
-            else if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
+            if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
                 yBodyRot = (float) Mafs.getAngle(RoyalRedEntity.this, target) + 90;
                 setYRot(yBodyRot);
-                //TODO: ANIMATIONS
+                attackInBox(getOffsetBox(getBbWidth()).inflate(0.2), 50);
             }
             //TODO: ANALYZE
             if (getNavigation().isDone() || age % 10 == 0)
@@ -609,7 +596,16 @@ public class RoyalRedEntity extends TameableDragonEntity
             }
         }
 
-        //TODO: STOP? To ensure we no longer breathe fire, etc.
+        @Override
+        public void stop () {
+            LivingEntity livingentity = this.entity.getTarget();
+            if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
+                this.entity.setTarget((LivingEntity)null);
+            }
+            this.entity.setAggressive(false);
+            this.entity.getNavigation().stop();
+            this.entity.setBreathingFire(false);
+        }
     }
 
 }
