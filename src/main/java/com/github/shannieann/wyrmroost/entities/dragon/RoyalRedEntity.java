@@ -573,7 +573,11 @@ public class RoyalRedEntity extends TameableDragonEntity
         public void tick()
         {
             if (animationStarted) {
-                super.tick();
+                if (super.canContinueToUse()) {
+                    super.tick();
+                } else {
+                    super.stop();
+                }
             }
 
             LivingEntity target = getTarget();
@@ -591,8 +595,10 @@ public class RoyalRedEntity extends TameableDragonEntity
 
             if (entity.shouldBreatheFire() != isBreathingFire){
                 setBreathingFire(entity.shouldBreatheFire());
-                super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME);
-                animationStarted = true;
+                if (!animationStarted) {
+                    animationStarted = true;
+                    super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME);
+                }
             }
             //If we have not started flying, and we are close to target, melee attack
             else if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
