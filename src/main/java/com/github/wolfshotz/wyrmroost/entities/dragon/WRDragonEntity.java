@@ -21,21 +21,21 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 public class WRDragonEntity extends TamableAnimal implements IAnimatable {
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
     
-    private static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.STRING);
+    private static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     /**
      * ANIMATION_TYPE:
      * Case 1: LOOP
      * Case 2: PLAY_ONCE
      * Case 3: HOLD_ON_LAST_FRAME
      */
-    private static final EntityDataAccessor<Integer> ANIMATION_TYPE = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> ANIMATION_TYPE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     /**
      * MOVING_STATE:
      * Case 0: Ground
      * Case 1: Flying
      * Case 2: Swimming
      */
-    private static final EntityDataAccessor<Integer> MOVING_STATE = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> MOVING_STATE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
     protected WRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -89,6 +89,7 @@ public class WRDragonEntity extends TamableAnimal implements IAnimatable {
             return PlayState.CONTINUE;
         }
         //Idle:
+        //TODO: IDLE VARIANTS
         event.getController().setAnimation(new AnimationBuilder().addAnimation("idle", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
