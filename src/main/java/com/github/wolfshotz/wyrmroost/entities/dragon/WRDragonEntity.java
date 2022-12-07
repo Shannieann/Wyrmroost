@@ -20,7 +20,7 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 
 public class WRDragonEntity extends TamableAnimal implements IAnimatable {
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
-
+    
     private static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.STRING);
     /**
      * ANIMATION_TYPE:
@@ -29,12 +29,6 @@ public class WRDragonEntity extends TamableAnimal implements IAnimatable {
      * Case 3: HOLD_ON_LAST_FRAME
      */
     private static final EntityDataAccessor<Integer> ANIMATION_TYPE = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.INT);
-    /**
-     * ATTACKING_STATE:
-     * Case 0: Not attacking
-     * Case n: Attacking with attack type n
-     */
-    private static final EntityDataAccessor<Integer> ATTACKING_STATE = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.INT);
     /**
      * MOVING_STATE:
      * Case 0: Ground
@@ -51,7 +45,6 @@ public class WRDragonEntity extends TamableAnimal implements IAnimatable {
     public void registerControllers(AnimationData data) {
         data.addAnimationController(new AnimationController(this, "generalController", 0, this::generalPredicate));
         data.addAnimationController(new AnimationController(this, "moveController", 0, this::movingPredicate));
-
     }
 
     @Override
@@ -85,17 +78,6 @@ public class WRDragonEntity extends TamableAnimal implements IAnimatable {
             event.getController().setAnimation(new AnimationBuilder().addAnimation("death", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
             return PlayState.CONTINUE;
         }
-        //TODO: Attacking triggers a Goal that sets the attack as a one shot ability... rework this goal, then.
-        int attackingState = this.getAttackingState();
-        if (attackingState != 0) {
-            for (int state = 1; state <= 4; state++){
-                if (attackingState == state) {
-                    event.getController().setAnimation(new AnimationBuilder().addAnimation("attack_"+state, ILoopType.EDefaultLoopTypes.LOOP));
-                    return PlayState.CONTINUE;
-                }
-            }
-        }
-        //Moving
         //This moving only plays if it's *just* moving and not doing anything else, as its only reached under those conditions...
         int movingState = this.getMovingState();
         if (event.isMoving()) {
@@ -136,7 +118,6 @@ public class WRDragonEntity extends TamableAnimal implements IAnimatable {
     {
         this.entityData.define(ANIMATION, "base");
         this.entityData.define(ANIMATION_TYPE, 1);
-        this.entityData.define(ATTACKING_STATE, 0);
         this.entityData.define(MOVING_STATE, 0);
         super.defineSynchedData();
     }
@@ -159,16 +140,6 @@ public class WRDragonEntity extends TamableAnimal implements IAnimatable {
     public void setAnimationType(int animation)
     {
         entityData.set(ANIMATION_TYPE, animation);
-    }
-
-    public int getAttackingState()
-    {
-        return entityData.get(ATTACKING_STATE);
-    }
-
-    public void setAttackingState(int attackingState)
-    {
-        entityData.set(ATTACKING_STATE, attackingState);
     }
 
     public int getMovingState()
