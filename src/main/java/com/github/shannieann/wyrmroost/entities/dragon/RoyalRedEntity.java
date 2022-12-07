@@ -605,10 +605,7 @@ public class RoyalRedEntity extends TameableDragonEntity
             //If we have not started flying, and we are close to target, melee attack
             else if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
                 this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
-
-                this.checkAndPerformAttack(livingentity, d0);
-
-
+                this.checkAndPerformAttack();
             }
             //TODO: ANALYZE
             if (getNavigation().isDone() || age % 10 == 0)
@@ -631,7 +628,8 @@ public class RoyalRedEntity extends TameableDragonEntity
             super.stop();
         }
 
-        protected void checkAndPerformAttack(LivingEntity pEnemy, double pDistToEnemySqr) {
+        protected void checkAndPerformAttack() {
+            LivingEntity target = getTarget();
             if (this.ticksUntilNextAttack <= 0) {
                 this.resetAttackCooldown();
                 yBodyRot = (float) Mafs.getAngle(RoyalRedEntity.this, target) + 90;
