@@ -64,7 +64,7 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
                     .trackingRange(8)
                     .build();
 
-    public static final RegistryObject<EntityType<RoostStalkerEntity>> ROOSTSTALKER =
+    public static final RegistryObject<EntityType<RoostStalkerEntity>> ROOST_STALKER =
             creature("roost_stalker", RoostStalkerEntity::new)
                     .size(0.65f, 0.5f)
                     .attributes(RoostStalkerEntity::getAttributeSupplier)
