@@ -90,7 +90,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
  * Created by com.github.WolfShotz 7/10/19 - 21:36
  * This is where the magic happens. Here be our Dragons!
  * Woah this mod is super old - Livin' In Luggery
- */public abstract class TameableDragonEntity extends WRDragonEntity implements IAnimatable, MenuProvider
+ */public abstract class TameableDragonEntity extends WRDragonEntity implements MenuProvider
 {
     public static final EntitySerializer<TameableDragonEntity> SERIALIZER = EntitySerializer.builder(b -> b
             .track(EntitySerializer.POS.optional(), "HomePos", t -> Optional.ofNullable(t.getHomePos()), (d, v) -> d.setHomePos(v.orElse(null)))
@@ -213,6 +213,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
     public void setSleeping(boolean sleep)
     {
+
         if (isSleeping() == sleep) return;
 
         entityData.set(SLEEPING, sleep);
@@ -311,6 +312,16 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
     public void tick()
     {
         super.tick();
+
+        //Animations:
+        //Sleeping
+        if (this.isSleeping()) {
+            this.setAnimation("sleep");
+        }
+        //Sitting
+        if (this.isInSittingPose()){
+            this.setAnimation("sit");
+        }
 
         if (level.isClientSide)
         {
@@ -1386,6 +1397,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
         return isFood(stack);
     }
 
+    /*
     // ================================
     //        Entity Animation
     // ================================
@@ -1405,4 +1417,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
     public boolean canBeLeashed(Player pPlayer) {
         return !this.isLeashed();
     }
+
+     */
 }

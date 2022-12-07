@@ -445,11 +445,6 @@ public class RoyalRedEntity extends TameableDragonEntity
     }
 
     @Override
-    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        return null;
-    }
-
-    @Override
     public boolean shouldSleep()
     {
         return !isKnockedOut() && super.shouldSleep();
