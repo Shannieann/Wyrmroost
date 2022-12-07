@@ -171,7 +171,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     protected void registerGoals()
     {
-        goalSelector.addGoal(0,new AnimatedGoal(this,this.getAnimation(),this.getAnimationType(),this.getAnimationTime()));
+        goalSelector.addGoal(0,new AnimatedGoal(this));
     }
 
 
@@ -819,7 +819,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!this.getAnimation().equals("base")) {
             int attackVariant = this.random.nextInt(ATTACK_ANIMATION_VARIANTS+1);
             this.setAnimation("attack_"+attackVariant);
-            this.setAnimationType(1);
+            this.setAnimationType(2);
             this.setAnimationTime(80);
         }
         return super.doHurtTarget(entity);
