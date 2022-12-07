@@ -10,10 +10,19 @@ public class AnimatedGoal extends Goal {
     public float animationTime;
     public float elapsedTime;
 
-    public AnimatedGoal(){}
+    public AnimatedGoal(WRDragonEntity entity, String animationName, int animationType, float animationTime){
+        this.entity = entity;
+        this.animationName = animationName;
+        this.animationType = animationType;
+        this.animationTime = animationTime;
+        this.elapsedTime = 0;
+    }
 
     @Override
     public boolean canUse(){
+        if (this.entity.getAnimation().equals("base")){
+            return false;
+        }
         return true;
     }
 
