@@ -807,6 +807,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public boolean doHurtTarget(Entity entity)
     {
+        //TODO: Different animation
+        //TODO: Different attack values
+        //TODO: hurt timers?
+        //Could make a call to QueueHurtTarget
+        //If QueuedHurtTarget = true, start counting on a timer..
+        //If timer = desiredTimer
+            //Play Animation
+            //Play Sound
+            //Damage Target
         if (!this.getAnimation().equals("base")) {
             int attackVariant = this.random.nextInt(ATTACK_ANIMATION_VARIANTS+1);
             this.setAnimation("attack_"+attackVariant);
