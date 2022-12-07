@@ -710,6 +710,7 @@ public abstract class TameableDragonEntity extends WRDragonEntity implements Men
     @Override
     protected void registerGoals()
     {
+        super.registerGoals();
         goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new WRSitGoal(this));
     }
