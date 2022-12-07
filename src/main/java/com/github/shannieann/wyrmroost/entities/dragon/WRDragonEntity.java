@@ -56,6 +56,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     private int sleepCooldown;
     public int breedCount;
     private float ageProgress = 1;
+    public boolean isPlayingAnimation;
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
@@ -91,6 +92,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      */
     private static final EntityDataAccessor<Float> ANIMATION_TIME = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Integer> MOVING_STATE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> PLAYING_ANIMATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> MANUAL_ANIMATION_CALL = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
     protected WRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -112,9 +115,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public <E extends IAnimatable> PlayState generalPredicate(AnimationEvent<E> event)
     {
+        System.out.println("generalPredicate running with animation " + this.getAnimation());
+        //System.out.println("generalPredicate: is playing animation =" + this.getPlayingAnimation());
+
         String animation = this.getAnimation();
+//        Boolean playingAnimation = this.getPlayingAnimation();
         //If we do have an Ability animation play that
-        if (!animation.equals("base")) {
+        if (!animation.equals("base")/* && !this.getPlayingAnimation()*/) {
+            System.out.println("generalPredicate: attempting to set animation: " + this.getAnimation());
             int animationType = this.getAnimationType();
             ILoopType loopType;
             switch (animationType) {
@@ -145,17 +153,22 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
             }
 
-             */
-             event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
+            */
+            this.setPlayingAnimation(true);
+            event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
+            System.out.println("general Predicate: set animation to " + animation);
             return PlayState.CONTINUE;
         }
         //Else, do basic locomotion
         //TODO: Custom Death Animations
+        /*
         //Death
         if ((this.dead || this.getHealth() < 0.01 || this.isDeadOrDying())) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation("death", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
             return PlayState.CONTINUE;
         }
+
+        */
         //This moving only plays if it's *just* moving and not doing anything else, as its only reached under those conditions...
         int movingState = this.getMovingState();
         //TODO: RUNNING LOGIC
@@ -176,6 +189,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     protected void registerGoals()
     {
+        //Goal will only get called when we manually set an animation and want the time counter to apply to it
         goalSelector.addGoal(0,new AnimatedGoal(this,this.getAnimation(),this.getAnimationType(),this.getAnimationTime()));
     }
 
@@ -199,6 +213,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         this.entityData.define(ANIMATION_TYPE, 1);
         this.entityData.define(MOVING_STATE, 0);
         this.entityData.define(ANIMATION_TIME, 0F);
+        this.entityData.define(PLAYING_ANIMATION, false);
+        this.entityData.define(MANUAL_ANIMATION_CALL, false);
         entityData.define(HOME_POS, BlockPos.ZERO);
         entityData.define(AGE, 0);
         super.defineSynchedData();
@@ -210,7 +226,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     public void setAnimation(String animation)
-    {entityData.set(ANIMATION, animation);}
+    {
+        System.out.println("setAnimation Data Method called, setting animation to :" + animation);
+        entityData.set(ANIMATION, animation);
+    }
 
     public int getAnimationType()
     {
@@ -220,6 +239,36 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void setAnimationType(int animation)
     {
         entityData.set(ANIMATION_TYPE, animation);
+    }
+
+    public float getAnimationTime()
+    {
+        return entityData.get(ANIMATION_TIME);
+    }
+
+    public void setAnimationTime(float animationTime)
+    {
+        entityData.set(ANIMATION_TIME, animationTime);
+    }
+
+    public boolean getPlayingAnimation()
+    {
+        return entityData.get(PLAYING_ANIMATION);
+    }
+
+    public void setPlayingAnimation(boolean playingAnimation)
+    {
+        entityData.set(PLAYING_ANIMATION, playingAnimation);
+    }
+
+    public boolean getManualAnimationCall()
+    {
+        return entityData.get(MANUAL_ANIMATION_CALL);
+    }
+
+    public void setManualAnimationCall(boolean manualAnimationCall)
+    {
+        entityData.set(MANUAL_ANIMATION_CALL, manualAnimationCall);
     }
 
     public int getMovingState()
@@ -232,15 +281,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(MOVING_STATE, movingState);
     }
 
-    public float getAnimationTime()
-    {
-        return entityData.get(ANIMATION_TIME);
-    }
 
-    public void setAnimationTime(float animationTime)
-    {
-        entityData.set(ANIMATION_TIME, animationTime);
-    }
 
     @Override
     public boolean canBeLeashed(Player pPlayer) {
@@ -333,12 +374,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             this.setAnimation("sleep");
             this.setAnimationType(1);
             this.setAnimationTime(20);
+            this.setManualAnimationCall(true);
         }
         //Sitting
         if (this.isInSittingPose()){
             this.setAnimation("sit");
             this.setAnimationType(2);
             this.setAnimationTime(20);
+            this.setManualAnimationCall(true);
         }
     }
 
@@ -820,6 +863,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             //Play Animation
             //Play Sound
             //Damage Target
+        System.out.println("doHurtTarget called performing melee attack animation");
         if (this.getAnimation().equals("base")) {
             int attackVariant = this.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
             this.setAnimation("attack_"+attackVariant);

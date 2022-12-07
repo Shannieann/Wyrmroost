@@ -87,10 +87,10 @@ public class RoyalRedEntity extends TameableDragonEntity
     public static final int FIRE_ANIMATION_TYPE = 1;
     public static final float FIRE_ANIMATION_TIME = 80;
 
-    public static final String ATTACK_ANIMATION = "attack";
+    public static final String ATTACK_ANIMATION = "attack_";
     public static final int ATTACK_ANIMATION_TYPE = 2;
-    public static final float ATTACK_ANIMATION_TIME_1 = 80;
-    public static final float ATTACK_ANIMATION_TIME_2 = 80;
+    public static final float ATTACK_ANIMATION_TIME_1 = 40;
+    public static final float ATTACK_ANIMATION_TIME_2 = 27;
     public static final float ATTACK_ANIMATION_TIME_3 = 80;
 
     public final LerpedFloat flightTimer = LerpedFloat.unit();
@@ -173,12 +173,13 @@ public class RoyalRedEntity extends TameableDragonEntity
             // =====================
             //       Fire Logic
             // =====================
-
+            //TODO: CARE! Manual call to FIRE when FIRE was already set via Goal in the RRAttackGoal class
             /*
             if (isBreathingFire()) {
                 setAnimation(FIRE_ANIMATION);
                 setAnimationType(FIRE_ANIMATION_TYPE);
                 setAnimationTime(FIRE_ANIMATION_TIME);
+                setManualAnimationCall(true);
             }
              */
 
@@ -193,12 +194,18 @@ public class RoyalRedEntity extends TameableDragonEntity
             // =====================
             //       Roar Logic
             // =====================
+            /*
+            //TODO: Re-enable
 
             if (this.getAnimation().equals("base") && !this.isKnockedOut() && !this.isSleeping() && !this.isBreathingFire() && getRandom().nextDouble() < 0.0004) {
                 setAnimation(ROAR_ANIMATION);
                 setAnimationType(ROAR_ANIMATION_TYPE);
                 setAnimationTime(ROAR_ANIMATION_TIME);
+                setManualAnimationCall(true);
             }
+
+          */
+
 
             // =====================
             //       Knockout Logic
@@ -586,6 +593,9 @@ public class RoyalRedEntity extends TameableDragonEntity
                 }
             }
 
+
+            this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
+
             LivingEntity target = getTarget();
             double distFromTarget = distanceToSqr(target);
 
@@ -594,13 +604,20 @@ public class RoyalRedEntity extends TameableDragonEntity
             getLookControl().setLookAt(target, 90, 90);
 
             //Random chance to start flying / fly when target is far away...
+            //TODO: Re-enable
+            /*
             //TODO: If we are already flying... should we check for this?
             if (getRandom().nextDouble() < 0.001 || distFromTarget > 900) {
                 setFlying(true);
             }
 
+             */
+
+
             //GoalLogic: Do either breathe fire or melee attack
             //Goal Logic: Option 1 - Breathe Fire
+            //TODO: Re-enable
+/*
             if (entity.shouldBreatheFire() != isBreathingFire){
                 //AnimationLogic: Only breathe fire if we can animate correspondingly...
                 if (!animationPlaying) {
@@ -611,8 +628,10 @@ public class RoyalRedEntity extends TameableDragonEntity
                     super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME);
                 }
             }
+
+ */
             //Goal Logic: Option 2 - Melee Attack
-            else if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
+            /*else*/ if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
                 this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
                 //GoalLogic: try to perform a melee attack
                 this.checkAndPerformAttack();
@@ -629,6 +648,7 @@ public class RoyalRedEntity extends TameableDragonEntity
         @Override
         public void stop () {
             LivingEntity livingentity = this.entity.getTarget();
+            System.out.println("RRAttackGoal stopped at subclass");
             if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
                 this.entity.setTarget((LivingEntity)null);
             }
@@ -639,6 +659,7 @@ public class RoyalRedEntity extends TameableDragonEntity
         }
 
         protected void checkAndPerformAttack() {
+            System.out.println("RRAttackGoal check and perform attack called");
             LivingEntity target = getTarget();
             //GoalLogic: check we can perform an attack, timer set by AnimationLogic
             if (this.ticksUntilNextAttack <= 0) {
@@ -647,7 +668,7 @@ public class RoyalRedEntity extends TameableDragonEntity
 
                 //AnimationLogic: decide which attack variant we are using
                 int attackVariant = entity.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
-                String attackAnimation = "attack_"+attackVariant;
+                String attackAnimation = ATTACK_ANIMATION+attackVariant;
                 float attackAnimationTime;
                 double inflateValue;
                 int disableShieldTime;
@@ -656,20 +677,20 @@ public class RoyalRedEntity extends TameableDragonEntity
                 switch (attackVariant) {
                     case 1:
                         attackAnimationTime = ATTACK_ANIMATION_TIME_1;
-                        this.resetAttackCooldown(ATTACK_ANIMATION_TIME_1);
+                        this.ticksUntilNextAttack = (int) ATTACK_ANIMATION_TIME_1;
                         inflateValue = 0.2;
                         disableShieldTime = 50;
                         break;
                     case 2:
                         attackAnimationTime = ATTACK_ANIMATION_TIME_2;
-                        this.resetAttackCooldown(ATTACK_ANIMATION_TIME_2);
+                        this.ticksUntilNextAttack = (int) ATTACK_ANIMATION_TIME_2;
                         inflateValue = 0.2;
                         disableShieldTime = 50;
                         break;
 
                     case 3:
                         attackAnimationTime = ATTACK_ANIMATION_TIME_3;
-                        this.resetAttackCooldown(ATTACK_ANIMATION_TIME_3);
+                        this.ticksUntilNextAttack = (int) ATTACK_ANIMATION_TIME_3;
                         inflateValue = 0.2;
                         disableShieldTime = 50;
                         break;
@@ -683,16 +704,13 @@ public class RoyalRedEntity extends TameableDragonEntity
                 //AnimationLogic: Only do melee attack if we can animate correspondingly...
                 if (!animationPlaying) {
                     animationPlaying = true;
+                    System.out.println("RRAttackGoal performing melee attack animation");
                     //AnimationLogic: start corresponding animation
                     super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime);
                     //GoalLogic: Do melee attack, with parameters coming from animation logic
                     attackInBox(getOffsetBox(getBbWidth()).inflate(inflateValue), disableShieldTime);
                 }
             }
-
-        }
-        protected void resetAttackCooldown(float attackVariant) {
-            this.ticksUntilNextAttack = this.adjustedTickDelay((int) attackVariant);
         }
     }
 }
