@@ -103,7 +103,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void registerControllers(AnimationData data) {
         data.addAnimationController(new AnimationController(this, "generalController", 0, this::generalPredicate));
-        data.addAnimationController(new AnimationController(this, "moveController", 0, this::movingPredicate));
     }
 
     @Override
@@ -127,6 +126,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     break;
                 default:
                     return PlayState.STOP;
+            }
+            if (event.isMoving()) {
+                int movingState = this.getMovingState();
+                switch (movingState) {
+                    case 0: animation = animation + "_walk";
+                    case 1: animation = animation + "_fly";
+                    case 2: animation = animation + "_swim";
+                }
+
             }
              event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
             return PlayState.CONTINUE;
@@ -152,21 +160,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
         event.getController().setAnimation(new AnimationBuilder().addAnimation("idle_"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
-    }
-
-    public <E extends IAnimatable> PlayState movingPredicate(AnimationEvent<E> event)
-    {
-        int movingState = this.getMovingState();
-        if (event.isMoving()) {
-            switch (movingState) {
-                case 0 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("base_walk", ILoopType.EDefaultLoopTypes.LOOP));
-                case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("base_fly", ILoopType.EDefaultLoopTypes.LOOP));
-                case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("base_swim", ILoopType.EDefaultLoopTypes.LOOP));
-
-            }
-            return PlayState.CONTINUE;
-        }
-        return PlayState.STOP;
     }
 
     @Override
