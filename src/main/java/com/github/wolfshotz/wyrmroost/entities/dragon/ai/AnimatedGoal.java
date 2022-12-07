@@ -3,19 +3,18 @@ package com.github.wolfshotz.wyrmroost.entities.dragon.ai;
 import com.github.wolfshotz.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 
-public abstract class AnimatedGoal extends Goal {
-    WRDragonEntity entity;
-    String animationName;
-    int animationType;
-    float animationTime;
-    float elapsedTime;
+public class AnimatedGoal extends Goal {
+    public WRDragonEntity entity;
+    public String animationName;
+    public int animationType;
+    public float animationTime;
+    public float elapsedTime;
 
-    public AnimatedGoal(WRDragonEntity entity, String animationName, int animationType, float animationTime){
-        this.entity = entity;
-        this.animationName = animationName;
-        this.animationType = animationType;
-        this.animationTime = animationTime;
-        this.elapsedTime = 0;
+    public AnimatedGoal(){}
+
+    @Override
+    public boolean canUse(){
+        return true;
     }
 
     @Override
@@ -24,6 +23,16 @@ public abstract class AnimatedGoal extends Goal {
             return false;
         }
         return true;
+    }
+
+
+    public void start(WRDragonEntity entity, String animationName, int animationType, float animationTime) {
+        this.entity = entity;
+        this.animationName = animationName;
+        this.animationType = animationType;
+        this.animationTime = animationTime;
+        this.elapsedTime = 0;
+        this.start();
     }
 
     @Override
