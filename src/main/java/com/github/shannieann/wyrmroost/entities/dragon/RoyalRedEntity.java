@@ -612,6 +612,7 @@ public class RoyalRedEntity extends TameableDragonEntity
                 this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
                 this.checkAndPerformAttack();
                 int attackVariant = entity.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
+                String attackAnimation = "attack_"+attackVariant;
                 float attackAnimationTime;
                 switch (attackVariant) {
                     case 1 -> attackAnimationTime = ATTACK_ANIMATION_TIME_1;
@@ -619,7 +620,7 @@ public class RoyalRedEntity extends TameableDragonEntity
                     case 3 -> attackAnimationTime = ATTACK_ANIMATION_TIME_3;
                     default -> attackAnimationTime = 0;
                 }
-                super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, attackAnimationTime);
+                super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime);
                 animationStarted = true;
             }
             //TODO: ANALYZE
