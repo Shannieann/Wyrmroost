@@ -1,6 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.WRConfig;
+import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.BetterPathNavigator;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.DragonBodyController;
@@ -33,6 +34,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import org.apache.logging.log4j.core.jmx.Server;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -44,6 +46,7 @@ import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
@@ -942,6 +945,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         return false;
     }
+
+    public static boolean canFlyerSpawn(EntityType<? extends WRDragonEntity> entityType, ServerLevelAccessor serverLevelAccessor, MobSpawnType spawnType, BlockPos pos, Random random)
+    {
+        return serverLevelAccessor.getBlockState(pos.below()).getFluidState().isEmpty();
+    }
+
 }
 
 
