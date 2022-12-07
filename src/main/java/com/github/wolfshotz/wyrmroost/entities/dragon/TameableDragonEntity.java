@@ -260,11 +260,16 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
         entityData.set(FLYING, fly);
         if (fly)
         {
-            // make sure NOT to switch the navigator if liftoff fails
-            if (liftOff()) navigation = new FlyerPathNavigator(this);
+            if (liftOff()) {
+                navigation = new FlyerPathNavigator(this);
+                //Updates moving state to fly
+                this.setMovingState(1);
+            }
         }
         else {
             navigation = new BetterPathNavigator(this);
+            //Updates moving state to walk
+            this.setMovingState(0);
         }
 
     }

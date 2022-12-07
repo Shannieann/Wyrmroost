@@ -572,7 +572,7 @@ public class RoyalRedEntity extends TameableDragonEntity
             //We have now decided whether to breathe fire or not, if we are call the animation...
             if (isBreathingFire) {
                 //TODO: Correct animations
-                super.start(entity, "randomized animation", 2, 3);
+                super.start(entity, "randomized fire breath animation", 2, 3);
 
                 super.start();
             }
@@ -590,7 +590,7 @@ public class RoyalRedEntity extends TameableDragonEntity
                 setYRot(yBodyRot);
                 //TODO: RANDOMIZE MELEE ANIMATIONS
                 super.start(entity, "randomized animation", 2, 3);
-                //TODO: Do I need to super other things?
+                //TODO: Do I need to super other things? DEBUG
             }
             //TODO: ANALYZE
             if (getNavigation().isDone() || age % 10 == 0)
@@ -600,5 +600,8 @@ public class RoyalRedEntity extends TameableDragonEntity
                 getNavigation().moveTo(target.getX(), y, target.getZ(), !isFlying() && isBreathingFire? 0.8d : 1.3d);
             }
         }
+
+        //TODO: STOP? To ensure we no longer breathe fire, etc.
     }
+
 }
