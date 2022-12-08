@@ -112,7 +112,6 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 180)
                 .add(MOVEMENT_SPEED, 0.08)
-                .add(ForgeMod.SWIM_SPEED.get(), 0.3)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, 14)
                 .add(FOLLOW_RANGE, 50);
@@ -563,16 +562,16 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     @Override
     protected void registerGoals()
     {
-        goalSelector.addGoal(0, new WRSitGoal(this));
-        goalSelector.addGoal(1, new MoveToHomeGoal(this));
-        goalSelector.addGoal(2, new AttackGoal());
-        goalSelector.addGoal(3, new WRFollowOwnerGoal(this));
+//        goalSelector.addGoal(0, new WRSitGoal(this));
+//        goalSelector.addGoal(1, new MoveToHomeGoal(this));
+//        goalSelector.addGoal(2, new AttackGoal());
+//        goalSelector.addGoal(3, new WRFollowOwnerGoal(this));
 
-        goalSelector.addGoal(4, new DragonBreedGoal(this));
-        goalSelector.addGoal(5, new JumpOutOfWaterGoal());
+//        goalSelector.addGoal(4, new DragonBreedGoal(this));
+//        goalSelector.addGoal(5, new JumpOutOfWaterGoal());
         goalSelector.addGoal(6, new RandomSwimmingGoal(this, 1, 40));
-        goalSelector.addGoal(7, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
-        goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+//        goalSelector.addGoal(7, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
+//        goalSelector.addGoal(8, new RandomLookAroundGoal(this));
 
         targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
