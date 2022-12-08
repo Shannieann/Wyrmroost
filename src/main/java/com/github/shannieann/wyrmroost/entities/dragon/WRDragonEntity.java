@@ -1484,13 +1484,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override // Dont damage owners other pets!
     public boolean doHurtTarget(Entity entity)
     {
-        System.out.println("doHurtTarget called performing melee attack animation");
+        /*
+        //TODO: set animation before we call this method
         if (this.getAnimation().equals("base")) {
             int attackVariant = this.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
             this.setAnimation("attack_"+attackVariant);
             this.setAnimationType(2);
             this.setAnimationTime(80);
         }
+
+         */
         return !isAlliedTo(entity) && super.doHurtTarget(entity);
     }
 

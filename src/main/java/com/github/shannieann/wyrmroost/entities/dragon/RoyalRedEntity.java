@@ -47,6 +47,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import org.apache.commons.lang3.ArrayUtils;
 import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.shadowed.fasterxml.jackson.databind.deser.DataFormatReaders;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;
@@ -93,12 +94,17 @@ public class RoyalRedEntity extends WRDragonEntity
     public static final float ATTACK_ANIMATION_TIME_1 = 40;
     public static final float ATTACK_ANIMATION_TIME_2 = 27;
     public static final float ATTACK_ANIMATION_TIME_3 = 80;
+    public static final float ATTACK_QUEUE_TIME_1 = 18;
+    public static final float ATTACK_QUEUE_TIME_2 = 18;
+    public static final float ATTACK_QUEUE_TIME_3 = 50;
 
     public final LerpedFloat flightTimer = LerpedFloat.unit();
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public final LerpedFloat breathTimer = LerpedFloat.unit();
     public final LerpedFloat knockOutTimer = LerpedFloat.unit();
     private int knockOutTime = 0;
+
+
 
     public RoyalRedEntity(EntityType<? extends WRDragonEntity> type, Level worldIn)
     {
@@ -209,6 +215,8 @@ public class RoyalRedEntity extends WRDragonEntity
             //       Knockout Logic
             // =====================
             if (isKnockedOut() && --knockOutTime <= 0) setKnockedOut(false);
+
+
         }
     }
 
@@ -593,6 +601,12 @@ public class RoyalRedEntity extends WRDragonEntity
 
         boolean animationPlaying;
         int ticksUntilNextAttack;
+        private boolean attackIsQueued;
+        private float queuedAttackTimer;
+        private int attackQueueTimer = 0;
+        double inflateValue;
+        int disableShieldTime;
+
         public RRAttackGoal(RoyalRedEntity entity)
         {
             super(entity);
@@ -628,57 +642,69 @@ public class RoyalRedEntity extends WRDragonEntity
         @Override
         public void tick()
         {
-            //If animation is over (checked via Goal class) in AnimationLogic update the local variable for the GoalLogic
-            if (animationPlaying) {
-                if (super.canContinueToUse()) {
-                    super.tick();
+
+            if (attackIsQueued) {
+                if (this.attackQueueTimer == queuedAttackTimer) {
+                    attackQueueTimer = 0;
+                    attackIsQueued = false;
+                    attackInBox(getOffsetBox(getBbWidth()).inflate(inflateValue), disableShieldTime);
                 } else {
-                    super.stop();
-                    animationPlaying = false;
+                    attackQueueTimer++;
                 }
-            }
+            } else {
 
-            this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
-
-            LivingEntity target = getTarget();
-            double distFromTarget = distanceToSqr(target);
-
-            boolean isBreathingFire = getBreathingFire();
-            boolean canSeeTarget = getSensing().hasLineOfSight(target);
-            getLookControl().setLookAt(target, 90, 90);
-
-            //Random chance to start flying / fly when target is far away...
-            //TODO: If we are already flying... should we check for this?
-            if (getRandom().nextDouble() < 0.001 || distFromTarget > 900) {
-                setFlying(true);
-            }
-
-
-            //GoalLogic: Do either breathe fire or melee attack
-            //Goal Logic: Option 1 - Breathe Fire
-            if (entity.shouldBreatheFire() != isBreathingFire){
-                //AnimationLogic: Only breathe fire if we can animate correspondingly...
-                if (!animationPlaying) {
-                    //GoalLogic: Start breathing fire
-                    setBreathingFire(entity.shouldBreatheFire());
-                    //AnimationLogic: Start fire breath animation...
-                    animationPlaying = true;
-                    super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME);
+                //If animation is over (checked via Goal class) in AnimationLogic update the local variable for the GoalLogic
+                if (animationPlaying) {
+                    if (super.canContinueToUse()) {
+                        super.tick();
+                    } else {
+                        super.stop();
+                        animationPlaying = false;
+                    }
                 }
-            }
 
-
-            //Goal Logic: Option 2 - Melee Attack
-            else if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
                 this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
-                //GoalLogic: try to perform a melee attack
-                this.checkAndPerformAttack();
-            }
-            if (getNavigation().isDone() || age % 10 == 0)
-            {
-                boolean isFlyingTarget = target instanceof WRDragonEntity && ((WRDragonEntity) target).isFlying();
-                double y = target.getY() + (!isFlyingTarget && getRandom().nextDouble() > 0.1? 8 : 0);
-                getNavigation().moveTo(target.getX(), y, target.getZ(), !isFlying() && isBreathingFire? 0.8d : 1.3d);
+
+                LivingEntity target = getTarget();
+                double distFromTarget = distanceToSqr(target);
+
+                boolean isBreathingFire = getBreathingFire();
+                boolean canSeeTarget = getSensing().hasLineOfSight(target);
+                getLookControl().setLookAt(target, 90, 90);
+
+                //Random chance to start flying / fly when target is far away...
+                //TODO: If we are already flying... should we check for this?
+                if (getRandom().nextDouble() < 0.001 || distFromTarget > 900) {
+                    setFlying(true);
+                }
+
+
+                //GoalLogic: Do either breathe fire or melee attack
+                //Goal Logic: Option 1 - Breathe Fire
+                if (entity.shouldBreatheFire() != isBreathingFire){
+                    //AnimationLogic: Only breathe fire if we can animate correspondingly...
+                    if (!animationPlaying) {
+                        //GoalLogic: Start breathing fire
+                        setBreathingFire(entity.shouldBreatheFire());
+                        //AnimationLogic: Start fire breath animation...
+                        animationPlaying = true;
+                        super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME);
+                    }
+                }
+
+
+                //Goal Logic: Option 2 - Melee Attack
+                else if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
+                    this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
+                    //GoalLogic: try to perform a melee attack
+                    this.checkAndPerformAttack();
+                }
+                if (getNavigation().isDone() || age % 10 == 0)
+                {
+                    boolean isFlyingTarget = target instanceof WRDragonEntity && ((WRDragonEntity) target).isFlying();
+                    double y = target.getY() + (!isFlyingTarget && getRandom().nextDouble() > 0.1? 8 : 0);
+                    getNavigation().moveTo(target.getX(), y, target.getZ(), !isFlying() && isBreathingFire? 0.8d : 1.3d);
+                }
             }
         }
 
@@ -704,9 +730,7 @@ public class RoyalRedEntity extends WRDragonEntity
                 //AnimationLogic: decide which attack variant we are using
                 int attackVariant = entity.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
                 String attackAnimation = ATTACK_ANIMATION+attackVariant;
-                float attackAnimationTime;
-                double inflateValue;
-                int disableShieldTime;
+                float attackAnimationTime = 0;
 
                 //GoalLogic: check reset attack cooldown based on AnimationLogic, animation time
                 switch (attackVariant) {
@@ -715,12 +739,15 @@ public class RoyalRedEntity extends WRDragonEntity
                         this.ticksUntilNextAttack = (int) ATTACK_ANIMATION_TIME_1;
                         inflateValue = 0.2;
                         disableShieldTime = 50;
+                        this.queuedAttackTimer = ATTACK_QUEUE_TIME_1;
                         break;
                     case 2:
                         attackAnimationTime = ATTACK_ANIMATION_TIME_2;
                         this.ticksUntilNextAttack = (int) ATTACK_ANIMATION_TIME_2;
                         inflateValue = 0.2;
                         disableShieldTime = 50;
+                        this.queuedAttackTimer = ATTACK_QUEUE_TIME_2;
+
                         break;
 
                     case 3:
@@ -728,11 +755,8 @@ public class RoyalRedEntity extends WRDragonEntity
                         this.ticksUntilNextAttack = (int) ATTACK_ANIMATION_TIME_3;
                         inflateValue = 0.2;
                         disableShieldTime = 50;
-                        break;
-                    default:
-                        attackAnimationTime = 0;
-                        inflateValue = 0.2;
-                        disableShieldTime = 50;
+                        this.queuedAttackTimer = ATTACK_QUEUE_TIME_3;
+
                         break;
                 }
 
@@ -742,7 +766,7 @@ public class RoyalRedEntity extends WRDragonEntity
                     //AnimationLogic: start corresponding animation
                     super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime);
                     //GoalLogic: Do melee attack, with parameters coming from animation logic
-                    attackInBox(getOffsetBox(getBbWidth()).inflate(inflateValue), disableShieldTime);
+                    this.attackIsQueued = true;
                 }
             }
         }
