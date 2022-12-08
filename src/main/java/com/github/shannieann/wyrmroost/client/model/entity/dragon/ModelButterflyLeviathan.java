@@ -17,13 +17,13 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
     //TODO: All model variants
     @Override
     public ResourceLocation getModelLocation(ButterflyLeviathanEntity object) {
-        String modelLocation = "geo/entity/dragon/butterfly_leviathan_/butterfly_leviathan_" + ((object.isAdult() ? "adult" : "child") + ".geo.json");
+        String modelLocation = "geo/entity/dragon/butterfly_leviathan/butterfly_leviathan_" + ((object.isAdult() ? "adult" : "child") + ".geo.json");
         return new ResourceLocation(Wyrmroost.MOD_ID, modelLocation);
     }
 
     @Override
     public ResourceLocation getTextureLocation(ButterflyLeviathanEntity object) {
-        String textureLocation = "textures/entity/dragon/butterfly_leviathan_/butterfly_leviathan_" + object.getVariant() + "_" + object.getGender() +".png";
+        String textureLocation = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_" + object.getVariant() + "_" + object.getGender() +".png";
         return new ResourceLocation(Wyrmroost.MOD_ID, textureLocation);
     }
 
