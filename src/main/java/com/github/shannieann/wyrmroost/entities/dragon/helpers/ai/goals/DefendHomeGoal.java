@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals;
 
 import com.github.shannieann.wyrmroost.WRConfig;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -21,8 +21,8 @@ public class DefendHomeGoal extends TargetGoal
 {
     private static final Predicate<LivingEntity> FILTER = e -> e instanceof Enemy && !(e instanceof Creeper) && !e.getName().getString().equalsIgnoreCase("Ignore Me");
     private static final TargetingConditions CONDITIONS = TargetingConditions.forCombat().selector(FILTER);
-    private final TameableDragonEntity defender;
-    public DefendHomeGoal(TameableDragonEntity defender)
+    private final WRDragonEntity defender;
+    public DefendHomeGoal(WRDragonEntity defender)
     {
         super(defender, false, false);
         this.defender = defender;

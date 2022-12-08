@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.network.packets;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.entity.Entity;
@@ -55,9 +55,9 @@ public class KeybindHandler
             case MOUNT_KEY:
             case ALT_MOUNT_KEY:
                 Entity vehicle = player.getVehicle();
-                if (vehicle instanceof TameableDragonEntity)
+                if (vehicle instanceof WRDragonEntity)
                 {
-                    TameableDragonEntity dragon = ((TameableDragonEntity) vehicle);
+                    WRDragonEntity dragon = ((WRDragonEntity) vehicle);
                     if (dragon.isTame() && dragon.getControllingPlayer() == player)
                         dragon.recievePassengerKeybind(key, mods, pressed);
                 }

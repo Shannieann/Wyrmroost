@@ -54,10 +54,10 @@ import java.util.Random;
 
 import static net.minecraft.entity.ai.attributes.Attributes.*;
 
-public class ButterflyLeviathanEntity extends TameableDragonEntity
+public class ButterflyLeviathanEntity extends WRDragonEntity
 {
-    public static final EntitySerializer<ButterflyLeviathanEntity> SERIALIZER = TameableDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.INT, "Variant", TameableDragonEntity::getVariant, TameableDragonEntity::setVariant));
+    public static final EntitySerializer<ButterflyLeviathanEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
 
     public static final Animation LIGHTNING_ANIMATION = LogicalAnimation.create(64, ButterflyLeviathanEntity::lightningAnimation, () -> ButterflyLeviathanModel::roarAnimation);
     public static final Animation CONDUIT_ANIMATION = LogicalAnimation.create(59, ButterflyLeviathanEntity::conduitAnimation, () -> ButterflyLeviathanModel::conduitAnimation);
@@ -73,7 +73,7 @@ public class ButterflyLeviathanEntity extends TameableDragonEntity
     public int lightningCooldown = 0;
     public boolean beached = true;
 
-    public ButterflyLeviathanEntity(EntityType<? extends TameableDragonEntity> dragon, Level level)
+    public ButterflyLeviathanEntity(EntityType<? extends WRDragonEntity> dragon, Level level)
     {
         super(dragon, level);
         noCulling = WRConfig.NO_CULLING.get();

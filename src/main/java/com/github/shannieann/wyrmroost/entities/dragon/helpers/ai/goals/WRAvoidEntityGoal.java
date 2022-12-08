@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals;
 
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -12,7 +12,7 @@ import java.util.EnumSet;
 public class WRAvoidEntityGoal<T extends LivingEntity> extends Goal
 {
     private static final TargetingConditions AVOID_CONDITIONS = TargetingConditions.forNonCombat().range(8.0D);
-    private final TameableDragonEntity entity;
+    private final WRDragonEntity entity;
     private final Class<T> classToAvoid;
     private final float avoidDistance;
     private final double farSpeed;
@@ -20,12 +20,12 @@ public class WRAvoidEntityGoal<T extends LivingEntity> extends Goal
     //private final EntityPredicate builtTargetSelector;
     private T avoidTarget;
 
-    public WRAvoidEntityGoal(TameableDragonEntity entity, Class<T> classToAvoid, float avoidDistance, double speed)
+    public WRAvoidEntityGoal(WRDragonEntity entity, Class<T> classToAvoid, float avoidDistance, double speed)
     {
         this(entity, classToAvoid, avoidDistance, speed, speed * 1.43);
     }
 
-    public WRAvoidEntityGoal(TameableDragonEntity entityIn, Class<T> avoidClass, float distance, double nearSpeedIn, double farSpeedIn) {
+    public WRAvoidEntityGoal(WRDragonEntity entityIn, Class<T> avoidClass, float distance, double nearSpeedIn, double farSpeedIn) {
         this.entity = entityIn;
         this.classToAvoid = avoidClass;
         this.avoidDistance = distance;

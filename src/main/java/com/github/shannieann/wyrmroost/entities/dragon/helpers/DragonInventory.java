@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.dragon.helpers;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
@@ -11,9 +11,9 @@ import net.minecraftforge.items.ItemStackHandler;
  */
 public class DragonInventory extends ItemStackHandler
 {
-    public final TameableDragonEntity dragon;
+    public final WRDragonEntity dragon;
 
-    public DragonInventory(TameableDragonEntity dragon, int size)
+    public DragonInventory(WRDragonEntity dragon, int size)
     {
         super(size);
         this.dragon = dragon;

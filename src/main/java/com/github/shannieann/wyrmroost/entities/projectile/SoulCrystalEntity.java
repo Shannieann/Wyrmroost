@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.projectile;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.registry.WREffects;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRItems;
@@ -110,7 +110,7 @@ public class SoulCrystalEntity extends ThrowableItemProjectile
 
     public static boolean isSuitableEntity(Entity entity)
     {
-        return entity instanceof TameableDragonEntity/* && entity.getType().is(WREntityTypes.Tags.SOUL_BEARERS)*/;
+        return entity instanceof WRDragonEntity/* && entity.getType().is(WREntityTypes.Tags.SOUL_BEARERS)*/;
     }
 
     public static InteractionResult captureDragon(@Nullable Player player, Level level, ItemStack stack, Entity target)
@@ -123,7 +123,7 @@ public class SoulCrystalEntity extends ThrowableItemProjectile
         if (dragon.hasEffect(WREffects.SOUL_WEAKNESS.get())) return fail(player, "weak");
 
         if (!dragon.getPassengers().isEmpty()) dragon.ejectPassengers();
-        if (dragon instanceof TameableDragonEntity) ((TameableDragonEntity) dragon).dropStorage();
+        if (dragon instanceof WRDragonEntity) ((WRDragonEntity) dragon).dropStorage();
 
         CompoundTag tag = stack.getOrCreateTag();
         CompoundTag dragonTag = dragon.serializeNBT();

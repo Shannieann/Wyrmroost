@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.projectile.breath;
 
 import com.github.shannieann.wyrmroost.WRConfig;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import net.minecraft.core.BlockPos;
@@ -27,7 +27,7 @@ public class FireBreathEntity extends BreathWeaponEntity
         super(type, level);
     }
 
-    public FireBreathEntity(TameableDragonEntity shooter)
+    public FireBreathEntity(WRDragonEntity shooter)
     {
         super(WREntityTypes.FIRE_BREATH.get(), shooter);
     }

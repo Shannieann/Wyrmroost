@@ -56,7 +56,7 @@ import java.util.EnumSet;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 
-public class RoyalRedEntity extends TameableDragonEntity
+public class RoyalRedEntity extends WRDragonEntity
 {
     static {
         IDLE_ANIMATION_VARIANTS = 1;
@@ -70,10 +70,10 @@ public class RoyalRedEntity extends TameableDragonEntity
     public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private static final EntitySerializer<RoyalRedEntity> SERIALIZER = TameableDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.BOOL, "Gender", TameableDragonEntity::isMale, TameableDragonEntity::setGender)
-            .track(EntitySerializer.INT, "Variant", TameableDragonEntity::getVariant, TameableDragonEntity::setVariant)
-            .track(EntitySerializer.BOOL, "Sleeping", TameableDragonEntity::isSleeping, TameableDragonEntity::setSleeping)
+    private static final EntitySerializer<RoyalRedEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+            .track(EntitySerializer.BOOL, "Gender", WRDragonEntity::isMale, WRDragonEntity::setGender)
+            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
             .track(EntitySerializer.INT, "KnockOutTime", RoyalRedEntity::getKnockOutTime, RoyalRedEntity::setKnockoutTime));
 
     public static final int ARMOR_SLOT = 0;
@@ -99,7 +99,7 @@ public class RoyalRedEntity extends TameableDragonEntity
     public final LerpedFloat knockOutTimer = LerpedFloat.unit();
     private int knockOutTime = 0;
 
-    public RoyalRedEntity(EntityType<? extends TameableDragonEntity> type, Level worldIn)
+    public RoyalRedEntity(EntityType<? extends WRDragonEntity> type, Level worldIn)
     {
         super(type, worldIn);
         noCulling = WRConfig.NO_CULLING.get();
@@ -677,7 +677,7 @@ public class RoyalRedEntity extends TameableDragonEntity
             }
             if (getNavigation().isDone() || age % 10 == 0)
             {
-                boolean isFlyingTarget = target instanceof TameableDragonEntity && ((TameableDragonEntity) target).isFlying();
+                boolean isFlyingTarget = target instanceof WRDragonEntity && ((WRDragonEntity) target).isFlying();
                 double y = target.getY() + (!isFlyingTarget && getRandom().nextDouble() > 0.1? 8 : 0);
                 getNavigation().moveTo(target.getX(), y, target.getZ(), !isFlying() && isBreathingFire? 0.8d : 1.3d);
             }

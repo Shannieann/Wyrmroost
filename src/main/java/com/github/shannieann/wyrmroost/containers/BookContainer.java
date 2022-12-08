@@ -5,7 +5,8 @@ import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.client.screen.widgets.CollapsibleWidget;
 import com.github.shannieann.wyrmroost.containers.util.DynamicSlot;
 import com.github.shannieann.wyrmroost.containers.util.Slot3D;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.items.book.action.BookAction;
 import com.github.shannieann.wyrmroost.registry.WRIO;
@@ -33,13 +34,13 @@ import static com.github.shannieann.wyrmroost.client.ClientEvents.getClient;
 
 public class BookContainer extends AbstractContainerMenu
 {
-    public final TameableDragonEntity dragon;
+    public final WRDragonEntity dragon;
     public final Inventory playerInv;
     public final List<BookAction> actions = new ArrayList<>();
     public final List<Component> toolTips = new ArrayList<>();
     public final List<CollapsibleWidget> collapsibles = new ArrayList<>();
 
-    public BookContainer(int id, Inventory playerInv, TameableDragonEntity dragon)
+    public BookContainer(int id, Inventory playerInv, WRDragonEntity dragon)
     {
         super(WRIO.TARRAGON_TOME.get(), id);
         this.dragon = dragon;
@@ -107,13 +108,13 @@ public class BookContainer extends AbstractContainerMenu
         return new BookContainer(id, playerInv, fromBytes(buf));
     }
 
-    public static void open(ServerPlayer player, TameableDragonEntity dragon, ItemStack stack)
+    public static void open(ServerPlayer player, WRDragonEntity dragon, ItemStack stack)
     {
 
         NetworkHooks.openGui(player, dragon, b -> toBytes(dragon, b));
     }
 
-    private static void toBytes(TameableDragonEntity entity, FriendlyByteBuf buffer)
+    private static void toBytes(WRDragonEntity entity, FriendlyByteBuf buffer)
     {
 
         buffer.writeVarInt(entity.getId());
@@ -137,9 +138,9 @@ public class BookContainer extends AbstractContainerMenu
     }
 
     @SuppressWarnings("ConstantConditions")
-    private static TameableDragonEntity fromBytes(FriendlyByteBuf buf)
+    private static WRDragonEntity fromBytes(FriendlyByteBuf buf)
     {
-        TameableDragonEntity dragon = (TameableDragonEntity) ClientEvents.getLevel().getEntity(buf.readVarInt());
+        WRDragonEntity dragon = (WRDragonEntity) ClientEvents.getLevel().getEntity(buf.readVarInt());
         dragon.getActiveEffectsMap().clear();
 
         int series = buf.readVarInt();

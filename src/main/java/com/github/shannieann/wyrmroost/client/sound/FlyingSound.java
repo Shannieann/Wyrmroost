@@ -1,7 +1,8 @@
 package com.github.shannieann.wyrmroost.client.sound;
 
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundEvents;
@@ -9,10 +10,10 @@ import net.minecraft.sounds.SoundSource;
 
 public class FlyingSound extends AbstractTickableSoundInstance
 {
-    private final TameableDragonEntity entity;
+    private final WRDragonEntity entity;
     private int time;
 
-    public FlyingSound(TameableDragonEntity entity)
+    public FlyingSound(WRDragonEntity entity)
     {
         super(SoundEvents.ELYTRA_FLYING, SoundSource.PLAYERS);
         this.entity = entity;
@@ -44,7 +45,7 @@ public class FlyingSound extends AbstractTickableSoundInstance
         else stop();
     }
 
-    public static void play(TameableDragonEntity dragon)
+    public static void play(WRDragonEntity dragon)
     {
         Minecraft.getInstance().getSoundManager().play(new FlyingSound(dragon));
     }

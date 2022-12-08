@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.items;
 
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggEntity;
 import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggProperties;
 import com.github.shannieann.wyrmroost.registry.WRItems;
@@ -50,7 +50,7 @@ public class DragonEggItem extends Item
     {
         if (!player.isCreative()) return false;
         if (!entity.isAlive()) return false;
-        if (!(entity instanceof TameableDragonEntity)) return false;
+        if (!(entity instanceof WRDragonEntity)) return false;
 
         CompoundTag nbt = new CompoundTag();
         nbt.putString(DragonEggEntity.DATA_DRAGON_TYPE, EntityType.getKey(entity.getType()).toString());

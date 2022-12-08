@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.dragonegg;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.DragonEggItem;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
@@ -38,7 +38,7 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
     public static final String DATA_DRAGON_TYPE = "DragonType";
     private static final int UPDATE_CONDITIONS_INTERVAL = 50; // in ticks, this is for performance reasons
 
-    public EntityType<TameableDragonEntity> containedDragon;
+    public EntityType<WRDragonEntity> containedDragon;
     public DragonEggProperties properties; // cache for speed
     public Direction wiggleDirection = Direction.NORTH;
     public LerpedFloat wiggleTime = LerpedFloat.unit();
@@ -51,7 +51,7 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
         super(type, level);
     }
 
-    public DragonEggEntity(EntityType<TameableDragonEntity> type, int hatchTime, Level level)
+    public DragonEggEntity(EntityType<WRDragonEntity> type, int hatchTime, Level level)
     {
         super(WREntityTypes.DRAGON_EGG.get(), level);
         this.containedDragon = type;
@@ -201,7 +201,7 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
     {
         if (!level.isClientSide)
         {
-            TameableDragonEntity newDragon = containedDragon.create(level);
+            WRDragonEntity newDragon = containedDragon.create(level);
             if (newDragon == null)
             {
                 safeError();

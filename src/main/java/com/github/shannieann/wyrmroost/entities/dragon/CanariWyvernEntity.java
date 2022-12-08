@@ -34,17 +34,17 @@ import java.util.EnumSet;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 
-public class CanariWyvernEntity extends TameableDragonEntity
+public class CanariWyvernEntity extends WRDragonEntity
 {
-    private static final EntitySerializer<CanariWyvernEntity> SERIALIZER = TameableDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.BOOL, "Gender", TameableDragonEntity::isMale, TameableDragonEntity::setGender)
-            .track(EntitySerializer.INT, "Variant", TameableDragonEntity::getVariant, TameableDragonEntity::setVariant)
-            .track(EntitySerializer.BOOL, "Sleeping", TameableDragonEntity::isSleeping, TameableDragonEntity::setSleeping));
+    private static final EntitySerializer<CanariWyvernEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+            .track(EntitySerializer.BOOL, "Gender", WRDragonEntity::isMale, WRDragonEntity::setGender)
+            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping));
 
 
     public Player pissedOffTarget;
 
-    public CanariWyvernEntity(EntityType<? extends TameableDragonEntity> dragon, Level level)
+    public CanariWyvernEntity(EntityType<? extends WRDragonEntity> dragon, Level level)
     {
         super(dragon, level);
 

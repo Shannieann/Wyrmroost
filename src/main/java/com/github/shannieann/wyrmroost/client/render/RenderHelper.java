@@ -3,7 +3,7 @@ package com.github.shannieann.wyrmroost.client.render;
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.ModUtils;
@@ -112,7 +112,7 @@ public class RenderHelper extends RenderType
         if (evt.getType() == RenderGameOverlayEvent.ElementType.CHAT)
         {
             Entity vehicle = ClientEvents.getPlayer().getVehicle();
-            if (vehicle instanceof TameableDragonEntity && ((TameableDragonEntity) vehicle).isFlying())
+            if (vehicle instanceof WRDragonEntity && ((WRDragonEntity) vehicle).isFlying())
             {
                 ClientEvents.getClient().textureManager.bindForSetup(GUI_ICONS);
                 int y = ClientEvents.getClient().getWindow().getScreenHeight() / 2 - 24;
@@ -255,7 +255,7 @@ public class RenderHelper extends RenderType
         Player player = mc.player;
         ItemStack stack = ModUtils.getHeldStack(player, WRItems.TARRAGON_TOME.get());
         if (stack == null) return;
-        TameableDragonEntity dragon = TarragonTomeItem.getBoundDragon(mc.level, stack);
+        WRDragonEntity dragon = TarragonTomeItem.getBoundDragon(mc.level, stack);
         TarragonTomeItem.getAction(stack).render(dragon, ms, partialTicks);
         if (dragon == null) return;
 

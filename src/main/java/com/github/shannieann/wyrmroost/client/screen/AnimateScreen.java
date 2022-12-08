@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.screen;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -27,14 +27,14 @@ public class AnimateScreen extends Screen
 {
     public static AnimateScreen last;
 
-    public final TameableDragonEntity dragon;
+    public final WRDragonEntity dragon;
     private final Map<String, ModelPart> boxes;
     private final List<TransformationWidget> transformations = new ArrayList<>();
     private ReloadWidget reloader;
     private EditBox boxAdder;
     private String error;
 
-    protected AnimateScreen(TameableDragonEntity dragon)
+    protected AnimateScreen(WRDragonEntity dragon)
     {
         super(new TextComponent("Debug: Animate Screen"));
 
@@ -152,7 +152,7 @@ public class AnimateScreen extends Screen
         transformations.add(new TransformationWidget(name, box, rotate));
     }
 
-    public static void open(TameableDragonEntity dragon)
+    public static void open(WRDragonEntity dragon)
     {
         if (last == null || last.dragon != dragon) last = new AnimateScreen(dragon);
         else last.init();

@@ -51,13 +51,13 @@ import javax.annotation.Nullable;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 
-public class RoostStalkerEntity extends TameableDragonEntity
+public class RoostStalkerEntity extends WRDragonEntity
 {
     public static final int ITEM_SLOT = 0;
     //TODO: What are we using this serializer for?
-    public static final EntitySerializer<RoostStalkerEntity> SERIALIZER = TameableDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.BOOL, "Sleeping", TameableDragonEntity::isSleeping, TameableDragonEntity::setSleeping)
-            .track(EntitySerializer.INT, "Variant", TameableDragonEntity::getVariant, TameableDragonEntity::setVariant));
+    public static final EntitySerializer<RoostStalkerEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
+            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
     private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(RoostStalkerEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Boolean> SCAVENGING = SynchedEntityData.defineId(RoostStalkerEntity.class, EntityDataSerializers.BOOLEAN);
 

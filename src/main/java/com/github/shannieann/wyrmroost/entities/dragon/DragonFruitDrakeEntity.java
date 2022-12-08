@@ -47,12 +47,12 @@ import java.util.Random;
 
 import static net.minecraft.entity.ai.attributes.Attributes.*;
 
-public class DragonFruitDrakeEntity extends TameableDragonEntity implements IForgeShearable
+public class DragonFruitDrakeEntity extends WRDragonEntity implements IForgeShearable
 {
-    private static final EntitySerializer<DragonFruitDrakeEntity> SERIALIZER = TameableDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.BOOL, "Gender", TameableDragonEntity::isMale, TameableDragonEntity::setGender)
-            .track(EntitySerializer.INT, "Variant", TameableDragonEntity::getVariant, TameableDragonEntity::setVariant)
-            .track(EntitySerializer.BOOL, "Sleeping", TameableDragonEntity::isSleeping, TameableDragonEntity::setSleeping)
+    private static final EntitySerializer<DragonFruitDrakeEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+            .track(EntitySerializer.BOOL, "Gender", WRDragonEntity::isMale, WRDragonEntity::setGender)
+            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
             .track(EntitySerializer.INT, "ShearTimer", DragonFruitDrakeEntity::getShearedCooldown, DragonFruitDrakeEntity::setShearedCooldown));
 
     private static final int CROP_GROWTH_RADIUS = 5;

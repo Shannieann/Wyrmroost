@@ -1,6 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai;
 
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -14,9 +15,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class FlyerMoveController extends MoveControl
 {
-    private final TameableDragonEntity dragon;
+    private final WRDragonEntity dragon;
 
-    public FlyerMoveController(TameableDragonEntity dragon)
+    public FlyerMoveController(WRDragonEntity dragon)
     {
         super(dragon);
         this.dragon = dragon;

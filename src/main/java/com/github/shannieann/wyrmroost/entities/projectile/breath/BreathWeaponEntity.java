@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entities.projectile.breath;
 
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.entities.projectile.DragonProjectileEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;;
@@ -17,7 +17,7 @@ public class BreathWeaponEntity extends DragonProjectileEntity
         super(type, level);
     }
 
-    public BreathWeaponEntity(EntityType<? extends DragonProjectileEntity> type, TameableDragonEntity shooter)
+    public BreathWeaponEntity(EntityType<? extends DragonProjectileEntity> type, WRDragonEntity shooter)
     {
         super(type, shooter, shooter.getApproximateMouthPos(), Vec3.directionFromRotation(shooter.getXRot(), shooter.yHeadRot));
         this.growthRate = 1.025f;

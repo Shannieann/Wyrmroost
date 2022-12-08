@@ -7,7 +7,7 @@ import com.github.shannieann.wyrmroost.client.render.entity.DragonEggRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.*;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.GeodeTippedArrowRenderer;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.registry.*;
 import com.github.shannieann.wyrmroost.util.ModUtils;
@@ -133,11 +133,11 @@ public class ClientEvents
     {
         Minecraft mc = getClient();
         Entity entity = mc.player.getVehicle();
-        if (!(entity instanceof TameableDragonEntity)) return;
+        if (!(entity instanceof WRDragonEntity)) return;
         CameraType view = mc.options.getCameraType();
 
         if (view != CameraType.FIRST_PERSON)
-            ((TameableDragonEntity) entity).setMountCameraAngles(view == CameraType.THIRD_PERSON_BACK, event);
+            ((WRDragonEntity) entity).setMountCameraAngles(view == CameraType.THIRD_PERSON_BACK, event);
     }
 
     // =====================

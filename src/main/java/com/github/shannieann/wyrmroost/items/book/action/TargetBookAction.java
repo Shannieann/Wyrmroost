@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.items.book.action;
 
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
 public class TargetBookAction implements BookAction
 {
     @Override
-    public void onSelected(TameableDragonEntity dragon, Player player, ItemStack stack)
+    public void onSelected(WRDragonEntity dragon, Player player, ItemStack stack)
     {
         dragon.clearAI();
         dragon.clearHome();
@@ -27,7 +27,7 @@ public class TargetBookAction implements BookAction
     }
 
     @Override
-    public InteractionResult rightClick(TameableDragonEntity dragon, Player player, ItemStack stack)
+    public InteractionResult rightClick(WRDragonEntity dragon, Player player, ItemStack stack)
     {
         EntityHitResult ertr = clip(player, dragon);
         if (ertr != null)
@@ -41,7 +41,7 @@ public class TargetBookAction implements BookAction
     }
 
     @Override
-    public void render(TameableDragonEntity dragon, PoseStack ms, float partialTicks)
+    public void render(WRDragonEntity dragon, PoseStack ms, float partialTicks)
     {
         EntityHitResult rtr = clip(ClientEvents.getPlayer(), dragon);
         if (rtr != null && rtr.getEntity() != dragon.getTarget())
@@ -49,7 +49,7 @@ public class TargetBookAction implements BookAction
     }
 
     @Nullable
-    private EntityHitResult clip(Player player, TameableDragonEntity dragon)
+    private EntityHitResult clip(Player player, WRDragonEntity dragon)
     {
         if (dragon == null) return null;
         return Mafs.clipEntities(player,
@@ -59,7 +59,7 @@ public class TargetBookAction implements BookAction
     }
 
     @Override
-    public String getTranslateKey(@Nullable TameableDragonEntity dragon)
+    public String getTranslateKey(@Nullable WRDragonEntity dragon)
     {
         return TRANSLATE_PATH + "target";
     }

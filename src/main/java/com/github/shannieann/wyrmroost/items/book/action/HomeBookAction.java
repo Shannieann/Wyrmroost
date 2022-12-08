@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.items.book.action;
 
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
 public class HomeBookAction implements BookAction
 {
     @Override
-    public void onSelected(TameableDragonEntity dragon, Player player, ItemStack stack)
+    public void onSelected(WRDragonEntity dragon, Player player, ItemStack stack)
     {
         if (dragon.hasRestriction())
         {
@@ -33,7 +33,7 @@ public class HomeBookAction implements BookAction
     }
 
     @Override
-    public InteractionResult clickBlock(TameableDragonEntity dragon, UseOnContext context)
+    public InteractionResult clickBlock(WRDragonEntity dragon, UseOnContext context)
     {
         BlockPos pos = context.getClickedPos();
         Level level = context.getLevel();
@@ -56,7 +56,7 @@ public class HomeBookAction implements BookAction
     }
 
     @Override
-    public void render(TameableDragonEntity dragon, PoseStack ms, float partialTicks)
+    public void render(WRDragonEntity dragon, PoseStack ms, float partialTicks)
     {
         /*HitResult rtr = ClientEvents.getClient().hitResult;
         int ticks = (dragon == null)? 0 : dragon.tickCount;
@@ -69,7 +69,7 @@ public class HomeBookAction implements BookAction
     }
 
     @Override
-    public String getTranslateKey(@Nullable TameableDragonEntity dragon)
+    public String getTranslateKey(@Nullable WRDragonEntity dragon)
     {
         if (dragon != null && dragon.hasRestriction())
             return TRANSLATE_PATH + "home.remove";

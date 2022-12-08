@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.projectile;
 
 
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
 public class DragonProjectileEntity extends Projectile implements IEntityAdditionalSpawnData
 {
     @Nullable // Potentially if the dragon is unloaded, or is not synced yet.
-    public TameableDragonEntity shooter;
+    public WRDragonEntity shooter;
     public Vec3 acceleration;
     public float growthRate = 1f;
     public int life;
@@ -36,7 +36,7 @@ public class DragonProjectileEntity extends Projectile implements IEntityAdditio
         super(type, level);
     }
 
-    public DragonProjectileEntity(EntityType<? extends DragonProjectileEntity> type, TameableDragonEntity shooter, Vec3 position, Vec3 direction)
+    public DragonProjectileEntity(EntityType<? extends DragonProjectileEntity> type, WRDragonEntity shooter, Vec3 position, Vec3 direction)
     {
         super(type, shooter.level);
 
@@ -237,7 +237,7 @@ public class DragonProjectileEntity extends Projectile implements IEntityAdditio
     @Override
     public void readSpawnData(FriendlyByteBuf buf)
     {
-        this.shooter = (TameableDragonEntity) level.getEntity(buf.readInt());
+        this.shooter = (WRDragonEntity) level.getEntity(buf.readInt());
         this.growthRate = buf.readFloat();
     }
 

@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.items.book.action;
 
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.world.InteractionResult;
@@ -14,27 +14,27 @@ public interface BookAction
 {
     String TRANSLATE_PATH = "item.wyrmroost.tarragon_tome.action.";
 
-    default InteractionResult clickBlock(@Nullable TameableDragonEntity dragon, UseOnContext context)
+    default InteractionResult clickBlock(@Nullable WRDragonEntity dragon, UseOnContext context)
     {
         return InteractionResult.PASS;
     }
 
-    default InteractionResult rightClick(@Nullable TameableDragonEntity dragon, Player player, ItemStack stack)
+    default InteractionResult rightClick(@Nullable WRDragonEntity dragon, Player player, ItemStack stack)
     {
         return InteractionResult.PASS;
     }
 
-    default void onSelected(@Nullable TameableDragonEntity dragon, Player player, ItemStack stack)
+    default void onSelected(@Nullable WRDragonEntity dragon, Player player, ItemStack stack)
     {
     }
 
-    default void render(@Nullable TameableDragonEntity dragon, PoseStack ms, float partialTicks)
+    default void render(@Nullable WRDragonEntity dragon, PoseStack ms, float partialTicks)
     {
     }
 
-    String getTranslateKey(@Nullable TameableDragonEntity dragon);
+    String getTranslateKey(@Nullable WRDragonEntity dragon);
 
-    default TranslatableComponent getTranslation(@Nullable TameableDragonEntity dragon)
+    default TranslatableComponent getTranslation(@Nullable WRDragonEntity dragon)
     {
         return new TranslatableComponent(getTranslateKey(dragon));
     }

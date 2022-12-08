@@ -1,6 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai;
 
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.control.LookControl;
@@ -10,10 +11,10 @@ import java.util.Optional;
 
 public class LessShitLookController extends LookControl
 {
-    private final TameableDragonEntity dragon;
+    private final WRDragonEntity dragon;
     private boolean stopLooking;
 
-    public LessShitLookController(TameableDragonEntity dragon)
+    public LessShitLookController(WRDragonEntity dragon)
     {
         super(dragon);
         this.dragon = dragon;

@@ -4,7 +4,7 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.client.screen.TarragonTomeScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import com.github.shannieann.wyrmroost.util.ModUtils;
@@ -24,7 +24,7 @@ import javax.annotation.Nullable;
 public class DefaultBookAction implements BookAction
 {
     @Override
-    public InteractionResult rightClick(@Nullable TameableDragonEntity dragon, Player player, ItemStack stack)
+    public InteractionResult rightClick(@Nullable WRDragonEntity dragon, Player player, ItemStack stack)
     {
         boolean client = player.getLevel().isClientSide();
         if (dragon != null && !player.getLevel().isClientSide())
@@ -46,7 +46,7 @@ public class DefaultBookAction implements BookAction
     }
 
     @Override
-    public void render(@Nullable TameableDragonEntity dragon, PoseStack ms, float partialTicks)
+    public void render(@Nullable WRDragonEntity dragon, PoseStack ms, float partialTicks)
     {
         if (dragon == null && (dragon = clip(ClientEvents.getPlayer())) != null)
             RenderHelper.renderEntityOutline(dragon,
@@ -57,14 +57,14 @@ public class DefaultBookAction implements BookAction
     }
 
     @Nullable
-    private TameableDragonEntity clip(Player player)
+    private WRDragonEntity clip(Player player)
     {
-        EntityHitResult ertr = Mafs.clipEntities(player, 40, 0.75, e -> e instanceof TameableDragonEntity && ((TameableDragonEntity) e).isOwnedBy(player));
-        return ertr != null? (TameableDragonEntity) ertr.getEntity() : null;
+        EntityHitResult ertr = Mafs.clipEntities(player, 40, 0.75, e -> e instanceof WRDragonEntity && ((WRDragonEntity) e).isOwnedBy(player));
+        return ertr != null? (WRDragonEntity) ertr.getEntity() : null;
     }
 
     @Override
-    public String getTranslateKey(@Nullable TameableDragonEntity dragon)
+    public String getTranslateKey(@Nullable WRDragonEntity dragon)
     {
         return TRANSLATE_PATH + "default";
     }

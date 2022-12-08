@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals;
 
 import com.github.shannieann.wyrmroost.WRConfig;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
@@ -13,12 +13,12 @@ import java.util.EnumSet;
 public class DragonBreedGoal extends Goal
 {
     private static final TargetingConditions PARTNER_TARGETING = TargetingConditions.forNonCombat().range(8.0D).ignoreLineOfSight();
-    protected final TameableDragonEntity dragon;
+    protected final WRDragonEntity dragon;
     //protected final EntityPredicate predicate;
-    protected TameableDragonEntity targetMate;
+    protected WRDragonEntity targetMate;
     protected int spawnBabyDelay;
 
-    public DragonBreedGoal(TameableDragonEntity dragon)
+    public DragonBreedGoal(WRDragonEntity dragon)
     {
         setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         this.dragon = dragon;
@@ -79,7 +79,7 @@ public class DragonBreedGoal extends Goal
      * valid mate found.
      */
     @Nullable
-    protected TameableDragonEntity getNearbyMate()
+    protected WRDragonEntity getNearbyMate()
     {
         return dragon.level.getNearbyEntities(dragon.getClass(), PARTNER_TARGETING, dragon, dragon.getBoundingBox().inflate(dragon.getBbWidth() * 8))
                 .stream()

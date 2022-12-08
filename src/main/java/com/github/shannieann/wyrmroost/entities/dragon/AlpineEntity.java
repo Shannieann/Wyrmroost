@@ -34,11 +34,11 @@ import javax.annotation.Nullable;
 
 import static net.minecraft.entity.ai.attributes.Attributes.*;
 
-public class AlpineEntity extends TameableDragonEntity
+public class AlpineEntity extends WRDragonEntity
 {
-    public static final EntitySerializer<AlpineEntity> SERIALIZER = TameableDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.BOOL, "Sleeping", TameableDragonEntity::isSleeping, TameableDragonEntity::setSleeping)
-            .track(EntitySerializer.INT, "Variant", TameableDragonEntity::getVariant, TameableDragonEntity::setVariant));
+    public static final EntitySerializer<AlpineEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
+            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
 
     public static final Animation ROAR_ANIMATION = LogicalAnimation.create(84, AlpineEntity::roarAnimation, () -> AlpineModel::roarAnimation);
     public static final Animation WIND_GUST_ANIMATION = LogicalAnimation.create(25, AlpineEntity::windGustAnimation, () -> AlpineModel::windGustAnimation);
@@ -48,7 +48,7 @@ public class AlpineEntity extends TameableDragonEntity
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public final LerpedFloat flightTimer = LerpedFloat.unit();
 
-    public AlpineEntity(EntityType<? extends TameableDragonEntity> dragon, Level level)
+    public AlpineEntity(EntityType<? extends WRDragonEntity> dragon, Level level)
     {
         super(dragon, level);
     }
@@ -71,7 +71,7 @@ public class AlpineEntity extends TameableDragonEntity
     }
 
     @Override
-    public EntitySerializer<? extends TameableDragonEntity> getSerializer()
+    public EntitySerializer<? extends WRDragonEntity> getSerializer()
     {
         return SERIALIZER;
     }

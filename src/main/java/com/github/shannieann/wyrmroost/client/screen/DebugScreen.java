@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.client.screen;
 
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
@@ -9,10 +9,10 @@ import net.minecraft.network.chat.TextComponent;
 
 public class DebugScreen extends Screen
 {
-    public final TameableDragonEntity dragon;
+    public final WRDragonEntity dragon;
     private boolean paused = true;
 
-    public DebugScreen(TameableDragonEntity dragon)
+    public DebugScreen(WRDragonEntity dragon)
     {
         super(new TextComponent("debug_screen"));
 
@@ -63,7 +63,7 @@ public class DebugScreen extends Screen
         return paused;
     }
 
-    public static void open(TameableDragonEntity dragon)
+    public static void open(WRDragonEntity dragon)
     {
         Minecraft.getInstance().setScreen(new DebugScreen(dragon));
     }

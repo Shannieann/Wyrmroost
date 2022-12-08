@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.client.model.entity;
 
 /*import com.github.wolfshotz.wyrmroost.Wyrmroost;
 import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
-import com.github.wolfshotz.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.wolfshotz.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.wolfshotz.wyrmroost.items.DragonArmorItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-public abstract class DragonEntityModel<T extends TameableDragonEntity> extends WREntityModel<T>
+public abstract class DragonEntityModel<T extends WRDragonEntity> extends WREntityModel<T>
 {
     private static final Map<String, ResourceLocation> ARMOR_TEXTURES = new HashMap<>();
     public static final String FOLDER = "textures/entity/dragon/";
@@ -60,7 +60,7 @@ public abstract class DragonEntityModel<T extends TameableDragonEntity> extends 
         }
     }
 
-    private static ResourceLocation getArmorTexture(TameableDragonEntity entity, Item armor)
+    private static ResourceLocation getArmorTexture(WRDragonEntity entity, Item armor)
     {
         String path = entity.getType().getRegistryName().getPath() + "/accessories/" + armor.getRegistryName().getPath();
         return ARMOR_TEXTURES.computeIfAbsent(path, p -> Wyrmroost.id(FOLDER + p + ".png"));

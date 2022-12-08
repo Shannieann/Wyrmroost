@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost;
 
 import com.github.shannieann.wyrmroost.client.screen.AnimateScreen;
 import com.github.shannieann.wyrmroost.client.screen.DebugScreen;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.items.base.ArmorBase;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
@@ -119,8 +119,8 @@ public class CommonEvents {
             Entity entity = ertr.getEntity();
             entity.refreshDimensions();
 
-            if (!(entity instanceof TameableDragonEntity)) return;
-            TameableDragonEntity dragon = (TameableDragonEntity) entity;
+            if (!(entity instanceof WRDragonEntity)) return;
+            WRDragonEntity dragon = (WRDragonEntity) entity;
 
             if (player.isShiftKeyDown()) dragon.tame(true, player);
             else

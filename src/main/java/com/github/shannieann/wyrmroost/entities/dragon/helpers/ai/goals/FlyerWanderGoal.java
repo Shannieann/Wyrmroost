@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals;
 
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.util.AirRandomPos;
@@ -11,9 +11,9 @@ import java.util.EnumSet;
 
 public class FlyerWanderGoal extends WaterAvoidingRandomStrollGoal
 {
-    private final TameableDragonEntity dragon;
+    private final WRDragonEntity dragon;
 
-    public FlyerWanderGoal(TameableDragonEntity dragon, double speed, float probability)
+    public FlyerWanderGoal(WRDragonEntity dragon, double speed, float probability)
     {
         super(dragon, speed, probability);
         setFlags(EnumSet.of(Flag.MOVE, Flag.JUMP, Flag.LOOK));
@@ -21,7 +21,7 @@ public class FlyerWanderGoal extends WaterAvoidingRandomStrollGoal
         this.dragon = dragon;
     }
 
-    public FlyerWanderGoal(TameableDragonEntity dragon, double speed)
+    public FlyerWanderGoal(WRDragonEntity dragon, double speed)
     {
         this(dragon, speed, 0.001f);
     }
@@ -31,7 +31,7 @@ public class FlyerWanderGoal extends WaterAvoidingRandomStrollGoal
     {
         if (dragon.isInSittingPose()) return false;
         if (dragon.canBeControlledByRider()) return false;
-        if (!dragon.isFlying() && dragon.hasEntityDataAccessor(TameableDragonEntity.SLEEPING) && !dragon.level.isDay()) return false;
+        if (!dragon.isFlying() && dragon.hasEntityDataAccessor(WRDragonEntity.SLEEPING) && !dragon.level.isDay()) return false;
         Vec3 vec3d = getPosition();
         if (vec3d != null)
         {
@@ -52,7 +52,7 @@ public class FlyerWanderGoal extends WaterAvoidingRandomStrollGoal
 
         if (dragon.isFlying() || (!dragon.isLeashed() && dragon.getRandom().nextFloat() <= probability + 0.02))
         {
-            if ((dragon.hasEntityDataAccessor(TameableDragonEntity.SLEEPING) && !dragon.level.isDay()) || dragon.getRandom().nextFloat() <= probability)
+            if ((dragon.hasEntityDataAccessor(WRDragonEntity.SLEEPING) && !dragon.level.isDay()) || dragon.getRandom().nextFloat() <= probability)
                 position = LandRandomPos.getPos(dragon, 20, 25);
             else
             {

@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.items.book;
 
 import com.github.shannieann.wyrmroost.client.render.TarragonTomeRenderer;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.book.action.BookAction;
 import com.github.shannieann.wyrmroost.items.book.action.BookActions;
 import com.github.shannieann.wyrmroost.registry.WRItems;
@@ -112,20 +112,20 @@ public class TarragonTomeItem extends Item implements IAnimatable
         return BookActions.DEFAULT;
     }
 
-    public static void bind(TameableDragonEntity dragon, ItemStack stack)
+    public static void bind(WRDragonEntity dragon, ItemStack stack)
     {
         stack.getOrCreateTag().putInt(DATA_DRAGON_ID, dragon.getId());
     }
 
     @Nullable
-    public static TameableDragonEntity getBoundDragon(Level level, ItemStack stack)
+    public static WRDragonEntity getBoundDragon(Level level, ItemStack stack)
     {
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains(DATA_DRAGON_ID))
         {
             Entity entity = level.getEntity(tag.getInt(DATA_DRAGON_ID));
 
-            if (entity instanceof TameableDragonEntity) return (TameableDragonEntity) entity;
+            if (entity instanceof WRDragonEntity) return (WRDragonEntity) entity;
         }
 
         return null;

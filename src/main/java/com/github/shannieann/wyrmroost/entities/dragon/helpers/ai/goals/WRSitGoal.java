@@ -1,6 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals;
 
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,9 +14,9 @@ import java.util.Random;
 
 public class WRSitGoal extends SitWhenOrderedToGoal
 {
-    private final TameableDragonEntity dragon;
+    private final WRDragonEntity dragon;
 
-    public WRSitGoal(TameableDragonEntity dragon)
+    public WRSitGoal(WRDragonEntity dragon)
     {
         super(dragon);
         this.dragon = dragon;

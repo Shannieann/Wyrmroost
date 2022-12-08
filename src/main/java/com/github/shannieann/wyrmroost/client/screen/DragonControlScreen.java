@@ -6,7 +6,7 @@ import com.github.shannieann.wyrmroost.client.screen.widgets.CollapsibleWidget;
 import com.github.shannieann.wyrmroost.client.screen.widgets.PinButton;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.containers.util.Slot3D;
-import com.github.shannieann.wyrmroost.entities.dragon.TameableDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.book.action.BookAction;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import com.github.shannieann.wyrmroost.util.Mafs;
@@ -254,7 +254,7 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
     }
 
     public void renderEntity(PoseStack ms, int mouseX, int mouseY) {
-        TameableDragonEntity dragon = menu.dragon;
+        WRDragonEntity dragon = menu.dragon;
         float x = centerX;
         float y = centerY + ((dragon.getBbHeight() / 2) * scale) - scale;
         float yaw = (float) Math.atan((x - mouseX) / 40);
