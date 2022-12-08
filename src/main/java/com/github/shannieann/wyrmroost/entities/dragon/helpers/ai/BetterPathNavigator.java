@@ -9,6 +9,7 @@ import net.minecraft.world.phys.Vec3;
  */
 public class BetterPathNavigator extends GroundPathNavigation
 {
+    //TODO: Improve
     public BetterPathNavigator(Mob entity)
     {
         super(entity, entity.level);

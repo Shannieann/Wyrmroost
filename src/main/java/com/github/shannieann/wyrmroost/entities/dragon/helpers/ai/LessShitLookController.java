@@ -11,6 +11,7 @@ import java.util.Optional;
 
 public class LessShitLookController extends LookControl
 {
+    //TODO: Improve + name
     private final WRDragonEntity dragon;
     private boolean stopLooking;
 
