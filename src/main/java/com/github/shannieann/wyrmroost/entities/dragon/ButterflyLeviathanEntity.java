@@ -10,7 +10,6 @@ import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.*;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.book.action.BookActions;
 import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
-import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import com.github.shannieann.wyrmroost.util.Mafs;
@@ -56,15 +55,11 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.level.pathfinder.SwimNodeEvaluator;
-import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraft.world.phys.Vec3;
-import software.bernie.shadowed.eliotlash.mclib.utils.MathHelper;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.ai.attributes.Attribute;
 
 
 import javax.annotation.Nullable;
@@ -99,38 +94,12 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         moveControl = new MoveController();
         maxUpStep = 2;
         setPathfindingMalus(BlockPathTypes.WATER, 0);
+        isSwimmer = true;
     }
 
-    @Override
-    protected void registerGoals()
-    {
-        goalSelector.addGoal(0, new WRSitGoal(this));
-        goalSelector.addGoal(1, new MoveToHomeGoal(this));
-        goalSelector.addGoal(2, new AttackGoal());
-        goalSelector.addGoal(3, new WRFollowOwnerGoal(this));
-
-        goalSelector.addGoal(4, new DragonBreedGoal(this));
-        goalSelector.addGoal(5, new JumpOutOfWaterGoal());
-        goalSelector.addGoal(6, new RandomSwimmingGoal(this, 1, 40));
-        goalSelector.addGoal(7, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
-        goalSelector.addGoal(8, new RandomLookAroundGoal(this));
-
-        targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
-        targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
-        targetSelector.addGoal(3, new HurtByTargetGoal(this));
-        targetSelector.addGoal(4, new DefendHomeGoal(this));
-        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, e ->
-        {
-            EntityType<?> type = e.getType();
-            return e.isInWater() == isInWater() && (type == EntityType.PLAYER || type == EntityType.GUARDIAN || type == EntityType.SQUID);
-        }));
-    }
-
-    @Override
-    public EntitySerializer<ButterflyLeviathanEntity> getSerializer()
-    {
-        return SERIALIZER;
-    }
+    // ====================================
+    //      A) Entity Data
+    // ====================================
 
     @Override
     protected void defineSynchedData()
@@ -139,35 +108,99 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         entityData.define(HAS_CONDUIT, false);
     }
 
+    public static AttributeSupplier.Builder getAttributeSupplier()
+    {
+        return Mob.createMobAttributes()
+                .add(MAX_HEALTH, 180)
+                .add(MOVEMENT_SPEED, 0.08)
+                .add(ForgeMod.SWIM_SPEED.get(), 0.3)
+                .add(KNOCKBACK_RESISTANCE, 1)
+                .add(ATTACK_DAMAGE, 14)
+                .add(FOLLOW_RANGE, 50);
+    }
+
+    @Override
+    public EntitySerializer<ButterflyLeviathanEntity> getSerializer()
+    {
+        return SERIALIZER;
+    }
+
+    public boolean hasConduit()
+    {
+        return entityData.get(HAS_CONDUIT);
+    }
+
+    // ====================================
+    //      A.7) Entity Data: Miscellaneous
+    // ====================================
+
+    @Override
+    public EntityDimensions getDimensions(Pose pose)
+    {
+        return getType().getDimensions().scale(getScale());
+    }
+
+    @Override
+    protected float getStandingEyeHeight(Pose poseIn, EntityDimensions size)
+    {
+        return size.height * (beached? 1f : 0.6f);
+    }
+
+    @Override
+    public float getScale()
+    {
+        return getAgeScale(0.225f);
+    }
+
+    // ====================================
+    //      B) Tick and AI
+    // ====================================
+
     @Override
     public void aiStep()
     {
         super.aiStep();
 
-        Vec3 conduitPos = getConduitPos();
-
-        // cooldown for lightning attack
-        if (lightningCooldown > 0) --lightningCooldown;
-
-        // handle "beached" logic (if this fat bastard is on land)
-        boolean prevBeached = beached;
-        if (!beached && onGround && !wasTouchingWater) beached = true;
-        else if (beached && wasTouchingWater) beached = false;
-        if (prevBeached != beached) refreshDimensions();
+        // =====================
+        //       Update Timers
+        // =====================
         beachedTimer.add((beached)? 0.1f : -0.05f);
         swimTimer.add(isUnderWater()? -0.1f : 0.1f);
         sitTimer.add(isInSittingPose()? 0.1f : -0.1f);
 
-        if (isJumpingOutOfWater())
-        {
 
+        if (lightningCooldown > 0) --lightningCooldown;
+        // =====================
+        //       Beached Logic
+        // =====================
+        boolean prevBeached = beached;
 
+        if (!beached && onGround && !wasTouchingWater) {
+            beached = true;
+        }
+        else if (beached && wasTouchingWater) {
+            beached = false;
+        }
+        if (prevBeached != beached) {
+            refreshDimensions();
+        }
+
+        // =====================
+        //       Rotation Logic
+        // =====================
+        /*
+        if (isJumpingOutOfWater()) {
             Vec3 motion = getDeltaMovement();
-            //TODO: Access Transformer
             xRot = (float) (Math.signum(-motion.y) * Math.acos(Math.sqrt((motion.x*motion.x+motion.z*motion.z)) / motion.length()) * (double) (180f / Mafs.PI)) * 0.725f;
         }
 
-        // conduit effects
+         */
+
+        // =====================
+        //       Conduit Logic
+        // =====================
+
+        Vec3 conduitPos = getConduitPos();
         if (hasConduit())
         {
             if (level.isClientSide && isInWaterRainOrBubble() && getRandom().nextDouble() <= 0.1)
@@ -205,6 +238,40 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
                 if (getRandom().nextBoolean()) playSound(SoundEvents.CONDUIT_AMBIENT, 1f, 1f, true);
                 else playSound(SoundEvents.CONDUIT_AMBIENT_SHORT, 1f, 1f, true);
         }
+    }
+
+    // ====================================
+    //      B.1) Tick and AI: Attack and Hurt
+    // ====================================
+    public boolean canZap()
+    {
+        return isInWaterRainOrBubble() && lightningCooldown <= 0;
+    }
+
+
+    @Override
+    protected void registerGoals()
+    {
+        goalSelector.addGoal(0, new WRSitGoal(this));
+        goalSelector.addGoal(1, new MoveToHomeGoal(this));
+        goalSelector.addGoal(2, new AttackGoal());
+        goalSelector.addGoal(3, new WRFollowOwnerGoal(this));
+
+        goalSelector.addGoal(4, new DragonBreedGoal(this));
+        goalSelector.addGoal(5, new JumpOutOfWaterGoal());
+        goalSelector.addGoal(6, new RandomSwimmingGoal(this, 1, 40));
+        goalSelector.addGoal(7, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
+        goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+
+        targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
+        targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
+        targetSelector.addGoal(3, new HurtByTargetGoal(this));
+        targetSelector.addGoal(4, new DefendHomeGoal(this));
+        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, e ->
+        {
+            EntityType<?> type = e.getType();
+            return e.isInWater() == isInWater() && (type == EntityType.PLAYER || type == EntityType.GUARDIAN || type == EntityType.SQUID);
+        }));
     }
 
     public void lightningAnimation(int time)
@@ -460,10 +527,6 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return new Navigator();
     }
 
-    public boolean hasConduit()
-    {
-        return entityData.get(HAS_CONDUIT);
-    }
 
     @Override
     public DragonInventory createInv()
@@ -476,10 +539,6 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return !isInWater() && !beached;
     }
 
-    public boolean canZap()
-    {
-        return isInWaterRainOrBubble() && lightningCooldown <= 0;
-    }
 
     @Override
     public boolean canBreatheUnderwater()
@@ -499,25 +558,9 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return ModUtils.contains(source, DamageSource.LIGHTNING_BOLT, DamageSource.IN_FIRE, DamageSource.IN_WALL) || super.isInvulnerableTo(source);
     }
 
-    @Override
-    public float getScale()
-    {
-        return getAgeScale(0.225f);
-    }
 
-    @Override
-    protected float getStandingEyeHeight(Pose poseIn, EntityDimensions size)
-    {
-        return size.height * (beached? 1f : 0.6f);
-    }
 
-    @Override
-    public EntityDimensions getDimensions(Pose pose)
-    {
-        return getType().getDimensions().scale(getScale());
-    }
-
-    @Override // 2 passengers
+@Override // 2 passengers
     protected boolean canAddPassenger(Entity passenger)
     {
         return isTame() && isJuvenile() && getPassengers().size() < 2;
@@ -594,16 +637,6 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return false;
     }
 
-    public static AttributeSupplier.Builder getAttributeSupplier()
-    {
-        return Mob.createMobAttributes()
-                .add(MAX_HEALTH, 180)
-                .add(MOVEMENT_SPEED, 0.08)
-                .add(ForgeMod.SWIM_SPEED.get(), 0.3)
-                .add(KNOCKBACK_RESISTANCE, 1)
-                .add(ATTACK_DAMAGE, 14)
-                .add(FOLLOW_RANGE, 50);
-    }
 
     public class Navigator extends WaterBoundPathNavigation
     {
