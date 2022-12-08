@@ -75,7 +75,6 @@ public class AnimatedGoal extends Goal {
         this.entity.setAnimation("base");
         this.entity.setAnimationType(1);
         this.entity.setAnimationTime(0);
-        this.entity.setPlayingAnimation(false);
         this.entity.setManualAnimationCall(false);
     }
 }

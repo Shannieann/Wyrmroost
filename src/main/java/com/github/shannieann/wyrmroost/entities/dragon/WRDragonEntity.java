@@ -145,7 +145,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      */
     private static final EntityDataAccessor<Float> ANIMATION_TIME = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     private static final EntityDataAccessor<Integer> MOVING_STATE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> PLAYING_ANIMATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> MANUAL_ANIMATION_CALL = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
     protected WRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
@@ -209,7 +208,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
 
             */
-            this.setPlayingAnimation(true);
             event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
             return PlayState.CONTINUE;
         }
@@ -251,7 +249,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         this.entityData.define(ANIMATION_TYPE, 1);
         this.entityData.define(MOVING_STATE, 0);
         this.entityData.define(ANIMATION_TIME, 0F);
-        this.entityData.define(PLAYING_ANIMATION, false);
         this.entityData.define(MANUAL_ANIMATION_CALL, false);
         entityData.define(HOME_POS, BlockPos.ZERO);
         entityData.define(AGE, 0);
@@ -317,6 +314,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         } else super.onSyncedDataUpdated(key);
     }
 
+
     public abstract EntitySerializer<? extends WRDragonEntity> getSerializer();
 
 
@@ -347,17 +345,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(ANIMATION_TIME, animationTime);
     }
 
-    //TODO: REMOVE
-    public boolean getPlayingAnimation()
-    {
-        return entityData.get(PLAYING_ANIMATION);
-    }
-
-    public void setPlayingAnimation(boolean playingAnimation)
-    {
-        entityData.set(PLAYING_ANIMATION, playingAnimation);
-    }
-
     public boolean getManualAnimationCall() {
         return entityData.get(MANUAL_ANIMATION_CALL);
     }
@@ -377,7 +364,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(MOVING_STATE, movingState);
     }
 
-
     public boolean hasEntityDataAccessor(EntityDataAccessor<?> param)
     {
         return entityData.itemsById.containsKey(param.getId());
@@ -387,6 +373,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         return new Attribute[]{MAX_HEALTH, ATTACK_DAMAGE};
     }
+
     public float getTravelSpeed()
     {
         //@formatter:off
@@ -698,6 +685,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return position.add(calculateViewVector(getXRot(), yHeadRot).scale(dist));
     }
 
+    @Override
+    public ItemStack getPickedResult(HitResult target)
+    {
+        return new ItemStack(SpawnEggItem.byId(getType()));
+    }
+
+
     // ====================================
     //      B) Tick and AI
     // ====================================
@@ -788,6 +782,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //if (WRConfig.DEBUG_MODE.get() && level.isClientSide) DebugRendering.box(box, 0x99ff0000, Integer.MAX_VALUE);
         for (LivingEntity attacking : attackables)
         {
+            System.out.println("DO HURT TARGET CALLED");
             doHurtTarget(attacking);
             if (disabledShieldTime > 0 && attacking instanceof Player)
             {
@@ -829,7 +824,43 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(radius), filter.and(e -> e != this));
     }
 
-    
+    @Override // Dont damage owners other pets!
+    public boolean doHurtTarget(Entity entity)
+    {
+        /*
+        //TODO: set animation before we call this method
+        if (this.getAnimation().equals("base")) {
+            int attackVariant = this.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
+            this.setAnimation("attack_"+attackVariant);
+            this.setAnimationType(2);
+            this.setAnimationTime(80);
+        }
+
+         */
+        return !isAlliedTo(entity) && super.doHurtTarget(entity);
+    }
+
+
+    @Override // We shouldnt be targetting pets...
+    public boolean wantsToAttack(LivingEntity target, @Nullable LivingEntity owner)
+    {
+        return !isAlliedTo(target);
+    }
+
+    @Override
+    public boolean canAttack(LivingEntity target)
+    {
+        return !isHatchling() && !canBeControlledByRider() && super.canAttack(target);
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource source)
+    {
+        if (isRiding() && source == DamageSource.IN_WALL) return true;
+        if (isImmuneToArrows() && source == DamageSource.CACTUS) return true;
+        return super.isInvulnerableTo(source);
+    }
+
     // ====================================
     //      B.2) Tick and AI: Sit
     // ====================================
@@ -1035,7 +1066,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
 
     // ====================================
-    //      C.1) Navigation and Control: Riding
+    //      C.3) Navigation and Control: Riding
     // ====================================
 
     @Override
@@ -1142,13 +1173,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
     }
-    @Override
-    public boolean isInvulnerableTo(DamageSource source)
-    {
-        if (isRiding() && source == DamageSource.IN_WALL) return true;
-        if (isImmuneToArrows() && source == DamageSource.CACTUS) return true;
-        return super.isInvulnerableTo(source);
-    }
+
     /**
      * Recieve the keybind message from the current controlling passenger.
      *
@@ -1200,87 +1225,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     //      D) Taming
     // ====================================
-    //TODO: Tidy up section
 
     @Override
     public boolean canBeLeashed(Player pPlayer) {
         return false;
     }
 
-
-    public int getBreedCount()
-    {
-        return breedCount;
-    }
-
-    public void setBreedCount(int i)
-    {
-        this.breedCount = i;
-    }
-
-    public boolean isBreedingItem(ItemStack stack)
-    {
-        return isFood(stack);
-    }
-
-    public DragonInventory createInv()
-    {
-        return null;
-    }
-    
-    @Override
-    public AbstractContainerMenu createMenu(int id, Inventory playersInv, Player player)
-    {
-        System.out.println(new BookContainer(id, playersInv, this));
-        return new BookContainer(id, playersInv, this);
-    }
-
-
-    public void eat(ItemStack stack)
-    {
-        eat(level, stack);
-    }
-
-    @Override
-    public abstract boolean isFood(ItemStack stack);
-    
-    @Override
-    @SuppressWarnings("ConstantConditions")
-    public ItemStack eat(Level level, ItemStack stack)
-    {
-        Vec3 mouth = getApproximateMouthPos();
-
-        if (level.isClientSide)
-        {
-            double width = getBbWidth();
-            for (int i = 0; i < Math.max(width * width * 2, 12); ++i)
-            {
-                Vec3 vec3d1 = new Vec3(((double) getRandom().nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, ((double) getRandom().nextFloat() - 0.5D) * 0.1D);
-                vec3d1 = vec3d1.zRot(-getXRot() * (Mafs.PI / 180f));
-                vec3d1 = vec3d1.yRot(-getYRot() * (Mafs.PI / 180f));
-                level.addParticle(new ItemParticleOption(ParticleTypes.ITEM, stack), mouth.x + Mafs.nextDouble(getRandom()) * (width * 0.2), mouth.y, mouth.z + Mafs.nextDouble(getRandom()) * (width * 0.2), vec3d1.x, vec3d1.y, vec3d1.z);
-            }
-            ModUtils.playLocalSound(level, new BlockPos(mouth), getEatingSound(stack), 1f, 1f);
-        }
-        else
-        {
-            final float max = getMaxHealth();
-            if (getHealth() < max) heal(Math.max((int) max / 5, 4)); // Base healing on max health, minimum 2 hearts.
-
-            Item item = stack.getItem();
-            if (item.isEdible())
-            {
-                for (Pair<MobEffectInstance, Float> pair : item.getFoodProperties().getEffects())
-                    if (!level.isClientSide && pair.getFirst() != null && getRandom().nextFloat() < pair.getSecond())
-                        addEffect(new MobEffectInstance(pair.getFirst()));
-            }
-            if (item.hasContainerItem(stack))
-                spawnAtLocation(item.getContainerItem(stack), (float) (mouth.y - getY()));
-            stack.shrink(1);
-        }
-
-        return stack;
-    }
 
     public boolean tame(boolean tame, @Nullable Player tamer)
     {
@@ -1300,74 +1250,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    public void heal(float healAmount)
-    {
-        super.heal(healAmount);
-        level.broadcastEntityEvent(this, HEAL_PARTICLES_EVENT_ID);
-    }
-
-    @Override
-    public boolean canMate(Animal mate)
-    {
-        if (!(mate instanceof WRDragonEntity)) return false;
-        WRDragonEntity dragon = (WRDragonEntity) mate;
-        if (isInSittingPose() || dragon.isInSittingPose()) return false;
-        if (hasEntityDataAccessor(GENDER) && isMale() == dragon.isMale()) return false;
-        return super.canMate(mate);
-    }
-
-    @Nullable
-    @Override
-    public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob mate)
-    {
-        return (AgeableMob) getType().create(level);
-    }
-
-    @Override
-    public void spawnChildFromBreeding(ServerLevel level, Animal mate)
-    {
-        final BabyEntitySpawnEvent event = new BabyEntitySpawnEvent(this, mate, null);
-        if (MinecraftForge.EVENT_BUS.post(event)) return; // cancelled
-
-        final AgeableMob child = event.getChild();
-        if (child == null)
-        {
-            ItemStack eggStack = DragonEggItem.getStack(getType());
-            ItemEntity eggItem = new ItemEntity(level, getX(), getY(), getZ(), eggStack);
-            eggItem.setDeltaMovement(0, getBbHeight() / 3, 0);
-            level.addFreshEntity(eggItem);
-        }
-        else
-        {
-            child.setBaby(true);
-            child.moveTo(getX(), getY(), getZ(), 0, 0);
-            level.addFreshEntityWithPassengers(child);
-        }
-
-        breedCount++;
-        ((WRDragonEntity) mate).breedCount++;
-
-        ServerPlayer serverPlayer = getLoveCause();
-
-        if (serverPlayer == null && mate.getLoveCause() != null)
-            serverPlayer = mate.getLoveCause();
-
-        if (serverPlayer != null)
-        {
-            serverPlayer.awardStat(Stats.ANIMALS_BRED);
-            CriteriaTriggers.BRED_ANIMALS.trigger(serverPlayer, this, mate, child);
-        }
-
-        setAge(6000);
-        mate.setAge(6000);
-        resetLove();
-        mate.resetLove();
-        level.broadcastEntityEvent(this, (byte) 18);
-        if (level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT))
-            level.addFreshEntity(new ExperienceOrb(level, getX(), getY(), getZ(), getRandom().nextInt(7) + 1));
-    }
-
-    @Override
     @SuppressWarnings("ConstantConditions")
     public boolean isAlliedTo(Entity entity)
     {
@@ -1376,12 +1258,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (entity instanceof TamableAnimal && getOwner() != null && getOwner().equals(((TamableAnimal) entity).getOwner()))
             return true;
         return entity.isAlliedTo(getTeam());
-    }
-
-    @Override
-    public ItemStack getPickedResult(HitResult target)
-    {
-        return new ItemStack(SpawnEggItem.byId(getType()));
     }
 
     public void applyStaffInfo(BookContainer container)
@@ -1476,33 +1352,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return result;
     }
 
-    @Override // Dont damage owners other pets!
-    public boolean doHurtTarget(Entity entity)
-    {
-        /*
-        //TODO: set animation before we call this method
-        if (this.getAnimation().equals("base")) {
-            int attackVariant = this.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
-            this.setAnimation("attack_"+attackVariant);
-            this.setAnimationType(2);
-            this.setAnimationTime(80);
-        }
-
-         */
-        return !isAlliedTo(entity) && super.doHurtTarget(entity);
-    }
-
-    @Override // We shouldnt be targetting pets...
-    public boolean wantsToAttack(LivingEntity target, @Nullable LivingEntity owner)
-    {
-        return !isAlliedTo(target);
-    }
-
-    @Override
-    public boolean canAttack(LivingEntity target)
-    {
-        return !isHatchling() && !canBeControlledByRider() && super.canAttack(target);
-    }
     @Override
     public void dropLeash(boolean sendPacket, boolean dropLead)
     {
@@ -1519,8 +1368,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     //      D.1) Taming: Inventory
     // ====================================
-
-
 
     public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad)
     {
@@ -1563,8 +1410,152 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
     }
 
-    
-    
+    public DragonInventory createInv()
+    {
+        return null;
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int id, Inventory playersInv, Player player)
+    {
+        System.out.println(new BookContainer(id, playersInv, this));
+        return new BookContainer(id, playersInv, this);
+    }
+
+    // ====================================
+    //      D.2) Taming: Breeding and Food
+    // ====================================
+
+    public int getBreedCount()
+    {
+        return breedCount;
+    }
+
+    public void setBreedCount(int i)
+    {
+        this.breedCount = i;
+    }
+
+    public boolean isBreedingItem(ItemStack stack)
+    {
+        return isFood(stack);
+    }
+
+    public void eat(ItemStack stack)
+    {
+        eat(level, stack);
+    }
+
+    @Override
+    public abstract boolean isFood(ItemStack stack);
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public ItemStack eat(Level level, ItemStack stack)
+    {
+        Vec3 mouth = getApproximateMouthPos();
+
+        if (level.isClientSide)
+        {
+            double width = getBbWidth();
+            for (int i = 0; i < Math.max(width * width * 2, 12); ++i)
+            {
+                Vec3 vec3d1 = new Vec3(((double) getRandom().nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, ((double) getRandom().nextFloat() - 0.5D) * 0.1D);
+                vec3d1 = vec3d1.zRot(-getXRot() * (Mafs.PI / 180f));
+                vec3d1 = vec3d1.yRot(-getYRot() * (Mafs.PI / 180f));
+                level.addParticle(new ItemParticleOption(ParticleTypes.ITEM, stack), mouth.x + Mafs.nextDouble(getRandom()) * (width * 0.2), mouth.y, mouth.z + Mafs.nextDouble(getRandom()) * (width * 0.2), vec3d1.x, vec3d1.y, vec3d1.z);
+            }
+            ModUtils.playLocalSound(level, new BlockPos(mouth), getEatingSound(stack), 1f, 1f);
+        }
+        else
+        {
+            final float max = getMaxHealth();
+            if (getHealth() < max) heal(Math.max((int) max / 5, 4)); // Base healing on max health, minimum 2 hearts.
+
+            Item item = stack.getItem();
+            if (item.isEdible())
+            {
+                for (Pair<MobEffectInstance, Float> pair : item.getFoodProperties().getEffects())
+                    if (!level.isClientSide && pair.getFirst() != null && getRandom().nextFloat() < pair.getSecond())
+                        addEffect(new MobEffectInstance(pair.getFirst()));
+            }
+            if (item.hasContainerItem(stack))
+                spawnAtLocation(item.getContainerItem(stack), (float) (mouth.y - getY()));
+            stack.shrink(1);
+        }
+
+        return stack;
+    }
+
+    @Override
+    public void heal(float healAmount)
+    {
+        super.heal(healAmount);
+        level.broadcastEntityEvent(this, HEAL_PARTICLES_EVENT_ID);
+    }
+
+    @Nullable
+    @Override
+    public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob mate)
+    {
+        return (AgeableMob) getType().create(level);
+    }
+
+    @Override
+    public void spawnChildFromBreeding(ServerLevel level, Animal mate)
+    {
+        final BabyEntitySpawnEvent event = new BabyEntitySpawnEvent(this, mate, null);
+        if (MinecraftForge.EVENT_BUS.post(event)) return; // cancelled
+
+        final AgeableMob child = event.getChild();
+        if (child == null)
+        {
+            ItemStack eggStack = DragonEggItem.getStack(getType());
+            ItemEntity eggItem = new ItemEntity(level, getX(), getY(), getZ(), eggStack);
+            eggItem.setDeltaMovement(0, getBbHeight() / 3, 0);
+            level.addFreshEntity(eggItem);
+        }
+        else
+        {
+            child.setBaby(true);
+            child.moveTo(getX(), getY(), getZ(), 0, 0);
+            level.addFreshEntityWithPassengers(child);
+        }
+
+        breedCount++;
+        ((WRDragonEntity) mate).breedCount++;
+
+        ServerPlayer serverPlayer = getLoveCause();
+
+        if (serverPlayer == null && mate.getLoveCause() != null)
+            serverPlayer = mate.getLoveCause();
+
+        if (serverPlayer != null)
+        {
+            serverPlayer.awardStat(Stats.ANIMALS_BRED);
+            CriteriaTriggers.BRED_ANIMALS.trigger(serverPlayer, this, mate, child);
+        }
+
+        setAge(6000);
+        mate.setAge(6000);
+        resetLove();
+        mate.resetLove();
+        level.broadcastEntityEvent(this, (byte) 18);
+        if (level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT))
+            level.addFreshEntity(new ExperienceOrb(level, getX(), getY(), getZ(), getRandom().nextInt(7) + 1));
+    }
+
+
+    @Override
+    public boolean canMate(Animal mate)
+    {
+        if (!(mate instanceof WRDragonEntity)) return false;
+        WRDragonEntity dragon = (WRDragonEntity) mate;
+        if (isInSittingPose() || dragon.isInSittingPose()) return false;
+        if (hasEntityDataAccessor(GENDER) && isMale() == dragon.isMale()) return false;
+        return super.canMate(mate);
+    }
+
     // ====================================
     //      E) Client
     // ====================================
@@ -1629,7 +1620,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
     // ====================================
-    //      F) Goal Methods
+    //      F) Goals
     // ====================================
 
     @Override
@@ -1641,7 +1632,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         goalSelector.addGoal(1, new WRSitGoal(this));
     }
 
-    
+    // ====================================
+    //      F.n) Goals: n
+    // ====================================
 
 }
 
