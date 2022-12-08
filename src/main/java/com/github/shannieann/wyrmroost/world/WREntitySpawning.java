@@ -38,9 +38,11 @@ public class WREntitySpawning {
         if (WRServerConfig.SERVER.ENTITIES.ROOST_STALKER.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.ROOST_STALKER.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.ROOST_STALKER.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.ROOST_STALKER.get(), WRServerConfig.SERVER.ENTITIES.ROOST_STALKER.spawningConfig, MobCategory.CREATURE, event);
         }
-        if (WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.biomeWhitelist, biomeKey)) {
+        /*if (WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.CANARI_WYVERN.get(), WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig, MobCategory.CREATURE, event);
         }
+        
+         */
         if (WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.ROYAL_RED.get(), WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig, MobCategory.CREATURE, event);
         }

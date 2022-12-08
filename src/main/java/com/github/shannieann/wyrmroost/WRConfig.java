@@ -91,6 +91,7 @@ public class WRConfig
         COMMON = builder.build();
     }
 
+    //TODO: Relocate calls to proper file
     static // server
     {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();

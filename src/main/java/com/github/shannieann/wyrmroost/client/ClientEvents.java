@@ -108,15 +108,14 @@ public class ClientEvents
     }
 
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event){
-
-        event.registerEntityRenderer(WREntityTypes.LESSER_DESERTWYRM.get(), RenderLesserDeserwyrm::new);
         event.registerEntityRenderer(WREntityTypes.ROYAL_RED.get(), RenderRoyalRed::new);
-        event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RenderRoostStalker::new);
+        //event.registerEntityRenderer(WREntityTypes.LESSER_DESERTWYRM.get(), RenderLesserDeserwyrm::new);
+        //event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RenderRoostStalker::new);
 
-//        event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RoostStalkerRenderer2::new);
-        event.registerEntityRenderer(WREntityTypes.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
-        event.registerEntityRenderer(WREntityTypes.SILVER_GLIDER.get(), SilverGliderRenderer::new);
-        event.registerEntityRenderer(WREntityTypes.OVERWORLD_DRAKE.get(), OWDrakeRenderer::new);
+        //event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RoostStalkerRenderer2::new);
+        //event.registerEntityRenderer(WREntityTypes.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
+        //event.registerEntityRenderer(WREntityTypes.SILVER_GLIDER.get(), SilverGliderRenderer::new);
+        //event.registerEntityRenderer(WREntityTypes.OVERWORLD_DRAKE.get(), OWDrakeRenderer::new);
 
 
         event.registerEntityRenderer(WREntityTypes.SOUL_CRYSTAL.get(), ThrownItemRenderer::new);

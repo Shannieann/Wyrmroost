@@ -73,7 +73,10 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
                     .dragonEgg(new DragonEggProperties(0.175f, 0.3f, 6000))
                     .build();
 
-    /*public static final RegistryObject<EntityType<ButterflyLeviathanEntity>> BUTTERFLY_LEVIATHAN = ofGroup("butterfly_leviathan", ButterflyLeviathanEntity::new, MobCategory.WATER_CREATURE)
+
+    /*
+
+    public static final RegistryObject<EntityType<ButterflyLeviathanEntity>> BUTTERFLY_LEVIATHAN = ofGroup("butterfly_leviathan", ButterflyLeviathanEntity::new, MobCategory.WATER_CREATURE)
             .size(4f, 3f)
             .attributes(ButterflyLeviathanEntity::getAttributeSupplier)
             .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.OCEAN_FLOOR_WG, ButterflyLeviathanEntity::getSpawnPlacement)
@@ -91,15 +94,23 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
             .dragonEgg(new DragonEggProperties(0.25f, 0.35f, 9600))
             .renderModel(() -> DragonFruitDrakeModel::new)
             .build();
-*/
+
+     */
+
+    /*
     public static final RegistryObject<EntityType<CanariWyvernEntity>> CANARI_WYVERN = creature("canari_wyvern", CanariWyvernEntity::new)
             .size(0.65f, 0.85f)
             .attributes(CanariWyvernEntity::getAttributeSupplier)
-            .spawnPlacement(/*SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, WRDragonEntity::canFlyerSpawn*/)
+            .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, WRDragonEntity::canFlyerSpawn)
             .spawnEgg(0x1D1F28, 0x492E0E)
             .dragonEgg(new DragonEggProperties(0.175f, 0.275f, 6000).setConditions(c -> c.level.getBlockState(c.blockPosition().below()).getBlock() == Blocks.JUNGLE_LEAVES))
-            //.renderModel(() -> CanariWyvernModel::new)
+            .renderModel(() -> CanariWyvernModel::new)
             .build();
+
+     */
+
+
+
 
     public static final RegistryObject<EntityType<RoyalRedEntity>> ROYAL_RED = creature("royal_red", RoyalRedEntity::new)
             .size(3f, 3.9f)
