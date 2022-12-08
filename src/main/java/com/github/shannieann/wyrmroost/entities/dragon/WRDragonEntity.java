@@ -86,7 +86,7 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
-
+import net.minecraft.util.Mth;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
@@ -99,7 +99,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     private int sleepCooldown;
     public int breedCount;
     private float ageProgress = 1;
-    public boolean isPlayingAnimation;
+    //Only for swimmers:
+    public boolean isSwimmer;
+    public float rotationPitch;
+    public float prevRotationPitch;
+    public float prevYRot;
+    public float deltaYRot;
+    public float adjustYaw;
+    public float adjustment;
+    public float prevSetYaw;
+    public float setYaw;
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
@@ -786,6 +795,46 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             this.setAnimationTime(20);
             this.setManualAnimationCall(true);
         }
+
+
+        //YAW OPERATIONS:
+        //The following lines of code handle the dynamic yaw animations for entities...
+        //Grab the change in the entity's Yaw, deltaYRot...
+        //deltaYaw will tell us in which direction the entity is rotating...
+        deltaYRot = this.yRot - prevYRot;
+        //Store the previous yaw value, so we can use itn ext tick to calculate deltaYaw...
+        prevYRot = this.yRot;
+        //adjustYaw is a local variable that changes to try and match the change in Yaw....
+        //So, adjustYaw starts at 0.
+        // If it's rotating in the negative direction (deltaYRot negative), adjustYaw will start decreasing to catch up...
+        // Likewise, if it's rotating in the positive direction (deltaYRot positive) adjustYaw will start increasing to catch up...
+        //The increase or decrease always depends on the adjustment variable. This determines how "fast" adjustYaw will catch up.
+        //The max and min functions ensure that adjustYaw doesn't overshoot deltaYRot...
+        //Thus, adjustment will determine --how fast-- the pieces of the entity's model change their rotation.
+        //The multiplying factor in the corresponding entity's model will determine --how far-- they rotate.
+        //We store the prevAdjustYaw value and use this and the current adjustYaw value for partial tick methods.
+
+        prevSetYaw = setYaw;
+
+        if (adjustYaw > deltaYRot) {
+            adjustYaw = adjustYaw - adjustment;
+            adjustYaw = Math.max(adjustYaw, deltaYRot);
+        } else if (adjustYaw < deltaYRot) {
+            adjustYaw = adjustYaw + adjustment;
+            adjustYaw = Math.min(adjustYaw, deltaYRot);
+        }
+        setYaw = (adjustYaw*(Mth.PI/180.0F));
+
+        prevRotationPitch = rotationPitch;
+        rotationPitch = (float)((Mth.atan2((this.getDeltaMovement().y),Mth.sqrt((float) ((this.getDeltaMovement().x)*(this.getDeltaMovement().x)+(this.getDeltaMovement().z)*(this.getDeltaMovement().z))))));
+
+        //Troubleshooting:
+        // If the rotation "lags behind" (does not change directions fast enough) increase adjustment.
+        // If the rotation looks choppy (adjusts too fast), decrease adjustment
+        // If the entity seems to "dislocate", reduce the multipliers for bone rotation in the Model class.
+        // Reducing rotation multiplier in model class can also reduce choppiness, at the cost of how wide the bone rotation is.
+
+
     }
 
     public void clearAI()
