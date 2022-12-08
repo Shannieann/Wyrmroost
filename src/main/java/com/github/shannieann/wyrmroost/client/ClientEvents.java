@@ -109,6 +109,8 @@ public class ClientEvents
 
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event){
         event.registerEntityRenderer(WREntityTypes.ROYAL_RED.get(), RenderRoyalRed::new);
+        event.registerEntityRenderer(WREntityTypes.BUTTERFLY_LEVIATHAN.get(), RenderButterflyLeviathan::new);
+
         //event.registerEntityRenderer(WREntityTypes.LESSER_DESERTWYRM.get(), RenderLesserDeserwyrm::new);
         //event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RenderRoostStalker::new);
 
