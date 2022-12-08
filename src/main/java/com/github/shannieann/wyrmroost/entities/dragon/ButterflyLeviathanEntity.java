@@ -1,68 +1,86 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
-/*import com.github.wolfshotz.wyrmroost.WRConfig;
-import com.github.wolfshotz.wyrmroost.client.ClientEvents;
-import com.github.wolfshotz.wyrmroost.client.model.entity.ButterflyLeviathanModel;
-import com.github.wolfshotz.wyrmroost.client.screen.DragonControlScreen;
-import com.github.wolfshotz.wyrmroost.containers.BookContainer;
-import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.DragonInventory;
-import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.LessShitLookController;
-import com.github.wolfshotz.wyrmroost.entities.dragon.helpers.ai.goals.*;
-import com.github.wolfshotz.wyrmroost.entities.util.EntitySerializer;
-import com.github.wolfshotz.wyrmroost.items.book.action.BookActions;
-import com.github.wolfshotz.wyrmroost.network.packets.AnimationPacket;
-import com.github.wolfshotz.wyrmroost.network.packets.KeybindHandler;
-import com.github.wolfshotz.wyrmroost.registry.WRSounds;
-import com.github.wolfshotz.wyrmroost.util.LerpedFloat;
-import com.github.wolfshotz.wyrmroost.util.Mafs;
-import com.github.wolfshotz.wyrmroost.util.ModUtils;
-import com.github.wolfshotz.wyrmroost.util.animation.Animation;
-import com.github.wolfshotz.wyrmroost.util.animation.LogicalAnimation;
-import net.minecraft.entity.*;
-import net.minecraft.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.entity.ai.controller.MovementController;
-import net.minecraft.entity.ai.goal.*;
-import net.minecraft.entity.effect.LightningBoltEntity;
-import net.minecraft.entity.monster.IMob;
-import net.minecraft.entity.player.Player;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
-import net.minecraft.network.datasync.EntityDataAccessor;
-import net.minecraft.network.datasync.EntityDataSerializers;
-import net.minecraft.network.datasync.SynchedEntityData;
-import net.minecraft.particles.ParticleTypes;
-import net.minecraft.pathfinding.*;
-import net.minecraft.potion.MobEffectInstance;
-import net.minecraft.potion.Effects;
+import com.github.shannieann.wyrmroost.WRConfig;
+import com.github.shannieann.wyrmroost.client.ClientEvents;
+import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
+import com.github.shannieann.wyrmroost.containers.BookContainer;
+import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
+import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.LessShitLookController;
+import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.*;
+import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
+import com.github.shannieann.wyrmroost.items.book.action.BookActions;
+import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
+import com.github.shannieann.wyrmroost.registry.WREntityTypes;
+import com.github.shannieann.wyrmroost.registry.WRSounds;
+import com.github.shannieann.wyrmroost.util.LerpedFloat;
+import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.ModUtils;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.*;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.EntityHitResult;
-import net.minecraft.util.math.Mth;
-import net.minecraft.util.math.vector.Vec3;
-import net.minecraft.world.ServerLevelAccessor;
-import net.minecraft.world.IWorld;
-import net.minecraft.world.LevelReader;
-import net.minecraft.world.Level;
-import net.minecraft.world.gen.Heightmap;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.control.MoveControl;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.goal.RandomSwimmingGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathFinder;
+import net.minecraft.world.level.pathfinder.SwimNodeEvaluator;
+import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
+import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraft.world.phys.Vec3;
+import software.bernie.shadowed.eliotlash.mclib.utils.MathHelper;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.ai.attributes.Attribute;
+
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Random;
 
-import static net.minecraft.entity.ai.attributes.Attributes.*;
+import static net.minecraft.world.entity.ai.attributes.Attributes.*;
+//TODO: Improve navigation
+//TODO: Panthalassa-ify
+//TODO: Animations?
+//TODO: Basic tests first, then advanced stuff.
 
 public class ButterflyLeviathanEntity extends WRDragonEntity
 {
     public static final EntitySerializer<ButterflyLeviathanEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
-
-    public static final Animation LIGHTNING_ANIMATION = LogicalAnimation.create(64, ButterflyLeviathanEntity::lightningAnimation, () -> ButterflyLeviathanModel::roarAnimation);
-    public static final Animation CONDUIT_ANIMATION = LogicalAnimation.create(59, ButterflyLeviathanEntity::conduitAnimation, () -> ButterflyLeviathanModel::conduitAnimation);
-    public static final Animation BITE_ANIMATION = LogicalAnimation.create(17, ButterflyLeviathanEntity::biteAnimation, () -> ButterflyLeviathanModel::biteAnimation);
-    public static final Animation[] ANIMATIONS = new Animation[]{LIGHTNING_ANIMATION, CONDUIT_ANIMATION, BITE_ANIMATION};
+            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
 
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(ButterflyLeviathanEntity.class, EntityDataSerializers.BOOLEAN);
     public static final int CONDUIT_SLOT = 0;
@@ -73,14 +91,13 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     public int lightningCooldown = 0;
     public boolean beached = true;
 
-    public ButterflyLeviathanEntity(EntityType<? extends WRDragonEntity> dragon, Level level)
+    public ButterflyLeviathanEntity(EntityType<? extends WRDragonEntity> entityType, Level level)
     {
-        super(dragon, level);
+        super(entityType, level);
         noCulling = WRConfig.NO_CULLING.get();
         moveControl = new MoveController();
         maxUpStep = 2;
-
-        setPathfindingMalus(PathNodeType.WATER, 0);
+        setPathfindingMalus(BlockPathTypes.WATER, 0);
     }
 
     @Override
@@ -119,7 +136,6 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     {
         super.defineSynchedData();
         entityData.define(HAS_CONDUIT, false);
-        entityData.define(VARIANT, 0);
     }
 
     @Override
@@ -143,8 +159,11 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 
         if (isJumpingOutOfWater())
         {
+
+
             Vec3 motion = getDeltaMovement();
-            xRot = (float) (Math.signum(-motion.y) * Math.acos(Math.sqrt(Entity.getHorizontalDistanceSqr(motion)) / motion.length()) * (double) (180f / Mafs.PI)) * 0.725f;
+            //TODO: Access Transformer
+            xRot = (float) (Math.signum(-motion.y) * Math.acos(Math.sqrt((motion.x*motion.x+motion.z*motion.z)) / motion.length()) * (double) (180f / Mafs.PI)) * 0.725f;
         }
 
         // conduit effects
@@ -169,9 +188,9 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
                 for (LivingEntity entity : getEntitiesNearby(25, Entity::isInWaterRainOrBubble))
                 {
                     if (entity != getTarget() && (entity instanceof Player || isAlliedTo(entity)))
-                        entity.addEffect(new MobEffectInstance(Effects.CONDUIT_POWER, 220, 0, true, true));
+                        entity.addEffect(new MobEffectInstance(MobEffects.CONDUIT_POWER, 220, 0, true, true));
 
-                    if (!attacked && entity instanceof IMob)
+                    if (!attacked && entity instanceof Enemy)
                     {
                         attacked = true;
                         entity.hurt(DamageSource.MAGIC, 4);
@@ -285,7 +304,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
             double yDiff = getY() - yo;
             double zDiff = getZ() - zo;
             if (yDiff < 0.2) yDiff = 0;
-            float amount = Mth.sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff) * 4f;
+            float amount = Mth.sqrt((float)(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff))* 4f;
             if (amount > 1f) amount = 1f;
 
             animationSpeed += (amount - animationSpeed) * 0.4f;
@@ -316,7 +335,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     @Override
     public void doSpecialEffects()
     {
-        if (getVariant() == -1 && tickCount % 25 == 0)
+        if (getVariant().equals("special") && tickCount % 25 == 0)
         {
             double x = getX() + (Mafs.nextDouble(getRandom()) * getBbWidth() + 1);
             double y = getY() + (getRandom().nextDouble() * getBbHeight() + 1);
@@ -333,23 +352,24 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
             boolean flag = stack.getItem() == Items.CONDUIT;
             boolean hadConduit = hasConduit();
             entityData.set(HAS_CONDUIT, flag);
-            if (!onLoad && flag && !hadConduit) setAnimation(CONDUIT_ANIMATION);
+            //TODO: Set Animation
+            //if (!onLoad && flag && !hadConduit) setAnimation(CONDUIT_ANIMATION);
         }
     }
 
     @Override
     public void recievePassengerKeybind(int key, int mods, boolean pressed)
     {
-        if (pressed && noAnimations())
+        if (pressed /*&& noAnimations()*/)
         {
-            if (key == KeybindHandler.MOUNT_KEY) setAnimation(BITE_ANIMATION);
+            if (key == KeybindHandler.MOUNT_KEY) /*setAnimation(BITE_ANIMATION)*/;
             else if (key == KeybindHandler.ALT_MOUNT_KEY && !level.isClientSide && canZap())
             {
                 EntityHitResult ertr = Mafs.clipEntities(getControllingPlayer(), 40, e -> e instanceof LivingEntity && e != this);
                 if (ertr != null && wantsToAttack((LivingEntity) ertr.getEntity(), getOwner()))
                 {
                     setTarget((LivingEntity) ertr.getEntity());
-                    AnimationPacket.send(this, LIGHTNING_ANIMATION);
+                    /*AnimationPacket.send(this, LIGHTNING_ANIMATION);*/
                 }
             }
         }
@@ -381,9 +401,9 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
         if (backView)
-            event.getInfo().move(ClientEvents.getViewCollision(-10, this), 1, 0);
+            event.getCamera().move(ClientEvents.getViewCollision(-10, this), 1, 0);
         else
-            event.getInfo().move(ClientEvents.getViewCollision(-5, this), -0.75, 0);
+            event.getCamera().move(ClientEvents.getViewCollision(-5, this), -0.75, 0);
     }
 
     @Override
@@ -431,8 +451,10 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return WRSounds.ENTITY_BFLY_DEATH.get();
     }
 
+
+
     @Override
-    protected PathNavigator createNavigation(Level level)
+    protected PathNavigation createNavigation(Level level)
     {
         return new Navigator();
     }
@@ -519,9 +541,9 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     }
 
     @Override
-    public int determineVariant()
+    public String determineVariant()
     {
-        return getRandom().nextDouble() < 0.02? -1 : getRandom().nextInt(2);
+        return getRandom().nextDouble() < 0.02? "special" : "base"+getRandom().nextInt(2);
     }
 
     @Override
@@ -530,28 +552,30 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return false;
     }
 
+    /*
     @Override
     public Animation[] getAnimations()
     {
         return ANIMATIONS;
     }
 
+     */
+
     @Override
-    public CreatureAttribute getMobType()
+    public MobType getMobType()
     {
-        return CreatureAttribute.WATER;
+        return MobType.WATER;
     }
 
     @Override
-    public boolean checkSpawnRules(IWorld levelIn, MobSpawnType spawnReasonIn)
-    {
+    public boolean checkSpawnRules(LevelAccessor pLevel, MobSpawnType pReason) {
         return true;
     }
 
     private static void createLightning(Level level, Vec3 position, boolean effectOnly)
     {
         if (level.isClientSide) return;
-        LightningBoltEntity entity = EntityType.LIGHTNING_BOLT.create(level);
+        LightningBolt entity = EntityType.LIGHTNING_BOLT.create(level);
         entity.moveTo(position);
         entity.setVisualOnly(effectOnly);
         level.addFreshEntity(entity);
@@ -569,7 +593,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return false;
     }
 
-    public static AttributeSupplier.MutableAttribute getAttributeSupplier()
+    public static AttributeSupplier.Builder getAttributeSupplier()
     {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 180)
@@ -580,7 +604,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
                 .add(FOLLOW_RANGE, 50);
     }
 
-    public class Navigator extends SwimmerPathNavigator
+    public class Navigator extends WaterBoundPathNavigation
     {
         public Navigator()
         {
@@ -590,13 +614,13 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         @Override
         protected PathFinder createPathFinder(int range)
         {
-            return new PathFinder(nodeEvaluator = new WalkAndSwimNodeProcessor(), range);
+            return new PathFinder(nodeEvaluator = new SwimNodeEvaluator(true), range);
         }
 
         @Override
         public boolean isStableDestination(BlockPos pos)
         {
-            return !level.getBlockState(pos.below()).isAir(level, pos.below());
+            return !level.getBlockState(pos.below()).isAir();
         }
 
         @Override
@@ -606,7 +630,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         }
     }
 
-    private class MoveController extends MovementController
+    private class MoveController extends MoveControl
     {
         public MoveController()
         {
@@ -615,9 +639,9 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 
         public void tick()
         {
-            if (operation == Action.MOVE_TO && !canBeControlledByRider())
+            if (operation == Operation.MOVE_TO && !canBeControlledByRider())
             {
-                operation = Action.WAIT;
+                operation = Operation.WAIT;
                 double x = wantedX - getX();
                 double y = wantedY - getY();
                 double z = wantedZ - getZ();
@@ -626,7 +650,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
                 else
                 {
                     float newYaw = (float) Math.toDegrees(Mth.atan2(z, x)) - 90f;
-                    float pitch = -((float) (Mth.atan2(y, Mth.sqrt(x * x + z * z)) * 180 / Math.PI));
+                    float pitch = -((float) (Mth.atan2(y, Mth.sqrt((float)(x * x + z * z))) * 180 / Math.PI));
                     pitch = Mth.clamp(Mth.wrapDegrees(pitch), -85f, 85f);
 
                     yHeadRot = newYaw;
@@ -680,6 +704,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 
             if (isClose) yRot = (float) Mafs.getAngle(ButterflyLeviathanEntity.this, target) + 90f;
 
+            /*
             if (noAnimations())
             {
                 if (distFromTarget > 225 && (isTame() || target.getType() == EntityType.PLAYER) && canZap())
@@ -687,6 +712,8 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
                 else if (isClose && Mth.degreesDifferenceAbs((float) Mafs.getAngle(ButterflyLeviathanEntity.this, target) + 90, yRot) < 30)
                     AnimationPacket.send(ButterflyLeviathanEntity.this, BITE_ANIMATION);
             }
+
+             */
         }
     }
 
@@ -705,7 +732,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
             if (isInSittingPose()) return false;
             if (canBeControlledByRider()) return false;
             if (!isUnderWater()) return false;
-            if (level.getFluidState(this.pos = level.getHeightmapPos(Heightmap.Type.WORLD_SURFACE, blockPosition()).below()).isEmpty())
+            if (level.getFluidState(this.pos = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, blockPosition()).below()).isEmpty())
                 return false;
             if (pos.getY() <= 0) return false;
             return getRandom().nextDouble() < 0.001;
@@ -738,4 +765,3 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         }
     }
 }
-*/
