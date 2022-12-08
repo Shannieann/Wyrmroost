@@ -3,9 +3,9 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
-import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.AnimatedGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.WRSwimmingHelper;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.*;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.WRSitGoal;
@@ -52,8 +52,12 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
+import net.minecraft.world.entity.ai.control.MoveControl;
+import net.minecraft.world.entity.ai.control.SmoothSwimmingLookControl;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -66,6 +70,7 @@ import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
@@ -86,7 +91,7 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
-import net.minecraft.util.Mth;
+
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
@@ -127,6 +132,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<String> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
     public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> SWIMMING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     //TODO: What is this?
     private static final UUID SCALE_MOD_UUID = UUID.fromString("81a0addd-edad-47f1-9aa7-4d76774e055a");
@@ -279,6 +285,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(SLEEPING, false);
         entityData.define(VARIANT, "base0");
         entityData.define(FLYING, false);
+        entityData.define(SWIMMING, false);
         entityData.define(ARMOR, ItemStack.EMPTY);
         super.defineSynchedData();
     }
@@ -740,11 +747,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         super.tick();
 
         if (!level.isClientSide) {
-            // uhh so were falling, we should probably start flying
-            boolean flying = shouldFly();
-            if (flying != isFlying()) {
-                setFlying(flying);
+            //Will only try to fly if we're not in water...
+            boolean shouldFly = shouldFly();
+            if (shouldFly != isFlying()) {
+                setFlying(shouldFly);
             }
+            //Will only try to swimNavigate if we're actually a swimmer
+            boolean shouldSwim = shouldSwim();
+            if (shouldSwim != isSwimming()) {
+                setSwimmingNavigation(shouldSwim);
+            }
+
 
             // todo figure out a better target system?
             LivingEntity target = getTarget();
@@ -1050,6 +1063,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return false;
     }
 
+    public boolean isLandNavigator(){
+        return this.getNavigation() instanceof GroundPathNavigation;
+    }
+
     // ====================================
     //      C.1) Navigation and Control: Flying
     // ====================================
@@ -1092,7 +1109,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public boolean shouldFly()
     {
-        return canFly() && getAltitude() > 1;
+        return canFly() && getAltitude() > 1 && !isSwimming();
     }
 
     public boolean canFly()
@@ -1146,6 +1163,38 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return false;
     }
 
+    public boolean isSwimming()
+    {
+        return hasEntityDataAccessor(FLYING) && entityData.get(SWIMMING);
+    }
+
+    public boolean shouldSwim() {
+        //If it's in 1-block-deep water, switch to land navigator
+        if (this.isInWater() && this.level.getBlockState(blockPosition().below()).canOcclude() && this.level.getBlockState(blockPosition().above()).is(Blocks.AIR)) {
+            return false;
+        }
+        //...else, if it's not in water and it's on the ground, switch to land navigator
+        if (!this.isInWater() && this.isOnGround()) {
+            return false;
+        }
+        //If it's in swimmable water (meaning, at least two blocks deep), switch to water navigator
+        if (this.isInWater() && !this.level.getBlockState(blockPosition().below()).canOcclude()) {
+            return true;
+        }
+        return false;
+    }
+
+    public void setSwimmingNavigation(boolean shouldSwim) {
+        if (shouldSwim) {
+            this.moveControl = new MoveControl(this);
+            this.lookControl = new LessShitLookController(this);
+            this.navigation = new BetterPathNavigator(this);
+        } else {
+            this.moveControl = new WRSwimmingHelper(this, 85, 0.02F, 0.1F, true);
+            this.lookControl = new SmoothSwimmingLookControl(this, 10);
+            this.navigation = new WaterBoundPathNavigation(this, level);
+        }
+    }
     // ====================================
     //      C.3) Navigation and Control: Riding
     // ====================================
