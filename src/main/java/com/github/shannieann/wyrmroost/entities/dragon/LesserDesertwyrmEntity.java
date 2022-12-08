@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
+import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.LDWyrmItem;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
@@ -75,6 +76,11 @@ public class LesserDesertwyrmEntity extends WRDragonEntity
         if (compound.contains("burrowed")) {
             this.setBurrowed(compound.getBoolean("burrowed"));
         }
+    }
+
+    @Override
+    public EntitySerializer<? extends WRDragonEntity> getSerializer() {
+        return null;
     }
 
     public static <F extends Mob> boolean getSpawnPlacement(EntityType<F> entityType, ServerLevelAccessor serverLevelAccessor, MobSpawnType spawnType, BlockPos pos, Random random)
@@ -241,9 +247,14 @@ public class LesserDesertwyrmEntity extends WRDragonEntity
     }
 
     @Override
-    protected boolean isImmobile()
+    public boolean isImmobile()
     {
         return super.isImmobile() || getBurrowed();
+    }
+
+    @Override
+    public boolean isFood(ItemStack stack) {
+        return false;
     }
 
     @Override
