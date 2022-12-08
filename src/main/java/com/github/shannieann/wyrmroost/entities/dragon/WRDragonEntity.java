@@ -100,7 +100,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public int breedCount;
     private float ageProgress = 1;
     //Only for swimmers:
-    public boolean isSwimmer;
     public float rotationPitch;
     public float prevRotationPitch;
     public float prevYRot;
@@ -737,7 +736,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
 
     @Override
-    public void tick(){
+    public void tick() {
         super.tick();
 
         if (!level.isClientSide) {
@@ -765,18 +764,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
         if (sleepCooldown > 0) --sleepCooldown;
-        if (isSleeping())
-        {
+        if (isSleeping()) {
             ((LessShitLookController) getLookControl()).stopLooking();
             if (getHealth() < getMaxHealth() && getRandom().nextDouble() < 0.005) heal(1);
 
-            if (shouldWakeUp())
-            {
+            if (shouldWakeUp()) {
                 setSleeping(false);
             }
-        }
-        else if (shouldSleep())
-        {
+        } else if (shouldSleep()) {
             setSleeping(true);
         }
 
@@ -789,7 +784,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             this.setManualAnimationCall(true);
         }
         //Sitting
-        if (this.isInSittingPose()){
+        if (this.isInSittingPose()) {
             this.setAnimation("sit");
             this.setAnimationType(2);
             this.setAnimationTime(20);
@@ -797,43 +792,44 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
 
-        //YAW OPERATIONS:
-        //The following lines of code handle the dynamic yaw animations for entities...
-        //Grab the change in the entity's Yaw, deltaYRot...
-        //deltaYaw will tell us in which direction the entity is rotating...
-        deltaYRot = this.yRot - prevYRot;
-        //Store the previous yaw value, so we can use itn ext tick to calculate deltaYaw...
-        prevYRot = this.yRot;
-        //adjustYaw is a local variable that changes to try and match the change in Yaw....
-        //So, adjustYaw starts at 0.
-        // If it's rotating in the negative direction (deltaYRot negative), adjustYaw will start decreasing to catch up...
-        // Likewise, if it's rotating in the positive direction (deltaYRot positive) adjustYaw will start increasing to catch up...
-        //The increase or decrease always depends on the adjustment variable. This determines how "fast" adjustYaw will catch up.
-        //The max and min functions ensure that adjustYaw doesn't overshoot deltaYRot...
-        //Thus, adjustment will determine --how fast-- the pieces of the entity's model change their rotation.
-        //The multiplying factor in the corresponding entity's model will determine --how far-- they rotate.
-        //We store the prevAdjustYaw value and use this and the current adjustYaw value for partial tick methods.
+        if (canSwim()){
+            //YAW OPERATIONS:
+            //The following lines of code handle the dynamic yaw animations for entities...
+            //Grab the change in the entity's Yaw, deltaYRot...
+            //deltaYaw will tell us in which direction the entity is rotating...
+            deltaYRot = this.yRot - prevYRot;
+            //Store the previous yaw value, so we can use itn ext tick to calculate deltaYaw...
+            prevYRot = this.yRot;
+            //adjustYaw is a local variable that changes to try and match the change in Yaw....
+            //So, adjustYaw starts at 0.
+            // If it's rotating in the negative direction (deltaYRot negative), adjustYaw will start decreasing to catch up...
+            // Likewise, if it's rotating in the positive direction (deltaYRot positive) adjustYaw will start increasing to catch up...
+            //The increase or decrease always depends on the adjustment variable. This determines how "fast" adjustYaw will catch up.
+            //The max and min functions ensure that adjustYaw doesn't overshoot deltaYRot...
+            //Thus, adjustment will determine --how fast-- the pieces of the entity's model change their rotation.
+            //The multiplying factor in the corresponding entity's model will determine --how far-- they rotate.
+            //We store the prevAdjustYaw value and use this and the current adjustYaw value for partial tick methods.
 
-        prevSetYaw = setYaw;
+            prevSetYaw = setYaw;
 
-        if (adjustYaw > deltaYRot) {
-            adjustYaw = adjustYaw - adjustment;
-            adjustYaw = Math.max(adjustYaw, deltaYRot);
-        } else if (adjustYaw < deltaYRot) {
-            adjustYaw = adjustYaw + adjustment;
-            adjustYaw = Math.min(adjustYaw, deltaYRot);
+            if (adjustYaw > deltaYRot) {
+                adjustYaw = adjustYaw - adjustment;
+                adjustYaw = Math.max(adjustYaw, deltaYRot);
+            } else if (adjustYaw < deltaYRot) {
+                adjustYaw = adjustYaw + adjustment;
+                adjustYaw = Math.min(adjustYaw, deltaYRot);
+            }
+            setYaw = (adjustYaw * (Mth.PI / 180.0F));
+
+            prevRotationPitch = rotationPitch;
+            rotationPitch = (float) ((Mth.atan2((this.getDeltaMovement().y), Mth.sqrt((float) ((this.getDeltaMovement().x) * (this.getDeltaMovement().x) + (this.getDeltaMovement().z) * (this.getDeltaMovement().z))))));
+
+            //Troubleshooting:
+            // If the rotation "lags behind" (does not change directions fast enough) increase adjustment.
+            // If the rotation looks choppy (adjusts too fast), decrease adjustment
+            // If the entity seems to "dislocate", reduce the multipliers for bone rotation in the Model class.
+            // Reducing rotation multiplier in model class can also reduce choppiness, at the cost of how wide the bone rotation is.
         }
-        setYaw = (adjustYaw*(Mth.PI/180.0F));
-
-        prevRotationPitch = rotationPitch;
-        rotationPitch = (float)((Mth.atan2((this.getDeltaMovement().y),Mth.sqrt((float) ((this.getDeltaMovement().x)*(this.getDeltaMovement().x)+(this.getDeltaMovement().z)*(this.getDeltaMovement().z))))));
-
-        //Troubleshooting:
-        // If the rotation "lags behind" (does not change directions fast enough) increase adjustment.
-        // If the rotation looks choppy (adjusts too fast), decrease adjustment
-        // If the entity seems to "dislocate", reduce the multipliers for bone rotation in the Model class.
-        // Reducing rotation multiplier in model class can also reduce choppiness, at the cost of how wide the bone rotation is.
-
 
     }
 
@@ -1104,6 +1100,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return isJuvenile() && !isUnderWater() && !isLeashed();
     }
 
+    public boolean canSwim()
+    {
+        return false;
+    }
     public double getAltitude()
     {
         BlockPos.MutableBlockPos pos = blockPosition().mutable();
