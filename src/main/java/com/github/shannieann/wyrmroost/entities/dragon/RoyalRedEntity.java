@@ -6,7 +6,6 @@ import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.LessShitLookController;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.*;
 import com.github.shannieann.wyrmroost.entities.projectile.breath.FireBreathEntity;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
@@ -46,8 +45,6 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import org.apache.commons.lang3.ArrayUtils;
-import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.shadowed.fasterxml.jackson.databind.deser.DataFormatReaders;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;
@@ -103,8 +100,7 @@ public class RoyalRedEntity extends WRDragonEntity
     public final LerpedFloat breathTimer = LerpedFloat.unit();
     public final LerpedFloat knockOutTimer = LerpedFloat.unit();
     private int knockOutTime = 0;
-
-
+    private int debugTickCounter = 0;
 
     public RoyalRedEntity(EntityType<? extends WRDragonEntity> type, Level worldIn)
     {
@@ -113,6 +109,10 @@ public class RoyalRedEntity extends WRDragonEntity
         setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0);
         setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0);
     }
+
+    // ====================================
+    //      A) Entity Data
+    // ====================================
 
     @Override
     protected void defineSynchedData()
@@ -125,6 +125,14 @@ public class RoyalRedEntity extends WRDragonEntity
         entityData.define(KNOCKED_OUT, false);
         entityData.define(FLYING, false);
         entityData.define(ARMOR, ItemStack.EMPTY);
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key)
+    {
+        if (level.isClientSide && key.equals(BREATHING_FIRE) && getBreathingFire());
+            //BreathSound.play(this);
+        else super.onSyncedDataUpdated(key);
     }
 
     public static AttributeSupplier.Builder getAttributeSupplier()
@@ -142,36 +150,114 @@ public class RoyalRedEntity extends WRDragonEntity
     }
 
     @Override
-    public void onSyncedDataUpdated(EntityDataAccessor<?> key)
+    public EntitySerializer<RoyalRedEntity> getSerializer()
     {
-        if (level.isClientSide && key.equals(BREATHING_FIRE) && getBreathingFire());
-            //BreathSound.play(this);
-        else super.onSyncedDataUpdated(key);
+        return SERIALIZER;
+    }
+
+    public void setBreathingFire(boolean breathingFire)
+    {
+        if (!level.isClientSide) entityData.set(BREATHING_FIRE, breathingFire);
+    }
+
+
+    public boolean getBreathingFire()
+    {
+        return entityData.get(BREATHING_FIRE);
+    }
+    // ====================================
+    //      A.4) Entity Data: HOME
+    // ====================================
+    @Override
+    public boolean defendsHome()
+    {
+        return true;
+    }
+
+
+    // ====================================
+    //      A.5) Entity Data: SLEEP
+    // ====================================
+
+    @Override
+    public boolean shouldSleep()
+    {
+        return !isKnockedOut() && super.shouldSleep();
+    }
+
+
+    // ====================================
+    //      A.6) Entity Data: VARIANT
+    // ====================================
+
+    @Override
+    public int determineVariant()
+    {
+        LocalDate currentDate = LocalDate.now();
+        if (currentDate.getMonth().equals(Month.APRIL) && currentDate.getDayOfMonth() == 1)
+            return 99;
+        return getRandom().nextDouble() < 0.03? -1 : 0;
+    }
+
+
+    // ====================================
+    //      A.7) Entity Data: Miscellaneous
+    // ====================================
+
+    @Override
+    public EntityDimensions getDimensions(Pose pose)
+    {
+        EntityDimensions size = getType().getDimensions().scale(getScale());
+        if (isInSittingPose() || isSleeping()) size = size.scale(1, 0.5f);
+        return size;
     }
 
     @Override
-    protected void registerGoals()
+    public Vec3 getApproximateMouthPos()
     {
-        super.registerGoals();
-
-        goalSelector.addGoal(4, new MoveToHomeGoal(this));
-        goalSelector.addGoal(5, new RRAttackGoal(this));
-        goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
-        goalSelector.addGoal(7, new DragonBreedGoal(this));
-        goalSelector.addGoal(9, new FlyerWanderGoal(this, 1));
-        goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
-        goalSelector.addGoal(11, new RandomLookAroundGoal(this));
-
-        targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
-        targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        targetSelector.addGoal(3, new DefendHomeGoal(this));
-        targetSelector.addGoal(4, new HurtByTargetGoal(this));
-        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, e -> e.getType() == EntityType.PLAYER || e instanceof Animal));
+        Vec3 rotVector = calculateViewVector(getXRot() * 0.65f, yHeadRot);
+        Vec3 position = getEyePosition(1).subtract(0, 0.9, 0);
+        position = position.add(rotVector.scale(getBbWidth() + 1.3));
+        return position;
     }
+
+    @Override
+    public Attribute[] getScaledAttributes()
+    {
+        return ArrayUtils.addAll(super.getScaledAttributes(), ATTACK_KNOCKBACK);
+    }
+
+    @Override
+    public boolean isImmobile()
+    {
+        return super.isImmobile() || isKnockedOut();
+    }
+
+    @Override
+    protected float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn)
+    {
+        return getBbHeight() + 0.5f;
+    }
+
+    @Override
+    public float getScale()
+    {
+        float i = getAgeScale(0.3f);
+        if (isMale()) i *= 0.8f;
+        return i;
+    }
+
+
+    // ====================================
+    //      B) Tick and AI
+    // ====================================
 
     @Override
     public void aiStep()
     {
+
+        System.out.println("TICK COUNTER: " +debugTickCounter);
+        debugTickCounter++;
         super.aiStep();
         // =====================
         //       Update Timers
@@ -220,29 +306,58 @@ public class RoyalRedEntity extends WRDragonEntity
         }
     }
 
-    // =====================
-    //       Update Timers
-    // =====================
+    // ====================================
+    //      B.1) Tick and AI: Attack and Hurt
+    // ====================================
 
-    //TODO: LOCATE
-    @Override
-    public EntitySerializer<RoyalRedEntity> getSerializer()
-    {
-        return SERIALIZER;
+    private boolean shouldBreatheFire(){
+        //TODO: Distance Values, tweak?
+        LivingEntity target = this.getTarget();
+        if (target != null && target.isAlive()) {
+            double distFromTarget = distanceToSqr(target);
+            double degrees = Math.atan2(target.getZ() - getZ(), target.getX() - getX()) * (180 / Math.PI) - 90;
+            double headAngle = Math.abs(Mth.wrapDegrees(degrees - yHeadRot));
+            return (!isAtHome() && (distFromTarget > 100 || target.getY() - getY() > 3 || isFlying()) && headAngle < 30 && canBreatheFire());
+        }
+        return false;
     }
 
-
-
-    //TODO: SOUNDS
-    /*
-    public void roarAnimation(int time)
+    public boolean canBreatheFire()
     {
-        if (time == 0) playSound(WRSounds.ENTITY_ROYALRED_ROAR.get(), 3, 1, true);
-        ((LessShitLookController) getLookControl()).stopLooking();
-        for (LivingEntity entity : getEntitiesNearby(10, this::isAlliedTo))
-            entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 60));
+        return ageProgress() > 0.75f;
     }
-    */
+
+    public boolean isKnockedOut()
+    {
+        return entityData.get(KNOCKED_OUT);
+    }
+
+    public void setKnockedOut(boolean b)
+    {
+        entityData.set(KNOCKED_OUT, b);
+        if (!level.isClientSide)
+        {
+            knockOutTime = b? MAX_KNOCKOUT_TIME : 0;
+            if (b)
+            {
+                setXRot(0);
+                clearAI();
+                setFlying(false);
+            }
+        }
+    }
+
+    public int getKnockOutTime()
+    {
+        return knockOutTime;
+    }
+
+    public void setKnockoutTime(int i)
+    {
+        knockOutTime = Math.max(0, i);
+        if (i > 0 && !isKnockedOut()) entityData.set(KNOCKED_OUT, true);
+    }
+
 
     @Override
     public void die(DamageSource cause)
@@ -257,83 +372,26 @@ public class RoyalRedEntity extends WRDragonEntity
     }
 
 
-    /*public void meleeAttack()
-    {
-        if (!level.isClientSide)
-            AnimationPacket.send(this, isFlying() || getRandom().nextBoolean()? BITE_ATTACK_ANIMATION : SLAP_ATTACK_ANIMATION);
-    }*/
-
-    @Override
-    public Vec3 getApproximateMouthPos()
-    {
-        Vec3 rotVector = calculateViewVector(getXRot() * 0.65f, yHeadRot);
-        Vec3 position = getEyePosition(1).subtract(0, 0.9, 0);
-        position = position.add(rotVector.scale(getBbWidth() + 1.3));
-        return position;
-    }
-
-    @Override
-    public EntityDimensions getDimensions(Pose pose)
-    {
-        EntityDimensions size = getType().getDimensions().scale(getScale());
-        float heightFactor = isSleeping()? 0.5f : isInSittingPose()? 0.9f : 1;
-        return size.scale(1, heightFactor);
-    }
-
-    @Override
-    public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
-    {
-        if (backView)
-            event.getCamera().move(ClientEvents.getViewCollision(-8.5, this), 0, 0);
-        else
-            event.getCamera().move(ClientEvents.getViewCollision(-5, this), -0.75, 0);
-    }
-
     @Override
     public boolean isInvulnerableTo(DamageSource source)
     {
         return source == DamageSource.IN_WALL || super.isInvulnerableTo(source);
     }
 
-
-    // =====================
-    //      Variant Methods
-    // =====================
-
     @Override
-    public int determineVariant()
+    public boolean isImmuneToArrows()
     {
-        LocalDate currentDate = LocalDate.now();
-        if (currentDate.getMonth().equals(Month.APRIL) && currentDate.getDayOfMonth() == 1)
-            return 99;
-        return getRandom().nextDouble() < 0.03? -1 : 0;
+        return true;
     }
 
+    // ====================================
+    //      C) Navigation and Control
+    // ====================================
 
-    // =====================
-    //      Food Methods
-    // =====================
+    // ====================================
+    //      C.1) Navigation and Control: Flying
+    // ====================================
 
-    @Override
-    @SuppressWarnings("ConstantConditions")
-    public boolean isFood(ItemStack stack)
-    {
-        return stack.getItem().isEdible() && stack.getItem().getFoodProperties().isMeat();
-    }
-
-    // =====================
-    //      Sleep Methods
-    // =====================
-
-    @Override
-    public boolean shouldSleep()
-    {
-        return !isKnockedOut() && super.shouldSleep();
-    }
-
-    // =====================
-    //      Flying Methods
-    // =====================
     @Override
     public boolean causeFallDamage(float distance, float damageMultiplier, DamageSource source)
     {
@@ -353,9 +411,49 @@ public class RoyalRedEntity extends WRDragonEntity
         return isFlying()? 5 : 7;
     }
 
-    // =====================
-    //      Tamed Methods
-    // =====================
+    // ====================================
+    //      C.3) Navigation and Control: Riding
+    // ====================================
+
+    @Override
+    public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
+    {
+        if (backView)
+            event.getCamera().move(ClientEvents.getViewCollision(-8.5, this), 0, 0);
+        else
+            event.getCamera().move(ClientEvents.getViewCollision(-5, this), -0.75, 0);
+    }
+
+    @Override
+    protected boolean canAddPassenger(Entity passenger)
+    {
+        return isTame() && isJuvenile() && !isKnockedOut() && getPassengers().size() < 3;
+    }
+
+    @Override
+    public Vec3 getPassengerPosOffset(Entity entity, int index)
+    {
+        return new Vec3(0, getBbHeight() * 0.85f, index == 0? 0.5f : -1);
+    }
+
+    //TODO: Keybind animations
+    @Override
+    public void recievePassengerKeybind(int key, int mods, boolean pressed)
+    {
+        //if (!noAnimations()) return;
+
+        if (key == KeybindHandler.MOUNT_KEY && pressed && !getBreathingFire())
+        {
+            //if ((mods & GLFW.GLFW_MOD_CONTROL) != 0) setAnimation(ROAR_ANIMATION);
+            //else meleeAttack();
+        }
+
+        if (key == KeybindHandler.ALT_MOUNT_KEY && canBreatheFire()) setBreathingFire(pressed);
+    }
+
+    // ====================================
+    //      D) Taming
+    // ====================================
 
     @Override
     public void applyStaffInfo(BookContainer container)
@@ -400,118 +498,9 @@ public class RoyalRedEntity extends WRDragonEntity
 
         return super.playerInteraction(player, hand, stack);
     }
-
-
-    @Override
-    protected boolean canAddPassenger(Entity passenger)
-    {
-        return isTame() && isJuvenile() && !isKnockedOut() && getPassengers().size() < 3;
-    }
-
-    @Override
-    public Vec3 getPassengerPosOffset(Entity entity, int index)
-    {
-        return new Vec3(0, getBbHeight() * 0.85f, index == 0? 0.5f : -1);
-    }
-
-    //TODO: Keybind animations
-    @Override
-    public void recievePassengerKeybind(int key, int mods, boolean pressed)
-    {
-        //if (!noAnimations()) return;
-
-        if (key == KeybindHandler.MOUNT_KEY && pressed && !getBreathingFire())
-        {
-            //if ((mods & GLFW.GLFW_MOD_CONTROL) != 0) setAnimation(ROAR_ANIMATION);
-            //else meleeAttack();
-        }
-
-        if (key == KeybindHandler.ALT_MOUNT_KEY && canBreatheFire()) setBreathingFire(pressed);
-    }
-
-    // =====================
-    //      Knockout Methods
-    // =====================
-
-    public boolean isKnockedOut()
-    {
-        return entityData.get(KNOCKED_OUT);
-    }
-
-    public void setKnockedOut(boolean b)
-    {
-        entityData.set(KNOCKED_OUT, b);
-        if (!level.isClientSide)
-        {
-            knockOutTime = b? MAX_KNOCKOUT_TIME : 0;
-            if (b)
-            {
-                setXRot(0);
-                clearAI();
-                setFlying(false);
-            }
-        }
-    }
-
-    public int getKnockOutTime()
-    {
-        return knockOutTime;
-    }
-
-    public void setKnockoutTime(int i)
-    {
-        knockOutTime = Math.max(0, i);
-        if (i > 0 && !isKnockedOut()) entityData.set(KNOCKED_OUT, true);
-    }
-
-    // =====================
-    //      Fire Methods
-    // =====================
-
-    private boolean shouldBreatheFire(){
-        //TODO: Distance Values, tweak?
-        LivingEntity target = this.getTarget();
-        if (target != null && target.isAlive()) {
-            double distFromTarget = distanceToSqr(target);
-            double degrees = Math.atan2(target.getZ() - getZ(), target.getX() - getX()) * (180 / Math.PI) - 90;
-            double headAngle = Math.abs(Mth.wrapDegrees(degrees - yHeadRot));
-            return (!isAtHome() && (distFromTarget > 100 || target.getY() - getY() > 3 || isFlying()) && headAngle < 30 && canBreatheFire());
-        }
-        return false;
-    }
-
-
-    public boolean canBreatheFire()
-    {
-        return ageProgress() > 0.75f;
-    }
-
-
-    public void setBreathingFire(boolean breathingFire)
-    {
-        if (!level.isClientSide) entityData.set(BREATHING_FIRE, breathingFire);
-    }
-
-    public boolean getBreathingFire()
-    {
-        return entityData.get(BREATHING_FIRE);
-    }
-
-    // =====================
-    //      Home Methods
-    // =====================
-
-
-    @Override
-    public boolean defendsHome()
-    {
-        return true;
-    }
-
-
-    // =====================
-    //      Inventory Methods
-    // =====================
+    // ====================================
+    //      D.1) Taming: Inventory
+    // ====================================
 
     @Override
     public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad)
@@ -525,9 +514,25 @@ public class RoyalRedEntity extends WRDragonEntity
         return new DragonInventory(this, 1);
     }
 
-    // =====================
-    //      Sound Methods
-    // =====================
+    // ====================================
+    //      D.2) Taming: Breeding and Food
+    // ====================================
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public boolean isFood(ItemStack stack)
+    {
+        return stack.getItem().isEdible() && stack.getItem().getFoodProperties().isMeat();
+    }
+
+    // ====================================
+    //      E) Client
+    // ====================================
+
+    // ====================================
+    //      E.1) Client: Sounds
+    // ====================================
+
 
     @Nullable
     @Override
@@ -556,45 +561,52 @@ public class RoyalRedEntity extends WRDragonEntity
         return 1.5f * getScale();
     }
 
-    // =====================
-    //      Misc Methods
-    // =====================
+    //TODO: SOUNDS
+    /*
+    public void roarAnimation(int time)
+    {
+        if (time == 0) playSound(WRSounds.ENTITY_ROYALRED_ROAR.get(), 3, 1, true);
+        ((LessShitLookController) getLookControl()).stopLooking();
+        for (LivingEntity entity : getEntitiesNearby(10, this::isAlliedTo))
+            entity.addEffect(new MobEffectInstance(MobEffects.DAMAGE_BOOST, 60));
+    }
+    */
+
+    /*public void meleeAttack()
+    {
+        if (!level.isClientSide)
+            AnimationPacket.send(this, isFlying() || getRandom().nextBoolean()? BITE_ATTACK_ANIMATION : SLAP_ATTACK_ANIMATION);
+    }*/
+
+    // ====================================
+    //      F) Goals
+    // ====================================
 
     @Override
-    public boolean isImmuneToArrows()
+    protected void registerGoals()
     {
-        return true;
+        super.registerGoals();
+
+        goalSelector.addGoal(4, new MoveToHomeGoal(this));
+        goalSelector.addGoal(5, new RRAttackGoal(this));
+        goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
+        goalSelector.addGoal(7, new DragonBreedGoal(this));
+        goalSelector.addGoal(9, new FlyerWanderGoal(this, 1));
+        goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
+        goalSelector.addGoal(11, new RandomLookAroundGoal(this));
+
+        targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
+        targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+        targetSelector.addGoal(3, new DefendHomeGoal(this));
+        targetSelector.addGoal(4, new HurtByTargetGoal(this));
+        //TODO: Target Villagers, etc.
+        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, e -> e.getType() == EntityType.PLAYER || e instanceof Animal));
     }
 
-    @Override
-    public Attribute[] getScaledAttributes()
-    {
-        return ArrayUtils.addAll(super.getScaledAttributes(), ATTACK_KNOCKBACK);
-    }
+    // ====================================
+    //      F.n) Goals: RRAttackGoal
+    // ====================================
 
-    @Override
-    public boolean isImmobile()
-    {
-        return super.isImmobile() || isKnockedOut();
-    }
-
-    @Override
-    protected float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn)
-    {
-        return getBbHeight() + 0.5f;
-    }
-
-    @Override
-    public float getScale()
-    {
-        float i = getAgeScale(0.3f);
-        if (isMale()) i *= 0.8f;
-        return i;
-    }
-
-    // =====================
-    //      Custom Goals
-    // =====================
     class RRAttackGoal extends AnimatedGoal
     {
         private RoyalRedEntity entity;
@@ -642,11 +654,11 @@ public class RoyalRedEntity extends WRDragonEntity
         @Override
         public void tick()
         {
-
             if (attackIsQueued) {
                 if (this.attackQueueTimer == queuedAttackTimer) {
                     attackQueueTimer = 0;
                     attackIsQueued = false;
+                    System.out.println("ATTACK IN BOX CALLED");
                     attackInBox(getOffsetBox(getBbWidth()).inflate(inflateValue), disableShieldTime);
                 } else {
                     attackQueueTimer++;
@@ -766,6 +778,7 @@ public class RoyalRedEntity extends WRDragonEntity
                     //AnimationLogic: start corresponding animation
                     super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime);
                     //GoalLogic: Do melee attack, with parameters coming from animation logic
+                    System.out.println("ATTACK QUEUED");
                     this.attackIsQueued = true;
                 }
             }
