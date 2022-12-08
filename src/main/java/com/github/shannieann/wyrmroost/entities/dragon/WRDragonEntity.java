@@ -60,13 +60,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
-    public static final EntityDataAccessor<Boolean> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Integer> AGE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
     public static final EntityDataAccessor<Boolean> FLYING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
     public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT); // todo in 1.17: make this use strings for nbt based textures
-    public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
-    public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
-    public static final EntityDataAccessor<Integer> AGE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     //TODO: What is this?
     private static final UUID SCALE_MOD_UUID = UUID.fromString("81a0addd-edad-47f1-9aa7-4d76774e055a");
     private static final int AGE_UPDATE_INTERVAL = 200;
@@ -186,25 +186,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return PlayState.CONTINUE;
     }
 
-    @Override
-    protected void registerGoals()
-    {
-        //Goal will only get called when we manually set an animation and want the time counter to apply to it
-        goalSelector.addGoal(0,new AnimatedGoal(this,this.getAnimation(),this.getAnimationType(),this.getAnimationTime()));
-    }
-
-
-    // =====================
-    //      Entity Data
-    // =====================
-    @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @javax.annotation.Nullable SpawnGroupData data, @javax.annotation.Nullable CompoundTag dataTag)
-    {
-        if (hasEntityDataAccessor(GENDER)) setGender(getRandom().nextBoolean());
-        if (hasEntityDataAccessor(VARIANT)) setVariant(determineVariant());
-
-        return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
-    }
+    // ====================================
+    //      A) Entity Data
+    // ====================================
 
     @Override
     protected void defineSynchedData()
@@ -220,16 +204,49 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         super.defineSynchedData();
     }
 
+    @Override
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @javax.annotation.Nullable SpawnGroupData data, @javax.annotation.Nullable CompoundTag dataTag)
+    {
+        if (hasEntityDataAccessor(GENDER)) setGender(getRandom().nextBoolean());
+        if (hasEntityDataAccessor(VARIANT)) setVariant(determineVariant());
+
+        return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
+    }
+
+    @Override
+    public void onSyncedDataUpdated(EntityDataAccessor<?> key)
+    {
+        if (key.equals(SLEEPING) || key.equals(FLYING) || key.equals(TamableAnimal.DATA_FLAGS_ID))
+        {
+            refreshDimensions();
+        }
+        else if (key == AGE)
+        {
+            setAge(entityData.get(AGE));
+            updateAgeProgress();
+            refreshDimensions();
+
+            float scale = getScale();
+            if (scale >= 1)
+            {
+                AttributeModifier mod = new AttributeModifier(SCALE_MOD_UUID, "Scale modifier", scale, AttributeModifier.Operation.MULTIPLY_BASE);
+                for (Attribute att : getScaledAttributes())
+                {
+                    AttributeInstance instance = getAttribute(att);
+                    instance.removeModifier(mod);
+                    instance.addTransientModifier(mod);
+                }
+            }
+        }
+        else super.onSyncedDataUpdated(key);
+    }
+
     public String getAnimation()
     {
         return entityData.get(ANIMATION);
     }
 
-    public void setAnimation(String animation)
-    {
-        System.out.println("setAnimation Data Method called, setting animation to :" + animation);
-        entityData.set(ANIMATION, animation);
-    }
+    public void setAnimation(String animation) {entityData.set(ANIMATION, animation);}
 
     public int getAnimationType()
     {
@@ -261,8 +278,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(PLAYING_ANIMATION, playingAnimation);
     }
 
-    public boolean getManualAnimationCall()
-    {
+    public boolean getManualAnimationCall() {
         return entityData.get(MANUAL_ANIMATION_CALL);
     }
 
@@ -282,230 +298,134 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
 
-
-    @Override
-    public boolean canBeLeashed(Player pPlayer) {
-        return false;
-    }
-
     public boolean hasEntityDataAccessor(EntityDataAccessor<?> param)
     {
         return entityData.itemsById.containsKey(param.getId());
     }
 
-    @Override
-    public void onSyncedDataUpdated(EntityDataAccessor<?> key)
+    public Attribute[] getScaledAttributes()
     {
-        if (key.equals(SLEEPING) || key.equals(FLYING) || key.equals(TamableAnimal.DATA_FLAGS_ID))
-        {
-            refreshDimensions();
-        }
-        else if (key == AGE)
-        {
-            setAge(entityData.get(AGE));
-            updateAgeProgress();
-            refreshDimensions();
-
-            float scale = getScale();
-            if (scale >= 1)
-            {
-                AttributeModifier mod = new AttributeModifier(SCALE_MOD_UUID, "Scale modifier", scale, AttributeModifier.Operation.MULTIPLY_BASE);
-                for (Attribute att : getScaledAttributes())
-                {
-                    AttributeInstance instance = getAttribute(att);
-                    instance.removeModifier(mod);
-                    instance.addTransientModifier(mod);
-                }
-            }
-        }
-        else super.onSyncedDataUpdated(key);
+        return new Attribute[]{MAX_HEALTH, ATTACK_DAMAGE};
+    }
+    public float getTravelSpeed()
+    {
+        //@formatter:off
+        return isFlying()? (float) getAttributeValue(FLYING_SPEED)
+                : (float) getAttributeValue(MOVEMENT_SPEED);
+        //@formatter:on
     }
 
-    // =====================
-    //      tick Methods
-    // =====================
-    @Override
-    public void tick(){
-        super.tick();
+    public static boolean canFlyerSpawn(EntityType<? extends WRDragonEntity> entityType, ServerLevelAccessor serverLevelAccessor, MobSpawnType spawnType, BlockPos pos, Random random)
+    {
+        return serverLevelAccessor.getBlockState(pos.below()).getFluidState().isEmpty();
+    }
 
-        if (!level.isClientSide) {
-            // uhh so were falling, we should probably start flying
-            boolean flying = shouldFly();
-            if (flying != isFlying()) {
-                setFlying(flying);
-            }
+    // ====================================
+    //      A.1) Entity Data: AGE
+    // ====================================
+    public void updateAgeProgress()
+    {
+        // no reason to recalculate this value several times per tick/frame...
+        float growth = DragonEggProperties.get(getType()).getGrowthTime();
+        float min = Math.min(getAge(), 0);
+        ageProgress = 1 - (min / growth);
+    }
 
-            // todo figure out a better target system?
-            LivingEntity target = getTarget();
-            if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
-                setTarget(null);
-        }
+    public float ageProgress()
+    {
+        return ageProgress;
+    }
 
+    public boolean isJuvenile()
+    {
+        return ageProgress() > 0.5f;
+    }
 
-        updateAgeProgress();
-        if (age < 0 && tickCount % AGE_UPDATE_INTERVAL == 0) entityData.set(AGE, age);
+    public boolean isAdult()
+    {
+        return ageProgress() >= 1f;
+    }
 
-        if (this.level.isClientSide) {
-            doSpecialEffects();
-            int age = getAge();
-            if (age < 0) setAge(++age);
-            else if (age > 0) setAge(--age);
-        }
-
-        if (sleepCooldown > 0) --sleepCooldown;
-        if (isSleeping())
-        {
-            ((LessShitLookController) getLookControl()).stopLooking();
-            if (getHealth() < getMaxHealth() && getRandom().nextDouble() < 0.005) heal(1);
-
-            if (shouldWakeUp())
-            {
-                setSleeping(false);
-            }
-        }
-        else if (shouldSleep())
-        {
-            setSleeping(true);
-        }
-
-        //Animations:
-        //Sleeping
-        if (this.isSleeping()) {
-            this.setAnimation("sleep");
-            this.setAnimationType(1);
-            this.setAnimationTime(20);
-            this.setManualAnimationCall(true);
-        }
-        //Sitting
-        if (this.isInSittingPose()){
-            this.setAnimation("sit");
-            this.setAnimationType(2);
-            this.setAnimationTime(20);
-            this.setManualAnimationCall(true);
-        }
+    public boolean isHatchling()
+    {
+        return ageProgress() < 0.5f;
     }
 
     @Override
-    public void travel(Vec3 vec3d){
-        float speed = getTravelSpeed();
-        boolean isFlying = isFlying();
-        if (isFlying)
-        {
-            // Move relative to yaw - handled in the move controller or by passenger
-            moveRelative(speed, vec3d);
-            move(MoverType.SELF, getDeltaMovement());
-            setDeltaMovement(getDeltaMovement().scale(0.9f));
-            calculateEntityAnimation(this, true);
-        }
-        else super.travel(vec3d);
-    }
-
-
-    // =====================
-    //      Navigation and Control
-    // =====================
-    @Override
-    protected PathNavigation createNavigation(Level levelIn)
+    public boolean isBaby()
     {
-        return new BetterPathNavigator(this);
+        return !isAdult();
     }
 
     @Override
-    protected BodyRotationControl createBodyControl()
+    public void setBaby(boolean baby)
     {
-        return new DragonBodyController(this);
+        setAge(baby? DragonEggProperties.get(getType()).getGrowthTime() : 0);
+        entityData.set(AGE, this.age);
+    }
+
+    @Override
+    public int getAge()
+    {
+        return age;
+    }
+
+    @Override
+    public void ageUp(int age, boolean forced)
+    {
+        super.ageUp(age, forced);
+        entityData.set(AGE, this.age);
+    }
+
+    @Override
+    public float getScale()
+    {
+        return 0.5f + (0.5f * ageProgress());
+    }
+
+    public float getAgeScale(float baby)
+    {
+        return baby + ((1 - baby) * ageProgress());
+    }
+
+    // ====================================
+    //      A.2) Entity Data: ARMOR
+    // ====================================
+
+    public boolean hasArmor()
+    {
+        return hasEntityDataAccessor(ARMOR) && entityData.get(ARMOR).getItem() instanceof DragonArmorItem;
+    }
+
+    public ItemStack getArmorStack()
+    {
+        return hasEntityDataAccessor(ARMOR)? entityData.get(ARMOR) : ItemStack.EMPTY;
+    }
+
+    public void setArmor(@javax.annotation.Nullable ItemStack stack)
+    {
+        if (stack == null || !(stack.getItem() instanceof DragonArmorItem)) stack = ItemStack.EMPTY;
+        entityData.set(ARMOR, stack);
     }
 
 
-    // =====================
-    //       Entity AI
-    // =====================
-    public void clearAI()
+
+    // ====================================
+    //      A.3) Entity Data: GENDER
+    // ====================================
+    public boolean isMale()
     {
-        jumping = false;
-        navigation.stop();
-        setTarget(null);
-        setSpeed(0);
-        setYya(0);
+        return !hasEntityDataAccessor(GENDER) || entityData.get(GENDER);
     }
 
-    // =====================
-    //      Sleep Methods
-    // =====================
-    public boolean isSleeping()
+    public void setGender(boolean sex)
     {
-        return hasEntityDataAccessor(SLEEPING) && entityData.get(SLEEPING);
+        entityData.set(GENDER, sex);
     }
 
-    public void setSleeping(boolean sleep)
-    {
-
-        if (isSleeping() == sleep) return;
-
-        entityData.set(SLEEPING, sleep);
-        if (!level.isClientSide)
-        {
-            if (sleep)
-            {
-                setAnimation("sleeping");
-                setAnimationTime(SLEEPING_ANIMATION_TIME);
-                setAnimationType(3);
-                clearAI();
-                setXRot(0);
-            }
-            else sleepCooldown = 350;
-        }
-    }
-
-    public boolean shouldSleep()
-    {
-        if (sleepCooldown > 0) return false;
-        if (level.isDay()) return false;
-        if (!isIdling()) return false;
-        if (isTame())
-        {
-            if (isAtHome())
-            {
-                if (defendsHome()) return getHealth() < getMaxHealth() * 0.25;
-            }
-            else if (!isInSittingPose()) return false;
-        }
-
-        return getRandom().nextDouble() < 0.0065;
-    }
-
-    public boolean isIdling()
-    {
-        return getNavigation().isDone() && getTarget() == null && !isVehicle() && !isInWaterOrBubble() && !isFlying();
-    }
-
-    public boolean shouldWakeUp()
-    {
-        return level.isDay() && getRandom().nextDouble() < 0.0065;
-    }
-
-    // =====================
-    //      Breed Methods
-    // =====================
-
-    public int getBreedCount()
-    {
-        return breedCount;
-    }
-
-    public void setBreedCount(int i)
-    {
-        this.breedCount = i;
-    }
-
-    public boolean isBreedingItem(ItemStack stack)
-    {
-        return isFood(stack);
-    }
-
-    // =====================
-    //      Home Methods
-    // =====================
+    // ====================================
+    //      A.4) Entity Data: HOME
+    // ====================================
 
     public boolean isAtHome()
     {
@@ -600,9 +520,328 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
 
-    // =====================
-    //      Flying Methods
-    // =====================
+    // ====================================
+    //      A.5) Entity Data: SLEEP
+    // ====================================
+
+    public boolean isSleeping()
+    {
+        return hasEntityDataAccessor(SLEEPING) && entityData.get(SLEEPING);
+    }
+
+    public void setSleeping(boolean sleep)
+    {
+
+        if (isSleeping() == sleep) return;
+
+        entityData.set(SLEEPING, sleep);
+        if (!level.isClientSide)
+        {
+            if (sleep)
+            {
+                setAnimation("sleeping");
+                setAnimationTime(SLEEPING_ANIMATION_TIME);
+                setAnimationType(3);
+                clearAI();
+                setXRot(0);
+            }
+            else sleepCooldown = 350;
+        }
+    }
+
+    public boolean shouldSleep()
+    {
+        if (sleepCooldown > 0) return false;
+        if (level.isDay()) return false;
+        if (!isIdling()) return false;
+        if (isTame())
+        {
+            if (isAtHome())
+            {
+                if (defendsHome()) return getHealth() < getMaxHealth() * 0.25;
+            }
+            else if (!isInSittingPose()) return false;
+        }
+
+        return getRandom().nextDouble() < 0.0065;
+    }
+
+
+    public boolean shouldWakeUp()
+    {
+        return level.isDay() && getRandom().nextDouble() < 0.0065;
+    }
+
+    // ====================================
+    //      A.6) Entity Data: VARIANT
+    // ====================================
+
+    public int determineVariant()
+    {
+        return 0;
+    }
+    //Special Variants = -1
+    public int getVariant()
+    {
+        return hasEntityDataAccessor(VARIANT)? entityData.get(VARIANT) : 0;
+    }
+
+    public void setVariant(int variant)
+    {
+        entityData.set(VARIANT, variant);
+    }
+
+
+    // ====================================
+    //      A.7) Entity Data: Miscellaneous
+    // ====================================
+
+    @Override
+    public EntityDimensions getDimensions(Pose pose)
+    {
+        EntityDimensions size = getType().getDimensions().scale(getScale());
+        if (isInSittingPose() || isSleeping()) size = size.scale(1, 0.5f);
+        return size;
+    }
+
+    @Override
+    protected int getExperienceReward(Player player)
+    {
+        return Math.max((int) ((getBbWidth() * getBbHeight()) * 0.25) + getRandom().nextInt(3), super.getExperienceReward(player));
+    }
+
+
+    public Vec3 getApproximateMouthPos()
+    {
+        Vec3 position = getEyePosition(1).subtract(0, 0.75d, 0);
+        double dist = (getBbWidth() / 2) + 0.75d;
+        return position.add(calculateViewVector(getXRot(), yHeadRot).scale(dist));
+    }
+
+    // ====================================
+    //      B) Tick and AI
+    // ====================================
+
+    @Override
+    public void tick(){
+        super.tick();
+
+        if (!level.isClientSide) {
+            // uhh so were falling, we should probably start flying
+            boolean flying = shouldFly();
+            if (flying != isFlying()) {
+                setFlying(flying);
+            }
+
+            // todo figure out a better target system?
+            LivingEntity target = getTarget();
+            if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
+                setTarget(null);
+        }
+
+
+        updateAgeProgress();
+        if (age < 0 && tickCount % AGE_UPDATE_INTERVAL == 0) entityData.set(AGE, age);
+
+        if (this.level.isClientSide) {
+            doSpecialEffects();
+            int age = getAge();
+            if (age < 0) setAge(++age);
+            else if (age > 0) setAge(--age);
+        }
+
+        if (sleepCooldown > 0) --sleepCooldown;
+        if (isSleeping())
+        {
+            ((LessShitLookController) getLookControl()).stopLooking();
+            if (getHealth() < getMaxHealth() && getRandom().nextDouble() < 0.005) heal(1);
+
+            if (shouldWakeUp())
+            {
+                setSleeping(false);
+            }
+        }
+        else if (shouldSleep())
+        {
+            setSleeping(true);
+        }
+
+        //Animations:
+        //Sleeping
+        if (this.isSleeping()) {
+            this.setAnimation("sleep");
+            this.setAnimationType(1);
+            this.setAnimationTime(20);
+            this.setManualAnimationCall(true);
+        }
+        //Sitting
+        if (this.isInSittingPose()){
+            this.setAnimation("sit");
+            this.setAnimationType(2);
+            this.setAnimationTime(20);
+            this.setManualAnimationCall(true);
+        }
+    }
+
+    public void clearAI()
+    {
+        jumping = false;
+        navigation.stop();
+        setTarget(null);
+        setSpeed(0);
+        setYya(0);
+    }
+
+
+
+    // ====================================
+    //      B.1) Tick and AI: Attack and Hurt
+    // ====================================
+    public void attackInBox(AABB box)
+    {
+        attackInBox(box, 0);
+    }
+
+    public void attackInBox(AABB box, int disabledShieldTime)
+    {
+        List<LivingEntity> attackables = level.getEntitiesOfClass(LivingEntity.class, box, entity -> entity != this && !hasPassenger(entity) && wantsToAttack(entity, getOwner()));
+        //if (WRConfig.DEBUG_MODE.get() && level.isClientSide) DebugRendering.box(box, 0x99ff0000, Integer.MAX_VALUE);
+        for (LivingEntity attacking : attackables)
+        {
+            doHurtTarget(attacking);
+            if (disabledShieldTime > 0 && attacking instanceof Player)
+            {
+                Player player = ((Player) attacking);
+                if (player.isUsingItem() && player.getUseItem().is(Items.SHIELD))
+                {
+                    player.getCooldowns().addCooldown(Items.SHIELD, disabledShieldTime);
+                    player.stopUsingItem();
+                    level.broadcastEntityEvent(player, (byte) 9);
+                }
+            }
+        }
+    }
+
+    @Override
+    public boolean doHurtTarget(Entity entity)
+    {
+        //TODO: Different animation
+        //TODO: Different attack values
+        //Could make a call to QueueHurtTarget
+        //If QueuedHurtTarget = true, start counting on a timer..
+        //If timer = desiredTimer
+        //Play Animation
+        //Play Sound
+        //Damage Target
+        System.out.println("doHurtTarget called performing melee attack animation");
+        if (this.getAnimation().equals("base")) {
+            int attackVariant = this.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
+            this.setAnimation("attack_"+attackVariant);
+            this.setAnimationType(2);
+            this.setAnimationTime(80);
+        }
+        return super.doHurtTarget(entity);
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float amount)
+    {
+        if (isImmuneToArrows() && source.getDirectEntity() != null)
+        {
+            EntityType<?> attackSource = source.getDirectEntity().getType();
+            if (attackSource == EntityType.ARROW) return false;
+            else if (attackSource == WREntityTypes.GEODE_TIPPED_ARROW.get()) amount *= 0.5f;
+        }
+
+        setSleeping(false);
+        setOrderedToSit(false);
+        return super.hurt(source, amount);
+    }
+
+    @Deprecated
+    public boolean isImmuneToArrows()
+    {
+        return false;
+    }
+
+
+    // ====================================
+    //      B.2) Tick and AI: Sit
+    // ====================================
+
+    @Override
+    public void setInSittingPose(boolean flag)
+    {
+        super.setInSittingPose(flag);
+        if (flag) {
+            clearAI();
+            setAnimation("sitting");
+            setAnimationType(3);
+            setAnimationTime(20);
+        }
+    }
+
+    // ====================================
+    //      C) Navigation and Control
+    // ====================================
+
+    @Override
+    protected PathNavigation createNavigation(Level levelIn)
+    {
+        return new BetterPathNavigator(this);
+    }
+
+    @Override
+    protected BodyRotationControl createBodyControl()
+    {
+        return new DragonBodyController(this);
+    }
+
+    @Override
+    public void travel(Vec3 vec3d){
+        float speed = getTravelSpeed();
+        boolean isFlying = isFlying();
+        if (isFlying)
+        {
+            // Move relative to yaw - handled in the move controller or by passenger
+            moveRelative(speed, vec3d);
+            move(MoverType.SELF, getDeltaMovement());
+            setDeltaMovement(getDeltaMovement().scale(0.9f));
+            calculateEntityAnimation(this, true);
+        }
+        else super.travel(vec3d);
+    }
+
+    public boolean isIdling()
+    {
+        return getNavigation().isDone() && getTarget() == null && !isVehicle() && !isInWaterOrBubble() && !isFlying();
+    }
+
+    public AABB getOffsetBox(float offset)
+    {
+        return getBoundingBox().move(Vec3.directionFromRotation(0, yBodyRot).scale(offset));
+    }
+
+    public void setRotation(float yaw, float pitch)
+    {
+        this.setYRot(yaw % 360.0F);
+        this.setXRot(pitch % 360.0F);
+    }
+
+    public boolean isRiding()
+    {
+        return getVehicle() != null;
+    }
+
+    @Override
+    public boolean isSuppressingSlidingDownLadder()
+    {
+        return false;
+    }
+
+    // ====================================
+    //      C.1) Navigation and Control: Flying
+    // ====================================
 
     public boolean isFlying()
     {
@@ -686,211 +925,47 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         return !canFly() && super.causeFallDamage(distance - (int) (getBbHeight() * 0.8), damageMultiplier, source);
     }
-    // =====================
-    //      Age Methods
-    // =====================
 
-    public void updateAgeProgress()
-    {
-        // no reason to recalculate this value several times per tick/frame...
-        float growth = DragonEggProperties.get(getType()).getGrowthTime();
-        float min = Math.min(getAge(), 0);
-        ageProgress = 1 - (min / growth);
-    }
+    // ====================================
+    //      C.2) Navigation and Control: Swimming
+    // ====================================
 
-    public float ageProgress()
-    {
-        return ageProgress;
-    }
-
-    public boolean isJuvenile()
-    {
-        return ageProgress() > 0.5f;
-    }
-
-    public boolean isAdult()
-    {
-        return ageProgress() >= 1f;
-    }
-
-    public boolean isHatchling()
-    {
-        return ageProgress() < 0.5f;
-    }
+    // ====================================
+    //      D) Taming
+    // ====================================
 
     @Override
-    public boolean isBaby()
-    {
-        return !isAdult();
-    }
-
-    @Override
-    public void setBaby(boolean baby)
-    {
-        setAge(baby? DragonEggProperties.get(getType()).getGrowthTime() : 0);
-        entityData.set(AGE, this.age);
-    }
-
-    @Override
-    public int getAge()
-    {
-        return age;
-    }
-
-    @Override
-    public void ageUp(int age, boolean forced)
-    {
-        super.ageUp(age, forced);
-        entityData.set(AGE, this.age);
-    }
-
-    @Override
-    public float getScale()
-    {
-        return 0.5f + (0.5f * ageProgress());
-    }
-
-    public float getAgeScale(float baby)
-    {
-        return baby + ((1 - baby) * ageProgress());
+    public boolean canBeLeashed(Player pPlayer) {
+        return false;
     }
 
 
-    // =====================
-    //      Armor Methods
-    // =====================
-
-    public boolean hasArmor()
+    public int getBreedCount()
     {
-        return hasEntityDataAccessor(ARMOR) && entityData.get(ARMOR).getItem() instanceof DragonArmorItem;
+        return breedCount;
     }
 
-    public ItemStack getArmorStack()
+    public void setBreedCount(int i)
     {
-        return hasEntityDataAccessor(ARMOR)? entityData.get(ARMOR) : ItemStack.EMPTY;
+        this.breedCount = i;
     }
 
-    public void setArmor(@javax.annotation.Nullable ItemStack stack)
+    public boolean isBreedingItem(ItemStack stack)
     {
-        if (stack == null || !(stack.getItem() instanceof DragonArmorItem)) stack = ItemStack.EMPTY;
-        entityData.set(ARMOR, stack);
+        return isFood(stack);
     }
 
-    // =====================
-    //      Variant Methods
-    // =====================
-    public int determineVariant()
+    // ====================================
+    //      E) Client
+    // ====================================
+
+    public void doSpecialEffects()
     {
-        return 0;
-    }
-    //Special Variants = -1
-    public int getVariant()
-    {
-        return hasEntityDataAccessor(VARIANT)? entityData.get(VARIANT) : 0;
     }
 
-    public void setVariant(int variant)
-    {
-        entityData.set(VARIANT, variant);
-    }
-
-    // =====================
-    //      Gender Methods
-    // =====================
-    public boolean isMale()
-    {
-        return !hasEntityDataAccessor(GENDER) || entityData.get(GENDER);
-    }
-
-    public void setGender(boolean sex)
-    {
-        entityData.set(GENDER, sex);
-    }
-
-    // =====================
-    //      Sitting Methods
-    // =====================
-    @Override
-    public void setInSittingPose(boolean flag)
-    {
-        super.setInSittingPose(flag);
-        if (flag) {
-            clearAI();
-            setAnimation("sitting");
-            setAnimationType(3);
-            setAnimationTime(20);
-        }
-    }
-
-    // =====================
-    //      Attack Methods
-    // =====================
-
-    public void attackInBox(AABB box)
-    {
-        attackInBox(box, 0);
-    }
-
-    public void attackInBox(AABB box, int disabledShieldTime)
-    {
-        List<LivingEntity> attackables = level.getEntitiesOfClass(LivingEntity.class, box, entity -> entity != this && !hasPassenger(entity) && wantsToAttack(entity, getOwner()));
-        //if (WRConfig.DEBUG_MODE.get() && level.isClientSide) DebugRendering.box(box, 0x99ff0000, Integer.MAX_VALUE);
-        for (LivingEntity attacking : attackables)
-        {
-            doHurtTarget(attacking);
-            if (disabledShieldTime > 0 && attacking instanceof Player)
-            {
-                Player player = ((Player) attacking);
-                if (player.isUsingItem() && player.getUseItem().is(Items.SHIELD))
-                {
-                    player.getCooldowns().addCooldown(Items.SHIELD, disabledShieldTime);
-                    player.stopUsingItem();
-                    level.broadcastEntityEvent(player, (byte) 9);
-                }
-            }
-        }
-    }
-
-
-    @Override
-    public boolean doHurtTarget(Entity entity)
-    {
-        //TODO: Different animation
-        //TODO: Different attack values
-        //Could make a call to QueueHurtTarget
-        //If QueuedHurtTarget = true, start counting on a timer..
-        //If timer = desiredTimer
-            //Play Animation
-            //Play Sound
-            //Damage Target
-        System.out.println("doHurtTarget called performing melee attack animation");
-        if (this.getAnimation().equals("base")) {
-            int attackVariant = this.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
-            this.setAnimation("attack_"+attackVariant);
-            this.setAnimationType(2);
-            this.setAnimationTime(80);
-        }
-        return super.doHurtTarget(entity);
-    }
-
-    @Override
-    public boolean hurt(DamageSource source, float amount)
-    {
-        if (isImmuneToArrows() && source.getDirectEntity() != null)
-        {
-            EntityType<?> attackSource = source.getDirectEntity().getType();
-            if (attackSource == EntityType.ARROW) return false;
-            else if (attackSource == WREntityTypes.GEODE_TIPPED_ARROW.get()) amount *= 0.5f;
-        }
-
-        setSleeping(false);
-        setOrderedToSit(false);
-        return super.hurt(source, amount);
-    }
-
-    // =====================
-    //      Sound Methods
-    // =====================
+    // ====================================
+    //      E.1) Client: Sounds
+    // ====================================
     @Override
     public void playSound(SoundEvent soundIn, float volume, float pitch)
     {
@@ -926,89 +1001,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!isSleeping()) super.playAmbientSound();
     }
 
-    // =====================
-    //      Client Methods
-    // =====================
-    public void doSpecialEffects()
-    {
-    }
-    // =====================
-    //      Misc Methods
-    // =====================
-    public Attribute[] getScaledAttributes()
-    {
-        return new Attribute[]{MAX_HEALTH, ATTACK_DAMAGE};
-    }
-    public float getTravelSpeed()
-    {
-        //@formatter:off
-        return isFlying()? (float) getAttributeValue(FLYING_SPEED)
-                : (float) getAttributeValue(MOVEMENT_SPEED);
-        //@formatter:on
-    }
 
-    @Deprecated
-    public boolean isImmuneToArrows()
-    {
-        return false;
-    }
+    // ====================================
+    //      F) Goal Methods
+    // ====================================
 
     @Override
-    public EntityDimensions getDimensions(Pose pose)
+    protected void registerGoals()
     {
-        EntityDimensions size = getType().getDimensions().scale(getScale());
-        if (isInSittingPose() || isSleeping()) size = size.scale(1, 0.5f);
-        return size;
+        //Goal will only get called when we manually set an animation and want the time counter to apply to it
+        goalSelector.addGoal(0,new AnimatedGoal(this,this.getAnimation(),this.getAnimationType(),this.getAnimationTime()));
     }
-
-    @Override
-    protected int getExperienceReward(Player player)
-    {
-        return Math.max((int) ((getBbWidth() * getBbHeight()) * 0.25) + getRandom().nextInt(3), super.getExperienceReward(player));
-    }
-
-    /**
-     * A universal getter for the position of the mouth on the dragon.
-     * This is prone to be inaccurate, but can serve good enough for most things
-     * If a more accurate position is needed, best to override and adjust accordingly.
-     *
-     * @return An approximate position of the mouth of the dragon
-     */
-    public Vec3 getApproximateMouthPos()
-    {
-        Vec3 position = getEyePosition(1).subtract(0, 0.75d, 0);
-        double dist = (getBbWidth() / 2) + 0.75d;
-        return position.add(calculateViewVector(getXRot(), yHeadRot).scale(dist));
-    }
-
-
-    public AABB getOffsetBox(float offset)
-    {
-        return getBoundingBox().move(Vec3.directionFromRotation(0, yBodyRot).scale(offset));
-    }
-
-    public void setRotation(float yaw, float pitch)
-    {
-        this.setYRot(yaw % 360.0F);
-        this.setXRot(pitch % 360.0F);
-    }
-
-    public boolean isRiding()
-    {
-        return getVehicle() != null;
-    }
-
-    @Override
-    public boolean isSuppressingSlidingDownLadder()
-    {
-        return false;
-    }
-
-    public static boolean canFlyerSpawn(EntityType<? extends WRDragonEntity> entityType, ServerLevelAccessor serverLevelAccessor, MobSpawnType spawnType, BlockPos pos, Random random)
-    {
-        return serverLevelAccessor.getBlockState(pos.below()).getFluidState().isEmpty();
-    }
-
 }
 
 
