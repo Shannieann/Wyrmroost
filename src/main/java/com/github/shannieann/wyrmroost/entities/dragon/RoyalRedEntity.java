@@ -55,6 +55,7 @@ import java.util.EnumSet;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
+//TODO: Tidy up class
 
 public class RoyalRedEntity extends WRDragonEntity
 {
@@ -103,8 +104,6 @@ public class RoyalRedEntity extends WRDragonEntity
     {
         super(type, worldIn);
         noCulling = WRConfig.NO_CULLING.get();
-
-        //TODO: Double call?
         setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0);
         setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0);
     }

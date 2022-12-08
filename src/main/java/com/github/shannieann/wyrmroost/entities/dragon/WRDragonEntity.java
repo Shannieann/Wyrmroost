@@ -1205,6 +1205,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     //      D) Taming
     // ====================================
+    //TODO: Tidy up section
 
     @Override
     public boolean canBeLeashed(Player pPlayer) {
