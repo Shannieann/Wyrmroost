@@ -37,8 +37,8 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 public class CanariWyvernEntity extends WRDragonEntity
 {
     private static final EntitySerializer<CanariWyvernEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.BOOL, "Gender", WRDragonEntity::isMale, WRDragonEntity::setGender)
-            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
+            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
             .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping));
 
 
@@ -87,9 +87,9 @@ public class CanariWyvernEntity extends WRDragonEntity
     {
         super.defineSynchedData();
         entityData.define(FLYING, false);
-        entityData.define(GENDER, false);
+        entityData.define(GENDER, "male");
         entityData.define(SLEEPING, false);
-        entityData.define(VARIANT, 0);
+        entityData.define(VARIANT, "");
     }
 
 
@@ -193,9 +193,10 @@ public class CanariWyvernEntity extends WRDragonEntity
 
 
     @Override
-    public int determineVariant()
+    public String determineVariant()
     {
-        return getRandom().nextInt(5);
+
+        return "base"+getRandom().nextInt(5);
     }
 
     @Override

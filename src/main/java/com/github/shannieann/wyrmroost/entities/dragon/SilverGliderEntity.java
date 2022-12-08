@@ -44,8 +44,8 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 public class SilverGliderEntity extends WRDragonEntity
 {
     private static final EntitySerializer<SilverGliderEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.BOOL, "Gender", WRDragonEntity::isMale, WRDragonEntity::setGender)
-            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
+            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
             .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping));
 
     public final LerpedFloat sitTimer = LerpedFloat.unit();
@@ -70,8 +70,8 @@ public class SilverGliderEntity extends WRDragonEntity
     {
         super.defineSynchedData();
         entityData.define(FLYING, false);
-        entityData.define(GENDER, false);
-        entityData.define(VARIANT, 0);
+        entityData.define(GENDER, "male");
+        entityData.define(VARIANT, "base");
         entityData.define(SLEEPING, false);
     }
 
@@ -189,7 +189,7 @@ public class SilverGliderEntity extends WRDragonEntity
     @Override
     public void doSpecialEffects()
     {
-        if (getVariant() == -1 && tickCount % 5 == 0)
+        if (getVariant() == "special" && tickCount % 5 == 0)
         {
             double x = getX() + getRandom().nextGaussian();
             double y = getY() + getRandom().nextDouble();
@@ -207,10 +207,12 @@ public class SilverGliderEntity extends WRDragonEntity
     }
 
     @Override
-    public int determineVariant()
+    public String  determineVariant()
     {
-        if (getRandom().nextDouble() < 0.002) return -1;
-        return getRandom().nextInt(3);
+        if (getRandom().nextDouble() < 0.002) {
+            return "special";
+        }
+        return ("base"+getRandom().nextInt(3));
     }
 
     @Nullable

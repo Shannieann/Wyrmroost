@@ -116,17 +116,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<Integer> AGE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
     public static final EntityDataAccessor<Boolean> FLYING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<String> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
     public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT); // todo in 1.17: make this use strings for nbt based textures
+    public static final EntityDataAccessor<String> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING); // todo in 1.17: make this use strings for nbt based textures
     //TODO: What is this?
     private static final UUID SCALE_MOD_UUID = UUID.fromString("81a0addd-edad-47f1-9aa7-4d76774e055a");
     private static final int AGE_UPDATE_INTERVAL = 200;
     protected static int IDLE_ANIMATION_VARIANTS;
     protected static int ATTACK_ANIMATION_VARIANTS;
-    protected static float SITTING_ANIMATION_TIME;
-    protected static float SLEEPING_ANIMATION_TIME;
+    protected static int SITTING_ANIMATION_TIME;
+    protected static int SLEEPING_ANIMATION_TIME;
 
 
     private static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
@@ -143,7 +143,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      * Case 1: Flying
      * Case 2: Swimming
      */
-    private static final EntityDataAccessor<Float> ANIMATION_TIME = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
+    private static final EntityDataAccessor<Integer> ANIMATION_TIME = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> MOVING_STATE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> MANUAL_ANIMATION_CALL = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
@@ -234,7 +234,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
         //Idle:
         int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
-        event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle_"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
+        event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
 
@@ -248,7 +248,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         this.entityData.define(ANIMATION, "base");
         this.entityData.define(ANIMATION_TYPE, 1);
         this.entityData.define(MOVING_STATE, 0);
-        this.entityData.define(ANIMATION_TIME, 0F);
+        this.entityData.define(ANIMATION_TIME, 0);
         this.entityData.define(MANUAL_ANIMATION_CALL, false);
         entityData.define(HOME_POS, BlockPos.ZERO);
         entityData.define(AGE, 0);
@@ -276,7 +276,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @javax.annotation.Nullable SpawnGroupData data, @javax.annotation.Nullable CompoundTag dataTag)
     {
-        if (hasEntityDataAccessor(GENDER)) setGender(getRandom().nextBoolean());
+        String gender;
+        if (getRandom().nextBoolean()){
+            gender = "male";
+        } else {
+            gender = "female";
+        }
+        if (hasEntityDataAccessor(GENDER)) setGender(gender);
         if (hasEntityDataAccessor(VARIANT)) setVariant(determineVariant());
 
         return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
@@ -335,12 +341,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(ANIMATION_TYPE, animation);
     }
 
-    public float getAnimationTime()
+    public int getAnimationTime()
     {
         return entityData.get(ANIMATION_TIME);
     }
 
-    public void setAnimationTime(float animationTime)
+    public void setAnimationTime(int animationTime)
     {
         entityData.set(ANIMATION_TIME, animationTime);
     }
@@ -480,14 +486,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     //      A.3) Entity Data: GENDER
     // ====================================
-    public boolean isMale()
+    public String getGender()
     {
-        return !hasEntityDataAccessor(GENDER) || entityData.get(GENDER);
+        return (!hasEntityDataAccessor(GENDER) || entityData.get(GENDER).equals("male")) ? "male" : "female";
     }
 
-    public void setGender(boolean sex)
+    public void setGender(String gender)
     {
-        entityData.set(GENDER, sex);
+        entityData.set(GENDER, gender);
     }
 
     // ====================================
@@ -643,17 +649,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      A.6) Entity Data: VARIANT
     // ====================================
 
-    public int determineVariant()
+    public String determineVariant()
     {
-        return 0;
+        return "base";
     }
     //Special Variants = -1
-    public int getVariant()
+    public String getVariant()
     {
-        return hasEntityDataAccessor(VARIANT)? entityData.get(VARIANT) : 0;
+        return hasEntityDataAccessor(VARIANT)? entityData.get(VARIANT) : "base";
     }
 
-    public void setVariant(int variant)
+    public void setVariant(String variant)
     {
         entityData.set(VARIANT, variant);
     }
@@ -1271,8 +1277,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         if (hasEntityDataAccessor(GENDER))
         {
-            boolean isMale = isMale();
-            container.addTooltip(new TranslatableComponent("entity.wyrmroost.dragons.gender." + (isMale? "male" : "female"))
+            String gender = getGender();
+            Boolean isMale = (gender.equals("male"));
+            container.addTooltip(new TranslatableComponent("entity.wyrmroost.dragons.gender." + gender)
                     .withStyle(isMale? ChatFormatting.DARK_AQUA : ChatFormatting.RED));
         }
     }
@@ -1552,7 +1559,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!(mate instanceof WRDragonEntity)) return false;
         WRDragonEntity dragon = (WRDragonEntity) mate;
         if (isInSittingPose() || dragon.isInSittingPose()) return false;
-        if (hasEntityDataAccessor(GENDER) && isMale() == dragon.isMale()) return false;
+        if (hasEntityDataAccessor(GENDER) && (getGender()).equals(dragon.getGender())) return false;
         return super.canMate(mate);
     }
 

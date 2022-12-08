@@ -7,15 +7,15 @@ public class AnimatedGoal extends Goal {
     public WRDragonEntity entity;
     public String animationName;
     public int animationType;
-    public float animationTime;
-    public float elapsedTime;
+    public int animationTime;
+    public int elapsedTime;
 
     public AnimatedGoal(WRDragonEntity entity){
         this.entity = entity;
         this.elapsedTime = 0;
     }
 
-    public AnimatedGoal(WRDragonEntity entity, String animationName, int animationType, float animationTime){
+    public AnimatedGoal(WRDragonEntity entity, String animationName, int animationType, int animationTime){
         this.entity = entity;
         this.animationName = animationName;
         this.animationType = animationType;
@@ -54,7 +54,7 @@ public class AnimatedGoal extends Goal {
         //Just proceed to count ticks directly...
     }
 
-    public void start(String animationName, int animationType, float animationTime){
+    public void start(String animationName, int animationType, int animationTime){
         this.entity.setAnimation(this.animationName = animationName);
         this.entity.setAnimationType(this.animationType = animationType);
         this.entity.setAnimationTime(this.animationTime = animationTime);

@@ -24,8 +24,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -70,8 +68,8 @@ public class RoyalRedEntity extends WRDragonEntity
     public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
 
     private static final EntitySerializer<RoyalRedEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.BOOL, "Gender", WRDragonEntity::isMale, WRDragonEntity::setGender)
-            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getVariant, WRDragonEntity::setGender)
+            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
             .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
             .track(EntitySerializer.INT, "KnockOutTime", RoyalRedEntity::getKnockOutTime, RoyalRedEntity::setKnockoutTime));
 
@@ -80,27 +78,26 @@ public class RoyalRedEntity extends WRDragonEntity
 
     public static final String ROAR_ANIMATION = "roar";
     public static final int ROAR_ANIMATION_TYPE = 2;
-    public static final float ROAR_ANIMATION_TIME = 80;
+    public static final int ROAR_ANIMATION_TIME = 80;
 
     public static final String FIRE_ANIMATION = "fire";
     public static final int FIRE_ANIMATION_TYPE = 1;
-    public static final float FIRE_ANIMATION_TIME = 80;
+    public static final int FIRE_ANIMATION_TIME = 80;
 
-    public static final String ATTACK_ANIMATION = "attack_";
+    public static final String ATTACK_ANIMATION = "attack";
     public static final int ATTACK_ANIMATION_TYPE = 2;
-    public static final float ATTACK_ANIMATION_TIME_1 = 40;
-    public static final float ATTACK_ANIMATION_TIME_2 = 27;
-    public static final float ATTACK_ANIMATION_TIME_3 = 80;
-    public static final float ATTACK_QUEUE_TIME_1 = 18;
-    public static final float ATTACK_QUEUE_TIME_2 = 18;
-    public static final float ATTACK_QUEUE_TIME_3 = 50;
+    public static final int ATTACK_ANIMATION_TIME_1 = 20;
+    public static final int ATTACK_ANIMATION_TIME_2 = 13;
+    public static final int ATTACK_ANIMATION_TIME_3 = 35;
+    public static final int ATTACK_QUEUE_TIME_1 = 9;
+    public static final int ATTACK_QUEUE_TIME_2 = 9;
+    public static final int ATTACK_QUEUE_TIME_3 = 25;
 
     public final LerpedFloat flightTimer = LerpedFloat.unit();
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public final LerpedFloat breathTimer = LerpedFloat.unit();
     public final LerpedFloat knockOutTimer = LerpedFloat.unit();
     private int knockOutTime = 0;
-    private int debugTickCounter = 0;
 
     public RoyalRedEntity(EntityType<? extends WRDragonEntity> type, Level worldIn)
     {
@@ -118,9 +115,9 @@ public class RoyalRedEntity extends WRDragonEntity
     protected void defineSynchedData()
     {
         super.defineSynchedData();
-        entityData.define(GENDER, false);
+        entityData.define(GENDER, "male");
         entityData.define(SLEEPING, false);
-        entityData.define(VARIANT, 0);
+        entityData.define(VARIANT, "base0");
         entityData.define(BREATHING_FIRE, false);
         entityData.define(KNOCKED_OUT, false);
         entityData.define(FLYING, false);
@@ -191,12 +188,12 @@ public class RoyalRedEntity extends WRDragonEntity
     // ====================================
 
     @Override
-    public int determineVariant()
+    public String determineVariant()
     {
         LocalDate currentDate = LocalDate.now();
         if (currentDate.getMonth().equals(Month.APRIL) && currentDate.getDayOfMonth() == 1)
-            return 99;
-        return getRandom().nextDouble() < 0.03? -1 : 0;
+            return "april";
+        return getRandom().nextDouble() < 0.03? "special" : "base";
     }
 
 
@@ -243,7 +240,7 @@ public class RoyalRedEntity extends WRDragonEntity
     public float getScale()
     {
         float i = getAgeScale(0.3f);
-        if (isMale()) i *= 0.8f;
+        if (getGender().equals("male")) i *= 0.8f;
         return i;
     }
 
@@ -255,9 +252,6 @@ public class RoyalRedEntity extends WRDragonEntity
     @Override
     public void aiStep()
     {
-
-        System.out.println("TICK COUNTER: " +debugTickCounter);
-        debugTickCounter++;
         super.aiStep();
         // =====================
         //       Update Timers
@@ -614,7 +608,7 @@ public class RoyalRedEntity extends WRDragonEntity
         boolean animationPlaying;
         int ticksUntilNextAttack;
         private boolean attackIsQueued;
-        private float queuedAttackTimer;
+        private int queuedAttackTimer;
         private int attackQueueTimer = 0;
         double inflateValue;
         int disableShieldTime;
@@ -658,7 +652,6 @@ public class RoyalRedEntity extends WRDragonEntity
                 if (this.attackQueueTimer == queuedAttackTimer) {
                     attackQueueTimer = 0;
                     attackIsQueued = false;
-                    System.out.println("ATTACK IN BOX CALLED");
                     attackInBox(getOffsetBox(getBbWidth()).inflate(inflateValue), disableShieldTime);
                 } else {
                     attackQueueTimer++;
@@ -742,7 +735,7 @@ public class RoyalRedEntity extends WRDragonEntity
                 //AnimationLogic: decide which attack variant we are using
                 int attackVariant = entity.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
                 String attackAnimation = ATTACK_ANIMATION+attackVariant;
-                float attackAnimationTime = 0;
+                int attackAnimationTime = 0;
 
                 //GoalLogic: check reset attack cooldown based on AnimationLogic, animation time
                 switch (attackVariant) {
@@ -778,7 +771,6 @@ public class RoyalRedEntity extends WRDragonEntity
                     //AnimationLogic: start corresponding animation
                     super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime);
                     //GoalLogic: Do melee attack, with parameters coming from animation logic
-                    System.out.println("ATTACK QUEUED");
                     this.attackIsQueued = true;
                 }
             }

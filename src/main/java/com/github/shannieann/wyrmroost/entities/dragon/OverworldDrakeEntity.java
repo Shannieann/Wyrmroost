@@ -59,8 +59,8 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 public class OverworldDrakeEntity extends WRDragonEntity
 {
     private static final EntitySerializer<OverworldDrakeEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.BOOL, "Gender", WRDragonEntity::isMale, WRDragonEntity::setGender)
-            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
+            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
             .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping));
 
     // inventory slot constants
@@ -95,9 +95,9 @@ public class OverworldDrakeEntity extends WRDragonEntity
     protected void defineSynchedData()
     {
         super.defineSynchedData();
-        entityData.define(GENDER, false);
+        entityData.define(GENDER, "male");
         entityData.define(SLEEPING, false);
-        entityData.define(VARIANT, 0);
+        entityData.define(VARIANT, "base");
         entityData.define(SADDLED, false);
         entityData.define(ARMOR, ItemStack.EMPTY);
     }
@@ -432,12 +432,12 @@ public class OverworldDrakeEntity extends WRDragonEntity
     }
 
     @Override
-    public int determineVariant()
+    public String determineVariant()
     {
-        if (getRandom().nextDouble() < 0.008) return -1;
+        if (getRandom().nextDouble() < 0.008) return "special";
 
-        if (Biome.getBiomeCategory(level.getBiome(blockPosition())) == Biome.BiomeCategory.SAVANNA) return 1;
-        return 0;
+        if (Biome.getBiomeCategory(level.getBiome(blockPosition())) == Biome.BiomeCategory.SAVANNA) return "base1";
+        return "base0";
     }
 
 

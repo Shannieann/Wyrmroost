@@ -3,30 +3,26 @@ package com.github.shannieann.wyrmroost.client.model.entity.dragon;
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.entities.dragon.RoyalRedEntity;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
+import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
 public class ModelRoyalRed extends AnimatedGeoModel<RoyalRedEntity>
 {
-    //TODO: Select variant by modifying string
-    private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/royal_red/royal_red.geo.json");
-    private static final ResourceLocation TEXTURE_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/royal_red/royal_red.png");
-    //TODO: Uniform variant numbering
-    private static final ResourceLocation TEXTURE_RESOURCE_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/royal_red/royal_red_sp.png");
     private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/royal_red/royal_red.json");
 
     //TODO: All model variants
     @Override
     public ResourceLocation getModelLocation(RoyalRedEntity object) {
-        return MODEL_RESOURCE;
+        String modelLocation = "geo/entity/dragon/royal_red/royal_red" + "_" + (object.isAdult() ? "adult" : "child" + ".geo.json");
+        return new ResourceLocation(Wyrmroost.MOD_ID, modelLocation);
     }
-
-    //TODO: All texture variants
     @Override
     public ResourceLocation getTextureLocation(RoyalRedEntity object) {
-        if (object.getVariant() == -1) {
-            return TEXTURE_RESOURCE_SPECIAL;
-        }
-        return TEXTURE_RESOURCE;
+        String textureLocation = "textures/entity/dragon/royal_red/royal_red_" + object.getVariant() + "_" + object.getGender() + "_" + (object.isFlying()? "fly" : "land") + ".png";
+        return new ResourceLocation(Wyrmroost.MOD_ID, textureLocation);
     }
 
     @Override
@@ -34,12 +30,10 @@ public class ModelRoyalRed extends AnimatedGeoModel<RoyalRedEntity>
         return ANIMATION_RESOURCE;
     }
 
-    //TODO: Is this necessary?
-    /*
     @Override
-    public void setCustomAnimations(T animatable, int instanceId, AnimationEvent animationEvent) {
+    public void setCustomAnimations(RoyalRedEntity animatable, int instanceId, AnimationEvent animationEvent) {
         super.setCustomAnimations(animatable, instanceId, animationEvent);
-        IBone head = this.getAnimationProcessor().getBone("neck");
+        IBone head = this.getAnimationProcessor().getBone("head");
 
         EntityModelData extraData = (EntityModelData) animationEvent.getExtraDataOfType(EntityModelData.class).get(0);
         if (head != null) {
@@ -47,5 +41,5 @@ public class ModelRoyalRed extends AnimatedGeoModel<RoyalRedEntity>
             head.setRotationY(extraData.netHeadYaw * Mth.DEG_TO_RAD);
         }
     }
-    */
+
 }

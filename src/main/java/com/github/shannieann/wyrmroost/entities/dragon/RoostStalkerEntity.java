@@ -57,7 +57,7 @@ public class RoostStalkerEntity extends WRDragonEntity
     //TODO: What are we using this serializer for?
     public static final EntitySerializer<RoostStalkerEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
-            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
+            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
     private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(RoostStalkerEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Boolean> SCAVENGING = SynchedEntityData.defineId(RoostStalkerEntity.class, EntityDataSerializers.BOOLEAN);
 
@@ -72,7 +72,7 @@ public class RoostStalkerEntity extends WRDragonEntity
     {
         super.defineSynchedData();
         entityData.define(SLEEPING, false);
-        entityData.define(VARIANT, 0);
+        entityData.define(VARIANT, "base");
         entityData.define(ITEM, ItemStack.EMPTY);
         entityData.define(SCAVENGING, false);
     }
@@ -196,7 +196,7 @@ public class RoostStalkerEntity extends WRDragonEntity
     @Override
     public void doSpecialEffects()
     {
-        if (getVariant() == -1 && tickCount % 25 == 0)
+        if (getVariant().equals("special") && tickCount % 25 == 0)
         {
             double x = getX() + (Mafs.nextDouble(getRandom()) * 0.7d);
             double y = getY() + (getRandom().nextDouble() * 0.5d);
@@ -245,9 +245,9 @@ public class RoostStalkerEntity extends WRDragonEntity
     }
 
     @Override
-    public int determineVariant()
+    public String determineVariant()
     {
-        return getRandom().nextDouble() < 0.005? -1 : 0;
+        return getRandom().nextDouble() < 0.005? "special" : "base";
     }
 
 
