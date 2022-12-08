@@ -32,10 +32,7 @@ public class GeckoRoostStalkerModel<T extends RoostStalkerEntity> extends Animat
 
 	@Override
 	public ResourceLocation getTextureLocation(RoostStalkerEntity object) {
-		switch (object.getVariant()){
-			case 1: return specialTexture;
-			default: return textureResource;
-		}
+		return textureResource;
 	}
 
 	@Override
@@ -72,10 +69,7 @@ public class GeckoRoostStalkerModel<T extends RoostStalkerEntity> extends Animat
 		@Override
 		protected ResourceLocation getEntityTexture(T entityIn) {
 			if (entityIn.isSleeping()) return BLANK_EYES;
-			switch (entityIn.getVariant()){
-				case 1: return eyesSpecialTexture;
-				default: return eyesResource;
-			}
+			return textureResource;
 		}
 
 		@Override

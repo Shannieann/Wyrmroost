@@ -26,8 +26,8 @@ public class GeckoSilverGliderModel<T extends SilverGliderEntity> extends Animat
         if (dragon.hasCustomName() && dragon.getCustomName().getContents().equalsIgnoreCase("lady")){
             return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "canari_wyvern/lady.png");
         }
-        String gender = dragon.isMale()? "m" : "f";
-        int variant = dragon.getVariant();
+        String gender = dragon.getGender().equals("male")? "male" : "female";
+        String variant = dragon.getVariant();
         return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "canari_wyvern/body_" + gender + variant + ".png");
     }
 

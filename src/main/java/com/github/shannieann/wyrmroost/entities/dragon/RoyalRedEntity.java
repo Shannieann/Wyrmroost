@@ -278,17 +278,20 @@ public class RoyalRedEntity extends WRDragonEntity
             // =====================
             //       Roar Logic
             // =====================
-            /*
-            //TODO: Re-enable
 
-            if (this.getAnimation().equals("base") && !this.isKnockedOut() && !this.isSleeping() && !this.isBreathingFire() && getRandom().nextDouble() < 0.0004) {
+            if (this.getAnimation().equals("base")
+                    || this.getAnimation().equals("walk")
+                    || this.getAnimation().equals("walk_fast")
+                    || this.getAnimation().equals("swim")
+                    || this.getAnimation().equals("swim_fast")
+                    && !this.isKnockedOut() && !this.isSleeping() && !this.getBreathingFire() && getRandom().nextDouble() < 0.0004) {
                 setAnimation(ROAR_ANIMATION);
                 setAnimationType(ROAR_ANIMATION_TYPE);
                 setAnimationTime(ROAR_ANIMATION_TIME);
                 setManualAnimationCall(true);
             }
 
-          */
+
 
 
             // =====================
