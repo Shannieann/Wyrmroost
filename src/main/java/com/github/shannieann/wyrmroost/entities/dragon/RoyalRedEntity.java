@@ -355,7 +355,7 @@ public class RoyalRedEntity extends WRDragonEntity
         if (i > 0 && !isKnockedOut()) entityData.set(KNOCKED_OUT, true);
     }
 
-
+    //TODO implement
     @Override
     public void die(DamageSource cause)
     {
