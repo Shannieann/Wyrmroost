@@ -41,7 +41,6 @@ public class AnimatedGoal extends Goal {
     @Override
     public boolean canContinueToUse() {
         if (elapsedTime > animationTime) {
-            System.out.println("AnimatedGoal: canContinueToUse returned false after " + elapsedTime + " ticks");
             return false;
         }
         return true;
@@ -53,11 +52,9 @@ public class AnimatedGoal extends Goal {
         //This method will get called only if an animation was set manually (tick, etc.)
         //If we have called this, we already have a set animation in the constructor, so there's no need to set it again...
         //Just proceed to count ticks directly...
-        System.out.println("AnimatedGoal start (override) method called: " + animationName + "/" + animationType + "/" + animationTime);
     }
 
     public void start(String animationName, int animationType, float animationTime){
-        System.out.println("AnimatedGoal start method called: " + animationName + "/" + animationType + "/" + animationTime);
         this.entity.setAnimation(this.animationName = animationName);
         this.entity.setAnimationType(this.animationType = animationType);
         this.entity.setAnimationTime(this.animationTime = animationTime);
@@ -74,7 +71,6 @@ public class AnimatedGoal extends Goal {
     public void stop(){
         //Once the animation has ran its course, we reset it, clearing up the entity to play new animations
         //We ensure we reset manualAnimationCall
-        System.out.println("AnimatedGoal resetting animation to base");
         this.elapsedTime = 0;
         this.entity.setAnimation("base");
         this.entity.setAnimationType(1);

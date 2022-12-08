@@ -174,14 +174,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public <E extends IAnimatable> PlayState generalPredicate(AnimationEvent<E> event)
     {
-        System.out.println("generalPredicate running with animation " + this.getAnimation());
-        //System.out.println("generalPredicate: is playing animation =" + this.getPlayingAnimation());
-
         String animation = this.getAnimation();
 //        Boolean playingAnimation = this.getPlayingAnimation();
         //If we do have an Ability animation play that
         if (!animation.equals("base")/* && !this.getPlayingAnimation()*/) {
-            System.out.println("generalPredicate: attempting to set animation: " + this.getAnimation());
             int animationType = this.getAnimationType();
             ILoopType loopType;
             switch (animationType) {
@@ -215,7 +211,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             */
             this.setPlayingAnimation(true);
             event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
-            System.out.println("general Predicate: set animation to " + animation);
             return PlayState.CONTINUE;
         }
         //Else, do basic locomotion
