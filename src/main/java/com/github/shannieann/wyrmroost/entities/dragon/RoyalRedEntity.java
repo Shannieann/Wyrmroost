@@ -51,8 +51,6 @@ import java.util.EnumSet;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-//TODO: Tidy up class
-
 public class RoyalRedEntity extends WRDragonEntity
 {
     static {
@@ -193,7 +191,7 @@ public class RoyalRedEntity extends WRDragonEntity
         LocalDate currentDate = LocalDate.now();
         if (currentDate.getMonth().equals(Month.APRIL) && currentDate.getDayOfMonth() == 1)
             return "april";
-        return getRandom().nextDouble() < 0.03? "special" : "base";
+        return getRandom().nextDouble() < 0.03? "special" : "base0";
     }
 
 
@@ -433,7 +431,7 @@ public class RoyalRedEntity extends WRDragonEntity
         return new Vec3(0, getBbHeight() * 0.85f, index == 0? 0.5f : -1);
     }
 
-    //TODO: Keybind animations
+    //TODO: Animation on Keybind Presses
     @Override
     public void recievePassengerKeybind(int key, int mods, boolean pressed)
     {
