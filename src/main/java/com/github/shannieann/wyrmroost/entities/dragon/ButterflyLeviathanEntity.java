@@ -72,6 +72,7 @@ import java.util.EnumSet;
 import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
+//TODO: FIRST TIDY UP THIS WHOLE CLASS
 //TODO: Improve navigation
 //TODO: Panthalassa-ify
 //TODO: Animations?

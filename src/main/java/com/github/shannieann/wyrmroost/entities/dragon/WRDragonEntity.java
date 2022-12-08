@@ -267,6 +267,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         this.entityData.define(MANUAL_ANIMATION_CALL, false);
         entityData.define(HOME_POS, BlockPos.ZERO);
         entityData.define(AGE, 0);
+        entityData.define(GENDER, "male");
+        entityData.define(SLEEPING, false);
+        entityData.define(VARIANT, "base0");
+        entityData.define(FLYING, false);
+        entityData.define(ARMOR, ItemStack.EMPTY);
         super.defineSynchedData();
     }
 

@@ -111,13 +111,9 @@ public class RoyalRedEntity extends WRDragonEntity
     protected void defineSynchedData()
     {
         super.defineSynchedData();
-        entityData.define(GENDER, "male");
-        entityData.define(SLEEPING, false);
-        entityData.define(VARIANT, "base0");
-        entityData.define(BREATHING_FIRE, false);
         entityData.define(KNOCKED_OUT, false);
-        entityData.define(FLYING, false);
-        entityData.define(ARMOR, ItemStack.EMPTY);
+        entityData.define(BREATHING_FIRE, false);
+
     }
 
     @Override
