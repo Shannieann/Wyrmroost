@@ -30,7 +30,6 @@ public class WRSwimmingHelper extends MoveControl {
         if (this.applyGravity && this.mob.isInWater()) {
             this.mob.setDeltaMovement(this.mob.getDeltaMovement().add(0.0D, 0.005D, 0.0D));
         }
-
         if (this.operation == MoveControl.Operation.MOVE_TO && !this.mob.getNavigation().isDone()) {
             double d0 = this.wantedX - this.mob.getX();
             double d1 = this.wantedY - this.mob.getY();
@@ -40,7 +39,8 @@ public class WRSwimmingHelper extends MoveControl {
                 this.mob.setZza(0.0F);
             } else {
                 float f = (float)(Mth.atan2(d2, d0) * (double)(180F / (float)Math.PI)) - 90.0F;
-                 if ((this.entity.getTarget() != null)) {
+                //Set max turn value: Sharp turns if controlled by rider of if aggressive
+                 if ((this.entity.getTarget() != null) || this.entity.canBeControlledByRider()) {
                      //TODO: Tweak Values
                     this.maxTurnY=15;
                 } else {
