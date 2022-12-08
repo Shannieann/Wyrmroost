@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.client.render;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
+/*import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.AABB;

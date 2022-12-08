@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entities.util;
 
-/*import com.github.wolfshotz.wyrmroost.registry.WRItems;
+/*import com.github.shannieann.wyrmroost.registry.WRItems;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.Item;

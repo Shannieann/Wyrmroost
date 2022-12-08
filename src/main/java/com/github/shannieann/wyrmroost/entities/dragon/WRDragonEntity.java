@@ -674,10 +674,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public String getVariant()
     {
-        if (this.isNoAi()) {
-            return "base0";
-        }
-        return hasEntityDataAccessor(VARIANT) ? entityData.get(VARIANT) : "base0";
+        String returnValue = hasEntityDataAccessor(VARIANT) ? entityData.get(VARIANT) : "base0";
+        return returnValue.isEmpty() ? "base0" : returnValue;
 
     }
 

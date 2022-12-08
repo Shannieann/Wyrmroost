@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.blocks.tile;
 
-/*import com.github.wolfshotz.wyrmroost.registry.WRBlockEntities;
+/*import com.github.shannieann.wyrmroost.registry.WRBlockEntities;
 import net.minecraft.tileentity.SignTileEntity;
 import net.minecraft.tileentity.TileEntityType;
 

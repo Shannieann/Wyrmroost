@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.blocks;
 
-/*import com.github.wolfshotz.wyrmroost.client.particle.PetalParticle;
+/*import com.github.shannieann.wyrmroost.client.particle.PetalParticle;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.LeavesBlock;
 import net.minecraft.util.math.BlockPos;

@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.blocks;
 
-/*import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
-import com.github.wolfshotz.wyrmroost.util.Mafs;
+/*import com.github.shannieann.wyrmroost.registry.WRBlocks;
+import com.github.shannieann.wyrmroost.util.Mafs;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.BushBlock;

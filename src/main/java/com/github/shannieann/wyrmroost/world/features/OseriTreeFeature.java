@@ -1,10 +1,10 @@
-/*package com.github.wolfshotz.wyrmroost.world.features;
+/*package com.github.shannieann.wyrmroost.world.features;
 
-import com.github.wolfshotz.wyrmroost.blocks.GrowingPlantBlock;
-import com.github.wolfshotz.wyrmroost.blocks.PetalsBlock;
-import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
-import com.github.wolfshotz.wyrmroost.util.Mafs;
-import com.github.wolfshotz.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.blocks.GrowingPlantBlock;
+import com.github.shannieann.wyrmroost.blocks.PetalsBlock;
+import com.github.shannieann.wyrmroost.registry.WRBlocks;
+import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.serialization.Codec;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
@@ -25,8 +25,8 @@ import java.util.Locale;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import static com.github.wolfshotz.wyrmroost.util.ModUtils.DIRECTIONS;
-import static com.github.wolfshotz.wyrmroost.util.ModUtils.HORIZONTALS;
+import static com.github.shannieann.wyrmroost.util.ModUtils.DIRECTIONS;
+import static com.github.shannieann.wyrmroost.util.ModUtils.HORIZONTALS;
 
 /*public class OseriTreeFeature extends Feature<OseriTreeFeature.Type>
 {

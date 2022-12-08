@@ -1,8 +1,8 @@
 package com.github.shannieann.wyrmroost.registry;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import com.github.wolfshotz.wyrmroost.blocks.tile.WRSignBlockEntity;
-import com.github.wolfshotz.wyrmroost.util.ModUtils;
+/*import com.github.shannieann.wyrmroost.Wyrmroost;
+import com.github.shannieann.wyrmroost.blocks.tile.WRSignBlockEntity;
+import com.github.shannieann.wyrmroost.util.ModUtils;
 import net.minecraft.block.Block;
 import net.minecraft.client.renderer.tileentity.SignTileEntityRenderer;
 import net.minecraft.client.renderer.tileentity.TileEntityRenderer;

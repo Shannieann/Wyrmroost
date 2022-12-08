@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.blocks;
 
-/*import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
-import com.github.wolfshotz.wyrmroost.registry.WRSounds;
+/*import com.github.shannieann.wyrmroost.registry.WRBlocks;
+import com.github.shannieann.wyrmroost.registry.WRSounds;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.IGrowable;

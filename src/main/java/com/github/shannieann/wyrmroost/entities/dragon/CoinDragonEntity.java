@@ -1,8 +1,8 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
-/*import com.github.wolfshotz.wyrmroost.items.CoinDragonItem;
-import com.github.wolfshotz.wyrmroost.registry.WRItems;
-import com.github.wolfshotz.wyrmroost.registry.WRSounds;
+/*import com.github.shannieann.wyrmroost.items.CoinDragonItem;
+import com.github.shannieann.wyrmroost.registry.WRItems;
+import com.github.shannieann.wyrmroost.registry.WRSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;

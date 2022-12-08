@@ -23,7 +23,7 @@ import net.minecraftforge.registries.RegistryObject;
 
 import java.util.function.Supplier;
 
-//import com.github.wolfshotz.wyrmroost.items.book.TarragonTomeItem;
+//import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
 
 public class WRItems
 {

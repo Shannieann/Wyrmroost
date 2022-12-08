@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.client;
 
-//import com.github.wolfshotz.wyrmroost.client.render.TarragonTomeRenderer;
+//import com.github.shannieann.wyrmroost.client.render.TarragonTomeRenderer;
 
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.client.render.entity.DragonEggRenderer;

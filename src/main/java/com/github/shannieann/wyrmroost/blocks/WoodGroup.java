@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.blocks;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
+/*import com.github.shannieann.wyrmroost.Wyrmroost;
+import com.github.shannieann.wyrmroost.registry.WRBlocks;
 import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.material.MaterialColor;

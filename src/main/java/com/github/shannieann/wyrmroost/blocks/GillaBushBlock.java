@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.blocks;
 
-/*import com.github.wolfshotz.wyrmroost.registry.WRBlocks;
+/*import com.github.shannieann.wyrmroost.registry.WRBlocks;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;

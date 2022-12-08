@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.world.features;
 
-/*import com.github.wolfshotz.wyrmroost.blocks.GrowingPlantBlock;
+/*import com.github.shannieann.wyrmroost.blocks.GrowingPlantBlock;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.block.Block;

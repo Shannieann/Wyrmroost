@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.registry;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
+/*import com.github.shannieann.wyrmroost.Wyrmroost;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.FlowingFluidBlock;
 import net.minecraft.block.material.Material;

@@ -1,9 +1,9 @@
 package com.github.shannieann.wyrmroost.client.model.entity;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import com.github.wolfshotz.wyrmroost.client.render.RenderHelper;
-import com.github.wolfshotz.wyrmroost.entities.dragon.WRDragonEntity;
-import com.github.wolfshotz.wyrmroost.items.DragonArmorItem;
+/*import com.github.shannieann.wyrmroost.Wyrmroost;
+import com.github.shannieann.wyrmroost.client.render.RenderHelper;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.items.DragonArmorItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;

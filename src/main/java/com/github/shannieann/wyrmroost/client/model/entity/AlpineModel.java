@@ -1,9 +1,9 @@
 package com.github.shannieann.wyrmroost.client.model.entity;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
-import com.github.wolfshotz.wyrmroost.client.model.ModelAnimator;
-import com.github.wolfshotz.wyrmroost.entities.dragon.AlpineEntity;
-import com.github.wolfshotz.wyrmroost.util.Mafs;
+/*import com.github.shannieann.wyrmroost.Wyrmroost;
+import com.github.shannieann.wyrmroost.client.model.ModelAnimator;
+import com.github.shannieann.wyrmroost.entities.dragon.AlpineEntity;
+import com.github.shannieann.wyrmroost.util.Mafs;
 import com.mojang.blaze3d.matrix.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.util.ResourceLocation;

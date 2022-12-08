@@ -1,8 +1,8 @@
 package com.github.shannieann.wyrmroost.entities.projectile;
 
-/*import com.github.wolfshotz.wyrmroost.entities.dragon.WRDragonEntity;
-import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
-import com.github.wolfshotz.wyrmroost.util.Mafs;
+/*import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.registry.WREntityTypes;
+import com.github.shannieann.wyrmroost.util.Mafs;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.BlockParticleOption;

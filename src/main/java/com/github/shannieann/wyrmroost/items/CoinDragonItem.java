@@ -1,10 +1,10 @@
 package com.github.shannieann.wyrmroost.items;
 
-/*import com.github.wolfshotz.wyrmroost.Wyrmroost;
-//import com.github.wolfshotz.wyrmroost.entities.dragon.CoinDragonEntity;
-import com.github.wolfshotz.wyrmroost.registry.WREntityTypes;
-import com.github.wolfshotz.wyrmroost.registry.WRItems;
-import com.github.wolfshotz.wyrmroost.util.ModUtils;
+/*import com.github.shannieann.wyrmroost.Wyrmroost;
+//import com.github.shannieann.wyrmroost.entities.dragon.CoinDragonEntity;
+import com.github.shannieann.wyrmroost.registry.WREntityTypes;
+import com.github.shannieann.wyrmroost.registry.WRItems;
+import com.github.shannieann.wyrmroost.util.ModUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.BlockPos;

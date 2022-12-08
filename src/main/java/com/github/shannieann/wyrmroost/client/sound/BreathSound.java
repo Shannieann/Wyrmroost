@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.sound;
 
-/*import com.github.wolfshotz.wyrmroost.entities.dragon.RoyalRedEntity;
-import com.github.wolfshotz.wyrmroost.registry.WRSounds;
+/*import com.github.shannieann.wyrmroost.entities.dragon.RoyalRedEntity;
+import com.github.shannieann.wyrmroost.registry.WRSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.sounds.SoundSource;

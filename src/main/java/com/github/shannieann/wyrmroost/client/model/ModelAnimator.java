@@ -1,8 +1,8 @@
 package com.github.shannieann.wyrmroost.client.model;
 
-/*import com.github.wolfshotz.wyrmroost.util.Mafs;
-import com.github.wolfshotz.wyrmroost.util.animation.Animation;
-import com.github.wolfshotz.wyrmroost.util.animation.IAnimatable;
+/*import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.animation.Animation;
+import com.github.shannieann.wyrmroost.util.animation.IAnimatable;
 import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.util.Mth;

@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.client;
 
-/*import com.github.wolfshotz.wyrmroost.registry.WRWorld;
+/*import com.github.shannieann.wyrmroost.registry.WRWorld;
 import it.unimi.dsi.fastutil.objects.Object2ObjectMap;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ActiveRenderInfo;

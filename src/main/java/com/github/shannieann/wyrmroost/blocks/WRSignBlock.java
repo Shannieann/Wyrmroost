@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.blocks;
 
-/*import com.github.wolfshotz.wyrmroost.blocks.tile.WRSignBlockEntity;
-import com.github.wolfshotz.wyrmroost.registry.WRBlockEntities;
+/*import com.github.shannieann.wyrmroost.blocks.tile.WRSignBlockEntity;
+import com.github.shannieann.wyrmroost.registry.WRBlockEntities;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.StandingSignBlock;
 import net.minecraft.block.WallSignBlock;
