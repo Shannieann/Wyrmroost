@@ -60,13 +60,11 @@ public class RoyalRedEntity extends WRDragonEntity
         SLEEPING_ANIMATION_TIME = 60;
     }
 
-
-
     public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
 
     private static final EntitySerializer<RoyalRedEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getVariant, WRDragonEntity::setGender)
+            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
             .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
             .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
             .track(EntitySerializer.INT, "KnockOutTime", RoyalRedEntity::getKnockOutTime, RoyalRedEntity::setKnockoutTime));
@@ -191,7 +189,11 @@ public class RoyalRedEntity extends WRDragonEntity
         LocalDate currentDate = LocalDate.now();
         if (currentDate.getMonth().equals(Month.APRIL) && currentDate.getDayOfMonth() == 1)
             return "april";
-        return getRandom().nextDouble() < 0.03? "special" : "base0";
+        if (!this.isNoAi()) {
+            return getRandom().nextDouble() < 0.03? "special" : "base0";
+        } else {
+            return "base0";
+        }
     }
 
 

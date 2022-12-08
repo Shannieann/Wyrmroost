@@ -297,9 +297,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         } else {
             gender = "female";
         }
-        if (hasEntityDataAccessor(GENDER)) setGender(gender);
-        if (hasEntityDataAccessor(VARIANT)) setVariant(determineVariant());
-
+        if (hasEntityDataAccessor(GENDER)) {
+            setGender(gender);
+        }
+        if (hasEntityDataAccessor(VARIANT)) {
+            setVariant(determineVariant());
+        }
         return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
     }
 
@@ -666,12 +669,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public String determineVariant()
     {
-        return "base";
+        return "base0";
     }
-    //Special Variants = -1
+
     public String getVariant()
     {
-        return hasEntityDataAccessor(VARIANT)? entityData.get(VARIANT) : "base";
+        if (this.isNoAi()) {
+            return "base0";
+        }
+        return hasEntityDataAccessor(VARIANT) ? entityData.get(VARIANT) : "base0";
+
     }
 
     public void setVariant(String variant)

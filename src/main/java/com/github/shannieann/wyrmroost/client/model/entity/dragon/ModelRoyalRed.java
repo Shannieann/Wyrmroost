@@ -16,7 +16,7 @@ public class ModelRoyalRed extends AnimatedGeoModel<RoyalRedEntity>
     //TODO: All model variants
     @Override
     public ResourceLocation getModelLocation(RoyalRedEntity object) {
-        String modelLocation = "geo/entity/dragon/royal_red/royal_red" + "_" + ((object.isAdult() ? "adult" : "child") + ".geo.json");
+        String modelLocation = "geo/entity/dragon/royal_red/royal_red_" + ((object.isAdult() ? "adult" : "child") + ".geo.json");
         return new ResourceLocation(Wyrmroost.MOD_ID, modelLocation);
     }
     @Override
