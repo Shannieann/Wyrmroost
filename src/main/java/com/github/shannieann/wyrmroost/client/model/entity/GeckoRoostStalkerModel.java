@@ -4,7 +4,7 @@ package com.github.shannieann.wyrmroost.client.model.entity;// Made with Blockbe
 
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.client.render.entity.dragon.DragonEyesLayer;
+import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.DragonEyesLayer;
 import com.github.shannieann.wyrmroost.entities.dragon.RoostStalkerEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;

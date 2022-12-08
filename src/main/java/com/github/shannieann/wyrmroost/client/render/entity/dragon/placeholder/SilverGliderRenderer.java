@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.client.render.entity.dragon;
+package com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder;
 
 import com.github.shannieann.wyrmroost.client.model.entity.GeckoSilverGliderModel;
 import com.github.shannieann.wyrmroost.entities.dragon.SilverGliderEntity;
