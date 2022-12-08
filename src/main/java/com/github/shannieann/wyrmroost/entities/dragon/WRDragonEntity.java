@@ -1100,10 +1100,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return isJuvenile() && !isUnderWater() && !isLeashed();
     }
 
-    public boolean canSwim()
-    {
-        return false;
-    }
     public double getAltitude()
     {
         BlockPos.MutableBlockPos pos = blockPosition().mutable();
@@ -1144,6 +1140,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     //      C.2) Navigation and Control: Swimming
     // ====================================
+
+    public boolean canSwim()
+    {
+        return false;
+    }
 
     // ====================================
     //      C.3) Navigation and Control: Riding
