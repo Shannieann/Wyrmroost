@@ -178,6 +178,40 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //If we do have an Ability animation play that
         if (!animation.equals("base")/* && !this.getPlayingAnimation()*/) {
             int animationType = this.getAnimationType();
+            //Mixed Walking Animations
+            if (event.isMoving() && !this.isAggressive()) {
+                int movingState = this.getMovingState();
+                switch (movingState) {
+                    case 0:
+                        animation = "walk_" + animation;
+                        break;
+                    case 1:
+                        animation = "fly_" + animation;
+                        break;
+                    case 2:
+                        animation = "swim_" + animation;
+                        break;
+                }
+                event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, ILoopType.EDefaultLoopTypes.LOOP));
+                return PlayState.CONTINUE;
+            }
+            //Mixed Running Animations
+            if (event.isMoving() && !this.isAggressive()) {
+                int movingState = this.getMovingState();
+                switch (movingState) {
+                    case 0:
+                        animation = "walk_fast" + animation;
+                        break;
+                    case 1:
+                        animation = "fly_fast" + animation;
+                        break;
+                    case 2:
+                        animation = "swim_fast" + animation;
+                        break;
+                }
+                event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, ILoopType.EDefaultLoopTypes.LOOP));
+                return PlayState.CONTINUE;
+            }
             ILoopType loopType;
             switch (animationType) {
                 case 1: loopType = ILoopType.EDefaultLoopTypes.LOOP;
@@ -189,25 +223,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 default:
                     return PlayState.STOP;
             }
-            //TODO: RUNNING LOGIC
-            /*
-            if (event.isMoving()) {
-                int movingState = this.getMovingState();
-                switch (movingState) {
-                    case 0:
-                        animation = animation + "_walk";
-                        break;
-                    case 1:
-                        animation = animation + "_fly";
-                        break;
-                    case 2:
-                        animation = animation + "_swim";
-                        break;
-                }
-
-            }
-
-            */
             event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
             return PlayState.CONTINUE;
         }
