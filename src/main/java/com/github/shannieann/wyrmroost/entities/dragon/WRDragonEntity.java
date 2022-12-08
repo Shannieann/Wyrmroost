@@ -1190,7 +1190,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             this.lookControl = new LessShitLookController(this);
             this.navigation = new BetterPathNavigator(this);
         } else {
-            this.moveControl = new WRSwimmingHelper(this, 85, 0.02F, 0.1F, true);
+            this.moveControl = new WRSwimmingHelper(this, 85);
             this.lookControl = new SmoothSwimmingLookControl(this, 10);
             this.navigation = new WaterBoundPathNavigation(this, level);
         }
