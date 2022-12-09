@@ -39,6 +39,7 @@ class ItemModelData extends ItemModelProvider
         final ModelFile itemGenerated = uncheckedModel(mcLoc("item/generated"));
         final ModelFile ister = uncheckedModel("builtin/entity");
 
+        REGISTERED.add(WRItems.TARRAGON_TOME.get().asItem());
         getBuilder("desert_wyrm_alive").parent(itemGenerated).texture("layer0", resource("desert_wyrm_alive"));
         //item(WRItems.LDWYRM.get()).override().predicate(Wyrmroost.id("is_alive"), 1f).model(uncheckedModel(resource("desert_wyrm_alive")));
 
@@ -54,9 +55,7 @@ class ItemModelData extends ItemModelProvider
                 .transform(ModelBuilder.Perspective.GROUND).rotation(180, 0, 0).translation(4, 8, -5).scale(0.55f).end();
 
         //getBuilderFor(WRItems.TARRAGON_TOME.get()).parent(ister).guiLight(BlockModel.GuiLight.FRONT);
-        getBuilder("book_sprite").parent(itemGenerated).texture("layer0", resource(WRItems.TARRAGON_TOME.getId().getPath()));
         //item(WRBlocks.HOARFROST.get(), modLoc("block/hoarfrost_spines"));
-
         //final ItemModelBuilder cdBuilder = item(WRItems.COIN_DRAGON.get());
         for (int i = 1; i < 5; i++)
         {
