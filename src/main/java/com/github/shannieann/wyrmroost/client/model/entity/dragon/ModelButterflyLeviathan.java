@@ -53,17 +53,17 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
         if (animatable.isSwimming()) {
             float setYawValue = animatable.prevSetYaw+(animatable.setYaw-animatable.prevSetYaw)*animationEvent.getPartialTick();
             (this.getAnimationProcessor().getBone("body2")).setRotationY(setYawValue * rotationMultiplier);
-            (this.getAnimationProcessor().getBone("tail1")).setRotationY(setYawValue * rotationMultiplier);
-            (this.getAnimationProcessor().getBone("tail2")).setRotationY(setYawValue * rotationMultiplier);
-            (this.getAnimationProcessor().getBone("tail3")).setRotationY(setYawValue * rotationMultiplier);
-            (this.getAnimationProcessor().getBone("tail4")).setRotationY(setYawValue * rotationMultiplier);
-            (this.getAnimationProcessor().getBone("tail5")).setRotationY(setYawValue * rotationMultiplier);
-            (this.getAnimationProcessor().getBone("tail7")).setRotationY(setYawValue * rotationMultiplier);
-            (this.getAnimationProcessor().getBone("tail6")).setRotationY(setYawValue * rotationMultiplier);
-            (this.getAnimationProcessor().getBone("neck1")).setRotationY(-setYawValue * rotationMultiplier);
-            (this.getAnimationProcessor().getBone("neck2")).setRotationY(-setYawValue * rotationMultiplier);
-            (this.getAnimationProcessor().getBone("neck3")).setRotationY(-setYawValue * rotationMultiplier);
-            (this.getAnimationProcessor().getBone("neck4")).setRotationY(-setYawValue * rotationMultiplier);
+            (this.getAnimationProcessor().getBone("itail1")).setRotationY(setYawValue * rotationMultiplier);
+            (this.getAnimationProcessor().getBone("itail2")).setRotationY(setYawValue * rotationMultiplier);
+            (this.getAnimationProcessor().getBone("itail3")).setRotationY(setYawValue * rotationMultiplier);
+            (this.getAnimationProcessor().getBone("itail4")).setRotationY(setYawValue * rotationMultiplier);
+            (this.getAnimationProcessor().getBone("itail5")).setRotationY(setYawValue * rotationMultiplier);
+            (this.getAnimationProcessor().getBone("itail7")).setRotationY(setYawValue * rotationMultiplier);
+            (this.getAnimationProcessor().getBone("itail6")).setRotationY(setYawValue * rotationMultiplier);
+            (this.getAnimationProcessor().getBone("ineck1")).setRotationY(-setYawValue * rotationMultiplier);
+            (this.getAnimationProcessor().getBone("ineck2")).setRotationY(-setYawValue * rotationMultiplier);
+            (this.getAnimationProcessor().getBone("ineck3")).setRotationY(-setYawValue * rotationMultiplier);
+            (this.getAnimationProcessor().getBone("ineck4")).setRotationY(-setYawValue * rotationMultiplier);
         }
     }
 }

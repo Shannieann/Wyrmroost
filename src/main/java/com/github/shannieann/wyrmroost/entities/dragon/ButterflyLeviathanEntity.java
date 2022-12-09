@@ -55,10 +55,15 @@ import java.util.EnumSet;
 import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
-//TODO: FIRST TIDY UP THIS WHOLE CLASS
-//TODO: Improve navigation?
-//TODO: Animations?
-//TODO: Basic tests first, then advanced AI stuff.
+//TODO: Pending BFL Fixes:
+//See which methods are needed, which are not
+//Ground Nav <--> Swimmer Nav, test both
+//Return to water goal
+//Jump out of water goal
+//LookRandomly, lookAtPlayer
+//Attack: BFL Attack
+//Attack: Dive and Leap
+//Attack: Nova?
 
 public class ButterflyLeviathanEntity extends WRDragonEntity
 {
@@ -103,7 +108,6 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 180)
                 .add(MOVEMENT_SPEED, 0.08)
-                //TODO: Tweak
                 .add(ForgeMod.SWIM_SPEED.get(), 0.10F)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, 14)
