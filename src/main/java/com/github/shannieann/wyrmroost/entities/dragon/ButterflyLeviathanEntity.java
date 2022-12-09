@@ -76,7 +76,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(ButterflyLeviathanEntity.class, EntityDataSerializers.BOOLEAN);
     public static final int CONDUIT_SLOT = 0;
     public static final float YAW_ADJUSTMENT = 0.10F;
-    public static final float MAX_PITCH_ADJUSTMENT = 0.10F;
+    public static final float DELTA_PITCH_LIMIT = 2F;
 
     public final LerpedFloat beachedTimer = LerpedFloat.unit();
     public final LerpedFloat swimTimer = LerpedFloat.unit();
@@ -92,7 +92,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         maxUpStep = 2;
         setPathfindingMalus(BlockPathTypes.WATER, 0);
         this.adjustmentYaw = YAW_ADJUSTMENT;
-        this.maxPitchAdjustment = MAX_PITCH_ADJUSTMENT;
+        this.deltaPitchLimit = DELTA_PITCH_LIMIT;
     }
 
     // ====================================
@@ -658,7 +658,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 
 //        goalSelector.addGoal(4, new DragonBreedGoal(this));
 //        goalSelector.addGoal(5, new JumpOutOfWaterGoal());
-        goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 1, 10,32,16));
+        goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 1, 10,32,24));
 
 //        goalSelector.addGoal(7, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
 //        goalSelector.addGoal(8, new RandomLookAroundGoal(this));
