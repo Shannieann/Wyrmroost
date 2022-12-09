@@ -12,18 +12,18 @@ import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
 public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathanEntity>
 {
-    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/animatable/dragon/butterfly_leviathan/butterfly_leviathan.json");
+    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/butterfly_leviathan/butterfly_leviathan.json");
 
     //TODO: All model variants
     @Override
     public ResourceLocation getModelLocation(ButterflyLeviathanEntity object) {
-        String modelLocation = "geo/animatable/dragon/butterfly_leviathan/butterfly_leviathan_" + ((object.isAdult() ? "adult" : "child") + ".geo.json");
+        String modelLocation = "geo/entity/dragon/butterfly_leviathan/butterfly_leviathan_" + ((object.isAdult() ? "adult" : "child") + ".geo.json");
         return new ResourceLocation(Wyrmroost.MOD_ID, modelLocation);
     }
 
     @Override
     public ResourceLocation getTextureLocation(ButterflyLeviathanEntity object) {
-        String textureLocation = "textures/animatable/dragon/butterfly_leviathan/butterfly_leviathan_" + object.getVariant() + "_" + object.getGender() +".png";
+        String textureLocation = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_" + object.getVariant() + "_" + object.getGender() +".png";
         return new ResourceLocation(Wyrmroost.MOD_ID, textureLocation);
     }
 
