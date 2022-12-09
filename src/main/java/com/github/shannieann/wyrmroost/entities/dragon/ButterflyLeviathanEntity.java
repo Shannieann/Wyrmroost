@@ -5,6 +5,7 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRandomSwimmingGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRWaterLeapGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.LessShitLookController;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
@@ -56,11 +57,15 @@ import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
-//Pitch adjustments, avoid stuttering
-//See which methods are needed, which are not
+//TODO: Tweak pitch adjustments
+//TODO: BFL textures, etc
+//Jump out of water goal
+
+//This class: See which methods are needed, which are not
+
 //Ground Nav <--> Swimmer Nav, test both
 //Return to water goal
-//Jump out of water goal
+
 //LookRandomly, lookAtPlayer
 //Attack: BFL Attack
 //Attack: Dive and Leap
@@ -657,7 +662,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 //        goalSelector.addGoal(3, new WRFollowOwnerGoal(this));
 
 //        goalSelector.addGoal(4, new DragonBreedGoal(this));
-//        goalSelector.addGoal(5, new JumpOutOfWaterGoal());
+        goalSelector.addGoal(5, new WRWaterLeapGoal(this));
         goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 1, 10,32,24));
 
 //        goalSelector.addGoal(7, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
@@ -718,54 +723,6 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
             }
 
              */
-        }
-    }
-
-    private class JumpOutOfWaterGoal extends Goal
-    {
-        private BlockPos pos;
-
-        public JumpOutOfWaterGoal()
-        {
-            setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE, Flag.JUMP, Flag.LOOK));
-        }
-
-        @Override
-        public boolean canUse()
-        {
-            if (isInSittingPose()) return false;
-            if (canBeControlledByRider()) return false;
-            if (!isUnderWater()) return false;
-            if (level.getFluidState(this.pos = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, blockPosition()).below()).isEmpty())
-                return false;
-            if (pos.getY() <= 0) return false;
-            return getRandom().nextDouble() < 0.001;
-        }
-
-        @Override
-        public boolean canContinueToUse()
-        {
-            return !canBeControlledByRider() && isUnderWater();
-        }
-
-        @Override
-        public void start()
-        {
-            getNavigation().stop();
-            this.pos = pos.relative(getDirection(), (int) ((pos.getY() - getY()) * 0.5d));
-        }
-
-        @Override
-        public void tick()
-        {
-            getMoveControl().setWantedPosition(pos.getX(), pos.getY(), pos.getZ(), 1.2d);
-        }
-
-        @Override
-        public void stop()
-        {
-            pos = null;
-            clearAI();
         }
     }
 }
