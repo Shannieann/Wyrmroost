@@ -4,7 +4,6 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.BaseRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.LessShitLookController;
@@ -58,14 +57,15 @@ import java.util.Random;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: FIRST TIDY UP THIS WHOLE CLASS
 //TODO: Improve navigation
-//TODO: Panthalassa-ify
 //TODO: Animations?
 //TODO: Basic tests first, then advanced stuff.
 
 public class ButterflyLeviathanEntity extends WRDragonEntity
 {
+    //TODO: Correct ALL Serializers
     public static final EntitySerializer<ButterflyLeviathanEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
+            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(ButterflyLeviathanEntity.class, EntityDataSerializers.BOOLEAN);
     public static final int CONDUIT_SLOT = 0;
@@ -101,6 +101,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 180)
                 .add(MOVEMENT_SPEED, 0.08)
+                //TODO: Tweak
                 .add(ForgeMod.SWIM_SPEED.get(), 2F)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, 14)
@@ -559,8 +560,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 
 //        goalSelector.addGoal(4, new DragonBreedGoal(this));
 //        goalSelector.addGoal(5, new JumpOutOfWaterGoal());
-        goalSelector.addGoal(6, new BaseRandomSwimmingGoal(this, 1, 10));
-//        goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 1, 10,16,8));
+        goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 1, 10,32,16));
 
 //        goalSelector.addGoal(7, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
 //        goalSelector.addGoal(8, new RandomLookAroundGoal(this));
