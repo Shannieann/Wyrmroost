@@ -34,7 +34,7 @@ public class WRRandomSwimmingGoal extends Goal {
         this.entity = entity;
         this.speed = speed;
         this.executionChance = chance;
-        this.checkNoActionTime = true;
+        this.checkNoActionTime = false;
         this.horizontalRange = horizontalRange;
         this.verticalRange = verticalRange;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE));
@@ -81,11 +81,12 @@ public class WRRandomSwimmingGoal extends Goal {
         Vec3 speed = this.entity.getDeltaMovement();
         //If we are moving, generateRandomDirectionWithinRadians with a max turn of 90 degrees
         if (speed.length() != 0) {
+            //TODO: Confirm this works
             //Normalize the speed vector to get an actual direction...
             Vec3 speedUnit = speed.normalize();
             //Try and get a non-null offset.
             for (int i = 0; i < 16; i++) {
-                Vec3 offset = generateRandomPositionWithinRadians(this.entity.getRandom(), 16, 8, 0, speedUnit.x, speedUnit.z, Math.PI / 2);
+                Vec3 offset = generateRandomPositionWithinRadians(this.entity.getRandom(), horizontalRange, verticalRange, 0, speedUnit.x, speedUnit.z, Math.PI / 2);
                 if (offset != null) {
                     targetPosition = new BlockPos(this.entity.getX() + offset.x, this.entity.getY() + offset.y, this.entity.getZ() + offset.z);
                     if (this.entity.level.getFluidState(targetPosition).is(FluidTags.WATER)) {
@@ -108,9 +109,9 @@ public class WRRandomSwimmingGoal extends Goal {
         }
         //We do not have a speed, attempt to generate an entirely random position...
         for (int k = 0; k < 16; k ++) {
-            Vec3 offset = generateEntirelyRandomPosition(entity,entity.getRandom(),16,8);
-            if (offset != null) {
-                targetPosition = new BlockPos(this.entity.getX() + offset.x, this.entity.getY() + offset.y, this.entity.getZ() + offset.z);
+            Vec3 target = generateEntirelyRandomPosition(entity,entity.getRandom(),horizontalRange,verticalRange);
+            if (target != null) {
+                targetPosition = new BlockPos(target);
                 if (this.entity.level.getFluidState(targetPosition).is(FluidTags.WATER)) {
                     //If our random position is WATER, return it directly, no need to adjust...
                     return new Vec3(targetPosition.getX(), targetPosition.getY(), targetPosition.getZ());
@@ -144,6 +145,7 @@ public class WRRandomSwimmingGoal extends Goal {
     public void start() {
 //        this.entity.getNavigation().moveTo(this.x, this.y, this.z, this.speed);
         this.entity.level.setBlock(new BlockPos(this.x,this.y,this.z), Blocks.EMERALD_BLOCK.defaultBlockState(),2);
+        stop();
     }
 
     @Override
