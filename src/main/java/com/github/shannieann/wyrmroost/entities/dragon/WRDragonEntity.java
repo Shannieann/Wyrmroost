@@ -202,6 +202,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         String animation = this.getAnimation();
 //        Boolean playingAnimation = this.getPlayingAnimation();
         //If we do have an Ability animation play that
+        //TODO: Add check for ANIMATION_MOVES, if it does do moving, else, do not
         if (!animation.equals("base")/* && !this.getPlayingAnimation()*/) {
             int animationType = this.getAnimationType();
             //Mixed Walking Animations
@@ -758,6 +759,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             if (shouldSwim != isSwimming()) {
                 setSwimmingNavigation(shouldSwim);
             }
+            System.out.println("IS SWIMMING NAVIGATOR: " + (this.getNavigation() instanceof WRSwimmingNavigator));
 
 
             // todo figure out a better target system?
@@ -1198,6 +1200,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public boolean isSwimming()
     {
+        //Of note, swimming entities will, technically, be counted as swimming when in air...
         return hasEntityDataAccessor(SWIMMING) && entityData.get(SWIMMING);
     }
 
@@ -1218,7 +1221,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!this.isInWater() && this.level.getFluidState(blockPosition().below()).is(FluidTags.WATER)) {
             return true;
         }
-        //If we're falling, still use water navigator
+        //If it's falling, still use water navigator
         if (!this.isInWater() && !this.isOnGround() && this.level.getBlockState(new BlockPos(position())).is(Blocks.AIR)) {
             return true;
         }

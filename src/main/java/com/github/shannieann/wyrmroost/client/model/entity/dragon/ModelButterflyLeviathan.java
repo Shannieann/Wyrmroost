@@ -44,6 +44,7 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
             head.setRotationY(extraData.netHeadYaw * Mth.DEG_TO_RAD);
         }
 
+        //TODO: IF IS BREACHING DATA PARAM USE ATAN FUNCTION
         float setPitchValue = (animatable.currentPitchRadians+(animatable.targetPitchRadians-animatable.currentPitchRadians)*animationEvent.getPartialTick());
         this.getAnimationProcessor().getBone("body1").setRotationX(-setPitchValue);
 
@@ -53,6 +54,7 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
         //}
 
         //TODO: CHECK IF CONDITIONS FOR PARTICULAR CASES, BOTH HERE AND IN ENTITY CLASS
+        //TODO: VERIFY isSwimming CHECK IN ENTITY CLASS
         if (animatable.isSwimming()) {
             float setYawValue = animatable.prevSetYaw+(animatable.setYaw-animatable.prevSetYaw)*animationEvent.getPartialTick();
             this.getAnimationProcessor().getBone("body2").setRotationY(setYawValue * rotationYawMultiplier);
