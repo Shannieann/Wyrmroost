@@ -28,9 +28,9 @@ public class WRRandomSwimmingGoal extends Goal {
         this.speed = speedIn;
         this.executionChance = chance;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+        this.horizontalDistance = horizontalDistance;
+        this.verticalDistance = verticalDistance;
     }
-
-
 
     @Override
     public boolean canUse() {
