@@ -71,6 +71,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -1075,6 +1076,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public boolean isLandNavigator(){
         return this.getNavigation() instanceof GroundPathNavigation;
+    }
+
+    @Override
+    public float getWalkTargetValue(BlockPos pPos, LevelReader pLevel) {
+        return 0.0F;
     }
 
     // ====================================
