@@ -4,7 +4,7 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.WRSwimmingHelper;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.WRSwimControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.*;
@@ -39,6 +39,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
@@ -54,6 +55,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.control.SmoothSwimmingLookControl;
+import net.minecraft.world.entity.ai.control.SmoothSwimmingMoveControl;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -169,6 +171,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         inventory = LazyOptional.of(inv == null? null : () -> inv);
         lookControl = new LessShitLookController(this);
         if (hasEntityDataAccessor(FLYING)) moveControl = new FlyerMoveController(this);
+        if (hasEntityDataAccessor(SWIMMING)) moveControl = new WRSwimControl(this);
+
     }
 
     // =====================
@@ -745,8 +749,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void tick() {
         super.tick();
-
         if (!level.isClientSide) {
+            System.out.println("Is Ground Path Nav: " + (this.navigation instanceof GroundPathNavigation));
+            System.out.println("Is Better Ground Path Nav: " + (this.navigation instanceof BetterPathNavigator));
+            System.out.println("Is Swimming: " + this.isSwimming());
+            System.out.println("Is Swimming Path Nav: " + (this.navigation instanceof WaterBoundPathNavigation));
+            System.out.println("Is Flying: " + this.isFlying());
+            System.out.println("Is Flying Path Nav: " + (this.navigation instanceof  FlyerPathNavigator));
+
             //Will only try to fly if we're not in water...
             boolean shouldFly = shouldFly();
             if (shouldFly != isFlying()) {
@@ -1165,7 +1175,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public boolean isSwimming()
     {
-        return hasEntityDataAccessor(FLYING) && entityData.get(SWIMMING);
+        return hasEntityDataAccessor(SWIMMING) && entityData.get(SWIMMING);
     }
 
     public boolean shouldSwim() {
@@ -1181,20 +1191,30 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (this.isInWater() && !this.level.getBlockState(blockPosition().below()).canOcclude()) {
             return true;
         }
+        //If it's on water surface, switch to water navigator
+        if (!this.isInWater() && this.level.getFluidState(blockPosition().below()).is(FluidTags.WATER)) {
+            return true;
+        }
         return false;
     }
 
     public void setSwimmingNavigation(boolean shouldSwim) {
         if (shouldSwim) {
+            this.moveControl = new WRSwimControl(this);
+            this.lookControl = new SmoothSwimmingLookControl(this, 10);
+            this.navigation = new WaterBoundPathNavigation(this, level);
+        } else {
             this.moveControl = new MoveControl(this);
             this.lookControl = new LessShitLookController(this);
             this.navigation = new BetterPathNavigator(this);
-        } else {
-            this.moveControl = new WRSwimmingHelper(this, 85);
-            this.lookControl = new SmoothSwimmingLookControl(this, 10);
-            this.navigation = new WaterBoundPathNavigation(this, level);
         }
+        entityData.set(SWIMMING, shouldSwim);
     }
+
+    public boolean getSwimmingNavigation() {
+       return entityData.get(SWIMMING);
+    }
+
     // ====================================
     //      C.3) Navigation and Control: Riding
     // ====================================
