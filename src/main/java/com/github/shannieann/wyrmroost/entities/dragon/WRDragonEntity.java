@@ -5,6 +5,7 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.WRSwimControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.WRSwimmingNavigator;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.*;
@@ -55,11 +56,9 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.control.SmoothSwimmingLookControl;
-import net.minecraft.world.entity.ai.control.SmoothSwimmingMoveControl;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -85,6 +84,7 @@ import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.living.BabyEntitySpawnEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
+import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -201,15 +201,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             if (event.isMoving() && !this.isAggressive()) {
                 int movingState = this.getMovingState();
                 switch (movingState) {
-                    case 0:
-                        animation = "walk_" + animation;
-                        break;
-                    case 1:
-                        animation = "fly_" + animation;
-                        break;
-                    case 2:
-                        animation = "swim_" + animation;
-                        break;
+                    case 0 -> animation = "walk_" + animation;
+                    case 1 -> animation = "fly_" + animation;
+                    case 2 -> animation = "swim_" + animation;
                 }
                 event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
@@ -217,17 +211,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             //Mixed Running Animations
             if (event.isMoving() && !this.isAggressive()) {
                 int movingState = this.getMovingState();
-                switch (movingState) {
-                    case 0:
-                        animation = "walk_fast" + animation;
-                        break;
-                    case 1:
-                        animation = "fly_fast" + animation;
-                        break;
-                    case 2:
-                        animation = "swim_fast" + animation;
-                        break;
-                }
+                animation = switch (movingState) {
+                    case 0 -> "walk_fast" + animation;
+                    case 1 -> "fly_fast" + animation;
+                    case 2 -> "swim_fast" + animation;
+                    default -> animation;
+                };
                 event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
             }
@@ -314,7 +303,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @javax.annotation.Nullable SpawnGroupData data, @javax.annotation.Nullable CompoundTag dataTag)
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @javax.annotation.Nullable SpawnGroupData data, @javax.annotation.Nullable CompoundTag dataTag)
     {
         String gender;
         if (getRandom().nextBoolean()){
@@ -751,13 +740,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void tick() {
         super.tick();
         if (!level.isClientSide) {
-            System.out.println("Is Ground Path Nav: " + (this.navigation instanceof GroundPathNavigation));
-            System.out.println("Is Better Ground Path Nav: " + (this.navigation instanceof BetterPathNavigator));
-            System.out.println("Is Swimming: " + this.isSwimming());
-            System.out.println("Is Swimming Path Nav: " + (this.navigation instanceof WaterBoundPathNavigation));
-            System.out.println("Is Flying: " + this.isFlying());
-            System.out.println("Is Flying Path Nav: " + (this.navigation instanceof  FlyerPathNavigator));
-
             //Will only try to fly if we're not in water...
             boolean shouldFly = shouldFly();
             if (shouldFly != isFlying()) {
@@ -1208,11 +1190,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (shouldSwim) {
             this.moveControl = new WRSwimControl(this);
             this.lookControl = new SmoothSwimmingLookControl(this, 10);
-            this.navigation = new WaterBoundPathNavigation(this, level);
+            this.navigation = new WRSwimmingNavigator(this);
+            this.setMovingState(2);
         } else {
             this.moveControl = new MoveControl(this);
             this.lookControl = new LessShitLookController(this);
             this.navigation = new BetterPathNavigator(this);
+            this.setMovingState(0);
         }
         entityData.set(SWIMMING, shouldSwim);
     }
