@@ -29,6 +29,7 @@ public class DefaultBookAction implements BookAction
         boolean client = player.getLevel().isClientSide();
         if (dragon != null && !player.getLevel().isClientSide())
         {
+            System.out.println("hello");
             BookContainer.open((ServerPlayer) player, dragon, stack);
         }
         else if ((dragon = clip(player)) != null)
@@ -40,7 +41,9 @@ public class DefaultBookAction implements BookAction
                 ModUtils.playLocalSound(player.getLevel(), player.blockPosition(), SoundEvents.BOOK_PAGE_TURN, SoundSource.PLAYERS, 0.75f, 1f);
             }
         }
-        else if (client) TarragonTomeScreen.open();
+        else if (client){
+            TarragonTomeScreen.open();
+        }
 
         return InteractionResult.CONSUME;
     }

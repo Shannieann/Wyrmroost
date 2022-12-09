@@ -5,6 +5,7 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRunWhenLosingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.*;
 import com.github.shannieann.wyrmroost.entities.projectile.breath.FireBreathEntity;
@@ -581,6 +582,7 @@ public class RoyalRedEntity extends WRDragonEntity
         super.registerGoals();
 
         goalSelector.addGoal(4, new MoveToHomeGoal(this));
+        goalSelector.addGoal(4, new WRRunWhenLosingGoal(this, 0.1f, 40, 0.95f, 0.99f ));
         goalSelector.addGoal(5, new RRAttackGoal(this));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new DragonBreedGoal(this));
