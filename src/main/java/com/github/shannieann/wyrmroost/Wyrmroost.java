@@ -1,10 +1,12 @@
 package com.github.shannieann.wyrmroost;
 
 import com.github.shannieann.wyrmroost.client.ClientEvents;
+import com.github.shannieann.wyrmroost.client.PacketKey;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.network.packets.*;
 import com.github.shannieann.wyrmroost.registry.*;
 import com.github.shannieann.wyrmroost.util.ModUtils;
+import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -71,6 +73,7 @@ public class Wyrmroost
         network.messageBuilder(BookActionPacket.class, ++index, NetworkDirection.PLAY_TO_SERVER).encoder(BookActionPacket::encode).decoder(BookActionPacket::new).consumer(BookActionPacket::handle).add();
         network.messageBuilder(SGGlidePacket.class, ++index, NetworkDirection.PLAY_TO_SERVER).encoder(SGGlidePacket::encode).decoder(SGGlidePacket::new).consumer(SGGlidePacket::handle).add();
         network.messageBuilder(AddPassengerPacket.class, ++index, NetworkDirection.PLAY_TO_CLIENT).encoder(AddPassengerPacket::encode).decoder(AddPassengerPacket::new).consumer(AddPassengerPacket::handle).add();
+        network.messageBuilder(PacketKey.class, ++index, NetworkDirection.PLAY_TO_SERVER).encoder(PacketKey::encode).decoder(PacketKey::new).consumer(PacketKey::handle).add();
 
         NETWORK = network;
     }

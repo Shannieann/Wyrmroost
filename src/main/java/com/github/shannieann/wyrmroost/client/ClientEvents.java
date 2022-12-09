@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost.client;
 
 //import com.github.shannieann.wyrmroost.client.render.TarragonTomeRenderer;
 
+import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.client.render.entity.DragonEggRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.*;
@@ -14,6 +15,7 @@ import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
+import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.color.item.ItemColors;
@@ -29,9 +31,11 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.lwjgl.glfw.GLFW;
 
 /**
  * EventBus listeners on CLIENT distribution
@@ -58,6 +62,7 @@ public class ClientEvents
         forgeBus.addListener(RenderHelper::renderOverlay);
         forgeBus.addListener(RenderHelper::renderEntities);
         forgeBus.addListener(ClientEvents::cameraPerspective);
+        forgeBus.addListener(ClientEvents::onKeyInput);
 
         //WRDimensionRenderInfo.init();
     }
@@ -196,4 +201,16 @@ public class ClientEvents
 
         return wanted;
     }
+
+    public static void onKeyInput(TickEvent.ClientTickEvent event) {
+        Minecraft game = Minecraft.getInstance();
+        if (game.player != null) {
+                if (ClientEvents.KEY_TEST.isDown()) {
+                    Wyrmroost.NETWORK.sendToServer(new PacketKey());
+                }
+        }
+    }
+
+    public static final KeyMapping KEY_TEST = new KeyMapping("key.test",  GLFW.GLFW_KEY_J, "key.wyrmroost.category");
+
 }
