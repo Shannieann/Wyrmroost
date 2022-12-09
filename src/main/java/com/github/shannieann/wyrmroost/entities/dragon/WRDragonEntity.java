@@ -815,7 +815,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             //Thus, adjustment will determine --how fast-- the pieces of the entity's model change their rotation.
             //The multiplying factor in the corresponding entity's model will determine --how far-- they rotate.
             //We store the prevAdjustYaw value and use this and the current adjustYaw value for partial tick methods.
-
             prevSetYaw = setYaw;
 
             if (adjustYaw > deltaYRot) {
@@ -827,8 +826,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             setYaw = (adjustYaw * (Mth.PI / 180.0F));
 
+            //PITCH OPERATIONS:
             prevRotationPitch = rotationPitch;
-            rotationPitch = (float) ((Mth.atan2((this.getDeltaMovement().y), Mth.sqrt((float) ((this.getDeltaMovement().x) * (this.getDeltaMovement().x) + (this.getDeltaMovement().z) * (this.getDeltaMovement().z))))));
+            rotationPitch = (float)((Mth.atan2((this.getDeltaMovement().y),Mth.sqrt((float) ((this.getDeltaMovement().x)*(this.getDeltaMovement().x)+(this.getDeltaMovement().z)*(this.getDeltaMovement().z))))));
 
             //Troubleshooting:
             // If the rotation "lags behind" (does not change directions fast enough) increase adjustment.

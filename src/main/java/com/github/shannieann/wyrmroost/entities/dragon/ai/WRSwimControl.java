@@ -20,9 +20,6 @@ public class WRSwimControl extends MoveControl {
 
     @Override
     public void tick() {
-        //TODO: remove
-        this.mob.setDeltaMovement(this.mob.getDeltaMovement().add(0.0D, 0.005D, 0.0D));
-
         if (this.operation == MoveControl.Operation.MOVE_TO && !this.mob.getNavigation().isDone()) {
             double d0 = this.wantedX - this.mob.getX();
             double d1 = this.wantedY - this.mob.getY();

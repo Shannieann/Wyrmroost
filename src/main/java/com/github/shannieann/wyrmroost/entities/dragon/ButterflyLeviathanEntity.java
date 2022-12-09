@@ -69,6 +69,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(ButterflyLeviathanEntity.class, EntityDataSerializers.BOOLEAN);
     public static final int CONDUIT_SLOT = 0;
+    public static final float YAW_ADJUSTMENT = 0.10F;
 
     public final LerpedFloat beachedTimer = LerpedFloat.unit();
     public final LerpedFloat swimTimer = LerpedFloat.unit();
@@ -83,6 +84,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         //moveControl = new MoveController();
         maxUpStep = 2;
         setPathfindingMalus(BlockPathTypes.WATER, 0);
+        this.adjustment = YAW_ADJUSTMENT;
     }
 
     // ====================================
@@ -102,7 +104,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
                 .add(MAX_HEALTH, 180)
                 .add(MOVEMENT_SPEED, 0.08)
                 //TODO: Tweak
-                .add(ForgeMod.SWIM_SPEED.get(), 2F)
+                .add(ForgeMod.SWIM_SPEED.get(), 0.10F)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, 14)
                 .add(FOLLOW_RANGE, 50);
@@ -416,6 +418,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
             move(MoverType.SELF, getDeltaMovement());
             setDeltaMovement(getDeltaMovement().scale(0.9d));
 
+            /*
             animationSpeedOld = animationSpeed;
             double xDiff = getX() - xo;
             double yDiff = getY() - yo;
@@ -426,9 +429,11 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 
             animationSpeed += (amount - animationSpeed) * 0.4f;
             animationPosition += animationSpeed;
-
+            */
+            /*
             if (vec3d.z == 0 && getTarget() == null && !isInSittingPose())
                 setDeltaMovement(getDeltaMovement().add(0, -0.003d, 0));
+             */
         }
         else super.travel(vec3d);
     }
