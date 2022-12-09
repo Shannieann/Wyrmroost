@@ -10,7 +10,7 @@ import net.minecraftforge.common.ForgeMod;
 
 public class WRSwimControl extends MoveControl {
     private int maxTurnX = 85;
-
+//TODO: Rename class
     private final WRDragonEntity entity;
 
     public WRSwimControl(WRDragonEntity entity) {
@@ -20,6 +20,7 @@ public class WRSwimControl extends MoveControl {
 
     @Override
     public void tick() {
+        //TODO: remove
         this.mob.setDeltaMovement(this.mob.getDeltaMovement().add(0.0D, 0.005D, 0.0D));
 
         if (this.operation == MoveControl.Operation.MOVE_TO && !this.mob.getNavigation().isDone()) {
