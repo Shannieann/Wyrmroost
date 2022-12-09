@@ -56,9 +56,9 @@ import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: FIRST TIDY UP THIS WHOLE CLASS
-//TODO: Improve navigation
+//TODO: Improve navigation?
 //TODO: Animations?
-//TODO: Basic tests first, then advanced stuff.
+//TODO: Basic tests first, then advanced AI stuff.
 
 public class ButterflyLeviathanEntity extends WRDragonEntity
 {
@@ -119,6 +119,71 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return entityData.get(HAS_CONDUIT);
     }
 
+    @Override
+    public boolean checkSpawnRules(LevelAccessor pLevel, MobSpawnType pReason) {
+        return true;
+    }
+
+    @Override
+    public boolean canBreatheUnderwater()
+    {
+        return true;
+    }
+
+    public static <F extends Mob> boolean getSpawnPlacement(EntityType<F> fEntityType, ServerLevelAccessor level, MobSpawnType reason, BlockPos pos, Random random)
+    {
+        if (reason == MobSpawnType.SPAWNER) return true;
+        if (level.getFluidState(pos).is(FluidTags.WATER))
+        {
+            final double chance = random.nextDouble();
+            if (reason == MobSpawnType.CHUNK_GENERATION) return chance < 0.325;
+            else if (reason == MobSpawnType.NATURAL) return chance < 0.001;
+        }
+        return false;
+    }
+
+    @Override
+    public MobType getMobType()
+    {
+        return MobType.WATER;
+    }
+
+    public Vec3 getConduitPos()
+    {
+        return getEyePosition(1)
+                .add(0, 0.4, 0.35)
+                .add(calculateViewVector(xRot, yHeadRot).scale(4.15));
+    }
+    // ====================================
+    //      A.4) Entity Data: HOME
+    // ====================================
+
+    @Override
+    public boolean defendsHome()
+    {
+        return true;
+    }
+
+    // ====================================
+    //      A.5) Entity Data: SLEEP
+    // ====================================
+    @Override
+    public boolean shouldSleep()
+    {
+        return false;
+    }
+
+    // ====================================
+    //      A.6) Entity Data: VARIANT
+    // ====================================
+
+
+    @Override
+    public String determineVariant()
+    {
+        return getRandom().nextDouble() < 0.02? "special" : "base"+getRandom().nextInt(2);
+    }
+
     // ====================================
     //      A.7) Entity Data: Miscellaneous
     // ====================================
@@ -140,6 +205,13 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     {
         return getAgeScale(0.225f);
     }
+
+    @Override
+    public boolean checkSpawnObstruction(LevelReader level)
+    {
+        return level.noCollision(this);
+    }
+
 
     // ====================================
     //      B) Tick and AI
@@ -298,6 +370,17 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         level.addFreshEntity(entity);
     }
 
+    @Override
+    public boolean isImmuneToArrows()
+    {
+        return true;
+    }
+
+    @Override
+    public boolean isInvulnerableTo(DamageSource source)
+    {
+        return ModUtils.contains(source, DamageSource.LIGHTNING_BOLT, DamageSource.IN_FIRE, DamageSource.IN_WALL) || super.isInvulnerableTo(source);
+    }
 
     // ====================================
     //      C) Navigation and Control
@@ -359,6 +442,21 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         //@formatter:on
     }
 
+    @Override
+    public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
+    {
+        if (backView)
+            event.getCamera().move(ClientEvents.getViewCollision(-10, this), 1, 0);
+        else
+            event.getCamera().move(ClientEvents.getViewCollision(-5, this), -0.75, 0);
+    }
+
+    @Override
+    public int getYawRotationSpeed()
+    {
+        return 6;
+    }
+
     // ====================================
     //      C.1) Navigation and Control: Flying
     // ====================================
@@ -418,19 +516,25 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         }
     }
 
-    @Override
-    public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
+    public boolean isJumpingOutOfWater()
     {
-        if (backView)
-            event.getCamera().move(ClientEvents.getViewCollision(-10, this), 1, 0);
-        else
-            event.getCamera().move(ClientEvents.getViewCollision(-5, this), -0.75, 0);
+        return !isInWater() && !beached;
     }
 
 
     // ====================================
     //      D) Taming
     // ====================================
+
+    @Override
+    public void applyStaffInfo(BookContainer container)
+    {
+        super.applyStaffInfo(container);
+
+        container.slot(BookContainer.accessorySlot(getInventory(), CONDUIT_SLOT, 0, -65, -75, DragonControlScreen.CONDUIT_UV).only(Items.CONDUIT).limit(1))
+                .addAction(BookActions.TARGET);
+    }
+
 
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
@@ -468,6 +572,12 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
             //TODO: Set Animation
             //if (!onLoad && flag && !hadConduit) setAnimation(CONDUIT_ANIMATION);
         }
+    }
+
+    @Override
+    public DragonInventory createInv()
+    {
+        return new DragonInventory(this, 1);
     }
 
     // ====================================
@@ -522,33 +632,9 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return WRSounds.ENTITY_BFLY_DEATH.get();
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    // ====================================
+    //      F) Goals
+    // ====================================
 
     @Override
     protected void registerGoals()
@@ -579,131 +665,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
          */
     }
 
-
-
-
-
-
-    @Override
-    public boolean shouldSleep()
-    {
-        return false;
-    }
-
-    public Vec3 getConduitPos()
-    {
-        return getEyePosition(1)
-                .add(0, 0.4, 0.35)
-                .add(calculateViewVector(xRot, yHeadRot).scale(4.15));
-    }
-
-    @Override
-    public void applyStaffInfo(BookContainer container)
-    {
-        super.applyStaffInfo(container);
-
-        container.slot(BookContainer.accessorySlot(getInventory(), CONDUIT_SLOT, 0, -65, -75, DragonControlScreen.CONDUIT_UV).only(Items.CONDUIT).limit(1))
-                .addAction(BookActions.TARGET);
-    }
-
-    @Override
-    public boolean checkSpawnObstruction(LevelReader level)
-    {
-        return level.noCollision(this);
-    }
-
-    @Override
-    public boolean defendsHome()
-    {
-        return true;
-    }
-
-    /*
-    @Override
-    protected PathNavigation createNavigation(Level level)
-    {
-        return new Navigator();
-    }
-    */
-
-
-    @Override
-    public DragonInventory createInv()
-    {
-        return new DragonInventory(this, 1);
-    }
-
-    public boolean isJumpingOutOfWater()
-    {
-        return !isInWater() && !beached;
-    }
-
-
-    @Override
-    public boolean canBreatheUnderwater()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isImmuneToArrows()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isInvulnerableTo(DamageSource source)
-    {
-        return ModUtils.contains(source, DamageSource.LIGHTNING_BOLT, DamageSource.IN_FIRE, DamageSource.IN_WALL) || super.isInvulnerableTo(source);
-    }
-
-
-    @Override
-    public int getYawRotationSpeed()
-    {
-        return 6;
-    }
-
-    @Override
-    public String determineVariant()
-    {
-        return getRandom().nextDouble() < 0.02? "special" : "base"+getRandom().nextInt(2);
-    }
-
-
-    /*
-    @Override
-    public Animation[] getAnimations()
-    {
-        return ANIMATIONS;
-    }
-
-     */
-
-    @Override
-    public MobType getMobType()
-    {
-        return MobType.WATER;
-    }
-
-    @Override
-    public boolean checkSpawnRules(LevelAccessor pLevel, MobSpawnType pReason) {
-        return true;
-    }
-
-
-
-    public static <F extends Mob> boolean getSpawnPlacement(EntityType<F> fEntityType, ServerLevelAccessor level, MobSpawnType reason, BlockPos pos, Random random)
-    {
-        if (reason == MobSpawnType.SPAWNER) return true;
-        if (level.getFluidState(pos).is(FluidTags.WATER))
-        {
-            final double chance = random.nextDouble();
-            if (reason == MobSpawnType.CHUNK_GENERATION) return chance < 0.325;
-            else if (reason == MobSpawnType.NATURAL) return chance < 0.001;
-        }
-        return false;
-    }
+    //TODO: Extract
 
     private class AttackGoal extends Goal
     {
