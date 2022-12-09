@@ -56,6 +56,7 @@ import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
+//Pitch adjustments, avoid stuttering
 //See which methods are needed, which are not
 //Ground Nav <--> Swimmer Nav, test both
 //Return to water goal
@@ -75,7 +76,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(ButterflyLeviathanEntity.class, EntityDataSerializers.BOOLEAN);
     public static final int CONDUIT_SLOT = 0;
     public static final float YAW_ADJUSTMENT = 0.10F;
-    public static final float PITCH_ADJUSTMENT = 0.01F;
+    public static final float MAX_PITCH_ADJUSTMENT = 0.10F;
 
     public final LerpedFloat beachedTimer = LerpedFloat.unit();
     public final LerpedFloat swimTimer = LerpedFloat.unit();
@@ -91,8 +92,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         maxUpStep = 2;
         setPathfindingMalus(BlockPathTypes.WATER, 0);
         this.adjustmentYaw = YAW_ADJUSTMENT;
-        this.adjustmentPitch = PITCH_ADJUSTMENT;
-
+        this.maxPitchAdjustment = MAX_PITCH_ADJUSTMENT;
     }
 
     // ====================================

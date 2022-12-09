@@ -114,13 +114,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float deltaYRot;
     public float adjustYaw;
     public float adjustmentYaw;
-    public float adjustmentPitch;
     public float prevSetYaw;
     public float setYaw;
-    public float prevSetPitch;
-    public float setPitch;
     public float deltaPitch;
-    public float adjustPitch;
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
@@ -149,7 +145,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     protected static int ATTACK_ANIMATION_VARIANTS;
     protected static int SITTING_ANIMATION_TIME;
     protected static int SLEEPING_ANIMATION_TIME;
-
+    protected float maxPitchAdjustment;
 
     private static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     /**
@@ -217,9 +213,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             if (event.isMoving() && !this.isAggressive()) {
                 int movingState = this.getMovingState();
                 animation = switch (movingState) {
-                    case 0 -> "walk_fast" + animation;
-                    case 1 -> "fly_fast" + animation;
-                    case 2 -> "swim_fast" + animation;
+                    case 0 -> "walk_fast_" + animation;
+                    case 1 -> "fly_fast_" + animation;
+                    case 2 -> "swim_fast_" + animation;
                     default -> animation;
                 };
                 event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, ILoopType.EDefaultLoopTypes.LOOP));
@@ -262,6 +258,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
         //Idle:
         int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
+        //TODO: DO NOT PERMANENTLY LOOP IDLE
         event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
@@ -802,7 +799,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             this.setManualAnimationCall(true);
         }
 
-
         if (isSwimming()){
             //YAW OPERATIONS:
             //The following lines of code handle the dynamic yaw animations for entities...
@@ -832,31 +828,25 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setYaw = (adjustYaw * (Mth.PI / 180.0F));
 
             //PITCH OPERATIONS:
-            rotationPitch = (float)((Mth.atan2((this.getDeltaMovement().y),Mth.sqrt((float) ((this.getDeltaMovement().x)*(this.getDeltaMovement().x)+(this.getDeltaMovement().z)*(this.getDeltaMovement().z))))));
-            deltaPitch = this.rotationPitch - prevRotationPitch;
             prevRotationPitch = rotationPitch;
+            rotationPitch = (float)((Mth.atan2((this.getDeltaMovement().y),Mth.sqrt((float) ((this.getDeltaMovement().x)*(this.getDeltaMovement().x)+(this.getDeltaMovement().z)*(this.getDeltaMovement().z))))));
 
-            prevSetPitch = setPitch;
-            if (adjustPitch > deltaPitch) {
-                adjustPitch = adjustPitch - adjustmentPitch;
-                adjustPitch = Math.max(adjustPitch, deltaPitch);
-            } else if (adjustPitch < deltaPitch) {
-                adjustPitch = adjustPitch + adjustmentPitch;
-                adjustPitch = Math.min(adjustPitch, deltaPitch);
+            deltaPitch = rotationPitch - prevRotationPitch;
+            if (deltaPitch > maxPitchAdjustment) {
+                rotationPitch = prevRotationPitch + deltaPitch;
+            } else if (deltaPitch < -maxPitchAdjustment) {
+                rotationPitch = prevRotationPitch + deltaPitch;
             }
-            rotationPitch = rotationPitch;
-            adjustPitch = adjustPitch;
-            setPitch = ((this.level.getBlockState(new BlockPos(position())).is(Blocks.AIR)) && this.level.getBlockState(new BlockPos(position()).below()).is(Blocks.AIR)) ?
-                    rotationPitch : adjustPitch;
 
+        }
             //Troubleshooting:
             // If the rotation "lags behind" (does not change directions fast enough) increase adjustment.
             // If the rotation looks choppy (adjusts too fast), decrease adjustment
             // If the entity seems to "dislocate", reduce the multipliers for bone rotation in the Model class.
             // Reducing rotation multiplier in model class can also reduce choppiness, at the cost of how wide the bone rotation is.
-        }
-
     }
+
+
 
     public void clearAI()
     {
