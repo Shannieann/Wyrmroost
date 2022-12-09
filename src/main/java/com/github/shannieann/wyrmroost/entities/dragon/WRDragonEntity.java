@@ -810,7 +810,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             //The following lines of code handle the dynamic yaw animations for entities...
             //Grab the change in the entity's Yaw, deltaYRot...
             //deltaYaw will tell us in which direction the entity is rotating...
-            System.out.println("yRot:" + this.yRot);
             deltaYRot = this.yRot - prevYRot;
             //Store the previous yaw value, so we can use itn ext tick to calculate deltaYaw...
             prevYRot = this.yRot;
@@ -901,7 +900,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //if (WRConfig.DEBUG_MODE.get() && level.isClientSide) DebugRendering.box(box, 0x99ff0000, Integer.MAX_VALUE);
         for (LivingEntity attacking : attackables)
         {
-            System.out.println("DO HURT TARGET CALLED");
             doHurtTarget(attacking);
             if (disabledShieldTime > 0 && attacking instanceof Player)
             {
