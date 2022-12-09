@@ -798,7 +798,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
 
-        if (canSwim()){
+        if (isSwimming()){
             //YAW OPERATIONS:
             //The following lines of code handle the dynamic yaw animations for entities...
             //Grab the change in the entity's Yaw, deltaYRot...
