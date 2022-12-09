@@ -4,9 +4,10 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.BaseRandomSwimmingGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.LessShitLookController;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.*;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.book.action.BookActions;
 import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
@@ -31,18 +32,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.entity.ai.goal.RandomSwimmingGoal;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
-import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -53,8 +44,6 @@ import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import net.minecraft.world.level.pathfinder.PathFinder;
-import net.minecraft.world.level.pathfinder.SwimNodeEvaluator;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
@@ -112,7 +101,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 180)
                 .add(MOVEMENT_SPEED, 0.08)
-                .add(ForgeMod.SWIM_SPEED.get(), 0.026F)
+                .add(ForgeMod.SWIM_SPEED.get(), 2F)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, 14)
                 .add(FOLLOW_RANGE, 50);
@@ -570,10 +559,13 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 
 //        goalSelector.addGoal(4, new DragonBreedGoal(this));
 //        goalSelector.addGoal(5, new JumpOutOfWaterGoal());
-        goalSelector.addGoal(6, new RandomSwimmingGoal(this, 1, 40));
+        goalSelector.addGoal(6, new BaseRandomSwimmingGoal(this, 1, 10));
+//        goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 1, 10,16,8));
+
 //        goalSelector.addGoal(7, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
 //        goalSelector.addGoal(8, new RandomLookAroundGoal(this));
 
+        /*
         targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new HurtByTargetGoal(this));
@@ -583,6 +575,8 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
             EntityType<?> type = e.getType();
             return e.isInWater() == isInWater() && (type == EntityType.PLAYER || type == EntityType.GUARDIAN || type == EntityType.SQUID);
         }));
+
+         */
     }
 
 

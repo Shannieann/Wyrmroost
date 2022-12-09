@@ -24,13 +24,13 @@ public class WRSwimmingNavigator {}/*extends WaterBoundPathNavigation {
         return new PathFinder(nodeEvaluator = new SwimNodeEvaluator(true), range);
     }
 
-    @Override
+    @Overide
     public boolean isStableDestination(BlockPos pos) {
         return !level.getBlockState(pos.below()).isAir();
     }
 
     @Override
-    protected boolean canUpdatePath() {
+    protected boolean canUpdatePath() {r
         return true;
     }
 
