@@ -113,9 +113,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float prevYRot;
     public float deltaYRot;
     public float adjustYaw;
-    public float adjustment;
+    public float adjustmentYaw;
+    public float adjustmentPitch;
     public float prevSetYaw;
     public float setYaw;
+    public float prevSetPitch;
+    public float setPitch;
+    public float deltaPitch;
+    public float adjustPitch;
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
@@ -818,17 +823,31 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             prevSetYaw = setYaw;
 
             if (adjustYaw > deltaYRot) {
-                adjustYaw = adjustYaw - adjustment;
+                adjustYaw = adjustYaw - adjustmentYaw;
                 adjustYaw = Math.max(adjustYaw, deltaYRot);
             } else if (adjustYaw < deltaYRot) {
-                adjustYaw = adjustYaw + adjustment;
+                adjustYaw = adjustYaw + adjustmentYaw;
                 adjustYaw = Math.min(adjustYaw, deltaYRot);
             }
             setYaw = (adjustYaw * (Mth.PI / 180.0F));
 
             //PITCH OPERATIONS:
-            prevRotationPitch = rotationPitch;
             rotationPitch = (float)((Mth.atan2((this.getDeltaMovement().y),Mth.sqrt((float) ((this.getDeltaMovement().x)*(this.getDeltaMovement().x)+(this.getDeltaMovement().z)*(this.getDeltaMovement().z))))));
+            deltaPitch = this.rotationPitch - prevRotationPitch;
+            prevRotationPitch = rotationPitch;
+
+            prevSetPitch = setPitch;
+            if (adjustPitch > deltaPitch) {
+                adjustPitch = adjustPitch - adjustmentPitch;
+                adjustPitch = Math.max(adjustPitch, deltaPitch);
+            } else if (adjustPitch < deltaPitch) {
+                adjustPitch = adjustPitch + adjustmentPitch;
+                adjustPitch = Math.min(adjustPitch, deltaPitch);
+            }
+            rotationPitch = rotationPitch;
+            adjustPitch = adjustPitch;
+            setPitch = ((this.level.getBlockState(new BlockPos(position())).is(Blocks.AIR)) && this.level.getBlockState(new BlockPos(position()).below()).is(Blocks.AIR)) ?
+                    rotationPitch : adjustPitch;
 
             //Troubleshooting:
             // If the rotation "lags behind" (does not change directions fast enough) increase adjustment.
@@ -1181,6 +1200,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
         //If it's on water surface, switch to water navigator
         if (!this.isInWater() && this.level.getFluidState(blockPosition().below()).is(FluidTags.WATER)) {
+            return true;
+        }
+        //If we're falling, still use water navigator
+        if (!this.isInWater() && !this.isOnGround() && this.level.getBlockState(new BlockPos(position())).is(Blocks.AIR)) {
             return true;
         }
         return false;

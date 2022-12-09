@@ -44,7 +44,7 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
             head.setRotationY(extraData.netHeadYaw * Mth.DEG_TO_RAD);
         }
 
-        float setPitchValue = animatable.prevRotationPitch+(animatable.rotationPitch-animatable.prevRotationPitch)*animationEvent.getPartialTick();
+        float setPitchValue = animatable.prevSetPitch+(animatable.setPitch-animatable.prevSetPitch)*animationEvent.getPartialTick();
         if (animatable.isSwimming() && !animatable.level.getBlockState(animatable.blockPosition().below()).canOcclude()) {
             setPitchValue = Mth.clamp(setPitchValue, -0.785F,0.785F);
             (this.getAnimationProcessor().getBone("body1")).setRotationX(setPitchValue);
