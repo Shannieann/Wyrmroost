@@ -3,24 +3,22 @@ package com.github.shannieann.wyrmroost.entities.dragon.ai;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.ForgeMod;
 
-public class WRSwimmingHelper extends MoveControl {
-    private int maxTurnX;
-    private int maxTurnY;
+public class WRSwimControl extends MoveControl {
+    private int maxTurnX = 85;
 
     private final WRDragonEntity entity;
 
-    public WRSwimmingHelper(WRDragonEntity entity, int maxTurnX) {
+    public WRSwimControl(WRDragonEntity entity) {
         super(entity);
         this.entity = entity;
-        this.maxTurnX = maxTurnX;
     }
 
+    @Override
     public void tick() {
         this.mob.setDeltaMovement(this.mob.getDeltaMovement().add(0.0D, 0.005D, 0.0D));
 
@@ -34,14 +32,15 @@ public class WRSwimmingHelper extends MoveControl {
             } else {
                 float f = (float)(Mth.atan2(d2, d0) * (double)(180F / (float)Math.PI)) - 90.0F;
                 //Set max turn value: Sharp turns if controlled by rider of if aggressive
-                 if ((this.entity.getTarget() != null) || this.entity.canBeControlledByRider()) {
+                int maxTurnY;
+                if ((this.entity.getTarget() != null) || this.entity.canBeControlledByRider()) {
                      //TODO: Tweak Values
-                    this.maxTurnY=15;
+                    maxTurnY =15;
                 } else {
                      //TODO: Tweak Values
-                     this.maxTurnY=7;
+                     maxTurnY =7;
                 }
-                this.mob.setYRot(this.rotlerp(this.mob.getYRot(), f, (float)this.maxTurnY));
+                this.mob.setYRot(this.rotlerp(this.mob.getYRot(), f, (float) maxTurnY));
                 this.mob.yBodyRot = this.mob.getYRot();
                 this.mob.yHeadRot = this.mob.getYRot();
                 //TODO: Tweak speed if in water?

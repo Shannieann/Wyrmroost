@@ -197,16 +197,23 @@ class LootTableData extends LootTableProvider
                     .withPool(singleRollPool().add(meat(WRItems.RAW_COMMON_MEAT.get(), 1, 7, 2, 3)))
                     .withPool(singleRollPool().add(item(WRItems.DRAKE_BACKPLATE.get(), 1)).when(LootItemKilledByPlayerCondition.killedByPlayer()).when(LootItemRandomChanceCondition.randomChance(0.15f)).apply(looting(0, 1))));
 
+            /*
             add(WREntityTypes.ROOSTSTALKER.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_LOWTIER_MEAT.get(), 0, 2, 1, 2)))
                     .withPool(singleRollPool().add(item(Items.GOLD_NUGGET, 0, 2))));
 
             //add(WREntityTypes.DRAGON_FRUIT_DRAKE.get(), LootTable.lootTable().withPool(singleRollPool().add(item(Items.APPLE, 0, 6))));
 
+
+
+             */
+            /*
             add(WREntityTypes.CANARI_WYVERN.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_COMMON_MEAT.get(), 0, 2, 1, 2)))
                     .withPool(singleRollPool().add(item(Items.FEATHER, 1, 4).apply(looting(2, 6)))));
 
+
+             */
             add(WREntityTypes.SILVER_GLIDER.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_LOWTIER_MEAT.get(), 0, 3, 1, 3))));
 
