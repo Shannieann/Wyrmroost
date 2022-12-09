@@ -1,0 +1,33 @@
+{
+  "credit": "Made with Blockbench",
+  "loader": "forge:separate-perspective",
+  "gui_light": "front",
+  "base": {
+    "parent": "builtin/entity",
+    "texture_size": [
+      64,
+      32
+    ],
+  "display": {}
+  },
+  "perspectives": {
+    "gui": {
+      "parent": "item/generated",
+      "textures": {
+        "layer0": "wyrmroost:item/tarragon_tome"
+      }
+    },
+    "ground": {
+      "parent": "item/generated",
+      "textures": {
+        "layer0": "wyrmroost:item/tarragon_tome"
+      }
+    },
+    "fixed": {
+      "parent": "item/generated",
+      "textures": {
+        "layer0": "wyrmroost:item/tarragon_tome"
+      }
+    }
+  }
+}
