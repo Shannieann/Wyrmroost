@@ -108,15 +108,21 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public int breedCount;
     private float ageProgress = 1;
     //Only for swimmers:
-    public float rotationPitch;
-    public float prevRotationPitch;
+
     public float prevYRot;
     public float deltaYRot;
     public float adjustYaw;
     public float adjustmentYaw;
     public float prevSetYaw;
     public float setYaw;
+
     public float deltaPitch;
+    public float adjustedPitch;
+    public float adjustmentPitch;
+    public float deltaPitchLimit;
+    public float targetPitchRadians;
+    public float currentPitchRadians;
+
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
@@ -799,11 +805,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             this.setManualAnimationCall(true);
         }
 
-        if (isSwimming()){
+        if (isSwimming() && level.isClientSide){
             //YAW OPERATIONS:
             //The following lines of code handle the dynamic yaw animations for entities...
             //Grab the change in the entity's Yaw, deltaYRot...
             //deltaYaw will tell us in which direction the entity is rotating...
+            System.out.println("yRot:" + this.yRot);
             deltaYRot = this.yRot - prevYRot;
             //Store the previous yaw value, so we can use itn ext tick to calculate deltaYaw...
             prevYRot = this.yRot;
@@ -827,23 +834,44 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             setYaw = (adjustYaw * (Mth.PI / 180.0F));
 
-            //PITCH OPERATIONS:
-            prevRotationPitch = rotationPitch;
-            rotationPitch = (float)((Mth.atan2((this.getDeltaMovement().y),Mth.sqrt((float) ((this.getDeltaMovement().x)*(this.getDeltaMovement().x)+(this.getDeltaMovement().z)*(this.getDeltaMovement().z))))));
-
-            deltaPitch = rotationPitch - prevRotationPitch;
-            if (deltaPitch > maxPitchAdjustment) {
-                rotationPitch = prevRotationPitch + deltaPitch;
-            } else if (deltaPitch < -maxPitchAdjustment) {
-                rotationPitch = prevRotationPitch + deltaPitch;
-            }
-
-        }
             //Troubleshooting:
             // If the rotation "lags behind" (does not change directions fast enough) increase adjustment.
             // If the rotation looks choppy (adjusts too fast), decrease adjustment
             // If the entity seems to "dislocate", reduce the multipliers for bone rotation in the Model class.
             // Reducing rotation multiplier in model class can also reduce choppiness, at the cost of how wide the bone rotation is.
+
+
+            //PITCH OPERATIONS:
+
+            //BREACHING: UNUSED
+            //rotationPitch = (float)((Mth.atan2((this.getDeltaMovement().y),Mth.sqrt((float) ((this.getDeltaMovement().x)*(this.getDeltaMovement().x)+(this.getDeltaMovement().z)*(this.getDeltaMovement().z))))));
+
+            //Calculate deltaPitch, between our target (xRot) and the previous value we applied to the model...
+            deltaPitch = this.xRot - adjustedPitch;
+
+            //Store the current
+            currentPitchRadians = adjustedPitch * (Mth.PI / 180.0F);
+            //Model "wants" to set its pitch to xRot, however if xRot is changing too fast, we slow down this change...
+            if (Mth.abs(deltaPitch) > deltaPitchLimit) {
+                //Increase or Decrease pitch to attempt to reach target value...
+                if (deltaPitch > 0) {
+                    adjustedPitch = adjustedPitch + deltaPitchLimit;
+                }
+                if (deltaPitch < 0) {
+                    adjustedPitch = adjustedPitch - deltaPitchLimit;
+                }
+            }
+            //If we are changing at an acceptable rate, reach the target directly...
+            else {
+                adjustedPitch = xRot;
+            }
+            /*
+            //Store the value (in degrees) that we are using to set the Pitch...
+            prevSetPitch = adjustedPitch;
+           */
+            //Convert the value to Rads, this will be used by the model class...
+            targetPitchRadians = (adjustedPitch * (Mth.PI / 180.0F));
+        }
     }
 
 
