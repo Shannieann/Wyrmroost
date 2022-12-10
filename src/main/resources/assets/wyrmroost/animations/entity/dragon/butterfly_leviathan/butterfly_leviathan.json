@@ -1,9 +1,6 @@
 {
 	"format_version": "1.8.0",
 	"animations": {
-		"animation.torpedo.hold": {
-			"loop": true
-		},
 		"base": {
 			"loop": true
 		},
@@ -512,10 +509,6 @@
 			"loop": true,
 			"animation_length": 4,
 			"bones": {
-				"body1": {
-					"rotation": ["-50+math.cos((query.anim_time + 0.1) * 180) *5", "math.cos((query.anim_time + 0.1) * 180) *4", 0],
-					"position": [0, "math.cos((query.anim_time + 0.1) * 180) *2", "math.cos((query.anim_time + 0.1) * 180) *2"]
-				},
 				"body2": {
 					"rotation": ["-math.cos((query.anim_time - 0.1) * 270) *3", "math.cos((query.anim_time - 0.1) * 270) *2", 0]
 				},
@@ -2362,9 +2355,6 @@
 		"breach_fly": {
 			"loop": true,
 			"bones": {
-				"body1": {
-					"rotation": ["-50+math.cos(query.anim_time*270/0.25)*0.2", "math.sin(query.anim_time*270/0.25)*0.2", "math.cos(query.anim_time*270/0.25)*0.1"]
-				},
 				"body2": {
 					"rotation": ["-math.sin(query.anim_time*270/0.25)*0.05", 0, "-math.sin(query.anim_time*270/0.25)*0.025"]
 				},
