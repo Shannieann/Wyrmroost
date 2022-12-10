@@ -812,7 +812,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void tick() {
         super.tick();
-        System.out.println(this.getAnimation());
+        //System.out.println(this.getAnimation());
         if (!level.isClientSide) {
             //Will only try to fly if we're not in water...
             boolean shouldFly = shouldFly();
@@ -845,7 +845,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         if (sleepCooldown > 0) --sleepCooldown;
         if (isSleeping()) {
-            ((LessShitLookController) getLookControl()).stopLooking();
+            if (getLookControl() instanceof LessShitLookController) ((LessShitLookController) getLookControl()).stopLooking();
             if (getHealth() < getMaxHealth() && getRandom().nextDouble() < 0.005) heal(1);
 
             if (shouldWakeUp()) {
@@ -1666,7 +1666,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory playersInv, Player player)
     {
-        System.out.println(new BookContainer(id, playersInv, this));
+        //System.out.println(new BookContainer(id, playersInv, this));
         return new BookContainer(id, playersInv, this);
     }
 

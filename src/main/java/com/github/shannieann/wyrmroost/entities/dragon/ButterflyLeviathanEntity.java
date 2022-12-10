@@ -360,7 +360,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 
     public void conduitAnimation(int time)
     {
-        ((LessShitLookController) getLookControl()).stopLooking();
+        if (getLookControl() instanceof LessShitLookController) ((LessShitLookController) getLookControl()).stopLooking();
         if (time == 0) playSound(WRSounds.ENTITY_BFLY_ROAR.get(), 5f, 1, true);
         else if (time == 15)
         {
