@@ -8,8 +8,8 @@ import com.github.shannieann.wyrmroost.entities.effect.EffectLightningSphere;
 import com.github.shannieann.wyrmroost.entities.projectile.GeodeTippedArrowEntity;
 import com.github.shannieann.wyrmroost.entities.projectile.SoulCrystalEntity;
 import com.github.shannieann.wyrmroost.entities.projectile.breath.FireBreathEntity;
-import com.github.shannieann.wyrmroost.items.LazySpawnEggItem;
 import com.google.common.collect.ImmutableSet;
+import cpw.mods.util.Lazy;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.*;
@@ -17,8 +17,8 @@ import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.network.PlayMessages;
 import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
@@ -74,18 +74,15 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
                     .dragonEgg(new DragonEggProperties(0.175f, 0.3f, 6000))
                     .build();
 
-
-
-
     public static final RegistryObject<EntityType<ButterflyLeviathanEntity>> BUTTERFLY_LEVIATHAN =
-            ofGroup("butterfly_leviathan", ButterflyLeviathanEntity::new, MobCategory.CREATURE)
-            .size(1.5f, 1.5f)
-            .attributes(ButterflyLeviathanEntity::getAttributeSupplier)
-            .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.OCEAN_FLOOR_WG, ButterflyLeviathanEntity::getSpawnPlacement)
-            .spawnEgg(0x17283C, 0x7A6F5A)
-            .dragonEgg(new DragonEggProperties(0.5f, 0.8f, 40000).setConditions(Entity::isInWater))
-            .trackingRange(8)
-            .build();
+            creature("butterfly_leviathan", ButterflyLeviathanEntity::new)
+                    .size(1.5f, 1.5f)
+                    .attributes(ButterflyLeviathanEntity::getAttributeSupplier)
+                    .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.OCEAN_FLOOR_WG, ButterflyLeviathanEntity::getSpawnPlacement)
+                    .spawnEgg(0x17283C, 0x7A6F5A)
+                    .dragonEgg(new DragonEggProperties(0.5f, 0.8f, 40000).setConditions(Entity::isInWater))
+                    .trackingRange(8)
+                    .build();
 
     /*
     public static final RegistryObject<EntityType<DragonFruitDrakeEntity>> DRAGON_FRUIT_DRAKE = creature("dragon_fruit_drake", DragonFruitDrakeEntity::new)
@@ -254,7 +251,6 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
         private Supplier<AttributeSupplier> attributes = null;
         private SpawnPlacementEntry<T> spawnPlacement;
         private BiFunction<PlayMessages.SpawnEntity, Level, T> customClientFactory;
-
         private RegistryObject<EntityType<T>> registered;
 
         private Builder(String name, EntityType.EntityFactory<T> factory, MobCategory group)
@@ -327,7 +323,7 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
 
         private Builder<T> spawnEgg(int primColor, int secColor)
         {
-            WRItems.register(name + "_spawn_egg", () -> new LazySpawnEggItem<>(registered, primColor, secColor));
+            WRItems.register(name + "_spawn_egg", () -> new ForgeSpawnEggItem(() -> (EntityType<? extends Mob>) registered.get(), primColor, secColor,WRItems.builder()));
             return this;
         }
 
@@ -359,7 +355,8 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
 
         private RegistryObject<EntityType<T>> build()
         {
-            return registered = REGISTRY.register(name, () -> new WREntityTypes<>(factory, category, serialize, summon, fireImmune, canSpawnFarFromPlayer, immuneTo, size, trackingRange, packetInterval, t -> updatesVelocity, t -> trackingRange, t -> packetInterval, customClientFactory, attributes, spawnPlacement, dragonEggProperties));
+            registered = REGISTRY.register(name, () -> new WREntityTypes<>(factory, category, serialize, summon, fireImmune, canSpawnFarFromPlayer, immuneTo, size, trackingRange, packetInterval, t -> updatesVelocity, t -> trackingRange, t -> packetInterval, customClientFactory, attributes, spawnPlacement, dragonEggProperties));
+            return registered;
         }
     }
 
