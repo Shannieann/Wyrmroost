@@ -10,6 +10,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SpawnEggItem;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.util.Lazy;
 import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
@@ -19,7 +20,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class LazySpawnEggItem<T extends Entity> extends SpawnEggItem
+public class LazySpawnEggItem<T extends Entity> extends ForgeSpawnEggItem
 {
     public static final Set<LazySpawnEggItem<?>> SPAWN_EGGS = new HashSet<>();
 
