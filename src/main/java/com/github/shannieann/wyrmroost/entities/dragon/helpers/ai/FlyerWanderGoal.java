@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals;
+package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.util.Mafs;
