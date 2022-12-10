@@ -5,6 +5,7 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRandomSwimmingGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRReturnToWaterGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRWaterLeapGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.LessShitLookController;
@@ -42,13 +43,11 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.ForgeMod;
-import net.minecraft.util.Mth;
 
 
 import javax.annotation.Nullable;
@@ -59,7 +58,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
 //TODO: Tweak pitch adjustments
 //TODO: BFL textures, etc
-//Jump out of water goal
+//TODO: Jump out of water goal, speed
 
 //This class: See which methods are needed, which are not
 
@@ -68,8 +67,18 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //LookRandomly, lookAtPlayer
 //Attack: BFL Attack
-//Attack: Dive and Leap
+//Attack: Dive and Leap?
 //Attack: Nova?
+
+//Fix serializer
+
+//Ride logic + rewrite keybinds
+//All tamed goals
+//Eggs, breeding, taming
+
+//Config Spawn + TidyUp EntityTypeRegistry
+
+//Finalize assets!
 
 public class ButterflyLeviathanEntity extends WRDragonEntity
 {
@@ -658,15 +667,18 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     {
 //        goalSelector.addGoal(0, new WRSitGoal(this));
 //        goalSelector.addGoal(1, new MoveToHomeGoal(this));
-//        goalSelector.addGoal(2, new AttackGoal());
-//        goalSelector.addGoal(3, new WRFollowOwnerGoal(this));
+//        goalSelector.addGoal(2, new WRFollowOwnerGoal(this));
 
-//        goalSelector.addGoal(4, new DragonBreedGoal(this));
-        goalSelector.addGoal(5, new WRWaterLeapGoal(this, 1));
-        goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 0.5, 10,32,24));
+//        goalSelector.addGoal(3, new DragonBreedGoal(this));
 
-//        goalSelector.addGoal(7, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
-//        goalSelector.addGoal(8, new RandomLookAroundGoal(this));
+        //goalSelector.addGoal(4, new AttackGoal());
+        
+        goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1));
+        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1));
+        goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 0.5, 10,32,24));
+
+//        goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
+//        goalSelector.addGoal(9, new RandomLookAroundGoal(this));
 
         /*
         targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));

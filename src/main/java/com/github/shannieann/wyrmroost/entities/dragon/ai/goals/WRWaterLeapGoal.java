@@ -43,12 +43,10 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             return false;
         }
         //Get the water surface position at which we are aiming...
-        if (entity.level.   getFluidState(this.pos = entity.level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, this.entity.blockPosition()).below()).isEmpty())
+        if (entity.level.getFluidState(this.pos = entity.level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, this.entity.blockPosition()).below()).isEmpty())
             return false;
         //Get the target position, ensure it's not too far away...
         if (entity.getRandom().nextDouble() < 0.001) {
-
-
             this.pos = pos.relative(entity.getDirection(), (int) ((pos.getY() - entity.getY()) * 0.5d));
             if (pos.distSqr(new Vec3i(entity.position().x, entity.position().y, entity.position().z)) > 256) {
                 return false;
