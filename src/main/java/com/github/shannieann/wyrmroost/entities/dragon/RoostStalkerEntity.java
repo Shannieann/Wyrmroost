@@ -101,6 +101,15 @@ public class RoostStalkerEntity extends WRDragonEntity
         goalSelector.addGoal(5, new MoveToHomeGoal(this));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new DragonBreedGoal(this));
+        goalSelector.addGoal(8, new AvoidEntityGoal<Player>(this, Player.class, 7f, 1.15f, 1f)
+        {
+            @Override
+            public boolean canUse()
+            {
+                return !isTame() && !getItem().isEmpty() && super.canUse();
+            }
+        });
+
         goalSelector.addGoal(9, new ScavengeGoal(1.1d));
         goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
         goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
