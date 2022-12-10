@@ -39,7 +39,7 @@ public class WRSwimControl extends MoveControl {
                     maxTurnY = 15;
                 } else {
                      //TODO: Tweak Values
-                     maxTurnY = 4;
+                     maxTurnY = 5;
                 }
                 this.mob.setYRot(this.rotlerp(this.mob.getYRot(), f, (float) maxTurnY));
                 this.mob.yBodyRot = this.mob.getYRot();

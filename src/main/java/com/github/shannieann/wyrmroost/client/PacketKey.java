@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.client;
 
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.TestClass;
+import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.TestClass;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
