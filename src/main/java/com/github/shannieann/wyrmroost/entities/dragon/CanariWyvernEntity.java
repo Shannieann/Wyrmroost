@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.DragonBodyController;
+import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.*;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.book.action.BookActions;
@@ -37,9 +38,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 public class CanariWyvernEntity extends WRDragonEntity
 {
     private static final EntitySerializer<CanariWyvernEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
-            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
-            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping));
+            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
 
     public Player pissedOffTarget;
@@ -83,13 +82,14 @@ public class CanariWyvernEntity extends WRDragonEntity
     }
 
     @Override
+    public boolean speciesCanFly() {
+        return true;
+    }
+
+    @Override
     protected void defineSynchedData()
     {
         super.defineSynchedData();
-        entityData.define(FLYING, false);
-        entityData.define(GENDER, "male");
-        entityData.define(SLEEPING, false);
-        entityData.define(VARIANT, "");
     }
 
 

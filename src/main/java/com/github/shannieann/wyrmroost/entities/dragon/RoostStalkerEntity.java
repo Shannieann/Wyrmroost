@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
+import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.WRRunWhenLosingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.DefendHomeGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.DragonBreedGoal;
@@ -55,9 +56,9 @@ public class RoostStalkerEntity extends WRDragonEntity
 {
     public static final int ITEM_SLOT = 0;
     //TODO: What are we using this serializer for?
-    public static final EntitySerializer<RoostStalkerEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
-            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
+    //public static final EntitySerializer<RoostStalkerEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+    //        .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
+    //        .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
     private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(RoostStalkerEntity.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Boolean> SCAVENGING = SynchedEntityData.defineId(RoostStalkerEntity.class, EntityDataSerializers.BOOLEAN);
 
@@ -71,10 +72,15 @@ public class RoostStalkerEntity extends WRDragonEntity
     protected void defineSynchedData()
     {
         super.defineSynchedData();
-        entityData.define(SLEEPING, false);
-        entityData.define(VARIANT, "base");
+        //entityData.define(SLEEPING, false);
+        //entityData.define(VARIANT, "base");
         entityData.define(ITEM, ItemStack.EMPTY);
         entityData.define(SCAVENGING, false);
+    }
+
+    @Override
+    public EntitySerializer<? extends WRDragonEntity> getSerializer() {
+        return super.getSerializer();
     }
 
 
@@ -99,14 +105,7 @@ public class RoostStalkerEntity extends WRDragonEntity
         goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
         goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
         goalSelector.addGoal(12, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(8, new AvoidEntityGoal<>(this, Player.class, 7f, 1.15f, 1f)
-        {
-            @Override
-            public boolean canUse()
-            {
-                return !isTame() && !getItem().isEmpty() && super.canUse();
-            }
-        });
+        //goalSelector.addGoal(2, new WRRunWhenLosingGoal(this, 0.2f, 1.0f, 7f, 1.15f, 1f));
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));
@@ -134,11 +133,9 @@ public class RoostStalkerEntity extends WRDragonEntity
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
     {
         final InteractionResult success = InteractionResult.sidedSuccess(level.isClientSide);
-        //TODO: Isn't this the same as stack?
-        ItemStack playerItemInHand = player.getItemInHand(hand);
 
         //Taming
-        if (!isTame() && playerItemInHand.is(Tags.Items.EGGS))
+        if (!isTame() && stack.is(Tags.Items.EGGS))
         {
             eat(stack);
             //TODO: Why are we changing the max health upon taming?
@@ -168,7 +165,7 @@ public class RoostStalkerEntity extends WRDragonEntity
                 return success;
             }
             //Riding
-            if (stack.isEmpty() && playerItemInHand.isEmpty() && !isLeashed() && player.getPassengers().size() < 3)
+            if (stack.isEmpty() && stack.isEmpty() && !isLeashed() && player.getPassengers().size() < 3)
             {
                 if (!level.isClientSide && startRiding(player, true))
                 {
@@ -180,12 +177,12 @@ public class RoostStalkerEntity extends WRDragonEntity
             }
             //Give Item (or exchange)
             //TODO: How do we take items away from Rooststalker without giving them anything in exchange?
-            if ((!stack.isEmpty() && !isFood(stack)) || !playerItemInHand.isEmpty())
+            if ((!stack.isEmpty() && !isFood(stack)) || !stack.isEmpty())
             {
                 //TODO: Check setStackInSlot method's comments. We are not performing the checks for sidedness.
                 //TODO: Perhaps perform these checks before the mob interact is ever called?
                 setStackInSlot(ITEM_SLOT, stack);
-                player.setItemInHand(hand, playerItemInHand);
+                player.setItemInHand(hand, stack);
                 return success;
             }
         }
@@ -341,11 +338,6 @@ public class RoostStalkerEntity extends WRDragonEntity
 
      */
 
-    @Override
-    public EntitySerializer<RoostStalkerEntity> getSerializer()
-    {
-        return SERIALIZER;
-    }
 
     class ScavengeGoal extends MoveToBlockGoal
     {
@@ -448,8 +440,7 @@ public class RoostStalkerEntity extends WRDragonEntity
          */
         private void interactChest(Container intentory, boolean open)
         {
-            if (!(intentory instanceof ChestBlockEntity)) return; // not a chest, ignore it
-            ChestBlockEntity chest = (ChestBlockEntity) intentory;
+            if (!(intentory instanceof ChestBlockEntity chest)) return; // not a chest, ignore it
 
             chest.openersCounter.openCount = open? 1 : 0;
             chest.getLevel().blockEvent(chest.getBlockPos(), chest.getBlockState().getBlock(), 1, chest.openersCounter.getOpenerCount());
