@@ -804,12 +804,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void tick() {
         super.tick();
+        System.out.println(this.getAnimation());
         if (!level.isClientSide) {
             //Will only try to fly if we're not in water...
             boolean shouldFly = shouldFly();
             if (shouldFly != isFlying()) {
                 setFlying(shouldFly);
             }
+
             //Will only try to swimNavigate if we're actually a swimmer
             boolean shouldSwim = shouldSwim();
             if (shouldSwim != isSwimming()) {
@@ -1282,7 +1284,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
         return false;
     }
-
+    
     public void setSwimmingNavigation(boolean shouldSwim) {
         if (shouldSwim) {
             this.moveControl = new WRSwimControl(this);

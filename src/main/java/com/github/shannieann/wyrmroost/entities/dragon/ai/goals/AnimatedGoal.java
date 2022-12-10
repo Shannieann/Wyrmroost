@@ -60,7 +60,6 @@ public class AnimatedGoal extends Goal {
         this.entity.setAnimationType(this.animationType = animationType);
         this.entity.setAnimationTime(this.animationTime = animationTime);
         this.entity.setIsMovingAnimation(this.isMovingAnimation = isMovingAnimation);
-
     }
 
     @Override

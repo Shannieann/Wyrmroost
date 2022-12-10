@@ -35,7 +35,7 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
     @Override
     public void setCustomAnimations(ButterflyLeviathanEntity animatable, int instanceId, AnimationEvent animationEvent) {
         super.setCustomAnimations(animatable, instanceId, animationEvent);
-        float rotationYawMultiplier = 5.0F;
+        float rotationYawMultiplier = 1.4F;
 
         IBone head = this.getAnimationProcessor().getBone("head");
         EntityModelData extraData = (EntityModelData) animationEvent.getExtraDataOfType(EntityModelData.class).get(0);
@@ -51,12 +51,11 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
         } else {
             setPitchValue = animatable.currentPitchRadians;
         }
-        this.getAnimationProcessor().getBone("body1").setRotationX(-setPitchValue);
+        this.getAnimationProcessor().getBone("ibody1").setRotationX(-setPitchValue);
 
-
-        if (animatable.isSwimming() && !animatable.getBreaching()) {
+        if (animatable.isSwimming()) {
             float setYawValue = animatable.prevSetYaw+(animatable.setYaw-animatable.prevSetYaw)*animationEvent.getPartialTick();
-            this.getAnimationProcessor().getBone("body2").setRotationY(setYawValue * rotationYawMultiplier);
+            this.getAnimationProcessor().getBone("ibody2").setRotationY(setYawValue * rotationYawMultiplier);
             this.getAnimationProcessor().getBone("itail1").setRotationY(setYawValue * rotationYawMultiplier);
             this.getAnimationProcessor().getBone("itail2").setRotationY(setYawValue * rotationYawMultiplier);
             this.getAnimationProcessor().getBone("itail3").setRotationY(setYawValue * rotationYawMultiplier);

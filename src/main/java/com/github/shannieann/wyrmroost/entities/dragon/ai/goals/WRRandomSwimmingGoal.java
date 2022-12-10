@@ -18,7 +18,6 @@ public class WRRandomSwimmingGoal extends Goal {
     protected double z;
     protected final double speed;
     protected int executionChance;
-    protected boolean mustUpdate;
     protected int horizontalDistance;
     protected int verticalDistance;
 
@@ -45,14 +44,10 @@ public class WRRandomSwimmingGoal extends Goal {
             return false;
         }
 
-        if (!this.entity.isInWater() && !this.entity.level.getBlockState(new BlockPos(entity.position()).below()).is(Blocks.WATER)) {
+        /*if (!this.entity.isInWater() && !this.entity.level.getBlockState(new BlockPos(entity.position()).below()).is(Blocks.WATER)) {
             return false;
-        } else {
-            if (!this.mustUpdate) {
-                if (this.entity.getRandom().nextInt(this.executionChance) != 0) {
-                    return false;
-                }
-            }
+        }*/
+        else {
             Vec3 vector3d = this.getPosition();
             if (vector3d == null) {
                 return false;
@@ -60,7 +55,6 @@ public class WRRandomSwimmingGoal extends Goal {
                 this.x = vector3d.x;
                 this.y = vector3d.y;
                 this.z = vector3d.z;
-                this.mustUpdate = false;
                 return true;
             }
         }
@@ -83,7 +77,8 @@ public class WRRandomSwimmingGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        if (this.entity.distanceToSqr(this.x,this.y,this.z) < 50) {
+        //TODO: TEST distance + avoid loops
+        if (this.entity.distanceToSqr(this.x,this.y,this.z) < 75) {
             return false;
         }
         if (!this.entity.isSwimming()) {

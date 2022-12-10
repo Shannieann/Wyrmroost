@@ -16,11 +16,14 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     private final WRDragonEntity entity;
     private final String breachStartAnimation = "breach_start";
     private final String breachFlyAnimation = "breach_fly";
+    private final String breachEndAnimation = "breach_end";
     private final double speedTowardsTarget;
     private boolean step1Done;
     private int step1Ticks;
     private boolean step2Done;
     private int step2Ticks;
+    private int finalTicks;
+
     private Vec3 startPos;
     public WRWaterLeapGoal(WRDragonEntity entity, double speedIn)
     {
@@ -42,17 +45,17 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         if (!entity.isUnderWater()) {
             return false;
         }
-        //Get the water surface position at which we are aiming...
-        if (entity.level.getFluidState(this.pos = entity.level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, this.entity.blockPosition()).below()).isEmpty())
-            return false;
-        //Get the target position, ensure it's not too far away...
-        if (entity.getRandom().nextDouble() < 0.001) {
+        if (entity.getRandom().nextDouble() < 0.05) {
+            //Get the water surface position at which we are aiming...
+            if (entity.level.getFluidState(this.pos = entity.level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, this.entity.blockPosition()).below()).isEmpty()) {
+                return false;
+            }
+            //Get the target position, ensure it's not too far away...
             this.pos = pos.relative(entity.getDirection(), (int) ((pos.getY() - entity.getY()) * 0.5d));
             if (pos.distSqr(new Vec3i(entity.position().x, entity.position().y, entity.position().z)) > 256) {
                 return false;
             }
             if (pos.getY() - entity.getY() > 8) {
-
                 return true;
             }
         }
@@ -85,7 +88,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             return false;
         }
         //If it has finished all the steps, stop the Goal.
-        if (step2Done) {
+        if (step2Done && finalTicks > 12) {
             return false;
         }
 
@@ -102,7 +105,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     public void start()
     {
         entity.getLookControl().setLookAt(pos.getX(),pos.getY(),pos.getZ());
-        this.entity.getMoveControl().setWantedPosition(pos.getX(), pos.getY(), pos.getZ(), this.entity.getAttributeBaseValue(ForgeMod.SWIM_SPEED.get())*3.0F);
+        this.entity.getNavigation().moveTo(pos.getX(), pos.getY(), pos.getZ(), speedTowardsTarget);
         startPos = this.entity.position();
         entity.setBreaching(true);
         super.start(breachStartAnimation, 1, 10,false);
@@ -114,7 +117,6 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         //Step 1: Reach Jump starting position, at water surface level, where the target's at.
         //Step 3: Perform grab and attack.
         //Step 4: Return to the water.
-
         if (!step1Done) {
             //Attempt step 1....
             if (moveStep1()) {
@@ -127,14 +129,18 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             }
         }
 
-        //Attempt Step4....
+        //Attempt Step2....
         if (step1Done && !step2Done) {
             if (moveStep2()){
                 step2Done = true;
-                super.stop();
+                super.start(breachEndAnimation, 2, 12,false);
             } else {
                 super.start(breachFlyAnimation, 1, 10,false);
             }
+        }
+
+        if (step2Done) {
+            finalTicks++;
         }
     }
 

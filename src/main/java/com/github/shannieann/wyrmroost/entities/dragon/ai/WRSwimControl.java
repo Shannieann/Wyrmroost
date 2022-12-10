@@ -32,19 +32,18 @@ public class WRSwimControl extends MoveControl {
                 //Set max turn value: Sharp turns if controlled by rider of if aggressive
                 int maxTurnY;
                 if (this.entity.getBreaching()){
-                    maxTurnY =90;
+                    maxTurnY = 90;
                 }
                 else if ((this.entity.getTarget() != null) || this.entity.canBeControlledByRider()) {
                      //TODO: Tweak Values
-                    maxTurnY =15;
+                    maxTurnY = 15;
                 } else {
                      //TODO: Tweak Values
-                     maxTurnY =7;
+                     maxTurnY = 4;
                 }
                 this.mob.setYRot(this.rotlerp(this.mob.getYRot(), f, (float) maxTurnY));
                 this.mob.yBodyRot = this.mob.getYRot();
                 this.mob.yHeadRot = this.mob.getYRot();
-                //TODO: Tweak speed if in water?
                 float speed = ((float) this.mob.getAttributeValue(ForgeMod.SWIM_SPEED.get()));
                 if (this.mob.isInWater() || this.mob.level.getBlockState(new BlockPos(mob.position()).below()).is(Blocks.WATER)) {
                     this.mob.setSpeed(speed);

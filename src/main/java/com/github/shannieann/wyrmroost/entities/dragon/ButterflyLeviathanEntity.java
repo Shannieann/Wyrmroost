@@ -57,6 +57,7 @@ import java.util.Random;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
 //TODO: Tweak pitch adjustments
+//TODO: Yaw adjustments
 //TODO: BFL textures, etc
 //TODO: Jump out of water goal, speed
 
@@ -89,7 +90,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(ButterflyLeviathanEntity.class, EntityDataSerializers.BOOLEAN);
     public static final int CONDUIT_SLOT = 0;
-    public static final float YAW_ADJUSTMENT = 0.10F;
+    public static final float YAW_ADJUSTMENT = 0.30F;
     public static final float DELTA_PITCH_LIMIT = 1.0F;
 
     public final LerpedFloat beachedTimer = LerpedFloat.unit();
@@ -107,6 +108,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         setPathfindingMalus(BlockPathTypes.WATER, 0);
         this.adjustmentYaw = YAW_ADJUSTMENT;
         this.deltaPitchLimit = DELTA_PITCH_LIMIT;
+        this.setSwimmingNavigation(true);
     }
 
     // ====================================
@@ -673,9 +675,9 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 
         //goalSelector.addGoal(4, new AttackGoal());
         
-        goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1));
-        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1));
-        goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 0.5, 10,32,24));
+        //goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1));
+        //goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1));
+        goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 0.01, 10,32,24));
 
 //        goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
 //        goalSelector.addGoal(9, new RandomLookAroundGoal(this));
@@ -712,6 +714,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         @Override
         public void tick()
         {
+            System.out.print(getAnimation());
             LivingEntity target = getTarget();
             if (target == null) return;
             double distFromTarget = distanceToSqr(target);
@@ -720,6 +723,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 
             boolean isClose = distFromTarget < 40;
 
+            //TODO: Fix crashes
             if (getNavigation().isDone())
                 getNavigation().moveTo(target, 1.2);
 
