@@ -101,7 +101,7 @@ public class RoostStalkerEntity extends WRDragonEntity
         goalSelector.addGoal(5, new MoveToHomeGoal(this));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new DragonBreedGoal(this));
-        goalSelector.addGoal(8, new AvoidEntityGoal<Player>(this, Player.class, 7f, 1.15f, 1f)
+        goalSelector.addGoal(8, new AvoidEntityGoal<>(this, Player.class, 7f, 1.15f, 1f)
         {
             @Override
             public boolean canUse()
@@ -186,6 +186,7 @@ public class RoostStalkerEntity extends WRDragonEntity
             }
             //Give Item (or exchange)
             //TODO: How do we take items away from Rooststalker without giving them anything in exchange?
+            // You would give them an empty stack ig (ItemStack.EMPTY)
             if ((!stack.isEmpty() && !isFood(stack)) || !stack.isEmpty())
             {
                 //TODO: Check setStackInSlot method's comments. We are not performing the checks for sidedness.
