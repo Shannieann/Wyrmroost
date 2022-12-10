@@ -4,8 +4,9 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRunWhenLosingGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.FlyerWanderGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.AnimatedGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.WRRunWhenLosingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.*;
 import com.github.shannieann.wyrmroost.entities.projectile.breath.FireBreathEntity;
@@ -66,8 +67,6 @@ public class RoyalRedEntity extends WRDragonEntity
 
     private static final EntitySerializer<RoyalRedEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
-            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
-            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
             .track(EntitySerializer.INT, "KnockOutTime", RoyalRedEntity::getKnockOutTime, RoyalRedEntity::setKnockoutTime));
 
     public static final int ARMOR_SLOT = 0;
@@ -585,14 +584,14 @@ public class RoyalRedEntity extends WRDragonEntity
         super.registerGoals();
 
         goalSelector.addGoal(4, new MoveToHomeGoal(this));
-        goalSelector.addGoal(4, new WRRunWhenLosingGoal(this, 0.1f, 40, 0.95f, 0.99f ));
+        //goalSelector.addGoal(4, new WRRunWhenLosingGoal(this, 0.1f, 40, 0.95f, 0.99f ));
         goalSelector.addGoal(5, new RRAttackGoal(this));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new DragonBreedGoal(this));
         goalSelector.addGoal(9, new FlyerWanderGoal(this, 1));
         goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
         goalSelector.addGoal(11, new RandomLookAroundGoal(this));
-
+        goalSelector.addGoal(3, new WRRunWhenLosingGoal(this, 0.1f, 0.001f, 20f, 1.15f, 1f));
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));

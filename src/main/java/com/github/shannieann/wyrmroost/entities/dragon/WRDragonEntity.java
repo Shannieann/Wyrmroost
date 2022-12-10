@@ -4,9 +4,9 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.WRSwimControl;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.WRSwimmingNavigator;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.WRSwimControl;
+import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.WRSwimmingNavigator;
+import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.*;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.WRSitGoal;
@@ -128,6 +128,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public static final EntitySerializer<WRDragonEntity> SERIALIZER = EntitySerializer.builder(b -> b
             .track(EntitySerializer.POS.optional(), "HomePos", t -> Optional.ofNullable(t.getHomePos()), (d, v) -> d.setHomePos(v.orElse(null)))
+            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
             .track(EntitySerializer.INT, "BreedCount", WRDragonEntity::getBreedCount, WRDragonEntity::setBreedCount));
 
     public static final byte HEAL_PARTICLES_EVENT_ID = 8;
@@ -383,7 +385,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
 
-    public abstract EntitySerializer<? extends WRDragonEntity> getSerializer();
+    public EntitySerializer<? extends WRDragonEntity> getSerializer(){
+        return SERIALIZER;
+    }
 
 
     public String getAnimation()

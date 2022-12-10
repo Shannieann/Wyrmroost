@@ -59,9 +59,9 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 public class OverworldDrakeEntity extends WRDragonEntity
 {
     private static final EntitySerializer<OverworldDrakeEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
-            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
-            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping));
+            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
+            //.track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            //.track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping));
 
     // inventory slot constants
     public static final int SADDLE_SLOT = 0;

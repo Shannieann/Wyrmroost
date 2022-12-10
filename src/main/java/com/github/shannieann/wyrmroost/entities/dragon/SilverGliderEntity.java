@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.DragonBreedGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.FlyerWanderGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.WRAvoidEntityGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.WRFollowOwnerGoal;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
@@ -45,9 +45,7 @@ public class SilverGliderEntity extends WRDragonEntity
 {
     //TODO: BOIDS
     private static final EntitySerializer<SilverGliderEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
-            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
-            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping));
+            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public final LerpedFloat flightTimer = LerpedFloat.unit();
