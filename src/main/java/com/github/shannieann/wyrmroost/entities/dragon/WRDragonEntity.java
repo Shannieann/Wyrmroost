@@ -1268,16 +1268,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!this.isInWater() && this.isOnGround()) {
             return false;
         }
-        //If it's in swimmable water (meaning, at least two blocks deep), switch to water navigator
-        if (this.isInWater() && !this.level.getBlockState(blockPosition().below()).canOcclude()) {
-            return true;
-        }
         //If it's on water surface, switch to water navigator
         if (!this.isInWater() && this.level.getFluidState(blockPosition().below()).is(FluidTags.WATER)) {
             return true;
         }
         //If it's falling, still use water navigator
         if (!this.isInWater() && !this.isOnGround() && this.level.getBlockState(new BlockPos(position())).is(Blocks.AIR)) {
+            return true;
+        }
+        //If it's in swimmable water (meaning, at least two blocks deep), switch to water navigator
+        if (this.isInWater() && !this.level.getBlockState(blockPosition().below()).canOcclude()) {
             return true;
         }
         return false;
