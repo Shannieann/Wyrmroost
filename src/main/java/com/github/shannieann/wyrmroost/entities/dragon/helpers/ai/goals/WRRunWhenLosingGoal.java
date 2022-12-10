@@ -16,7 +16,6 @@ public class WRRunWhenLosingGoal extends AvoidEntityGoal<LivingEntity> {
     private final float healthPercent;
     private final WRDragonEntity dragon;
     private final float chanceToRun;
-    private final Random random = new Random();
 
     public WRRunWhenLosingGoal(WRDragonEntity pMob, float healthPercent, float chanceToRun, float pMaxDistance, double pWalkSpeedModifier, double pSprintSpeedModifier) {
         super(pMob, LivingEntity.class, pMaxDistance, pWalkSpeedModifier, pSprintSpeedModifier);
@@ -29,11 +28,8 @@ public class WRRunWhenLosingGoal extends AvoidEntityGoal<LivingEntity> {
 
     @Override
     public boolean canUse() {
-        System.out.println("HELLO");
         if (this.dragon.getHealth()/this.dragon.getMaxHealth() > healthPercent) return false;
-        System.out.println("HELLO2");
-        if (random.nextFloat() > chanceToRun) return false;
-        System.out.println("HELLO3");
+        if (dragon.getRandom().nextFloat() > chanceToRun) return false;
 
 
 
