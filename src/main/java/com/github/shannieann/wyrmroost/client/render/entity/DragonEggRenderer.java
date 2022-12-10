@@ -80,7 +80,7 @@ public class DragonEggRenderer extends EntityRenderer<DragonEggEntity>
      * WREggTemplate - Ukan
      * Created using Tabula 7.0.1
     */
-    // HAS TO BE REPLACED
+    // TODO HAS TO BE REPLACED
     public static class Model extends EntityModel<DragonEggEntity>
     {
         @Override
