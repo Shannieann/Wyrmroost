@@ -1,5 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.dragon.ai.goals;
 
+import com.github.shannieann.wyrmroost.entities.effect.EffectLightningSphere;
+import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Chicken;
@@ -14,8 +16,10 @@ import static java.lang.Math.sin;
 public class TestClass {
     int numberOfPoints = 40;
     public TestClass(Player player){
-        ArrayList<Vec3> listOfVectors=listOfVectors();
-        summonEntities(listOfVectors,player);
+
+        //ArrayList<Vec3> listOfVectors=listOfVectors();
+        //summonEntities(listOfVectors,player);
+        summonLightningSphere(player);
   }
 
   public ArrayList<Vec3> listOfVectors() {
@@ -47,6 +51,9 @@ public class TestClass {
         }
   }
 
-
-
+  public void summonLightningSphere(Player player) {
+      EffectLightningSphere lightningSphere = new EffectLightningSphere(WREntityTypes.LIGHTNING_SPHERE.get(),player.level,100);
+      lightningSphere.setPos(player.position());
+      player.level.addFreshEntity(lightningSphere);
+  }
 }

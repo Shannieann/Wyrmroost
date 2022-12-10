@@ -4,6 +4,7 @@ import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.entities.dragon.*;
 import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggEntity;
 import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggProperties;
+import com.github.shannieann.wyrmroost.entities.effect.EffectLightningSphere;
 import com.github.shannieann.wyrmroost.entities.projectile.GeodeTippedArrowEntity;
 import com.github.shannieann.wyrmroost.entities.projectile.SoulCrystalEntity;
 import com.github.shannieann.wyrmroost.entities.projectile.breath.FireBreathEntity;
@@ -158,6 +159,14 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
 
     public static final RegistryObject<EntityType<FireBreathEntity>> FIRE_BREATH = WREntityTypes.<FireBreathEntity>ofGroup("fire_breath", FireBreathEntity::new, MobCategory.MISC)
             .size(0.75f, 0.75f)
+            .noSave()
+            .noSummon()
+            .packetInterval(10)
+            .build();
+
+    public static final RegistryObject<EntityType<EffectLightningSphere>> LIGHTNING_SPHERE =
+            WREntityTypes.<EffectLightningSphere>ofGroup("lightning_sphere", EffectLightningSphere::new, MobCategory.MISC)
+            .size(1.0f, 1.0f)
             .noSave()
             .noSummon()
             .packetInterval(10)
