@@ -116,7 +116,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 180)
                 .add(MOVEMENT_SPEED, 0.08)
-                .add(ForgeMod.SWIM_SPEED.get(), 0.10F)
+                .add(ForgeMod.SWIM_SPEED.get(), 0.20F)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, 14)
                 .add(FOLLOW_RANGE, 50);
@@ -662,8 +662,8 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 //        goalSelector.addGoal(3, new WRFollowOwnerGoal(this));
 
 //        goalSelector.addGoal(4, new DragonBreedGoal(this));
-        goalSelector.addGoal(5, new WRWaterLeapGoal(this, 10));
-        goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 1, 10,32,24));
+        goalSelector.addGoal(5, new WRWaterLeapGoal(this, 1));
+        goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 0.5, 10,32,24));
 
 //        goalSelector.addGoal(7, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
 //        goalSelector.addGoal(8, new RandomLookAroundGoal(this));
