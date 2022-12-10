@@ -138,6 +138,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public static final EntityDataAccessor<Integer> AGE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
+    public static final EntityDataAccessor<Float> BREACH_ATTACK_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
+    public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> FLYING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
@@ -302,6 +304,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         this.entityData.define(IS_MOVING_ANIMATION, false);
         entityData.define(HOME_POS, BlockPos.ZERO);
         entityData.define(AGE, 0);
+        entityData.define(BREACHING, false);
+        entityData.define(BREACH_ATTACK_COOLDOWN, 600F);
         entityData.define(GENDER, "male");
         entityData.define(SLEEPING, false);
         entityData.define(VARIANT, "base0");
@@ -437,6 +441,29 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void setMovingState(int movingState)
     {
         entityData.set(MOVING_STATE, movingState);
+    }
+
+
+    public void setBreaching(boolean breaching) {
+        entityData.set(BREACHING, breaching);
+
+
+    }
+
+    public boolean getBreaching() {
+        return entityData.get(BREACHING);
+
+    }
+
+
+    public void setBreachAttackCooldown(float breachCooldown) {
+        entityData.set(BREACH_ATTACK_COOLDOWN, breachCooldown);
+
+    }
+
+    public float getBreachAttackCooldown() {
+        return entityData.get(BREACH_ATTACK_COOLDOWN);
+
     }
 
     public boolean hasEntityDataAccessor(EntityDataAccessor<?> param)
@@ -789,8 +816,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             if (shouldSwim != isSwimming()) {
                 setSwimmingNavigation(shouldSwim);
             }
-            System.out.println("IS SWIMMING NAVIGATOR: " + (this.getNavigation() instanceof WRSwimmingNavigator));
-
 
             // todo figure out a better target system?
             LivingEntity target = getTarget();
@@ -875,35 +900,32 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
             //PITCH OPERATIONS:
-
-            //BREACHING: UNUSED
-            //rotationPitch = (float)((Mth.atan2((this.getDeltaMovement().y),Mth.sqrt((float) ((this.getDeltaMovement().x)*(this.getDeltaMovement().x)+(this.getDeltaMovement().z)*(this.getDeltaMovement().z))))));
-
-            //Calculate deltaPitch, between our target (xRot) and the previous value we applied to the model...
-            deltaPitch = this.xRot - adjustedPitch;
-
-            //Store the current
-            currentPitchRadians = adjustedPitch * (Mth.PI / 180.0F);
-            //Model "wants" to set its pitch to xRot, however if xRot is changing too fast, we slow down this change...
-            if (Mth.abs(deltaPitch) > deltaPitchLimit) {
-                //Increase or Decrease pitch to attempt to reach target value...
-                if (deltaPitch > 0) {
-                    adjustedPitch = adjustedPitch + deltaPitchLimit;
+            if (!this.getBreaching()) {
+                //Calculate deltaPitch, between our target (xRot) and the previous value we applied to the model...
+                deltaPitch = this.xRot - adjustedPitch;
+                //Store the current
+                currentPitchRadians = adjustedPitch * (Mth.PI / 180.0F);
+                //Model "wants" to set its pitch to xRot, however if xRot is changing too fast, we slow down this change...
+                if (Mth.abs(deltaPitch) > deltaPitchLimit) {
+                    //Increase or Decrease pitch to attempt to reach target value...
+                    if (deltaPitch > 0) {
+                        adjustedPitch = adjustedPitch + deltaPitchLimit;
+                    }
+                    if (deltaPitch < 0) {
+                        adjustedPitch = adjustedPitch - deltaPitchLimit;
+                    }
                 }
-                if (deltaPitch < 0) {
-                    adjustedPitch = adjustedPitch - deltaPitchLimit;
+                //If we are changing at an acceptable rate, reach the target directly...
+                else {
+                    adjustedPitch = xRot;
                 }
+                //Convert the value to Rads, this will be used by the model class...
+                targetPitchRadians = (adjustedPitch * (Mth.PI / 180.0F));
+            } else {
+                //If we are breaching, ignore previous logic, do fast rotations...
+                targetPitchRadians = (float) -((Mth.atan2((this.getDeltaMovement().y), Mth.sqrt((float) ((this.getDeltaMovement().x) * (this.getDeltaMovement().x) + (this.getDeltaMovement().z) * (this.getDeltaMovement().z))))));
+                currentPitchRadians = targetPitchRadians;
             }
-            //If we are changing at an acceptable rate, reach the target directly...
-            else {
-                adjustedPitch = xRot;
-            }
-            /*
-            //Store the value (in degrees) that we are using to set the Pitch...
-            prevSetPitch = adjustedPitch;
-           */
-            //Convert the value to Rads, this will be used by the model class...
-            targetPitchRadians = (adjustedPitch * (Mth.PI / 180.0F));
         }
     }
 

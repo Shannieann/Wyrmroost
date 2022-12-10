@@ -44,8 +44,13 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
             head.setRotationY(extraData.netHeadYaw * Mth.DEG_TO_RAD);
         }
 
-        //TODO: IF IS BREACHING DATA PARAM USE ATAN FUNCTION
-        float setPitchValue = (animatable.currentPitchRadians+(animatable.targetPitchRadians-animatable.currentPitchRadians)*animationEvent.getPartialTick());
+        float setPitchValue;
+        if (!animatable.getBreaching()) {
+            setPitchValue = (animatable.currentPitchRadians+(animatable.targetPitchRadians-animatable.currentPitchRadians)*animationEvent.getPartialTick());
+
+        } else {
+            setPitchValue = animatable.currentPitchRadians;
+        }
         this.getAnimationProcessor().getBone("body1").setRotationX(-setPitchValue);
 
         /// CLamps? Breaching Logic? Sleeping?
@@ -53,8 +58,6 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
             //setPitchValue = Mth.clamp(setPitchValue, -0.785F,0.785F);
         //}
 
-        //TODO: CHECK IF CONDITIONS FOR PARTICULAR CASES, BOTH HERE AND IN ENTITY CLASS
-        //TODO: VERIFY isSwimming CHECK IN ENTITY CLASS
         if (animatable.isSwimming()) {
             float setYawValue = animatable.prevSetYaw+(animatable.setYaw-animatable.prevSetYaw)*animationEvent.getPartialTick();
             this.getAnimationProcessor().getBone("body2").setRotationY(setYawValue * rotationYawMultiplier);
