@@ -43,6 +43,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class SilverGliderEntity extends WRDragonEntity
 {
+    //TODO: BOIDS
     private static final EntitySerializer<SilverGliderEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
             .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
