@@ -5,7 +5,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Random;
@@ -19,11 +18,11 @@ public class WRRunWhenLosingGoal extends AvoidEntityGoal<LivingEntity> {
     private final float chanceToRun;
     private final double walkSpeedModifier;
 
-    public WRRunWhenLosingGoal(WRDragonEntity pMob, float healthPercent, float chanceToRun, float pMaxDistance, double pWalkSpeedModifier, double pSprintSpeedModifier) {
-        super(pMob, LivingEntity.class, pMaxDistance, pWalkSpeedModifier, pSprintSpeedModifier);
+    public WRRunWhenLosingGoal(WRDragonEntity pDragon, float healthPercent, float chanceToRun, float pMaxDistance, double pWalkSpeedModifier, double pSprintSpeedModifier) {
+        super(pDragon, LivingEntity.class, pMaxDistance, pWalkSpeedModifier, pSprintSpeedModifier);
         this.healthPercent = healthPercent;
         this.chanceToRun = chanceToRun;
-        this.dragon = (WRDragonEntity) mob;
+        this.dragon = pDragon;
         this.walkSpeedModifier = pWalkSpeedModifier;
         //super(dragon, LivingEntity.class, pMaxDistance, pWalkSpeedModifier, pSprintSpeedModifier);
         this.runAwayTargeting = TargetingConditions.forCombat().range(pMaxDistance).selector(this.predicateOnAvoidEntity.and(avoidPredicate));
@@ -41,7 +40,9 @@ public class WRRunWhenLosingGoal extends AvoidEntityGoal<LivingEntity> {
 
 
 
-        this.toAvoid = dragon.getLastHurtByMob();
+        this.toAvoid = dragon.getLastHurtByMob() != null? dragon.getLastHurtByMob() : this.dragon.level.getNearestEntity(this.dragon.level.getEntitiesOfClass(this.avoidClass, this.dragon.getBoundingBox().inflate(this.maxDist, 3.0D, this.maxDist), (p_148078_) -> {
+            return true;
+        }), this.runAwayTargeting, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());;
         System.out.println(toAvoid);
 
         if (this.toAvoid == null) return false;
