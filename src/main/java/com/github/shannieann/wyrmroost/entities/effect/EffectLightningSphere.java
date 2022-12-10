@@ -95,8 +95,8 @@ public class EffectLightningSphere extends Entity implements IEntityAdditionalSp
                 Vec3 posToEntity = (testEntity.position().subtract(this.position())).normalize();
                 testEntity.hurt(DamageSource.LIGHTNING_BOLT,20);
                 //KnockBack!
-                testEntity.setDeltaMovement(testEntity.getDeltaMovement().add(posToEntity.scale(5)));
-                testEntity.setDeltaMovement(getDeltaMovement().add(0,5,0));
+                testEntity.setDeltaMovement(testEntity.getDeltaMovement().add(posToEntity.scale(10)));
+                testEntity.setDeltaMovement(getDeltaMovement().add(0,1.5,0));
                 ((LivingEntity) testEntity).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,20,3,true,true));
                 struckEntities.add(testEntity);
             }
