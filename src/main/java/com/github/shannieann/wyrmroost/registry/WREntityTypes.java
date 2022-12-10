@@ -76,9 +76,10 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
                     .build();
 
     public static final RegistryObject<EntityType<ButterflyLeviathanEntity>> BUTTERFLY_LEVIATHAN =
-            creature("butterfly_leviathan", ButterflyLeviathanEntity::new)
+            ofGroup("butterfly_leviathan", ButterflyLeviathanEntity::new,MobCategory.CREATURE)
                     .size(1.5f, 1.5f)
                     .attributes(ButterflyLeviathanEntity::getAttributeSupplier)
+                    .packetInterval(2)
                     .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.OCEAN_FLOOR_WG, ButterflyLeviathanEntity::getSpawnPlacement)
                     .spawnEgg(0x17283C, 0x7A6F5A)
                     .dragonEgg(new DragonEggProperties(0.5f, 0.8f, 40000).setConditions(Entity::isInWater))
