@@ -46,14 +46,17 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         if (entity.level.   getFluidState(this.pos = entity.level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, this.entity.blockPosition()).below()).isEmpty())
             return false;
         //Get the target position, ensure it's not too far away...
-        this.pos = pos.relative(entity.getDirection(), (int) ((pos.getY() - entity.getY()) * 0.5d));
-        if (pos.distSqr(new Vec3i(entity.position().x,entity.position().y,entity.position().z)) > 256) {
-            return false;
-        }
-        if (pos.getY() - entity.getY() > 8) {
-            //TODO: Do not use always...
-            //return entity.getRandom().nextDouble() < 0.001;
-            return true;
+        if (entity.getRandom().nextDouble() < 0.001) {
+
+
+            this.pos = pos.relative(entity.getDirection(), (int) ((pos.getY() - entity.getY()) * 0.5d));
+            if (pos.distSqr(new Vec3i(entity.position().x, entity.position().y, entity.position().z)) > 256) {
+                return false;
+            }
+            if (pos.getY() - entity.getY() > 8) {
+
+                return true;
+            }
         }
         return false;
     }
@@ -100,6 +103,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     @Override
     public void start()
     {
+        entity.getLookControl().setLookAt(pos.getX(),pos.getY(),pos.getZ());
         this.entity.getMoveControl().setWantedPosition(pos.getX(), pos.getY(), pos.getZ(), this.entity.getAttributeBaseValue(ForgeMod.SWIM_SPEED.get())*3.0F);
         startPos = this.entity.position();
         entity.setBreaching(true);
@@ -118,7 +122,6 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             if (moveStep1()) {
                 //If the JumpStart position is reached, record this position (will be used to determine when to deal damage).
                 step1Done = true;
-                super.start(breachFlyAnimation, 1, 10,false);
                 //Apply an upwards boost to this entity, ensuring it jumps.
                 if (entity.getDeltaMovement().y < 1.50D) {
                     entity.setDeltaMovement(entity.getDeltaMovement().x,1.50D,entity.getDeltaMovement().z);
@@ -142,9 +145,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         // If this position is unreachable, the Goal will be stopped in canContinueToUse().
         //A tick counter is implemented to stop the Goal if this takes too long. This avoids the creature getting stuck forever if something does not work out.
         step1Ticks = ++step1Ticks;
-        entity.getLookControl().setLookAt(pos.getX(),pos.getY(),pos.getZ());
         entity.getNavigation().moveTo(pos.getX(),pos.getY(),pos.getZ(),speedTowardsTarget);
-        super.start(breachStartAnimation, 1, 10,false);
         return entity.distanceToSqr(pos.getX(),pos.getY(),pos.getZ()) < 16.0F;
     }
 
@@ -155,6 +156,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         //A tick counter is implemented to stop the Goal if this takes too long. This avoids the creature getting stuck forever if something does not work out.
         step2Ticks = ++step2Ticks;
         entity.getNavigation().moveTo(startPos.x,startPos.y,startPos.z,speedTowardsTarget);
+        super.start(breachFlyAnimation, 1, 10,false);
         return (entity.distanceToSqr(startPos.x,startPos.y,startPos.z) <= 10);
     }
 

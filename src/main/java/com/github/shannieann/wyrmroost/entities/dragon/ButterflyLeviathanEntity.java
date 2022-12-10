@@ -116,7 +116,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 180)
                 .add(MOVEMENT_SPEED, 0.08)
-                .add(ForgeMod.SWIM_SPEED.get(), 0.20F)
+                .add(ForgeMod.SWIM_SPEED.get(), 0.15F)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, 14)
                 .add(FOLLOW_RANGE, 50);

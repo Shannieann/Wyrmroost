@@ -213,7 +213,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             //Ability + move Animations:
             if (this.getIsMovingAnimation()) {
                 //Ability + move (slow) Animations:
-                if (event.isMoving() && !this.isAggressive()) {
+                if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
                     int movingState = this.getMovingState();
                     switch (movingState) {
                         case 0 -> animation = "walk_" + animation;
@@ -224,7 +224,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     return PlayState.CONTINUE;
                 }
                 //Ability + move (fast) Animations:
-                if (event.isMoving() && !this.isAggressive()) {
+                if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
                     int movingState = this.getMovingState();
                     animation = switch (movingState) {
                         case 0 -> "walk_fast_" + animation;
@@ -262,8 +262,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         */
         //This moving only plays if it's *just* moving and not doing anything else, as its only reached under those conditions...
         int movingState = this.getMovingState();
-        //TODO: RUNNING LOGIC
-        if (event.isMoving() && this.isAggressive()) {
+        if (this.getDeltaMovement().length() !=0 && this.isAggressive()) {
             switch (movingState) {
                 case 0 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
                 case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly_fast", ILoopType.EDefaultLoopTypes.LOOP));
@@ -271,7 +270,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             return PlayState.CONTINUE;
         }
-        if (event.isMoving() && !this.isAggressive()) {
+        if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
             switch (movingState) {
                 case 0 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
                 case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
