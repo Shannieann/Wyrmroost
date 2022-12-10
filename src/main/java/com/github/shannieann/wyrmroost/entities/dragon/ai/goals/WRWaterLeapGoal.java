@@ -143,7 +143,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         //A tick counter is implemented to stop the Goal if this takes too long. This avoids the creature getting stuck forever if something does not work out.
         step1Ticks = ++step1Ticks;
         entity.getLookControl().setLookAt(pos.getX(),pos.getY(),pos.getZ());
-        entity.getNavigation().moveTo(pos.getX(),pos.getY(),pos.getZ(),speedTowardsTarget*10);
+        entity.getNavigation().moveTo(pos.getX(),pos.getY(),pos.getZ(),speedTowardsTarget);
         super.start(breachStartAnimation, 1, 10,false);
         return entity.distanceToSqr(pos.getX(),pos.getY(),pos.getZ()) < 16.0F;
     }
@@ -158,41 +158,14 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         return (entity.distanceToSqr(startPos.x,startPos.y,startPos.z) <= 10);
     }
 
-    /*
-    @Override
-    public void tick()
-    {
-        //If it has not yet jumped out of the water, and somehow its navigation stops, cancel the goal...
-        if (!hasBreached && !hasFinishedBreaching) {
-            if (!this.entity.level.getBlockState(this.pos).is(Blocks.AIR)) {
-                //If it's still navigating to the start position, keep playing breach start
-                this.entity.getMoveControl().setWantedPosition(pos.getX(), pos.getY(), pos.getZ(), this.entity.getAttributeBaseValue(ForgeMod.SWIM_SPEED.get())*3.0F);
-                super.start(breachStartAnimation, 1, 10,false);
-            } else {
-                super.start(breachFlyAnimation, 1, 10, false);
-                hasBreached = true;
-            }
-        }
-        if (hasBreached) {
-            if (!hasFinishedBreaching && !this.entity.level.getFluidState(this.pos).is(FluidTags.WATER)) {
-                super.start(breachFlyAnimation, 1, 10,false);
-            } else {
-                hasFinishedBreaching = true;
-            }
-        }
-
-        if (hasFinishedBreaching) {
-            endTickCounter++;
-        }
-        startTickCounter++;
-    }
-    */
-
-
-
     @Override
     public void stop()
     {
+        step1Done = false;
+        step1Ticks = 0;
+        step2Done = false;
+        step2Ticks = 0;
+        startPos = null;
         entity.setBreaching(false);
         entity.clearAI();
         entity.getNavigation().stop();
