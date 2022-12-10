@@ -184,7 +184,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         DragonInventory inv = createInv();
         inventory = LazyOptional.of(inv == null? null : () -> inv);
         lookControl = new LessShitLookController(this);
-        if (hasEntityDataAccessor(FLYING)) moveControl = new FlyerMoveController(this);
+        if (speciesCanFly()) moveControl = new FlyerMoveController(this);
         if (hasEntityDataAccessor(SWIMMING)) moveControl = new WRSwimControl(this);
 
     }
@@ -1182,11 +1182,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(FLYING, fly);
         if (fly) {
             if (liftOff()) {
+                System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
                 this.setMovingState(1);
                 navigation = new FlyerPathNavigator(this);
             }
         }
         else {
+            System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
             this.setMovingState(0);
             navigation = new BetterPathNavigator(this);
         }
