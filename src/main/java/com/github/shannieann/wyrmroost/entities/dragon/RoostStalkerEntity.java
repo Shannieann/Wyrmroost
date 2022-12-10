@@ -381,7 +381,7 @@ public class RoostStalkerEntity extends WRDragonEntity
             {
                 if (hasItem()) return;
                 //TODO: MISSING ANIMATION
-                setAnimation("scavenging");
+                //setAnimation("scavenging");
                 setScavenging(true);
 
                 if (chest == null) return;

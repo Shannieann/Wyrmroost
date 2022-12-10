@@ -151,6 +151,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     protected static int ATTACK_ANIMATION_VARIANTS;
     protected static int SITTING_ANIMATION_TIME;
     protected static int SLEEPING_ANIMATION_TIME;
+    protected static final boolean ATTACK_ANIMATION_MOVES = true;
     protected float maxPitchAdjustment;
 
     private static final EntityDataAccessor<String> ANIMATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
@@ -170,6 +171,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     private static final EntityDataAccessor<Integer> ANIMATION_TIME = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> MOVING_STATE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> MANUAL_ANIMATION_CALL = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> IS_MOVING_ANIMATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
     protected WRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -199,34 +201,38 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public <E extends IAnimatable> PlayState generalPredicate(AnimationEvent<E> event)
     {
+        //TODO: Test pushing entities and moving?
         String animation = this.getAnimation();
-//        Boolean playingAnimation = this.getPlayingAnimation();
+//      Boolean playingAnimation = this.getPlayingAnimation();
         //If we do have an Ability animation play that
-        //TODO: Add check for ANIMATION_MOVES, if it does do moving, else, do not
-        if (!animation.equals("base")/* && !this.getPlayingAnimation()*/) {
+        if (!animation.equals("base")) {
+            //If it's a moving animation, run that logic, add the ability animation to a moving animation..
             int animationType = this.getAnimationType();
-            //Mixed Walking Animations
-            if (event.isMoving() && !this.isAggressive()) {
-                int movingState = this.getMovingState();
-                switch (movingState) {
-                    case 0 -> animation = "walk_" + animation;
-                    case 1 -> animation = "fly_" + animation;
-                    case 2 -> animation = "swim_" + animation;
+            //Ability + move Animations:
+            if (this.getIsMovingAnimation()) {
+                //Ability + move (slow) Animations:
+                if (event.isMoving() && !this.isAggressive()) {
+                    int movingState = this.getMovingState();
+                    switch (movingState) {
+                        case 0 -> animation = "walk_" + animation;
+                        case 1 -> animation = "fly_" + animation;
+                        case 2 -> animation = "swim_" + animation;
+                    }
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, ILoopType.EDefaultLoopTypes.LOOP));
+                    return PlayState.CONTINUE;
                 }
-                event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, ILoopType.EDefaultLoopTypes.LOOP));
-                return PlayState.CONTINUE;
-            }
-            //Mixed Running Animations
-            if (event.isMoving() && !this.isAggressive()) {
-                int movingState = this.getMovingState();
-                animation = switch (movingState) {
-                    case 0 -> "walk_fast_" + animation;
-                    case 1 -> "fly_fast_" + animation;
-                    case 2 -> "swim_fast_" + animation;
-                    default -> animation;
-                };
-                event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, ILoopType.EDefaultLoopTypes.LOOP));
-                return PlayState.CONTINUE;
+                //Ability + move (fast) Animations:
+                if (event.isMoving() && !this.isAggressive()) {
+                    int movingState = this.getMovingState();
+                    animation = switch (movingState) {
+                        case 0 -> "walk_fast_" + animation;
+                        case 1 -> "fly_fast_" + animation;
+                        case 2 -> "swim_fast_" + animation;
+                        default -> animation;
+                    };
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, ILoopType.EDefaultLoopTypes.LOOP));
+                    return PlayState.CONTINUE;
+                }
             }
             ILoopType loopType;
             switch (animationType) {
@@ -255,7 +261,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //This moving only plays if it's *just* moving and not doing anything else, as its only reached under those conditions...
         int movingState = this.getMovingState();
         //TODO: RUNNING LOGIC
-        if (event.isMoving()) {
+        if (event.isMoving() && this.isAggressive()) {
+            switch (movingState) {
+                case 0 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
+                case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly_fast", ILoopType.EDefaultLoopTypes.LOOP));
+                case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("swim_fast", ILoopType.EDefaultLoopTypes.LOOP));
+            }
+            return PlayState.CONTINUE;
+        }
+        if (event.isMoving() && !this.isAggressive()) {
             switch (movingState) {
                 case 0 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
                 case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
@@ -264,9 +278,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return PlayState.CONTINUE;
         }
         //Idle:
-        int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
-        //TODO: DO NOT PERMANENTLY LOOP IDLE
-        event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
+        if (this.getRandom().nextDouble() < 0.001) {
+            int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
+            event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+        event.getController().setAnimation(new AnimationBuilder().  addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
 
@@ -282,6 +299,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         this.entityData.define(MOVING_STATE, 0);
         this.entityData.define(ANIMATION_TIME, 0);
         this.entityData.define(MANUAL_ANIMATION_CALL, false);
+        this.entityData.define(IS_MOVING_ANIMATION, false);
         entityData.define(HOME_POS, BlockPos.ZERO);
         entityData.define(AGE, 0);
         entityData.define(GENDER, "male");
@@ -400,6 +418,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         entityData.set(MANUAL_ANIMATION_CALL, manualAnimationCall);
     }
+
+    public boolean getIsMovingAnimation() {
+        return entityData.get(IS_MOVING_ANIMATION);
+    }
+
+    public void setIsMovingAnimation(boolean movingAnimation)
+    {
+        entityData.set(IS_MOVING_ANIMATION, movingAnimation);
+    }
+
 
     public int getMovingState()
     {
@@ -656,6 +684,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 setAnimation("sleeping");
                 setAnimationTime(SLEEPING_ANIMATION_TIME);
                 setAnimationType(3);
+                setManualAnimationCall(true);
+                setIsMovingAnimation(false);
                 clearAI();
                 setXRot(0);
             }
@@ -798,6 +828,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             this.setAnimationType(1);
             this.setAnimationTime(20);
             this.setManualAnimationCall(true);
+            setIsMovingAnimation(false);
         }
         //Sitting
         if (this.isInSittingPose()) {
@@ -805,6 +836,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             this.setAnimationType(2);
             this.setAnimationTime(20);
             this.setManualAnimationCall(true);
+            setIsMovingAnimation(false);
         }
 
         if (isSwimming() && level.isClientSide){
@@ -993,6 +1025,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setAnimation("sitting");
             setAnimationType(3);
             setAnimationTime(20);
+            setManualAnimationCall(true);
+            setIsMovingAnimation(false);
         }
     }
 

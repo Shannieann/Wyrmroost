@@ -76,10 +76,12 @@ public class RoyalRedEntity extends WRDragonEntity
     public static final String ROAR_ANIMATION = "roar";
     public static final int ROAR_ANIMATION_TYPE = 2;
     public static final int ROAR_ANIMATION_TIME = 80;
+    public static final boolean ROAR_ANIMATION_MOVES = true;
 
     public static final String FIRE_ANIMATION = "fire";
     public static final int FIRE_ANIMATION_TYPE = 1;
     public static final int FIRE_ANIMATION_TIME = 80;
+    public static final boolean FIRE_ANIMATION_MOVES = false;
 
     public static final String ATTACK_ANIMATION = "attack";
     public static final int ATTACK_ANIMATION_TYPE = 2;
@@ -285,6 +287,7 @@ public class RoyalRedEntity extends WRDragonEntity
                 setAnimation(ROAR_ANIMATION);
                 setAnimationType(ROAR_ANIMATION_TYPE);
                 setAnimationTime(ROAR_ANIMATION_TIME);
+                setIsMovingAnimation(ROAR_ANIMATION_MOVES);
                 setManualAnimationCall(true);
             }
 
@@ -694,7 +697,7 @@ public class RoyalRedEntity extends WRDragonEntity
                         setBreathingFire(entity.shouldBreatheFire());
                         //AnimationLogic: Start fire breath animation...
                         animationPlaying = true;
-                        super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME);
+                        super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME, FIRE_ANIMATION_MOVES);
                     }
                 }
 
@@ -770,7 +773,7 @@ public class RoyalRedEntity extends WRDragonEntity
                 if (!animationPlaying) {
                     animationPlaying = true;
                     //AnimationLogic: start corresponding animation
-                    super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime);
+                    super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime, ATTACK_ANIMATION_MOVES);
                     //GoalLogic: Do melee attack, with parameters coming from animation logic
                     this.attackIsQueued = true;
                 }
