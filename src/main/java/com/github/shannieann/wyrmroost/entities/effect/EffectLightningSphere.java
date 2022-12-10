@@ -1,7 +1,6 @@
 package com.github.shannieann.wyrmroost.entities.effect;
 
 import com.github.shannieann.wyrmroost.entities.dragon.ButterflyLeviathanEntity;
-import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -14,8 +13,8 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
-import net.minecraftforge.network.NetworkHooks;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -26,13 +25,15 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EffectLightningSphere extends Entity implements IEntityAdditionalSpawnData, IAnimatable {
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
-    public WRDragonEntity source;
     public float duration;
     public float existenceTicks;
+    List<Entity> struckEntities = new ArrayList<Entity>();
+
 
     public EffectLightningSphere(EntityType<?> type, Level level) {
         super(type, level);
@@ -58,13 +59,13 @@ public class EffectLightningSphere extends Entity implements IEntityAdditionalSp
 
         //Check for collisions with other entities:
             // Define a bounding box that will get inflated every tick....
-        //this.setBoundingBox(getBoundingBox().inflate(0.05*tickCount));
-        AABB boundingBox = this.getBoundingBox();
+        //this.setBoundingBox(this.getBoundingBox().inflate(0.05*tickCount));
+        AABB boundingBox = this.getBoundingBox().inflate(3*tickCount);
         //If any of the entities that meet the canImpactEntity condition are within the bounding box...
         List<Entity> entities = level.getEntities(this, boundingBox, this::canImpactEntity);
         if (!entities.isEmpty()) {
         //Proceed to register an impact...
-                impact(entities);
+            impact(entities);
         }
     }
 
@@ -81,15 +82,23 @@ public class EffectLightningSphere extends Entity implements IEntityAdditionalSp
         if (entity.isSpectator() || !entity.isPickable() || entity.noPhysics) {
             return false;
         }
-        return source != null && !entity.isAlliedTo(source);
+        if (struckEntities.contains(entity)) {
+            return false;
+        }
+        return true;
     }
 
     public void impact(List<Entity> entities) {
         if (!entities.isEmpty()) {
             for (int i = 0; i< entities.size(); i++){
                 Entity testEntity = entities.get(i);
+                Vec3 posToEntity = (testEntity.position().subtract(this.position())).normalize();
                 testEntity.hurt(DamageSource.LIGHTNING_BOLT,20);
+                //KnockBack!
+                testEntity.setDeltaMovement(testEntity.getDeltaMovement().add(posToEntity.scale(5)));
+                testEntity.setDeltaMovement(getDeltaMovement().add(0,5,0));
                 ((LivingEntity) testEntity).addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN,20,3,true,true));
+                struckEntities.add(testEntity);
             }
          }
     }
@@ -142,12 +151,10 @@ public class EffectLightningSphere extends Entity implements IEntityAdditionalSp
 
     @Override
     public void writeSpawnData(FriendlyByteBuf buffer) {
-        buffer.writeInt(source.getId());
     }
 
     @Override
     public void readSpawnData(FriendlyByteBuf buffer) {
-        this.source = (WRDragonEntity) level.getEntity(buffer.readInt());
     }
 
     public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
