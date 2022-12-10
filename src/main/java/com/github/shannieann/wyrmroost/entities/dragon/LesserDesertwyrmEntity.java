@@ -78,10 +78,6 @@ public class LesserDesertwyrmEntity extends WRDragonEntity
         }
     }
 
-    @Override
-    public EntitySerializer<? extends WRDragonEntity> getSerializer() {
-        return SERIALIZER;
-    }
 
     public static <F extends Mob> boolean getSpawnPlacement(EntityType<F> entityType, ServerLevelAccessor serverLevelAccessor, MobSpawnType spawnType, BlockPos pos, Random random)
     {

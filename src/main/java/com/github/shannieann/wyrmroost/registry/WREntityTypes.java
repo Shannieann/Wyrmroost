@@ -43,6 +43,7 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
                     .attributes(LesserDesertwyrmEntity::getAttributeSupplier)
                     .spawnPlacement(ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, LesserDesertwyrmEntity::getSpawnPlacement)
                     .spawnEgg(0xD6BCBC, 0xDEB6C7)
+                    .dragonEgg(new DragonEggProperties(0.15f, 0.1f, 10000))
                     .packetInterval(5)
                     .build();
 
