@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost.entities.effect;
 
 import com.github.shannieann.wyrmroost.entities.dragon.ButterflyLeviathanEntity;
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -57,8 +58,8 @@ public class EffectLightningSphere extends Entity implements IEntityAdditionalSp
 
         //Check for collisions with other entities:
             // Define a bounding box that will get inflated every tick....
-
-        AABB boundingBox = getBoundingBox().inflate(0.05*tickCount);
+        this.setBoundingBox(getBoundingBox().inflate(0.05*tickCount));
+        AABB boundingBox = this.getBoundingBox();
         //If any of the entities that meet the canImpactEntity condition are within the bounding box...
         List<Entity> entities = level.getEntities(this, boundingBox, this::canImpactEntity);
         if (!entities.isEmpty()) {
@@ -136,7 +137,7 @@ public class EffectLightningSphere extends Entity implements IEntityAdditionalSp
 
     @Override
     public Packet<?> getAddEntityPacket() {
-        return NetworkHooks.getEntitySpawningPacket(this);
+        return new ClientboundAddEntityPacket(this);
     }
 
     @Override
