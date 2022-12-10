@@ -10,7 +10,6 @@ import net.minecraftforge.common.ForgeMod;
 
 public class WRSwimControl extends MoveControl {
     private int maxTurnX = 85;
-//TODO: Rename class
     private final WRDragonEntity entity;
 
     public WRSwimControl(WRDragonEntity entity) {
@@ -35,10 +34,8 @@ public class WRSwimControl extends MoveControl {
                     maxTurnY = 90;
                 }
                 else if ((this.entity.getTarget() != null) || this.entity.canBeControlledByRider()) {
-                     //TODO: Tweak Values
                     maxTurnY = 15;
                 } else {
-                     //TODO: Tweak Values
                      maxTurnY = 5;
                 }
                 this.mob.setYRot(this.rotlerp(this.mob.getYRot(), f, (float) maxTurnY));
