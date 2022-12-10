@@ -3,8 +3,6 @@ package com.github.shannieann.wyrmroost.entities.dragon.ai.goals;
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
@@ -19,10 +17,6 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     private final String breachStartAnimation = "breach_start";
     private final String breachFlyAnimation = "breach_fly";
     private final double speedTowardsTarget;
-    private boolean hasBreached;
-    private boolean hasFinishedBreaching;
-    private int endTickCounter;
-    private int startTickCounter;
     private boolean step1Done;
     private int step1Ticks;
     private boolean step2Done;
@@ -32,7 +26,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     {
         super(entity);
         this.entity = entity;
-        this.speedTowardsTarget = speedIn*4;
+        this.speedTowardsTarget = speedIn;
         this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
 
@@ -108,6 +102,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     {
         this.entity.getMoveControl().setWantedPosition(pos.getX(), pos.getY(), pos.getZ(), this.entity.getAttributeBaseValue(ForgeMod.SWIM_SPEED.get())*3.0F);
         startPos = this.entity.position();
+        entity.setBreaching(true);
         super.start(breachStartAnimation, 1, 10,false);
     }
 
@@ -148,13 +143,13 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         //A tick counter is implemented to stop the Goal if this takes too long. This avoids the creature getting stuck forever if something does not work out.
         step1Ticks = ++step1Ticks;
         entity.getLookControl().setLookAt(pos.getX(),pos.getY(),pos.getZ());
-        entity.getNavigation().moveTo(pos.getX(),pos.getY(),pos.getZ(),speedTowardsTarget*4);
+        entity.getNavigation().moveTo(pos.getX(),pos.getY(),pos.getZ(),speedTowardsTarget*10);
         super.start(breachStartAnimation, 1, 10,false);
         return entity.distanceToSqr(pos.getX(),pos.getY(),pos.getZ()) < 16.0F;
     }
 
     public boolean moveStep2(){
-        //Once done with the BreachAttack, return to the water and try to move back to the original StrikePosition.
+        //Once done with the Breach, return to the water and try to move back to the original StrikePosition.
         //This is done to avoid the entity trying to get to an odd place after the attack is performed.
         // If this position is unreachable, the Goal will be stopped in canContinueToUse().
         //A tick counter is implemented to stop the Goal if this takes too long. This avoids the creature getting stuck forever if something does not work out.
@@ -198,6 +193,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     @Override
     public void stop()
     {
+        entity.setBreaching(false);
         entity.clearAI();
         entity.getNavigation().stop();
         super.stop();
