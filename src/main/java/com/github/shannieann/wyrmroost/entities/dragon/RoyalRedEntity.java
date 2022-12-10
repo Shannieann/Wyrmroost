@@ -109,6 +109,12 @@ public class RoyalRedEntity extends WRDragonEntity
     //      A) Entity Data
     // ====================================
 
+
+    @Override
+    public boolean speciesCanFly() {
+        return true;
+    }
+
     @Override
     protected void defineSynchedData()
     {
@@ -591,7 +597,7 @@ public class RoyalRedEntity extends WRDragonEntity
         goalSelector.addGoal(9, new FlyerWanderGoal(this, 1));
         goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
         goalSelector.addGoal(11, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(3, new WRRunWhenLosingGoal(this, 0.1f, 0.001f, 20f, 1.15f, 1f));
+        //goalSelector.addGoal(3, new WRRunWhenLosingGoal(this, 0.1f, 0.001f, 20f, 1.15f, 1f));
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));

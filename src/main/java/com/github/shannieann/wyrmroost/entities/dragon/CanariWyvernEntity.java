@@ -82,13 +82,14 @@ public class CanariWyvernEntity extends WRDragonEntity
     }
 
     @Override
+    public boolean speciesCanFly() {
+        return true;
+    }
+
+    @Override
     protected void defineSynchedData()
     {
         super.defineSynchedData();
-        entityData.define(FLYING, false);
-        entityData.define(GENDER, "male");
-        entityData.define(SLEEPING, false);
-        entityData.define(VARIANT, "");
     }
 
 

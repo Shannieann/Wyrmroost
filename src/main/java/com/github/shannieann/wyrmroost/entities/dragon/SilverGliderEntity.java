@@ -65,13 +65,14 @@ public class SilverGliderEntity extends WRDragonEntity
     }
 
     @Override
+    public boolean speciesCanFly() {
+        return true;
+    }
+
+    @Override
     protected void defineSynchedData()
     {
         super.defineSynchedData();
-        entityData.define(FLYING, false);
-        entityData.define(GENDER, "male");
-        entityData.define(VARIANT, "base");
-        entityData.define(SLEEPING, false);
     }
 
     @Override

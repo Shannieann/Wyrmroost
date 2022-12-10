@@ -294,6 +294,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      A) Entity Data
     // ====================================
 
+    // To override for individual species
+    public boolean speciesCanFly(){
+        return false; // Decides if the synced data is defined. Important because to see if a species could fly, the old coder saw if FLYING was defined in entitydata.
+    }
     @Override
     protected void defineSynchedData()
     {
@@ -310,7 +314,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(GENDER, "male");
         entityData.define(SLEEPING, false);
         entityData.define(VARIANT, "base0");
-        entityData.define(FLYING, false);
+        if (speciesCanFly()) entityData.define(FLYING, false);
         entityData.define(SWIMMING, false);
         entityData.define(ARMOR, ItemStack.EMPTY);
         super.defineSynchedData();
@@ -1208,7 +1212,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public boolean canFly()
     {
-        return isJuvenile() && !isUnderWater() && !isLeashed();
+        return isJuvenile() && !isUnderWater() && !isLeashed() && speciesCanFly();
     }
 
     public double getAltitude()

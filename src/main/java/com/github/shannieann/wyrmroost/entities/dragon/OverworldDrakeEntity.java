@@ -95,11 +95,7 @@ public class OverworldDrakeEntity extends WRDragonEntity
     protected void defineSynchedData()
     {
         super.defineSynchedData();
-        entityData.define(GENDER, "male");
-        entityData.define(SLEEPING, false);
-        entityData.define(VARIANT, "base");
         entityData.define(SADDLED, false);
-        entityData.define(ARMOR, ItemStack.EMPTY);
     }
 
     @Override
