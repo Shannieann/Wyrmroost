@@ -28,7 +28,7 @@ public class WRReturnToWaterGoal extends Goal {
     @Override
     public boolean canUse() {
         //canUse if it's on ground, outside of the water...
-        if (this.entity.isOnGround() && !this.entity.isInWater()){
+        if (this.entity.isInWater() && !this.entity.isOnGround()){
             return false;
         }
         if (this.entity.canBeControlledByRider()) {
