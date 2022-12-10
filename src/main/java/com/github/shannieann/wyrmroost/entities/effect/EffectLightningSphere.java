@@ -36,13 +36,13 @@ public class EffectLightningSphere extends Entity implements IEntityAdditionalSp
 
 
     public EffectLightningSphere(EntityType<?> type, Level level) {
-        super(type, level);
-        this.duration = 100;
+        this(type, level, 100);
     }
 
     public EffectLightningSphere(EntityType<?> type, Level level, float duration) {
         super(type, level);
         this.duration = duration;
+        this.noCulling = true;
     }
 
     @Override
