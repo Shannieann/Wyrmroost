@@ -58,7 +58,7 @@ public class EffectLightningSphere extends Entity implements IEntityAdditionalSp
 
         //Check for collisions with other entities:
             // Define a bounding box that will get inflated every tick....
-        this.setBoundingBox(getBoundingBox().inflate(0.05*tickCount));
+        //this.setBoundingBox(getBoundingBox().inflate(0.05*tickCount));
         AABB boundingBox = this.getBoundingBox();
         //If any of the entities that meet the canImpactEntity condition are within the bounding box...
         List<Entity> entities = level.getEntities(this, boundingBox, this::canImpactEntity);

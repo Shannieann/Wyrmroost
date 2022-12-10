@@ -24,7 +24,7 @@ public class RenderLightningSphere extends GeoProjectilesRenderer<EffectLightnin
     public void renderEarly(EffectLightningSphere animatable, PoseStack stackIn, float ticks,
                             MultiBufferSource renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn,
                             float red, float green, float blue, float partialTicks) {
-        float scalingFactor = 4.0F;
+        float scalingFactor = 10.0F;
         super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn,
                 red, green, blue, partialTicks);
         stackIn.scale(0.125F*(animatable.tickCount*scalingFactor), 0.125F*(animatable.tickCount*scalingFactor), 0.125F*(animatable.tickCount*scalingFactor));

@@ -53,7 +53,7 @@ public class TestClass {
 
   public void summonLightningSphere(Player player) {
       EffectLightningSphere lightningSphere = new EffectLightningSphere(WREntityTypes.LIGHTNING_SPHERE.get(),player.level,100);
-      lightningSphere.setPos(player.position());
+      lightningSphere.setPos(player.position().add(10,5,10));
       player.level.addFreshEntity(lightningSphere);
   }
 }
