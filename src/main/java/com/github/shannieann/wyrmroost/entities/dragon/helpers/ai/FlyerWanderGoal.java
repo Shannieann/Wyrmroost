@@ -4,6 +4,7 @@ import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.util.AirRandomPos;
+import net.minecraft.world.entity.ai.util.HoverRandomPos;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.phys.Vec3;
 
@@ -60,11 +61,11 @@ public class FlyerWanderGoal extends WaterAvoidingRandomStrollGoal
                 if (!dragon.isWithinRestriction())
                     vec3d = Vec3.atLowerCornerOf(dragon.getRestrictCenter()).subtract(dragon.position()).normalize();
 
-                position = AirRandomPos.getPosTowards(dragon, 50, 30, 10, vec3d, Mafs.PI / 2);
+                int yOffset = dragon.getAltitude() > 40? 10 : 0;
+                position = HoverRandomPos.getPos(dragon, 30, 50, vec3d.x, vec3d.z, Mafs.PI / 2, 10, yOffset);
             }
             if (position != null && position.y > dragon.getY() + dragon.getBbHeight() && !dragon.isFlying()) dragon.setFlying(true);
         }
         return position == null? super.getPosition() : position;
     }
-
 }
