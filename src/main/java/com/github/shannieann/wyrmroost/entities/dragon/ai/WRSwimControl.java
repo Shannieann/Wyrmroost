@@ -31,7 +31,10 @@ public class WRSwimControl extends MoveControl {
                 float f = (float)(Mth.atan2(d2, d0) * (double)(180F / (float)Math.PI)) - 90.0F;
                 //Set max turn value: Sharp turns if controlled by rider of if aggressive
                 int maxTurnY;
-                if ((this.entity.getTarget() != null) || this.entity.canBeControlledByRider()) {
+                if (this.entity.getBreaching()){
+                    maxTurnY =90;
+                }
+                else if ((this.entity.getTarget() != null) || this.entity.canBeControlledByRider()) {
                      //TODO: Tweak Values
                     maxTurnY =15;
                 } else {
