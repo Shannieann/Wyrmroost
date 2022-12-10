@@ -355,7 +355,7 @@ public class RoyalRedEntity extends WRDragonEntity
         if (i > 0 && !isKnockedOut()) entityData.set(KNOCKED_OUT, true);
     }
 
-    //TODO implement
+    //TODO Not working
     @Override
     public void die(DamageSource cause)
     {
@@ -433,7 +433,7 @@ public class RoyalRedEntity extends WRDragonEntity
         return new Vec3(0, getBbHeight() * 0.85f, index == 0? 0.5f : -1);
     }
 
-    //TODO: Animation on Keybind Presses
+    //TODO: Whole keybind logic
     @Override
     public void recievePassengerKeybind(int key, int mods, boolean pressed)
     {
