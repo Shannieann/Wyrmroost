@@ -6,6 +6,7 @@ import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.client.render.entity.DragonEggRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.*;
+import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.OWDrakeRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.effect.RenderLightningSphere;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.GeodeTippedArrowRenderer;
@@ -117,13 +118,13 @@ public class ClientEvents
         event.registerEntityRenderer(WREntityTypes.ROYAL_RED.get(), RenderRoyalRed::new);
         event.registerEntityRenderer(WREntityTypes.BUTTERFLY_LEVIATHAN.get(), RenderButterflyLeviathan::new);
 
-        //event.registerEntityRenderer(WREntityTypes.LESSER_DESERTWYRM.get(), RenderLesserDeserwyrm::new);
+        event.registerEntityRenderer(WREntityTypes.LESSER_DESERTWYRM.get(), RenderLesserDeserwyrm::new);
         event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RenderRoostStalker::new);
 
         //event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RoostStalkerRenderer2::new);
         //event.registerEntityRenderer(WREntityTypes.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
         //event.registerEntityRenderer(WREntityTypes.SILVER_GLIDER.get(), SilverGliderRenderer::new);
-        //event.registerEntityRenderer(WREntityTypes.OVERWORLD_DRAKE.get(), OWDrakeRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.OVERWORLD_DRAKE.get(), OWDrakeRenderer::new);
 
 
         event.registerEntityRenderer(WREntityTypes.SOUL_CRYSTAL.get(), ThrownItemRenderer::new);
