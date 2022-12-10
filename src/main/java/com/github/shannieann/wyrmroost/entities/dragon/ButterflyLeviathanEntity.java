@@ -662,7 +662,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 //        goalSelector.addGoal(3, new WRFollowOwnerGoal(this));
 
 //        goalSelector.addGoal(4, new DragonBreedGoal(this));
-        goalSelector.addGoal(5, new WRWaterLeapGoal(this));
+        goalSelector.addGoal(5, new WRWaterLeapGoal(this, getAttributeBaseValue(ForgeMod.SWIM_SPEED.get())));
         goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 1, 10,32,24));
 
 //        goalSelector.addGoal(7, new LookAtPlayerGoal(this, LivingEntity.class, 14f));

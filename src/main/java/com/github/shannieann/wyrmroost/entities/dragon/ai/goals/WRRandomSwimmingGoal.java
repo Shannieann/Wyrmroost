@@ -103,6 +103,5 @@ public class WRRandomSwimmingGoal extends Goal {
     @Override
     public void stop() {
         this.entity.getNavigation().stop();
-        super.stop();
     }
 }

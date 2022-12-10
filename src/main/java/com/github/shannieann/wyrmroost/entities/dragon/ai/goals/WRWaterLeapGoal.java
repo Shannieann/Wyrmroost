@@ -6,6 +6,9 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.common.ForgeMod;
 
 import java.util.EnumSet;
 
@@ -15,14 +18,21 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     private final WRDragonEntity entity;
     private final String breachStartAnimation = "breach_start";
     private final String breachFlyAnimation = "breach_fly";
+    private final double speedTowardsTarget;
     private boolean hasBreached;
     private boolean hasFinishedBreaching;
-    private int tickCounter;
-
-    public WRWaterLeapGoal(WRDragonEntity entity)
+    private int endTickCounter;
+    private int startTickCounter;
+    private boolean step1Done;
+    private int step1Ticks;
+    private boolean step2Done;
+    private int step2Ticks;
+    private Vec3 startPos;
+    public WRWaterLeapGoal(WRDragonEntity entity, double speedIn)
     {
         super(entity);
         this.entity = entity;
+        this.speedTowardsTarget = speedIn*4;
         this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
 
@@ -39,62 +49,151 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             return false;
         }
         //Get the water surface position at which we are aiming...
-        if (entity.level.getFluidState(this.pos = entity.level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, this.entity.blockPosition()).below()).isEmpty())
+        if (entity.level.   getFluidState(this.pos = entity.level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, this.entity.blockPosition()).below()).isEmpty())
             return false;
-        //get the target position
+        //Get the target position, ensure it's not too far away...
         this.pos = pos.relative(entity.getDirection(), (int) ((pos.getY() - entity.getY()) * 0.5d));
-        if (pos.distSqr(new Vec3i(entity.position().x,entity.position().y,entity.position().z)) > 100) {
+        if (pos.distSqr(new Vec3i(entity.position().x,entity.position().y,entity.position().z)) > 256) {
             return false;
         }
-        //TODO: Do not use always...
-        //return entity.getRandom().nextDouble() < 0.001;
-        return this.entity.getNavigation().moveTo(pos.getX(), pos.getY(), pos.getZ(), 1.5d);
+        if (pos.getY() - entity.getY() > 8) {
+            //TODO: Do not use always...
+            //return entity.getRandom().nextDouble() < 0.001;
+            return true;
+        }
+        return false;
     }
 
+
     @Override
-    public boolean canContinueToUse(){
+    public boolean canContinueToUse() {
         if (entity.canBeControlledByRider()) {
             return false;
         }
-        if (tickCounter >= 20) {
-            stop();
+
+        //If it hasn't attacked the target yet, and the entity somehow leaves the water, stop the Goal.
+        if (!step1Done &&  (!entity.isInWater())) {
+            return false;
         }
+
+        // If it takes too long reaching the jump position, stop the Goal.
+        if (step1Ticks> 100) {
+            return false;
+        }
+
+        // If it has attacked the target but has not yet navigated to its end position, and it cannot reach the end position, stop the Goal.
+        if (step1Done && !step2Done && !this.entity.level.getBlockState(new BlockPos(startPos)).isPathfindable(this.entity.level, new BlockPos(startPos), PathComputationType.WATER)) {
+            return false;
+        }
+        // If it takes too long reaching the end position after the jump, stop the Goal.
+        if (step2Ticks > 60) {
+            return false;
+        }
+        //If it has finished all the steps, stop the Goal.
+        if (step2Done) {
+            return false;
+        }
+
+        //If it's somehow using the landNavigator, do stop goal. Goal only makes sense for waterNavigator.
+        if (!this.entity.isSwimming()) {
+            return false;
+        }
+        //Else continue the Goal.
         return true;
     }
+
 
     @Override
     public void start()
     {
-        super.start(breachStartAnimation, 1, 10);
+        this.entity.getMoveControl().setWantedPosition(pos.getX(), pos.getY(), pos.getZ(), this.entity.getAttributeBaseValue(ForgeMod.SWIM_SPEED.get())*3.0F);
+        startPos = this.entity.position();
+        super.start(breachStartAnimation, 1, 10,false);
     }
 
+
+    @Override
+    public void tick() {
+        //Step 1: Reach Jump starting position, at water surface level, where the target's at.
+        //Step 3: Perform grab and attack.
+        //Step 4: Return to the water.
+
+        if (!step1Done) {
+            //Attempt step 1....
+            if (moveStep1()) {
+                //If the JumpStart position is reached, record this position (will be used to determine when to deal damage).
+                step1Done = true;
+                super.start(breachFlyAnimation, 1, 10,false);
+                //Apply an upwards boost to this entity, ensuring it jumps.
+                if (entity.getDeltaMovement().y < 1.50D) {
+                    entity.setDeltaMovement(entity.getDeltaMovement().x,1.50D,entity.getDeltaMovement().z);
+                }
+            }
+        }
+
+        //Attempt Step4....
+        if (step1Done && !step2Done) {
+            if (moveStep2()){
+                step2Done = true;
+                super.stop();
+            } else {
+                super.start(breachFlyAnimation, 1, 10,false);
+            }
+        }
+    }
+
+    public boolean moveStep1(){
+        //Creature will attempt to move to the target, from the StartPosition.
+        // If this position is unreachable, the Goal will be stopped in canContinueToUse().
+        //A tick counter is implemented to stop the Goal if this takes too long. This avoids the creature getting stuck forever if something does not work out.
+        step1Ticks = ++step1Ticks;
+        entity.getLookControl().setLookAt(pos.getX(),pos.getY(),pos.getZ());
+        entity.getNavigation().moveTo(pos.getX(),pos.getY(),pos.getZ(),speedTowardsTarget*4);
+        super.start(breachStartAnimation, 1, 10,false);
+        return entity.distanceToSqr(pos.getX(),pos.getY(),pos.getZ()) < 16.0F;
+    }
+
+    public boolean moveStep2(){
+        //Once done with the BreachAttack, return to the water and try to move back to the original StrikePosition.
+        //This is done to avoid the entity trying to get to an odd place after the attack is performed.
+        // If this position is unreachable, the Goal will be stopped in canContinueToUse().
+        //A tick counter is implemented to stop the Goal if this takes too long. This avoids the creature getting stuck forever if something does not work out.
+        step2Ticks = ++step2Ticks;
+        entity.getNavigation().moveTo(startPos.x,startPos.y,startPos.z,speedTowardsTarget);
+        return (entity.distanceToSqr(startPos.x,startPos.y,startPos.z) <= 10);
+    }
+
+    /*
     @Override
     public void tick()
     {
         //If it has not yet jumped out of the water, and somehow its navigation stops, cancel the goal...
         if (!hasBreached && !hasFinishedBreaching) {
             if (!this.entity.level.getBlockState(this.pos).is(Blocks.AIR)) {
-                if (this.entity.getNavigation().isStuck() || this.entity.getNavigation().isDone()) {
-                    stop();
-                } else {
-                    //If it's still navigating to the start position, keep playing breach start
-                    super.start(breachStartAnimation, 1, 10);
-                }
+                //If it's still navigating to the start position, keep playing breach start
+                this.entity.getMoveControl().setWantedPosition(pos.getX(), pos.getY(), pos.getZ(), this.entity.getAttributeBaseValue(ForgeMod.SWIM_SPEED.get())*3.0F);
+                super.start(breachStartAnimation, 1, 10,false);
             } else {
-                super.start(breachFlyAnimation, 1, 10);
-                    hasBreached = true;
+                super.start(breachFlyAnimation, 1, 10, false);
+                hasBreached = true;
             }
         }
-        if (hasBreached && !hasFinishedBreaching && !this.entity.level.getFluidState(this.pos).is(FluidTags.WATER)) {
-            super.start(breachFlyAnimation, 1, 10);
-        } else {
-            hasFinishedBreaching = true;
-        }
-        if (hasFinishedBreaching) {
-            tickCounter++;
+        if (hasBreached) {
+            if (!hasFinishedBreaching && !this.entity.level.getFluidState(this.pos).is(FluidTags.WATER)) {
+                super.start(breachFlyAnimation, 1, 10,false);
+            } else {
+                hasFinishedBreaching = true;
+            }
         }
 
+        if (hasFinishedBreaching) {
+            endTickCounter++;
+        }
+        startTickCounter++;
     }
+    */
+
+
 
     @Override
     public void stop()
