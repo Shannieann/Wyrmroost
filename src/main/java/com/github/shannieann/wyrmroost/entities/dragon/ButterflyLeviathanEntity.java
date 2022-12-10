@@ -81,7 +81,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(ButterflyLeviathanEntity.class, EntityDataSerializers.BOOLEAN);
     public static final int CONDUIT_SLOT = 0;
     public static final float YAW_ADJUSTMENT = 0.10F;
-    public static final float DELTA_PITCH_LIMIT = 2F;
+    public static final float DELTA_PITCH_LIMIT = 1.0F;
 
     public final LerpedFloat beachedTimer = LerpedFloat.unit();
     public final LerpedFloat swimTimer = LerpedFloat.unit();
@@ -662,7 +662,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 //        goalSelector.addGoal(3, new WRFollowOwnerGoal(this));
 
 //        goalSelector.addGoal(4, new DragonBreedGoal(this));
-        goalSelector.addGoal(5, new WRWaterLeapGoal(this, getAttributeBaseValue(ForgeMod.SWIM_SPEED.get())));
+        goalSelector.addGoal(5, new WRWaterLeapGoal(this, 4));
         goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 1, 10,32,24));
 
 //        goalSelector.addGoal(7, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
