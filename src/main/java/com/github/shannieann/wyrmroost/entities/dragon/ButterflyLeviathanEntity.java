@@ -108,7 +108,6 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         this.deltaPitchLimit = entityDeltaPitchLimit;
         this.adjustmentYaw = entityYawAdjustment;
         this.adjustmentExtremityPitch = entityExtremityPitchAdjustment;
-
         this.setNavigator(NavigationType.SWIMMING);
     }
 

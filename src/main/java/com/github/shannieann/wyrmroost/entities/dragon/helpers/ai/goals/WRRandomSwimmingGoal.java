@@ -1,12 +1,19 @@
 package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
-import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
-
+import java.util.List;
 
 public class WRRandomSwimmingGoal extends Goal {
 
@@ -43,13 +50,13 @@ public class WRRandomSwimmingGoal extends Goal {
         }
 
         else {
-            Vec3 vector3d = this.getPosition();
-            if (vector3d == null) {
+            Vec3 targetPosition = this.getPosition();
+            if (targetPosition == null) {
                 return false;
             } else {
-                this.x = vector3d.x;
-                this.y = vector3d.y;
-                this.z = vector3d.z;
+                this.x = targetPosition.x;
+                this.y = targetPosition.y;
+                this.z = targetPosition.z;
                 return true;
             }
         }
@@ -57,7 +64,7 @@ public class WRRandomSwimmingGoal extends Goal {
 
     @Nullable
     protected Vec3 getPosition() {
-        Vec3 targetVec =  BehaviorUtils.getRandomSwimmablePos(this.entity, horizontalDistance, verticalDistance);
+        /*Vec3 targetVec =  BehaviorUtils.getRandomSwimmablePos(this.entity, horizontalDistance, verticalDistance);
         if (targetVec != null) {
             Vec3 entityPos = this.entity.position();
             double distance = entityPos.subtract(targetVec).length();
@@ -66,9 +73,13 @@ public class WRRandomSwimmingGoal extends Goal {
                 return null;
             }
             //TODO: REMOVE DEBUGGING POSITION
-            return (new Vec3(targetVec.x,this.entity.position().y-10,targetVec.z));
+            //return (targetVec);
         }
         return null;
+
+         */
+        return new Vec3 (32,86,0);
+
     }
 
     @Override
@@ -93,5 +104,18 @@ public class WRRandomSwimmingGoal extends Goal {
     @Override
     public void stop() {
         this.entity.getNavigation().stop();
+    }
+
+    @Override
+    public void tick(){
+        if (entity.getNavigation().getPath() != null){
+            List<Node> nodeList = entity.getNavigation().getPath().nodes;
+            if (!nodeList.isEmpty()) {
+                for (int i = 0; i<nodeList.size(); i++) {
+                    entity.level.addAlwaysVisibleParticle(ParticleTypes.END_ROD, nodeList.get(i).x,nodeList.get(i).y,nodeList.get(i).z,0,0,0);
+                }
+            }
+        }
+        super.tick();
     }
 }

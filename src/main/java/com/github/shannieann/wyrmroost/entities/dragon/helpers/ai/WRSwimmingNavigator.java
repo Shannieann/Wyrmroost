@@ -19,7 +19,7 @@ public class WRSwimmingNavigator extends WaterBoundPathNavigation{
 
     @Override
     public boolean isStableDestination(BlockPos pos){
-        return!level.getBlockState(pos.below()).isAir();
+        return !level.getBlockState(pos.below()).isAir();
     }
 
     @Override
