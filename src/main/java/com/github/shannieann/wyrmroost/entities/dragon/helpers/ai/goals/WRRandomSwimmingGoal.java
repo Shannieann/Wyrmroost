@@ -1,9 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -44,9 +42,6 @@ public class WRRandomSwimmingGoal extends Goal {
             return false;
         }
 
-        /*if (!this.entity.isInWater() && !this.entity.level.getBlockState(new BlockPos(entity.position()).below()).is(Blocks.WATER)) {
-            return false;
-        }*/
         else {
             Vec3 vector3d = this.getPosition();
             if (vector3d == null) {

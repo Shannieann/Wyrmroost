@@ -122,6 +122,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float deltaPitchLimit;
     public float targetPitchRadians;
     public float currentPitchRadians;
+    public float deltaPitchHead;
+    public float deltaPitchExtremities;
+    public float pitchExtremities;
+    public float pitchExtremitiesRadians;
 
 
     public enum NavigationType {
@@ -817,16 +821,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         super.tick();
         if (!level.isClientSide) {
 
-
-
             setNavigator(getProperNavigator());
-
-            switch (getNavigationType()) {
-                case SWIMMING -> System.out.println("IS USING -SWIMMING- NAVIGATOR");
-                case FLYING -> System.out.println("IS USING -FLYING- NAVIGATOR");
-                case GROUND -> System.out.println("IS USING -GROUND- NAVIGATOR");
-            }
-
+            
             // todo figure out a better target system?
             LivingEntity target = getTarget();
             if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
@@ -920,17 +916,26 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     //Increase or Decrease pitch to attempt to reach target value...
                     if (deltaPitch > 0) {
                         adjustedPitch = adjustedPitch + deltaPitchLimit;
+                        deltaPitchExtremities = deltaPitchLimit;
                     }
                     if (deltaPitch < 0) {
                         adjustedPitch = adjustedPitch - deltaPitchLimit;
+                        deltaPitchExtremities = -deltaPitchLimit;
                     }
                 }
                 //If we are changing at an acceptable rate, reach the target directly...
                 else {
                     adjustedPitch = xRot;
+                    deltaPitchExtremities = 0;
                 }
+                //Head will grab the change in pitch we're applying and speed up ahead of body..
+                //Will only do so if we are not overshooting the target position...
+                pitchExtremities = adjustedPitch + deltaPitchExtremities;
+
                 //Convert the value to Rads, this will be used by the model class...
                 targetPitchRadians = (adjustedPitch * (Mth.PI / 180.0F));
+                pitchExtremitiesRadians = (pitchExtremities * (Mth.PI / 180.0F));
+
             } else {
                 //If we are breaching, ignore previous logic, do fast rotations...
                 targetPitchRadians = (float) -((Mth.atan2((this.getDeltaMovement().y), Mth.sqrt((float) ((this.getDeltaMovement().x) * (this.getDeltaMovement().x) + (this.getDeltaMovement().z) * (this.getDeltaMovement().z))))));
