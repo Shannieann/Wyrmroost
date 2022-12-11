@@ -115,17 +115,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float adjustmentYaw;
     public float prevSetYaw;
     public float setYaw;
-
     public float deltaPitch;
     public float adjustedPitch;
-    public float adjustmentPitch;
     public float deltaPitchLimit;
     public float targetPitchRadians;
     public float currentPitchRadians;
-    public float deltaPitchHead;
     public float deltaPitchExtremities;
     public float pitchExtremities;
     public float pitchExtremitiesRadians;
+    public float prevSetExtremityPitch;
+    public float setExtremityPitch;
+    public float adjustExtremityPitch;
+    public float adjustmentExtremityPitch;
 
 
     public enum NavigationType {
@@ -217,7 +218,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public <E extends IAnimatable> PlayState generalPredicate(AnimationEvent<E> event)
     {
-        //TODO: Test pushing entities and moving?
+        //TODO: Test pushing entities and moving? Check for push, do not proceed if push
         String animation = this.getAnimation();
 //      Boolean playingAnimation = this.getPlayingAnimation();
         //If we do have an Ability animation play that
@@ -288,7 +289,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             switch (movingState) {
                 case 0 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
                 case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
-                case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
+                //case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
             }
             return PlayState.CONTINUE;
         }
@@ -822,7 +823,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!level.isClientSide) {
 
             setNavigator(getProperNavigator());
-            
+
             // todo figure out a better target system?
             LivingEntity target = getTarget();
             if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
@@ -876,8 +877,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             //Grab the change in the entity's Yaw, deltaYRot...
             //deltaYaw will tell us in which direction the entity is rotating...
             deltaYRot = this.yRot - prevYRot;
-            //Store the previous yaw value, so we can use itn ext tick to calculate deltaYaw...
+            //Store the previous yaw value, so we can use it next tick to calculate deltaYaw...
             prevYRot = this.yRot;
+
             //adjustYaw is a local variable that changes to try and match the change in Yaw....
             //So, adjustYaw starts at 0.
             // If it's rotating in the negative direction (deltaYRot negative), adjustYaw will start decreasing to catch up...
@@ -906,6 +908,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
             //PITCH OPERATIONS:
+            //TODO: Breaching if checks, organize
             if (!this.getBreaching()) {
                 //Calculate deltaPitch, between our target (xRot) and the previous value we applied to the model...
                 deltaPitch = this.xRot - adjustedPitch;
@@ -916,11 +919,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     //Increase or Decrease pitch to attempt to reach target value...
                     if (deltaPitch > 0) {
                         adjustedPitch = adjustedPitch + deltaPitchLimit;
-                        deltaPitchExtremities = deltaPitchLimit;
+                        deltaPitchExtremities = 30;
                     }
                     if (deltaPitch < 0) {
                         adjustedPitch = adjustedPitch - deltaPitchLimit;
-                        deltaPitchExtremities = -deltaPitchLimit;
+                        deltaPitchExtremities = -30;
                     }
                 }
                 //If we are changing at an acceptable rate, reach the target directly...
@@ -935,6 +938,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 //Convert the value to Rads, this will be used by the model class...
                 targetPitchRadians = (adjustedPitch * (Mth.PI / 180.0F));
                 pitchExtremitiesRadians = (pitchExtremities * (Mth.PI / 180.0F));
+
+                //EXTREMITY PITCH OPERATIONS:
+
+                prevSetExtremityPitch = setExtremityPitch;
+                if (adjustExtremityPitch  > deltaPitch) {
+                    adjustExtremityPitch = adjustExtremityPitch - adjustmentExtremityPitch;
+                    adjustExtremityPitch = Math.max(adjustExtremityPitch, deltaPitch);
+                } else if (adjustExtremityPitch  < deltaPitch) {
+                    adjustExtremityPitch = adjustExtremityPitch + adjustmentExtremityPitch;
+                    adjustExtremityPitch = Math.min(adjustExtremityPitch, deltaPitch);
+                }
+                setExtremityPitch = (adjustExtremityPitch * (Mth.PI / 180.0F));
 
             } else {
                 //If we are breaching, ignore previous logic, do fast rotations...

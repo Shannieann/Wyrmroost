@@ -36,6 +36,7 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
     public void setCustomAnimations(ButterflyLeviathanEntity animatable, int instanceId, AnimationEvent animationEvent) {
         super.setCustomAnimations(animatable, instanceId, animationEvent);
         float rotationYawMultiplier = 1.4F;
+        float rotationPitchMultiplier = 10.0F;
 
         IBone head = this.getAnimationProcessor().getBone("head");
         EntityModelData extraData = (EntityModelData) animationEvent.getExtraDataOfType(EntityModelData.class).get(0);
@@ -47,13 +48,15 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
         float setPitchValue;
         if (!animatable.getBreaching()) {
             setPitchValue = (animatable.currentPitchRadians+(animatable.targetPitchRadians-animatable.currentPitchRadians)*animationEvent.getPartialTick());
-
         } else {
             setPitchValue = animatable.currentPitchRadians;
         }
         this.getAnimationProcessor().getBone("ibody1").setRotationX(-setPitchValue);
 
+
+
         if (animatable.isUsingSwimmingNavigator()) {
+            //deltaYaw operations
             float setYawValue = animatable.prevSetYaw+(animatable.setYaw-animatable.prevSetYaw)*animationEvent.getPartialTick();
             this.getAnimationProcessor().getBone("ibody2").setRotationY(setYawValue * rotationYawMultiplier);
             this.getAnimationProcessor().getBone("itail1").setRotationY(setYawValue * rotationYawMultiplier);
@@ -67,6 +70,9 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
             this.getAnimationProcessor().getBone("ineck2").setRotationY(-setYawValue * rotationYawMultiplier);
             this.getAnimationProcessor().getBone("ineck3").setRotationY(-setYawValue * rotationYawMultiplier);
             this.getAnimationProcessor().getBone("ineck4").setRotationY(-setYawValue * rotationYawMultiplier);
+            //deltaPitch operations
+            float setExtremityPitchValue = animatable.prevSetExtremityPitch+(animatable.setExtremityPitch-animatable.prevSetExtremityPitch)*animationEvent.getPartialTick();
+            this.getAnimationProcessor().getBone("ineck1").setRotationX(-setExtremityPitchValue * rotationPitchMultiplier);
         }
     }
 }

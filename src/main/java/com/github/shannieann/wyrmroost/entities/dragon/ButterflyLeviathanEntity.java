@@ -88,8 +88,9 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
 
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(ButterflyLeviathanEntity.class, EntityDataSerializers.BOOLEAN);
     public static final int CONDUIT_SLOT = 0;
-    public static final float YAW_ADJUSTMENT = 0.30F;
-    public static final float DELTA_PITCH_LIMIT = 1.0F;
+    public final float entityDeltaPitchLimit = 1.0F;
+    public final float entityYawAdjustment = 0.30F;
+    public final float entityExtremityPitchAdjustment = 0.20F;
 
     public final LerpedFloat beachedTimer = LerpedFloat.unit();
     public final LerpedFloat swimTimer = LerpedFloat.unit();
@@ -104,8 +105,10 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         //moveControl = new MoveController();
         maxUpStep = 2;
         setPathfindingMalus(BlockPathTypes.WATER, 0);
-        this.adjustmentYaw = YAW_ADJUSTMENT;
-        this.deltaPitchLimit = DELTA_PITCH_LIMIT;
+        this.deltaPitchLimit = entityDeltaPitchLimit;
+        this.adjustmentYaw = entityYawAdjustment;
+        this.adjustmentExtremityPitch = entityExtremityPitchAdjustment;
+
         this.setNavigator(NavigationType.SWIMMING);
     }
 

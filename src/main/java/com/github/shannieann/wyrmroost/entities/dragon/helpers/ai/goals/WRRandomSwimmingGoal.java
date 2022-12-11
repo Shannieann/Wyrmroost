@@ -65,7 +65,8 @@ public class WRRandomSwimmingGoal extends Goal {
             if (distance < 10) {
                 return null;
             }
-            return targetVec;
+            //TODO: REMOVE DEBUGGING POSITION
+            return (new Vec3(targetVec.x,this.entity.position().y-10,targetVec.z));
         }
         return null;
     }
