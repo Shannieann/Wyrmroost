@@ -108,7 +108,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         setPathfindingMalus(BlockPathTypes.WATER, 0);
         this.adjustmentYaw = YAW_ADJUSTMENT;
         this.deltaPitchLimit = DELTA_PITCH_LIMIT;
-        this.setSwimmingNavigation(true);
+        this.setNavigator(NavigationType.SWIMMING);
     }
 
     // ====================================
@@ -485,12 +485,18 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return 6;
     }
 
+    @Override
+    public boolean speciesCanWalk()
+    {
+        return true;
+    }
+
     // ====================================
     //      C.1) Navigation and Control: Flying
     // ====================================
 
     @Override
-    public boolean canFly()
+    public boolean speciesCanFly()
     {
         return false;
     }
@@ -500,11 +506,13 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     //      C.2) Navigation and Control: Swimming
     // ====================================
 
+
     @Override
-    public boolean canSwim()
+    public boolean speciesCanSwim()
     {
         return true;
     }
+
     // ====================================
     //      C.3) Navigation and Control: Riding
     // ====================================

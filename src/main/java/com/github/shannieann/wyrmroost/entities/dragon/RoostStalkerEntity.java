@@ -69,6 +69,11 @@ public class RoostStalkerEntity extends WRDragonEntity
     }
 
     @Override
+    public boolean speciesCanFly() {
+        return false;
+    }
+
+    @Override
     protected void defineSynchedData()
     {
         super.defineSynchedData();
@@ -265,6 +270,11 @@ public class RoostStalkerEntity extends WRDragonEntity
         return new BodyRotationControl(this);
     }
 
+    @Override
+    public boolean speciesCanWalk() {
+        return true;
+    }
+
     public ItemStack getItem()
     {
         return entityData.get(ITEM);
@@ -292,8 +302,13 @@ public class RoostStalkerEntity extends WRDragonEntity
     }
 
     @Override
-    public boolean canFly()
+    public boolean dragonCanFly()
     {
+        return false;
+    }
+
+    @Override
+    public boolean speciesCanSwim() {
         return false;
     }
 

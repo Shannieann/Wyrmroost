@@ -26,7 +26,7 @@ public class WRSitGoal extends SitWhenOrderedToGoal
     {
         if (!dragon.isTame()) return false;
         if (dragon.isInWaterOrBubble() && dragon.getMobType() != MobType.WATER) return false;
-        if (!dragon.isOnGround() && !dragon.isFlying()) return false;
+        if (!dragon.isOnGround() && !dragon.isUsingFlyingNavigator()) return false;
         LivingEntity owner = dragon.getOwner();
         if (owner == null) return true;
         return (dragon.distanceToSqr(owner) > 144d || owner.getLastHurtByMob() == null) && super.canUse();
@@ -35,7 +35,7 @@ public class WRSitGoal extends SitWhenOrderedToGoal
     @Override
     public void tick()
     {
-        if (dragon.isFlying()) // get to ground first
+        if (dragon.isUsingFlyingNavigator()) // get to ground first
         {
             if (dragon.getNavigation().isDone())
             {

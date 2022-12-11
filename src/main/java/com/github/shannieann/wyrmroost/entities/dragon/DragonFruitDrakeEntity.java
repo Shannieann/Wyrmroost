@@ -292,7 +292,7 @@ public class DragonFruitDrakeEntity extends WRDragonEntity implements IForgeShea
     }
 
     @Override
-    public boolean canFly()
+    public boolean dragonCanFly()
     {
         return false;
     }

@@ -48,7 +48,7 @@ public class DebugScreen extends Screen
         drawCenteredString(ms, font, "isSleeping: " + dragon.isSleeping(), (width / 2) + 50, 50, 0xffffff);
         drawCenteredString(ms, font, "isTamed: " + dragon.isTame(), (width / 2) - 50, 50, 0xffffff);
         drawCenteredString(ms, font, "isSitting: " + dragon.isInSittingPose(), (width / 2) - 50, 75, 0xffffff);
-        drawCenteredString(ms, font, "isFlying: " + dragon.isFlying(), (width / 2) + 50, 75, 0xffffff);
+        drawCenteredString(ms, font, "isFlying: " + dragon.isUsingFlyingNavigator(), (width / 2) + 50, 75, 0xffffff);
         drawCenteredString(ms, font, "variant: " + dragon.getVariant(), (width / 2) - 50, 100, 0xffffff);
         drawCenteredString(ms, font, "gender: " + gender, (width / 2) + 50, 100, 0xffffff);
         drawCenteredString(ms, font, "health: " + dragon.getHealth() + " / " + dragon.getMaxHealth(), (width / 2) - 50, 125, 0xffffff);

@@ -30,7 +30,7 @@ public class FlyingSound extends AbstractTickableSoundInstance
             pitch = 1;
             return;
         }
-        if (entity.isAlive() && entity.isFlying() && entity.getControllingPlayer() == ClientEvents.getPlayer())
+        if (entity.isAlive() && entity.isUsingFlyingNavigator() && entity.getControllingPlayer() == ClientEvents.getPlayer())
         {
             x = (float) entity.getX();
             y = (float) entity.getY();

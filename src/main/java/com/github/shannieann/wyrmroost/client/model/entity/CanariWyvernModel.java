@@ -431,7 +431,7 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity>
 
         this.bob = bob;
 
-        if (entity.isFlying())
+        if (entity.isUsingFlyingNavigator())
         {
             flap(wing1L, globalSpeed, 1f, false, 0, 0, limbSwing, limbSwingAmount);
             flap(wing2L, globalSpeed, 0.75f, false, -1.5f, 0, limbSwing, limbSwingAmount);
@@ -462,12 +462,12 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity>
             walk(footL_1, globalSpeed + 0.5f, -2f, true, 0.75f, -1, limbSwing, limbSwingAmount);
         }
 
-        if (entity.isInSittingPose() && !entity.isFlying()) sitPose();
+        if (entity.isInSittingPose() && !entity.isUsingFlyingNavigator()) sitPose();
         if (entity.isSleeping()) sleepPose();
 
         idle(bob);
 
-        if (this.entity.isFlying() && entity.getAnimation() != CanariWyvernEntity.ATTACK_ANIMATION)
+        if (this.entity.isUsingFlyingNavigator() && entity.getAnimation() != CanariWyvernEntity.ATTACK_ANIMATION)
             body1.xRot = pitch * (Mafs.PI / 180f);
         faceTarget(yaw, pitch, 1, neck1, neck2, head);
     }
@@ -475,7 +475,7 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity>
     // Standing pose without the t-pose wings shit
     public void setInitialPositions()
     {
-        if (entity.isFlying())
+        if (entity.isUsingFlyingNavigator())
         {
             body2.xRot = 0f;
 
@@ -583,7 +583,7 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity>
 
     public void idle(float frame)
     {
-        if (entity.isFlying())
+        if (entity.isUsingFlyingNavigator())
         {
             chainWave(headArray, globalSpeed - 0.1f, 0.05f, 2.5, frame, 1f);
             chainWave(tailArray, globalSpeed - 0.1f, 0.025f, -2.5, frame, 1f);
@@ -844,7 +844,7 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity>
 
     public void attackAnimation()
     {
-        if (entity.isFlying())
+        if (entity.isUsingFlyingNavigator())
         {
             animator().startKeyframe(5);
             animator().rotate(body1, -0.35f, 0, 0);

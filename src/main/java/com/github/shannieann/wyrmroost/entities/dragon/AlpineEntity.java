@@ -96,7 +96,7 @@ public class AlpineEntity extends WRDragonEntity
 
         sitTimer.add(isInSittingPose() || isSleeping()? 0.1f : -0.1f);
         sleepTimer.add(isSleeping()? 0.1f : -0.1f);
-        flightTimer.add(isFlying()? 0.1f : -0.05f);
+        flightTimer.add(isUsingFlyingNavigator()? 0.1f : -0.05f);
 
         if (!level.isClientSide && noAnimations() && !isSleeping() && isJuvenile() && getRandom().nextDouble() < 0.0005)
             AnimationPacket.send(this, ROAR_ANIMATION);
@@ -172,7 +172,7 @@ public class AlpineEntity extends WRDragonEntity
     @Override
     public void recievePassengerKeybind(int key, int mods, boolean pressed)
     {
-        if (key == KeybindHandler.ALT_MOUNT_KEY && pressed && noAnimations() && isFlying())
+        if (key == KeybindHandler.ALT_MOUNT_KEY && pressed && noAnimations() && isUsingFlyingNavigator())
             setAnimation(WIND_GUST_ANIMATION);
     }
 
@@ -196,7 +196,7 @@ public class AlpineEntity extends WRDragonEntity
     @Override
     protected float getJumpPower()
     {
-        if (canFly()) return (getBbHeight() * getBlockJumpFactor());
+        if (dragonCanFly()) return (getBbHeight() * getBlockJumpFactor());
         else return super.getJumpPower();
     }
 
@@ -229,7 +229,7 @@ public class AlpineEntity extends WRDragonEntity
     @Override
     protected float getStandingEyeHeight(Pose poseIn, EntityDimensions sizeIn)
     {
-        return sizeIn.height * (isFlying()? 0.8f : 1.25f);
+        return sizeIn.height * (isUsingFlyingNavigator()? 0.8f : 1.25f);
     }
 
     @Nullable

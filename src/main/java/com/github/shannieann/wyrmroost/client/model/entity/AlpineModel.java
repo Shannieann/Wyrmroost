@@ -693,7 +693,7 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
 
         if (!entity.isSleeping() && !entity.isInSittingPose() && entity.getAnimation() != AlpineEntity.WIND_GUST_ANIMATION)
         {
-            if (entity.isFlying()) // flight
+            if (entity.isUsingFlyingNavigator()) // flight
             {
                 chainWave(headArray, globalSpeed - 0.25f, 0.05f, 3, limbSwing, limbSwingAmount);
                 chainWave(tailArray, globalSpeed - 0.25f, -0.05f, -3, limbSwing, limbSwingAmount);
@@ -889,7 +889,7 @@ public class AlpineModel extends DragonEntityModel<AlpineEntity>
 
         animator.startKeyframe(12);
 
-        if (!entity.isFlying())
+        if (!entity.isUsingFlyingNavigator())
         {
             animator.rotate(neck1, -0.1f, 0, 0)
                     .rotate(neck2, 0.35f, 0, 0)

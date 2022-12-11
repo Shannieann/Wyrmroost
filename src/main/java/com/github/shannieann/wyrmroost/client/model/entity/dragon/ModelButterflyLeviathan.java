@@ -53,7 +53,7 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
         }
         this.getAnimationProcessor().getBone("ibody1").setRotationX(-setPitchValue);
 
-        if (animatable.isSwimming()) {
+        if (animatable.isUsingSwimmingNavigator()) {
             float setYawValue = animatable.prevSetYaw+(animatable.setYaw-animatable.prevSetYaw)*animationEvent.getPartialTick();
             this.getAnimationProcessor().getBone("ibody2").setRotationY(setYawValue * rotationYawMultiplier);
             this.getAnimationProcessor().getBone("itail1").setRotationY(setYawValue * rotationYawMultiplier);

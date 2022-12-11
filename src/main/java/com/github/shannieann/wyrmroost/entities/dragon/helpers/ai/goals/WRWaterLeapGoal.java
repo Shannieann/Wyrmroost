@@ -93,7 +93,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         }
 
         //If it's somehow using the landNavigator, do stop goal. Goal only makes sense for waterNavigator.
-        if (!this.entity.isSwimming()) {
+        if (!this.entity.isUsingSwimmingNavigator()) {
             return false;
         }
         //Else continue the Goal.

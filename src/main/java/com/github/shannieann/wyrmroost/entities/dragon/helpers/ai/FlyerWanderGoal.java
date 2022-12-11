@@ -32,7 +32,7 @@ public class FlyerWanderGoal extends WaterAvoidingRandomStrollGoal
     {
         if (dragon.isInSittingPose()) return false;
         if (dragon.canBeControlledByRider()) return false;
-        if (!dragon.isFlying() && dragon.hasEntityDataAccessor(WRDragonEntity.SLEEPING) && !dragon.level.isDay()) return false;
+        if (!dragon.isUsingFlyingNavigator() && dragon.hasEntityDataAccessor(WRDragonEntity.SLEEPING) && !dragon.level.isDay()) return false;
         Vec3 vec3d = getPosition();
         if (vec3d != null)
         {
@@ -51,7 +51,7 @@ public class FlyerWanderGoal extends WaterAvoidingRandomStrollGoal
     {
         Vec3 position = null;
 
-        if (dragon.isFlying() || (!dragon.isLeashed() && dragon.getRandom().nextFloat() <= probability + 0.02))
+        if (dragon.isUsingFlyingNavigator() || (!dragon.isLeashed() && dragon.getRandom().nextFloat() <= probability + 0.02))
         {
             if ((dragon.hasEntityDataAccessor(WRDragonEntity.SLEEPING) && !dragon.level.isDay()) || dragon.getRandom().nextFloat() <= probability)
                 position = LandRandomPos.getPos(dragon, 20, 25);
@@ -64,7 +64,7 @@ public class FlyerWanderGoal extends WaterAvoidingRandomStrollGoal
                 int yOffset = dragon.getAltitude() > 40? 10 : 0;
                 position = HoverRandomPos.getPos(dragon, 30, 50, vec3d.x, vec3d.z, Mafs.PI / 2, 10, yOffset);
             }
-            if (position != null && position.y > dragon.getY() + dragon.getBbHeight() && !dragon.isFlying()) dragon.setFlying(true);
+            if (position != null && position.y > dragon.getY() + dragon.getBbHeight() && !dragon.isUsingFlyingNavigator()) dragon.setNavigator(WRDragonEntity.NavigationType.FLYING);
         }
         return position == null? super.getPosition() : position;
     }

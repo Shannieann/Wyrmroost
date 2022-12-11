@@ -111,7 +111,7 @@ public class SilverGliderEntity extends WRDragonEntity
 
         sitTimer.add((isInSittingPose() || isSleeping())? 0.2f : -0.2f);
         sleepTimer.add(isSleeping()? 0.05f : -0.1f);
-        flightTimer.add(isFlying() || isGliding()? 0.1f : -0.1f);
+        flightTimer.add(isUsingFlyingNavigator() || isGliding()? 0.1f : -0.1f);
     }
 
     @Override
@@ -141,9 +141,14 @@ public class SilverGliderEntity extends WRDragonEntity
     public void travel(Vec3 vec3d)
     {
         Vec3 look = getLookAngle();
-        if (isFlying() && look.y < 0) setDeltaMovement(getDeltaMovement().add(0, look.y * 0.25, 0));
+        if (isUsingFlyingNavigator() && look.y < 0) setDeltaMovement(getDeltaMovement().add(0, look.y * 0.25, 0));
 
         super.travel(vec3d);
+    }
+
+    @Override
+    public boolean speciesCanWalk() {
+        return true;
     }
 
     @Override
@@ -243,9 +248,9 @@ public class SilverGliderEntity extends WRDragonEntity
     }
 
     @Override
-    public boolean shouldFly()
+    public boolean shouldUseFlyingNavigator()
     {
-        return isRiding()? isGliding() : super.shouldFly();
+        return isRiding()? isGliding() : super.shouldUseFlyingNavigator();
     }
 
     @Override
@@ -257,7 +262,12 @@ public class SilverGliderEntity extends WRDragonEntity
     @Override
     public int getYawRotationSpeed()
     {
-        return isFlying()? 5 : 75;
+        return isUsingFlyingNavigator()? 5 : 75;
+    }
+
+    @Override
+    public boolean speciesCanSwim() {
+        return false;
     }
 
     public boolean isGliding()
@@ -311,7 +321,7 @@ public class SilverGliderEntity extends WRDragonEntity
         @Override
         public boolean canUse()
         {
-            if (!isFlying()) return false;
+            if (!isUsingFlyingNavigator()) return false;
             if (isRiding()) return false;
             if (getRandom().nextDouble() > 0.001) return false;
             if (level.getFluidState(this.pos = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, blockPosition()).below()).isEmpty())

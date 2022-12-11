@@ -40,7 +40,7 @@ public class WRRandomSwimmingGoal extends Goal {
             return false;
         }
 
-        if (!this.entity.isSwimming()) {
+        if (!this.entity.isUsingSwimmingNavigator()) {
             return false;
         }
 
@@ -81,8 +81,8 @@ public class WRRandomSwimmingGoal extends Goal {
         if (this.entity.distanceToSqr(this.x,this.y,this.z) < 75) {
             return false;
         }
-        if (!this.entity.isSwimming()) {
-            return false;
+        if (!this.entity.isUsingSwimmingNavigator()) {
+               return false;
         }
         if (this.entity.getTarget() != null){
             return false;

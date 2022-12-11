@@ -41,10 +41,10 @@ public class FlyerMoveController extends MoveControl
                 dragon.setZza(0f);
                 return;
             }
-            if (y > 1) dragon.setFlying(true);
+            if (y > 1) dragon.setNavigator(WRDragonEntity.NavigationType.FLYING);
             float speed;
 
-            if (dragon.isFlying())
+            if (dragon.isUsingFlyingNavigator())
             {
                 speed = (float) (dragon.getAttributeValue(Attributes.FLYING_SPEED) * speedModifier);
 

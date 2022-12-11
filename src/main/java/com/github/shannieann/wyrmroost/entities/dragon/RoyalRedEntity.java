@@ -111,11 +111,6 @@ public class RoyalRedEntity extends WRDragonEntity
 
 
     @Override
-    public boolean speciesCanFly() {
-        return true;
-    }
-
-    @Override
     protected void defineSynchedData()
     {
         super.defineSynchedData();
@@ -260,7 +255,7 @@ public class RoyalRedEntity extends WRDragonEntity
         // =====================
         //       Update Timers
         // =====================
-        flightTimer.add(isFlying()? 0.1f : -0.085f);
+        flightTimer.add(isUsingFlyingNavigator()? 0.1f : -0.085f);
         sitTimer.add(isInSittingPose()? 0.075f : -0.1f);
         sleepTimer.add(isSleeping()? 0.035f : -0.05f);
         breathTimer.add(getBreathingFire()? 0.15f : -0.2f);
@@ -319,7 +314,7 @@ public class RoyalRedEntity extends WRDragonEntity
             double distFromTarget = distanceToSqr(target);
             double degrees = Math.atan2(target.getZ() - getZ(), target.getX() - getX()) * (180 / Math.PI) - 90;
             double headAngle = Math.abs(Mth.wrapDegrees(degrees - yHeadRot));
-            return (!isAtHome() && (distFromTarget > 100 || target.getY() - getY() > 3 || isFlying()) && headAngle < 30 && canBreatheFire());
+            return (!isAtHome() && (distFromTarget > 100 || target.getY() - getY() > 3 || isUsingFlyingNavigator()) && headAngle < 30 && canBreatheFire());
         }
         return false;
     }
@@ -344,7 +339,7 @@ public class RoyalRedEntity extends WRDragonEntity
             {
                 setXRot(0);
                 clearAI();
-                setFlying(false);
+                setNavigator(NavigationType.GROUND);
             }
         }
     }
@@ -390,9 +385,21 @@ public class RoyalRedEntity extends WRDragonEntity
     //      C) Navigation and Control
     // ====================================
 
+    public boolean speciesCanWalk(){
+        return false;
+    }
+
+
     // ====================================
     //      C.1) Navigation and Control: Flying
     // ====================================
+
+
+    @Override
+    public boolean speciesCanFly() {
+        return true;
+    }
+
 
     @Override
     public boolean causeFallDamage(float distance, float damageMultiplier, DamageSource source)
@@ -402,15 +409,15 @@ public class RoyalRedEntity extends WRDragonEntity
     }
 
     @Override
-    public boolean canFly()
+    public boolean dragonCanFly()
     {
-        return super.canFly() && !isKnockedOut();
+        return super.dragonCanFly() && !isKnockedOut();
     }
 
     @Override
     public int getYawRotationSpeed()
     {
-        return isFlying()? 5 : 7;
+        return isUsingFlyingNavigator()? 5 : 7;
     }
 
     // ====================================
@@ -451,6 +458,13 @@ public class RoyalRedEntity extends WRDragonEntity
         }
 
         if (key == KeybindHandler.ALT_MOUNT_KEY && canBreatheFire()) setBreathingFire(pressed);
+    }
+    // ====================================
+    //      C.1) Navigation and Control: Swimming
+    // ====================================
+
+    public boolean speciesCanSwim(){
+        return false;
     }
 
     // ====================================
@@ -577,7 +591,7 @@ public class RoyalRedEntity extends WRDragonEntity
     /*public void meleeAttack()
     {
         if (!level.isClientSide)
-            AnimationPacket.send(this, isFlying() || getRandom().nextBoolean()? BITE_ATTACK_ANIMATION : SLAP_ATTACK_ANIMATION);
+            AnimationPacket.send(this, isUsingFlyingNavigator() || getRandom().nextBoolean()? BITE_ATTACK_ANIMATION : SLAP_ATTACK_ANIMATION);
     }*/
 
     // ====================================
@@ -689,7 +703,7 @@ public class RoyalRedEntity extends WRDragonEntity
                 //Random chance to start flying / fly when target is far away...
                 //TODO: If we are already flying... should we check for this?
                 if (getRandom().nextDouble() < 0.001 || distFromTarget > 900) {
-                    setFlying(true);
+                    setNavigator(NavigationType.FLYING);
                 }
 
 
@@ -715,9 +729,9 @@ public class RoyalRedEntity extends WRDragonEntity
                 }
                 if (getNavigation().isDone() || age % 10 == 0)
                 {
-                    boolean isFlyingTarget = target instanceof WRDragonEntity && ((WRDragonEntity) target).isFlying();
+                    boolean isFlyingTarget = target instanceof WRDragonEntity && ((WRDragonEntity) target).isUsingFlyingNavigator();
                     double y = target.getY() + (!isFlyingTarget && getRandom().nextDouble() > 0.1? 8 : 0);
-                    getNavigation().moveTo(target.getX(), y, target.getZ(), !isFlying() && isBreathingFire? 0.8d : 1.3d);
+                    getNavigation().moveTo(target.getX(), y, target.getZ(), !isUsingFlyingNavigator() && isBreathingFire? 0.8d : 1.3d);
                 }
             }
         }

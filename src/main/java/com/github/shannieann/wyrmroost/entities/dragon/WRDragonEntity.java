@@ -107,8 +107,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     private int sleepCooldown;
     public int breedCount;
     private float ageProgress = 1;
-    //Only for swimmers:
 
+    //Only for swimmers:
     public float prevYRot;
     public float deltaYRot;
     public float adjustYaw;
@@ -123,6 +123,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float targetPitchRadians;
     public float currentPitchRadians;
 
+
+    public enum NavigationType {
+        GROUND,
+        FLYING,
+        SWIMMING
+    }
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
@@ -140,13 +146,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public static final EntityDataAccessor<Integer> AGE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
+    //TODO: These two are probably better to do inside an interface, IBreachable
     public static final EntityDataAccessor<Float> BREACH_ATTACK_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> FLYING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+
+
     public static final EntityDataAccessor<String> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
     public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> SWIMMING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<String> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     //TODO: What is this?
     private static final UUID SCALE_MOD_UUID = UUID.fromString("81a0addd-edad-47f1-9aa7-4d76774e055a");
@@ -184,8 +191,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         DragonInventory inv = createInv();
         inventory = LazyOptional.of(inv == null? null : () -> inv);
         lookControl = new LessShitLookController(this);
-        if (speciesCanFly()) moveControl = new FlyerMoveController(this);
-        if (hasEntityDataAccessor(SWIMMING)) moveControl = new WRSwimControl(this);
+
+        //TODO: DEFAULT NAVIGATORS
+
 
     }
 
@@ -294,10 +302,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      A) Entity Data
     // ====================================
 
-    // To override for individual species
-    public boolean speciesCanFly(){
-        return false; // Decides if the synced data is defined. Important because to see if a species could fly, the old coder saw if FLYING was defined in entitydata.
-    }
+
     @Override
     protected void defineSynchedData()
     {
@@ -314,8 +319,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(GENDER, "male");
         entityData.define(SLEEPING, false);
         entityData.define(VARIANT, "base0");
-        if (speciesCanFly()) entityData.define(FLYING, false);
-        entityData.define(SWIMMING, false);
         entityData.define(ARMOR, ItemStack.EMPTY);
         super.defineSynchedData();
     }
@@ -358,9 +361,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
-        if (key.equals(SLEEPING) || key.equals(FLYING) || key.equals(TamableAnimal.DATA_FLAGS_ID)) {
+        if (key.equals(SLEEPING) || isUsingFlyingNavigator() || key.equals(TamableAnimal.DATA_FLAGS_ID)) {
             refreshDimensions();
-            if (level.isClientSide && key == FLYING && isFlying() && canBeControlledByRider())
+            if (level.isClientSide  && isUsingFlyingNavigator() && canBeControlledByRider())
                 FlyingSound.play(this);
         } else if (key == ARMOR) {
             if (!level.isClientSide) {
@@ -486,7 +489,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float getTravelSpeed()
     {
         //@formatter:off
-        return isFlying()? (float) getAttributeValue(FLYING_SPEED)
+        return isUsingFlyingNavigator()? (float) getAttributeValue(FLYING_SPEED)
                 : (float) getAttributeValue(MOVEMENT_SPEED);
         //@formatter:on
     }
@@ -812,18 +815,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void tick() {
         super.tick();
-        //System.out.println(this.getAnimation());
         if (!level.isClientSide) {
-            //Will only try to fly if we're not in water...
-            boolean shouldFly = shouldFly();
-            if (shouldFly != isFlying()) {
-                setFlying(shouldFly);
-            }
 
-            //Will only try to swimNavigate if we're actually a swimmer
-            boolean shouldSwim = shouldSwim();
-            if (shouldSwim != isSwimming()) {
-                setSwimmingNavigation(shouldSwim);
+
+
+            setNavigator(getProperNavigator());
+
+            switch (getNavigationType()) {
+                case SWIMMING -> System.out.println("IS USING -SWIMMING- NAVIGATOR");
+                case FLYING -> System.out.println("IS USING -FLYING- NAVIGATOR");
+                case GROUND -> System.out.println("IS USING -GROUND- NAVIGATOR");
             }
 
             // todo figure out a better target system?
@@ -873,7 +874,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setIsMovingAnimation(false);
         }
 
-        if (isSwimming() && level.isClientSide){
+        if (isUsingSwimmingNavigator() && level.isClientSide){
             //YAW OPERATIONS:
             //The following lines of code handle the dynamic yaw animations for entities...
             //Grab the change in the entity's Yaw, deltaYRot...
@@ -1071,6 +1072,36 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return new BetterPathNavigator(this);
     }
 
+    public void setNavigator(NavigationType navigator) {
+        switch (navigator) {
+            case GROUND: {
+                this.moveControl = new MoveControl(this);
+                this.lookControl = new LessShitLookController(this);
+                this.navigation = new BetterPathNavigator(this);
+                this.setMovingState(0);
+                break;
+            }
+            case FLYING: {
+                this.moveControl = new FlyerMoveController(this);
+                this.lookControl = new LessShitLookController(this);
+                this.navigation = new FlyerPathNavigator(this);
+                this.setMovingState(1);
+                setOrderedToSit(false);
+                setSleeping(false);
+                jumpFromGround();
+                break;
+            }
+            case SWIMMING: {
+                this.moveControl = new WRSwimControl(this);
+                this.lookControl = new SmoothSwimmingLookControl(this, 10);
+                this.navigation = new WRSwimmingNavigator(this);
+                this.setMovingState(2);
+                break;
+            }
+        }
+    }
+
+
     @Override
     protected BodyRotationControl createBodyControl()
     {
@@ -1080,7 +1111,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void travel(Vec3 vec3d){
         float speed = getTravelSpeed();
-        boolean isFlying = isFlying();
+        boolean isFlying = isUsingFlyingNavigator();
         if (canBeControlledByRider()) // Were being controlled; override ai movement
         {
             LivingEntity entity = (LivingEntity) getControllingPassenger();
@@ -1106,7 +1137,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 else
                 {
                     speed *= 0.225f;
-                    if (entity.jumping && canFly()) setFlying(true);
+                    if (entity.jumping && dragonCanFly()) setNavigator(NavigationType.FLYING);
                 }
 
                 vec3d = new Vec3(moveX, moveY, moveZ);
@@ -1131,9 +1162,60 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
     }
 
+
+    public NavigationType getProperNavigator(){
+        //Priority order:
+            //1.- Swimming
+            //2.- Flying
+            //3.- Ground
+
+        //All the checks for speciesCanX is performed here...
+        //We only check the shouldCondition if it makes sense according to the speciesCanX...
+        boolean shouldUseFlyingNavigator = false;
+        boolean shouldUseSwimmingNavigator = false;
+        NavigationType navigationType = getNavigationType();
+        boolean isUsingSwimmingNavigator = (navigationType == NavigationType.SWIMMING);
+        boolean isUsingFlyingNavigator = (navigationType == NavigationType.FLYING);
+
+        if (speciesCanSwim()) {
+            //Local variable to avoid multiple method calls..
+            shouldUseSwimmingNavigator = shouldUseSwimmingNavigator();
+            if (shouldUseSwimmingNavigator != isUsingSwimmingNavigator) {
+                return NavigationType.SWIMMING;
+            }
+        }
+        if (speciesCanFly()) {
+            shouldUseFlyingNavigator = shouldUseFlyingNavigator();
+            if (shouldUseFlyingNavigator != isUsingFlyingNavigator) {
+                return NavigationType.FLYING;
+            }
+        }
+        if (speciesCanWalk()) {
+            if (!shouldUseFlyingNavigator && !shouldUseSwimmingNavigator) {
+                return NavigationType.GROUND;
+            }
+        }
+        //None of the conditions are met, we keep using the previous navigator.
+        return navigationType;
+    }
+
+    public NavigationType getNavigationType(){
+        PathNavigation navigation = this.getNavigation();
+        if (navigation instanceof WRSwimmingNavigator){
+            return NavigationType.SWIMMING;
+        }
+        if (navigation instanceof FlyerPathNavigator){
+            return NavigationType.FLYING;
+        }
+        if (navigation instanceof BetterPathNavigator){
+            return NavigationType.GROUND;
+        }
+        return NavigationType.GROUND;
+    }
+
     public boolean isIdling()
     {
-        return getNavigation().isDone() && getTarget() == null && !isVehicle() && !isInWaterOrBubble() && !isFlying();
+        return getNavigation().isDone() && getTarget() == null && !isVehicle() && !isInWaterOrBubble() && !isUsingFlyingNavigator();
     }
 
     public AABB getOffsetBox(float offset)
@@ -1162,23 +1244,35 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return this.getNavigation() instanceof GroundPathNavigation;
     }
 
+
+
     @Override
     public float getWalkTargetValue(BlockPos pPos, LevelReader pLevel) {
         return 0.0F;
+
     }
+
+    public abstract boolean speciesCanWalk();
 
     // ====================================
     //      C.1) Navigation and Control: Flying
     // ====================================
 
-    public boolean isFlying()
+    public abstract boolean speciesCanFly();
+
+
+    /*
+    public boolean isUsingFlyingNavigator()
     {
         return hasEntityDataAccessor(FLYING) && entityData.get(FLYING);
     }
 
+     */
+
+    /*
     public void setFlying(boolean fly)
     {
-        if (isFlying() == fly) return;
+        if (isUsingFlyingNavigator() == fly) return;
         entityData.set(FLYING, fly);
         if (fly) {
             if (liftOff()) {
@@ -1194,29 +1288,54 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
     }
 
-    public boolean liftOff()
+     */
+
+
+    /*
+    public boolean shouldFly()
     {
-        if (!canFly()) return false;
-        if (!onGround) return true; // We can't lift off the ground in the air...
+        return dragonCanFly() && getAltitude() > 1 && !isUsingSwimmingNavigator();
+    }
+     */
+
+    public boolean shouldUseFlyingNavigator()
+    {
+        if (getAltitude() >1) {
+            if (!speciesCanSwim() && isUnderWater()) {
+                return false;
+            }
+            return canLiftOff();
+        }
+        return false;
+    }
+
+    public boolean canLiftOff()
+    {
+        if (!dragonCanFly()) {
+            return false;
+        }
+
+        if (!onGround) {
+            return true; // We can't lift off the ground in the air...
+        }
 
         int heightDiff = level.getHeight(Heightmap.Types.MOTION_BLOCKING, (int) getX(), (int) getZ()) - (int) getY();
         if (heightDiff > 0 && heightDiff <= getFlightThreshold())
             return false; // position has too low of a ceiling, can't fly here.
-
-        setOrderedToSit(false);
-        setSleeping(false);
-        jumpFromGround();
         return true;
     }
 
-    public boolean shouldFly()
+    public boolean dragonCanFly()
     {
-        return canFly() && getAltitude() > 1 && !isSwimming();
+        if (speciesCanFly()) {
+            return isJuvenile() && !isLeashed() && speciesCanFly();
+        }
+        return false;
     }
 
-    public boolean canFly()
+    public boolean isUsingFlyingNavigator()
     {
-        return isJuvenile() && !isUnderWater() && !isLeashed() && speciesCanFly();
+        return getNavigation() instanceof FlyerPathNavigator;
     }
 
     public double getAltitude()
@@ -1235,7 +1354,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public int getYawRotationSpeed()
     {
-        return isFlying()? 6 : 75;
+        return isUsingFlyingNavigator()? 6 : 75;
     }
 
     public void flapWings()
@@ -1247,31 +1366,27 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     protected float getJumpPower()
     {
-        return canFly()? (getBbHeight() * getBlockJumpFactor()) * 0.6f : super.getJumpPower();
+        return dragonCanFly()? (getBbHeight() * getBlockJumpFactor()) * 0.6f : super.getJumpPower();
     }
 
     @Override // Disable fall calculations if we can fly (fall damage etc.)
     public boolean causeFallDamage(float distance, float damageMultiplier, DamageSource source)
     {
-        return !canFly() && super.causeFallDamage(distance - (int) (getBbHeight() * 0.8), damageMultiplier, source);
+        return !dragonCanFly() && super.causeFallDamage(distance - (int) (getBbHeight() * 0.8), damageMultiplier, source);
     }
 
     // ====================================
     //      C.2) Navigation and Control: Swimming
     // ====================================
 
-    public boolean canSwim()
+    public abstract boolean speciesCanSwim();
+
+    public boolean isUsingSwimmingNavigator()
     {
-        return false;
+        return getNavigation() instanceof WRSwimmingNavigator;
     }
 
-    public boolean isSwimming()
-    {
-        //Of note, swimming entities will, technically, be counted as swimming when in air...
-        return hasEntityDataAccessor(SWIMMING) && entityData.get(SWIMMING);
-    }
-
-    public boolean shouldSwim() {
+    public boolean shouldUseSwimmingNavigator() {
         //If it's in 1-block-deep water, switch to land navigator
         if (this.isInWater() && this.level.getBlockState(blockPosition().below()).canOcclude() && this.level.getBlockState(blockPosition().above()).is(Blocks.AIR)) {
             return false;
@@ -1284,8 +1399,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!this.isInWater() && this.level.getFluidState(blockPosition().below()).is(FluidTags.WATER)) {
             return true;
         }
-        //If it's falling, still use water navigator
-        if (!this.isInWater() && !this.isOnGround() && this.level.getBlockState(new BlockPos(position())).is(Blocks.AIR)) {
+        //If it's falling and cannot fly, still use water navigator
+        if (!speciesCanFly() && !this.isInWater() && !this.isOnGround() && this.level.getBlockState(new BlockPos(position())).is(Blocks.AIR)) {
             return true;
         }
         //If it's in swimmable water (meaning, at least two blocks deep), switch to water navigator
@@ -1294,24 +1409,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
         return false;
     }
-    
-    public void setSwimmingNavigation(boolean shouldSwim) {
-        if (shouldSwim) {
-            this.moveControl = new WRSwimControl(this);
-            this.lookControl = new SmoothSwimmingLookControl(this, 10);
-            this.navigation = new WRSwimmingNavigator(this);
-            this.setMovingState(2);
-        } else {
-            this.moveControl = new MoveControl(this);
-            this.lookControl = new LessShitLookController(this);
-            this.navigation = new BetterPathNavigator(this);
-            this.setMovingState(0);
-        }
-        entityData.set(SWIMMING, shouldSwim);
-    }
 
     public boolean getSwimmingNavigation() {
-       return entityData.get(SWIMMING);
+       return getNavigation() instanceof WRSwimmingNavigator;
     }
 
     // ====================================
@@ -1354,14 +1454,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             Vec3 vec3d = getRidingPosOffset(index);
             if (player.isFallFlying())
             {
-                if (!canFly())
+                if (!dragonCanFly())
                 {
                     stopRiding();
                     return;
                 }
 
                 vec3d = vec3d.scale(1.5);
-                setFlying(true);
+                setNavigator(NavigationType.FLYING);
             }
             Vec3 pos = Mafs.getYawVec(player.yBodyRot, vec3d.x, vec3d.z).add(player.getX(), player.getY() + vec3d.y, player.getZ());
             setPos(pos.x, pos.y, pos.z);
@@ -1547,7 +1647,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         final InteractionResult SUCCESS = InteractionResult.sidedSuccess(level.isClientSide);
 
-        if (isOwnedBy(player) && player.isShiftKeyDown() && !isFlying())
+        if (isOwnedBy(player) && player.isShiftKeyDown() && !isUsingFlyingNavigator())
         {
             setOrderedToSit(!isOrderedToSit());
             return SUCCESS;

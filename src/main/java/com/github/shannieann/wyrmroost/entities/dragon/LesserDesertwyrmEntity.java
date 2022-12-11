@@ -209,6 +209,21 @@ public class LesserDesertwyrmEntity extends WRDragonEntity
         return super.isInvulnerableTo(source) || source == DamageSource.IN_WALL;
     }
 
+    @Override
+    public boolean speciesCanWalk() {
+        return true;
+    }
+
+    @Override
+    public boolean speciesCanFly() {
+        return false;
+    }
+
+    @Override
+    public boolean speciesCanSwim() {
+        return false;
+    }
+
     @Nullable
     @Override
     protected SoundEvent getAmbientSound()

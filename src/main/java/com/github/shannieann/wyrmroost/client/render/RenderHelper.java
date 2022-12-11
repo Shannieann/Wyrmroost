@@ -112,7 +112,7 @@ public class RenderHelper extends RenderType
         if (evt.getType() == RenderGameOverlayEvent.ElementType.CHAT)
         {
             Entity vehicle = ClientEvents.getPlayer().getVehicle();
-            if (vehicle instanceof WRDragonEntity && ((WRDragonEntity) vehicle).isFlying())
+            if (vehicle instanceof WRDragonEntity && ((WRDragonEntity) vehicle).isUsingFlyingNavigator())
             {
                 ClientEvents.getClient().textureManager.bindForSetup(GUI_ICONS);
                 int y = ClientEvents.getClient().getWindow().getScreenHeight() / 2 - 24;

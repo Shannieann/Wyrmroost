@@ -76,6 +76,11 @@ public class CanariWyvernEntity extends WRDragonEntity
     }
 
     @Override
+    public boolean speciesCanWalk() {
+        return true;
+    }
+
+    @Override
     public EntitySerializer<CanariWyvernEntity> getSerializer()
     {
         return SERIALIZER;
@@ -110,7 +115,7 @@ public class CanariWyvernEntity extends WRDragonEntity
         if (isOwnedBy(player) && player.getPassengers().size() < 3 && !player.isShiftKeyDown() && !isLeashed())
         {
             setOrderedToSit(true);
-            setFlying(false);
+            setNavigator(NavigationType.GROUND);
             clearAI();
             startRiding(player, true);
             return InteractionResult.sidedSuccess(level.isClientSide);
@@ -202,7 +207,12 @@ public class CanariWyvernEntity extends WRDragonEntity
     @Override
     public int getYawRotationSpeed()
     {
-        return isFlying()? 12 : 75;
+        return isUsingFlyingNavigator()? 12 : 75;
+    }
+
+    @Override
+    public boolean speciesCanSwim() {
+        return false;
     }
 
     @Override
@@ -247,7 +257,7 @@ public class CanariWyvernEntity extends WRDragonEntity
         public boolean canUse()
         {
             if (isTame()) return false;
-            if (isFlying()) return false;
+            if (isUsingFlyingNavigator()) return false;
             if (getTarget() != null) return false;
             if ((target = level.getNearestPlayer(getX(), getY(), getZ(), 12d, true)) == null)
                 return false;
@@ -319,7 +329,7 @@ public class CanariWyvernEntity extends WRDragonEntity
             if ((++repathTimer >= 10 || getNavigation().isDone()) && getSensing().hasLineOfSight(target))
             {
                 repathTimer = 0;
-                if (!isFlying()) setFlying(true);
+                if (!isUsingFlyingNavigator()) setNavigator(NavigationType.FLYING);
                 getNavigation().moveTo(target.getX(), target.getBoundingBox().maxY - 2, target.getZ(), 1);
                 getLookControl().setLookAt(target, 90, 90);
             }

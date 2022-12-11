@@ -433,7 +433,7 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity>
         sleep(entity.sleepTimer.get(partialTicks));
         sit(entity.sitTimer.get(partialTicks));
 
-        if (entity.isFlying() || entity.isGliding())
+        if (entity.isUsingFlyingNavigator() || entity.isGliding())
         {
             flap(wing1L, globalSpeed - 0.2f, 0.05f, false, 0, 0, bob, 0.5f);
             walk(wing1L, globalSpeed + 0.5f, 0.09f, false, 0, 0, bob, 0.5f);
@@ -493,7 +493,7 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity>
             wingMembraneL2.x += foldAmount * 4;
             wingMembraneL2.yRot -= foldAmount;
         }
-        else faceTarget(netHeadYaw, entity.isFlying()? 0 : headPitch, 1, headArray);
+        else faceTarget(netHeadYaw, entity.isUsingFlyingNavigator()? 0 : headPitch, 1, headArray);
     }
 
     public void idle(float frame)

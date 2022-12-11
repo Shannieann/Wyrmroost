@@ -283,6 +283,11 @@ public class OverworldDrakeEntity extends WRDragonEntity
     }
 
     @Override
+    public boolean speciesCanWalk() {
+        return true;
+    }
+
+    @Override
     public float getScale()
     {
         return getAgeScale(0.275f);
@@ -390,8 +395,13 @@ public class OverworldDrakeEntity extends WRDragonEntity
     }
 
     @Override
-    public boolean canFly()
+    public boolean dragonCanFly()
     {
+        return false;
+    }
+
+    @Override
+    public boolean speciesCanSwim() {
         return false;
     }
 
@@ -457,5 +467,10 @@ public class OverworldDrakeEntity extends WRDragonEntity
     @Override
     public void registerControllers(AnimationData data) {
 
+    }
+
+    @Override
+    public boolean speciesCanFly() {
+        return false;
     }
 }
