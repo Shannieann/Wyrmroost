@@ -524,13 +524,18 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return true;
     }
 
+    @Override
+    public boolean speciesCanBeRidden() {
+        return true;
+    }
+
     // ====================================
     //      C.3) Navigation and Control: Riding
     // ====================================
     @Override // 2 passengers
     protected boolean canAddPassenger(Entity passenger)
     {
-        return isTame() && isJuvenile() && getPassengers().size() < 2;
+        return super.canAddPassenger(passenger) && isJuvenile();
     }
 
     @Override

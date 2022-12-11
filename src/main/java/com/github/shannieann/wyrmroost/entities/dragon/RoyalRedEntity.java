@@ -38,6 +38,8 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -45,6 +47,13 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import org.apache.commons.lang3.ArrayUtils;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.builder.ILoopType;
+import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;
@@ -108,6 +117,19 @@ public class RoyalRedEntity extends WRDragonEntity
     // ====================================
     //      A) Entity Data
     // ====================================
+
+    //todo Remove this, temporary for showing off layer
+
+
+    @Override
+    public void registerControllers(AnimationData data) {
+        data.addAnimationController(new AnimationController(this, "generalController", 0, this::testPredicate));
+    }
+    public <E extends IAnimatable> PlayState testPredicate(AnimationEvent<E> event)
+    {
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
+        return PlayState.CONTINUE;
+    }
 
 
     @Override
@@ -424,6 +446,12 @@ public class RoyalRedEntity extends WRDragonEntity
     //      C.3) Navigation and Control: Riding
     // ====================================
 
+
+    @Override
+    public boolean speciesCanBeRidden() {
+        return true;
+    }
+
     @Override
     public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
@@ -436,13 +464,18 @@ public class RoyalRedEntity extends WRDragonEntity
     @Override
     protected boolean canAddPassenger(Entity passenger)
     {
-        return isTame() && isJuvenile() && !isKnockedOut() && getPassengers().size() < 3;
+        return isJuvenile() && !isKnockedOut() && super.canAddPassenger(passenger);
+    }
+
+    @Override
+    public int getMaxPassengers() {
+        return 2;
     }
 
     @Override
     public Vec3 getPassengerPosOffset(Entity entity, int index)
     {
-        return new Vec3(0, getBbHeight() * 0.85f, index == 0? 0.5f : -1);
+        return new Vec3(0, getBbHeight() * 0.85f, index == 0? 1.75f : 1.0);
     }
 
     //TODO: Whole keybind logic
@@ -611,13 +644,13 @@ public class RoyalRedEntity extends WRDragonEntity
         goalSelector.addGoal(9, new FlyerWanderGoal(this, 1));
         goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
         goalSelector.addGoal(11, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(3, new WRRunWhenLosingGoal(this, 0.1f, 0.001f, 20f, 1.15f, 1f));
+        // TODO Replace this goal with a different WRFlyAwayWhenLosingGoal. Pretty sure RRs would just walk away and not use their wings which... isn't that smart.
+        goalSelector.addGoal(3, new WRRunWhenLosingGoal(this, 0.2f, 0.001f, 20f, 1.15f, 1f));
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));
         targetSelector.addGoal(4, new HurtByTargetGoal(this));
-        //TODO: Target Villagers, etc.
-        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, e -> e.getType() == EntityType.PLAYER || e instanceof Animal));
+        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, e -> e.getType() == EntityType.PLAYER || e instanceof Animal || e instanceof AbstractVillager));
     }
 
     // ====================================
@@ -705,7 +738,6 @@ public class RoyalRedEntity extends WRDragonEntity
                 if (getRandom().nextDouble() < 0.001 || distFromTarget > 900) {
                     setNavigator(NavigationType.FLYING);
                 }
-
 
                 //GoalLogic: Do either breathe fire or melee attack
                 //Goal Logic: Option 1 - Breathe Fire

@@ -1425,13 +1425,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return false;
     }
 
-    public boolean getSwimmingNavigation() {
-       return getNavigation() instanceof WRSwimmingNavigator;
-    }
 
     // ====================================
     //      C.3) Navigation and Control: Riding
     // ====================================
+
+    public abstract boolean speciesCanBeRidden();
+
+    public int getMaxPassengers(){
+        return 1;
+    }
 
     @Override
     public void rideTick()
@@ -1584,7 +1587,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     protected boolean canAddPassenger(Entity entityIn)
     {
-        return false;
+        return isTame() && speciesCanBeRidden() && getPassengers().size() < getMaxPassengers();
     }
     // ====================================
     //      D) Taming

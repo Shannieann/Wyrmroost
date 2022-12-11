@@ -115,6 +115,11 @@ public class SilverGliderEntity extends WRDragonEntity
     }
 
     @Override
+    public boolean speciesCanBeRidden() {
+        return false;
+    }
+
+    @Override
     public void rideTick()
     {
         super.rideTick();
