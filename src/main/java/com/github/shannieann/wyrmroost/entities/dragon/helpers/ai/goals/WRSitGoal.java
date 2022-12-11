@@ -1,7 +1,6 @@
 package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
@@ -59,8 +58,8 @@ public class WRSitGoal extends SitWhenOrderedToGoal
 
         // add some variance
         int followRange = Mth.floor(dragon.getAttributeValue(Attributes.FOLLOW_RANGE));
-        int ox = followRange - dragon.getRandom().nextInt(followRange) * 2;
-        int oz = followRange - dragon.getRandom().nextInt(followRange) * 2;
+        int ox = followRange - rand.nextInt(followRange) * 2;
+        int oz = followRange - rand.nextInt(followRange) * 2;
         ground.setX(ox);
         ground.setZ(oz);
 
