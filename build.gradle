@@ -51,7 +51,6 @@ minecraft {
 
         client2 {
             parent(null, "client")
-            args '--username', 'Dev2'
         }
 
         server {
