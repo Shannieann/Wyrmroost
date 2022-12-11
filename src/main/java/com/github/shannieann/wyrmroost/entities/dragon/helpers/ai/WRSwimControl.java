@@ -1,6 +1,5 @@
 package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai;
 
-
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.control.MoveControl;
@@ -40,7 +39,7 @@ public class WRSwimControl extends MoveControl {
                 else if ((this.entity.getTarget() != null) || this.entity.canBeControlledByRider()) {
                     maxTurnYaw = 15;
                 } else {
-                    maxTurnYaw = 90;
+                    maxTurnYaw = 4;
                 }
                 this.entity.setYRot(this.rotlerp(currentAngleYaw, desiredAngleYaw, maxTurnYaw));
                 this.entity.yBodyRot = this.entity.getYRot();
@@ -56,7 +55,8 @@ public class WRSwimControl extends MoveControl {
                     if (Math.abs(entityToTargetY) > (double)1.0E-5F || Math.abs(horizontalDistanceToTarget) > (double)1.0E-5F) {
                         float desiredAnglePitch = -((float)(Mth.atan2(entityToTargetY, horizontalDistanceToTarget) * (double)(180F / (float)Math.PI)));
                         desiredAnglePitch = Mth.clamp(Mth.wrapDegrees(desiredAnglePitch), (float)(-this.maxTurnPitch), (float)this.maxTurnPitch);
-                        this.entity.setXRot(this.rotlerp(this.entity.getXRot(), desiredAnglePitch, 20.0F));
+                        float currentAnglePitch = this.entity.getXRot();
+                        this.entity.setXRot(this.rotlerp(currentAnglePitch, desiredAnglePitch, 20.0F));
                     }
                     //Adjust acceleration components, this ensures the entity does not freeze entirely when reaching its target...
                     float f4 = Mth.cos(this.entity.getXRot() * ((float)Math.PI / 180F));

@@ -32,7 +32,7 @@ public class RenderButterflyLeviathan extends GeoEntityRenderer<ButterflyLeviath
     }
     //TODO: Scale upwards based on age
 
-    /*
+
     @Override
     public void renderEarly(ButterflyLeviathanEntity animatable, PoseStack stackIn, float ticks,
                             MultiBufferSource renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn,
@@ -40,8 +40,6 @@ public class RenderButterflyLeviathan extends GeoEntityRenderer<ButterflyLeviath
         super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn,
                 red, green, blue, partialTicks);
 
-        stackIn.scale(0.2F,0.2F,0.2F);
-
-
-     */
+        stackIn.scale(4.0F, 4.0F, 4.0F);
+    }
 }

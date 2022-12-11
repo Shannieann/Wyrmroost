@@ -2,7 +2,6 @@ package com.github.shannieann.wyrmroost.client.model.entity.dragon;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.entities.dragon.ButterflyLeviathanEntity;
-import com.github.shannieann.wyrmroost.entities.dragon.RoyalRedEntity;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
@@ -38,12 +37,14 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
         float rotationYawMultiplier = 1.4F;
         float rotationPitchMultiplier = 10.0F;
 
+        /*
         IBone head = this.getAnimationProcessor().getBone("head");
         EntityModelData extraData = (EntityModelData) animationEvent.getExtraDataOfType(EntityModelData.class).get(0);
         if (head != null) {
             head.setRotationX(extraData.headPitch * Mth.DEG_TO_RAD);
             head.setRotationY(extraData.netHeadYaw * Mth.DEG_TO_RAD);
         }
+        */
 
         float setPitchValue;
         if (!animatable.getBreaching()) {
@@ -52,8 +53,6 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
             setPitchValue = animatable.currentPitchRadians;
         }
         this.getAnimationProcessor().getBone("ibody1").setRotationX(-setPitchValue);
-
-
 
         if (animatable.isUsingSwimmingNavigator()) {
             //deltaYaw operations
@@ -73,6 +72,7 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
             //deltaPitch operations
             float setExtremityPitchValue = animatable.prevSetExtremityPitch+(animatable.setExtremityPitch-animatable.prevSetExtremityPitch)*animationEvent.getPartialTick();
             this.getAnimationProcessor().getBone("ineck1").setRotationX(-setExtremityPitchValue * rotationPitchMultiplier);
+            this.getAnimationProcessor().getBone("itail1").setRotationX(-setExtremityPitchValue * rotationPitchMultiplier);
         }
     }
 }

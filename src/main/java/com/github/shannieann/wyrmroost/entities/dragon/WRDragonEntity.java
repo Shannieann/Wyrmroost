@@ -4,7 +4,6 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.WRSwimControl;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.WRSwimmingNavigator;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
@@ -48,7 +47,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -56,12 +54,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
-import net.minecraft.world.entity.ai.control.SmoothSwimmingLookControl;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -96,11 +91,9 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 import software.bernie.geckolib3.util.GeckoLibUtil;
-
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.function.Predicate;
-
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 import static net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED;
 
@@ -194,11 +187,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     protected WRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         maxUpStep = 1;
+        //TODO: CONFIG
         this.noCulling = true;
         DragonInventory inv = createInv();
         inventory = LazyOptional.of(inv == null? null : () -> inv);
-        lookControl = new LessShitLookController(this);
-
         //TODO: DEFAULT NAVIGATORS
 
 
@@ -231,23 +223,22 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             if (this.getIsMovingAnimation()) {
                 //Ability + move (slow) Animations:
                 if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
-                    int movingState = this.getMovingState();
-                    switch (movingState) {
-                        case 0 -> animation = "walk_" + animation;
-                        case 1 -> animation = "fly_" + animation;
-                        case 2 -> animation = "swim_" + animation;
+                    NavigationType navigationType = this.getNavigationType();
+                    switch (navigationType) {
+                        case GROUND -> animation = "walk_" + animation;
+                        case FLYING -> animation = "fly_" + animation;
+                        case SWIMMING -> animation = "swim_" + animation;
                     }
                     event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, ILoopType.EDefaultLoopTypes.LOOP));
                     return PlayState.CONTINUE;
                 }
                 //Ability + move (fast) Animations:
                 if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
-                    int movingState = this.getMovingState();
-                    animation = switch (movingState) {
-                        case 0 -> "walk_fast_" + animation;
-                        case 1 -> "fly_fast_" + animation;
-                        case 2 -> "swim_fast_" + animation;
-                        default -> animation;
+                    NavigationType navigationType = this.getNavigationType();
+                    animation = switch (navigationType) {
+                        case GROUND -> "walk_fast_" + animation;
+                        case FLYING -> "fly_fast_" + animation;
+                        case SWIMMING -> "swim_fast_" + animation;
                     };
                     event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, ILoopType.EDefaultLoopTypes.LOOP));
                     return PlayState.CONTINUE;
@@ -278,20 +269,20 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         */
         //This moving only plays if it's *just* moving and not doing anything else, as its only reached under those conditions...
-        int movingState = this.getMovingState();
+        NavigationType navigationType = this.getNavigationType();
         if (this.getDeltaMovement().length() !=0 && this.isAggressive()) {
-            switch (movingState) {
-                case 0 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
-                case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly_fast", ILoopType.EDefaultLoopTypes.LOOP));
-                case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("swim_fast", ILoopType.EDefaultLoopTypes.LOOP));
+            switch (navigationType) {
+                case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
+                case FLYING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly_fast", ILoopType.EDefaultLoopTypes.LOOP));
+                case SWIMMING-> event.getController().setAnimation(new AnimationBuilder().addAnimation("swim_fast", ILoopType.EDefaultLoopTypes.LOOP));
             }
             return PlayState.CONTINUE;
         }
         if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
-            switch (movingState) {
-                case 0 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
-                case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
-                //case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
+            switch (navigationType) {
+                case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
+                case FLYING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
+                case SWIMMING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
             }
             return PlayState.CONTINUE;
         }
@@ -823,8 +814,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void tick() {
         super.tick();
         if (!level.isClientSide) {
-
-            setNavigator(getProperNavigator());
+            NavigationType properNavigator = getProperNavigator();
+            if (properNavigator != this.getNavigationType()) {
+                setNavigator(properNavigator);
+            }
 
             // todo figure out a better target system?
             LivingEntity target = getTarget();
@@ -1114,8 +1107,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 break;
             }
             case SWIMMING: {
-                this.moveControl = new WRSwimControl(this);
-                this.lookControl = new SmoothSwimmingLookControl(this, 10);
+                 this.moveControl = new WRSwimControl(this);
+                this.lookControl = new WRSwimmingLookControl(this, 10);
                 this.navigation = new WRSwimmingNavigator(this);
                 this.setMovingState(2);
                 break;
@@ -1990,6 +1983,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!isSleeping()) super.playAmbientSound();
     }
 
+
+    @Override
+    public void setYRot(float yRot){
+        this.yRot = yRot;
+    }
 
     // ====================================
     //      F) Goals

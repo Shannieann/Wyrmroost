@@ -90,7 +90,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     public static final int CONDUIT_SLOT = 0;
     public final float entityDeltaPitchLimit = 1.0F;
     public final float entityYawAdjustment = 0.30F;
-    public final float entityExtremityPitchAdjustment = 0.20F;
+    public final float entityExtremityPitchAdjustment = 0.01F;
 
     public final LerpedFloat beachedTimer = LerpedFloat.unit();
     public final LerpedFloat swimTimer = LerpedFloat.unit();

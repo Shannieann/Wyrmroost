@@ -31,3 +31,19 @@ forge*changelog.txt
 # Other Shit
 extra_assets
 logs
+src/main/resources/assets/minecraft/textures/misc/vignette.png.mcmeta
+src/main/resources/assets/minecraft/textures/misc/vignette.png
+src/main/resources/assets/minecraft/textures/misc/underwater.png
+src/main/resources/assets/minecraft/textures/block/water_still.png.mcmeta
+src/main/resources/assets/minecraft/textures/block/water_still.png
+src/main/resources/assets/minecraft/textures/block/water_overlay.png
+src/main/resources/assets/minecraft/textures/block/water_flow.png.mcmeta
+src/main/resources/assets/minecraft/textures/block/water_flow.png
+src/main/resources/assets/minecraft/textures/misc/vignette.png.mcmeta
+src/main/resources/assets/minecraft/textures/misc/vignette.png
+src/main/resources/assets/minecraft/textures/misc/underwater.png
+src/main/resources/assets/minecraft/textures/block/water_still.png.mcmeta
+src/main/resources/assets/minecraft/textures/block/water_still.png
+src/main/resources/assets/minecraft/textures/block/water_overlay.png
+src/main/resources/assets/minecraft/textures/block/water_flow.png.mcmeta
+src/main/resources/assets/minecraft/textures/block/water_flow.png
