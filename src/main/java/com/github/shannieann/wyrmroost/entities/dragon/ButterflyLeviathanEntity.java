@@ -46,23 +46,34 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.ForgeMod;
-
-
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
-//TODO: Tweak pitch adjustments
-//TODO: Yaw adjustments
-//TODO: BFL textures, etc
-//TODO: Jump out of water goal, speed
+//TODO: Ask dev feedback on rotations
+
+//TODO: THIS RELEASE: lightning bolt if near lightning rods
+
+//TODO: ASSETS
+//TODO: Texture: Lightning on/off
+//TODO: Texture Variants: base0, base1, special
+//TODO: No sexual dimorphism, remove logic
+//TODO: Child textures
+//TODO: Jump out of water goal
+//TODO: Nav switch, return to water goal
+
+//TODO: Other goals
+//TODO: New features:
+//TODO: Splash when hitting water
+//TODO: Fight design...
+//TODO: Taming, revolves around lightning
 
 //This class: See which methods are needed, which are not
 
 //Ground Nav <--> Swimmer Nav, test both
-//Return to water goal
+//Return to water goal, if no target...
 
 //LookRandomly, lookAtPlayer
 //Attack: BFL Attack
