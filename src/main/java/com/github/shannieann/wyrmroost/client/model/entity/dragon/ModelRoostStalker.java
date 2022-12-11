@@ -1,12 +1,8 @@
 package com.github.shannieann.wyrmroost.client.model.entity.dragon;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.DragonEyesLayer;
+import com.github.shannieann.wyrmroost.client.render.entity.dragon.layer.DragonEyesLayer;
 import com.github.shannieann.wyrmroost.entities.dragon.RoostStalkerEntity;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
@@ -41,7 +37,7 @@ public class ModelRoostStalker extends AnimatedGeoModel<RoostStalkerEntity> {
         private static final ResourceLocation EYES_TEXTURE_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/roost_stalker_eyes_sp.png");
 
         public RoostStalkerEyesLayer(IGeoRenderer<T> entityRendererIn) {
-            super(entityRendererIn);
+            super(entityRendererIn, ModelRoostStalker.MODEL_RESOURCE);
         }
 
 
@@ -54,16 +50,6 @@ public class ModelRoostStalker extends AnimatedGeoModel<RoostStalkerEntity> {
             }
         }
 
-        @Override
-        public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-            RenderType cameo = getRenderType(getEntityTexture(entityLivingBaseIn));
-            matrixStackIn.pushPose();
-            //TODO: Scale model by age
-            //TODO: Light up model?
-            this.getRenderer().render(this.getEntityModel().getModel(MODEL_RESOURCE), entityLivingBaseIn, partialTicks, cameo, matrixStackIn, bufferIn,
-                    bufferIn.getBuffer(cameo), packedLightIn, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
-            matrixStackIn.popPose();
-        }
     }
 }
 

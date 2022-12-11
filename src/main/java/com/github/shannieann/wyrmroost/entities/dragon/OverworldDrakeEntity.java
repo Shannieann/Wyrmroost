@@ -406,6 +406,11 @@ public class OverworldDrakeEntity extends WRDragonEntity
     }
 
     @Override
+    public boolean speciesCanBeRidden() {
+        return true;
+    }
+
+    @Override
     public boolean isFood(ItemStack stack)
     {
         return stack.is(Tags.Items.CROPS_WHEAT);
