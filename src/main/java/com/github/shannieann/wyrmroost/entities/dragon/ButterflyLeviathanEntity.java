@@ -539,6 +539,11 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     }
 
     @Override
+    public int getMaxPassengers() {
+        return 2;
+    }
+
+    @Override
     public Vec3 getPassengerPosOffset(Entity entity, int index)
     {
         return new Vec3(0, getPassengersRidingOffset(), index == 1? -2 : 0);
@@ -639,7 +644,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     @Override
     public boolean isFood(ItemStack stack)
     {
-        return stack.getItem().isEdible() && stack.getItem().getFoodProperties().isMeat();
+        return stack.isEdible() && stack.getFoodProperties(this).isMeat();
     }
 
     // ====================================

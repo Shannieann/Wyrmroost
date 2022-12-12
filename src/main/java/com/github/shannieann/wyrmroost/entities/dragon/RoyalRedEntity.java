@@ -396,7 +396,7 @@ public class RoyalRedEntity extends WRDragonEntity
     // ====================================
 
     public boolean speciesCanWalk(){
-        return false;
+        return true;
     }
 
 
