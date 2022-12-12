@@ -1,6 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon;
 
 import com.github.shannieann.wyrmroost.client.model.entity.dragon.ModelRoyalRed;
+import com.github.shannieann.wyrmroost.client.render.entity.dragon.layer.RiderLayer;
 import com.github.shannieann.wyrmroost.entities.dragon.RoyalRedEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -14,6 +15,7 @@ import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 public class RenderRoyalRed extends GeoEntityRenderer<RoyalRedEntity> {
     public RenderRoyalRed(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelRoyalRed());
+        this.addLayer(new RiderLayer<>(this));
         //TODO: Shadow?
     }
     //TODO: Scale upwards based on age

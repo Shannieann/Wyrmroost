@@ -312,6 +312,11 @@ public class RoostStalkerEntity extends WRDragonEntity
         return false;
     }
 
+    @Override
+    public boolean speciesCanBeRidden() {
+        return false;
+    }
+
     @Nullable
     @Override
     protected SoundEvent getAmbientSound()

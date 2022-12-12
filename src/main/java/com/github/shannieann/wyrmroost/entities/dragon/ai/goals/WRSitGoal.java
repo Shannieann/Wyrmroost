@@ -58,8 +58,8 @@ public class WRSitGoal extends SitWhenOrderedToGoal
 
         // add some variance
         int followRange = Mth.floor(dragon.getAttributeValue(Attributes.FOLLOW_RANGE));
-        int ox = followRange - dragon.getRandom().nextInt(followRange) * 2;
-        int oz = followRange - dragon.getRandom().nextInt(followRange) * 2;
+        int ox = followRange - rand.nextInt(followRange) * 2;
+        int oz = followRange - rand.nextInt(followRange) * 2;
         ground.setX(ox);
         ground.setZ(oz);
 

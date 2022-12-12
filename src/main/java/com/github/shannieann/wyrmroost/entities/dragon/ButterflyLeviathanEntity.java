@@ -527,13 +527,23 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         return true;
     }
 
+    @Override
+    public boolean speciesCanBeRidden() {
+        return true;
+    }
+
     // ====================================
     //      C.3) Navigation and Control: Riding
     // ====================================
     @Override // 2 passengers
     protected boolean canAddPassenger(Entity passenger)
     {
-        return isTame() && isJuvenile() && getPassengers().size() < 2;
+        return super.canAddPassenger(passenger) && isJuvenile();
+    }
+
+    @Override
+    public int getMaxPassengers() {
+        return 2;
     }
 
     @Override
@@ -637,7 +647,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     @Override
     public boolean isFood(ItemStack stack)
     {
-        return stack.getItem().isEdible() && stack.getItem().getFoodProperties().isMeat();
+        return stack.isEdible() && stack.getFoodProperties(this).isMeat();
     }
 
     // ====================================

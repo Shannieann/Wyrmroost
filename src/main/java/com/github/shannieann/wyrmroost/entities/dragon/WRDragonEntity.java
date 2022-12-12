@@ -1221,10 +1221,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (navigation instanceof WRSwimmingNavigator){
             return NavigationType.SWIMMING;
         }
-        if (navigation instanceof FlyerPathNavigator){
+        else if (navigation instanceof FlyerPathNavigator){
             return NavigationType.FLYING;
         }
-        if (navigation instanceof BetterPathNavigator){
+        else if (navigation instanceof BetterPathNavigator){
             return NavigationType.GROUND;
         }
         return NavigationType.GROUND;
@@ -1344,10 +1344,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public boolean dragonCanFly()
     {
-        if (speciesCanFly()) {
-            return isJuvenile() && !isLeashed() && speciesCanFly();
-        }
-        return false;
+        return isJuvenile() && !isLeashed() && speciesCanFly();
     }
 
     public boolean isUsingFlyingNavigator()
@@ -1427,13 +1424,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return false;
     }
 
-    public boolean getSwimmingNavigation() {
-       return getNavigation() instanceof WRSwimmingNavigator;
-    }
 
     // ====================================
     //      C.3) Navigation and Control: Riding
     // ====================================
+
+    public abstract boolean speciesCanBeRidden();
+
+    public int getMaxPassengers(){
+        return 1;
+    }
 
     @Override
     public void rideTick()
@@ -1496,8 +1496,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 return new Vec3(0, 1.81, 0);
             case 1:
                 return new Vec3(x, 1.38d, 0);
-            case 2:
-                return new Vec3(-x, 1.38d, 0);
         }
     }
 
@@ -1586,7 +1584,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     protected boolean canAddPassenger(Entity entityIn)
     {
-        return false;
+        return isTame() && speciesCanBeRidden() && getPassengers().size() < getMaxPassengers();
     }
     // ====================================
     //      D) Taming

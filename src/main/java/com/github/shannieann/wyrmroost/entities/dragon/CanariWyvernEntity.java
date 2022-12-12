@@ -216,6 +216,11 @@ public class CanariWyvernEntity extends WRDragonEntity
     }
 
     @Override
+    public boolean speciesCanBeRidden() {
+        return false;
+    }
+
+    @Override
     public boolean isFood(ItemStack stack)
     {
         return stack.getItem() == Items.SWEET_BERRIES;

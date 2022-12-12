@@ -6,9 +6,7 @@ import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.client.render.entity.DragonEggRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.*;
-import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.CanariWyvernRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.OWDrakeRenderer;
-import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.RoostStalkerRenderer2;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.SilverGliderRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.effect.RenderLightningSphere;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
@@ -42,6 +40,10 @@ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
+
 /**
  * EventBus listeners on CLIENT distribution
  * Also a client helper class because yes.
@@ -49,6 +51,7 @@ import org.lwjgl.glfw.GLFW;
 @SuppressWarnings("unused")
 public class ClientEvents
 {
+    public static Set<UUID> dragonRiders = new HashSet<>();
     public static boolean keybindFlight = true;
 
     public static void init()
@@ -67,6 +70,9 @@ public class ClientEvents
         forgeBus.addListener(RenderHelper::renderOverlay);
         forgeBus.addListener(RenderHelper::renderEntities);
         forgeBus.addListener(ClientEvents::cameraPerspective);
+        forgeBus.addListener(ClientEvents::preLivingRender);
+        forgeBus.addListener(ClientEvents::postLivingRender);
+        //forgeBus.addListener(ClientEvents::postLivingRender);
         forgeBus.addListener(ClientEvents::onKeyInput);
 
         //WRDimensionRenderInfo.init();
@@ -139,6 +145,21 @@ public class ClientEvents
     // =====================
     //      Forge Bus
     // =====================
+
+    private static void cancelIfRidingDragon(RenderLivingEvent event){
+        Entity entity = event.getEntity().getVehicle();
+        if (entity instanceof WRDragonEntity dragon) {
+            if (dragonRiders.contains(event.getEntity().getUUID())) event.setCanceled(true); // Don't render the real player if they're riding a dragon
+            CameraType camera = getClient().options.getCameraType();
+            if (getClient().player == event.getEntity() && camera == CameraType.FIRST_PERSON) event.setCanceled(true); // Don't render the "fake" player if the player is in 1st person
+        }
+    }
+    private static void preLivingRender(RenderLivingEvent.Pre event){
+        cancelIfRidingDragon(event);
+    }
+    private static void postLivingRender(RenderLivingEvent.Post event){
+        cancelIfRidingDragon(event);
+    }
 
     private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event)
     {
