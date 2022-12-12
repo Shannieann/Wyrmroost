@@ -53,49 +53,37 @@ import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
-//TODO: Ask dev feedback on rotations
 
-//TODO: CLASS: Tidy up
-
-//TODO: ASSETS:
-//TODO: Texture: Lightning on/off
-//TODO: Texture Variants: base0, base1, special
-//TODO: No sexual dimorphism, remove logic
-//TODO: Child textures
-
-//TODO: GOALS:
-//TODO: MOVEMENT: Jump out of water goal
-//TODO: MOVEMENT: Return to water goal, test position, must be two deep
-//TODO: MOVEMENT: Test Nav Switch
-//TODO: ATTACK: Reimplement whole logic...
-//TODO: ATTACK: If lightning rods near it, can attack
-
-//TODO: GENERAL
-
-
-//TODO: Other goals
-//TODO: New features:
-//TODO: Splash when hitting water
-//TODO: Fight design...
-//TODO: Taming, revolves around lightning
-
+//TODO: CLASS:
+//Tidy up
 //This class: See which methods are needed, which are not
-
-//Ground Nav <--> Swimmer Nav, test both
-//Return to water goal, if no target...
-
-//LookRandomly, lookAtPlayer
-//Attack: BFL Attack
-//Attack: Dive and Leap?
-//Attack: Nova?
-
 //Fix serializer
 
+//TODO: ASSETS:
+//Texture: Lightning on/off
+//Texture Variants: base0, base1, special
+//No sexual dimorphism, remove logic
+//Child textures
+
+//TODO: GOALS:
+//MOVEMENT: Jump out of water goal
+//MOVEMENT: Return to water goal, test position, must be two deep
+//MOVEMENT: Test Nav Switch
+//ATTACK: Reimplement whole logic...
+//ATTACK: If lightning rods near it, can attack
+//LOOKING: re-implement
+
+//TODO: ANIMATIONS
+//DO NOT CALC PITCH IF GROUND IS BENEATH IT
+
+//TODO: TAMING
 //Ride logic + rewrite keybinds
-//All tamed goals
+//All goals when tamed
 //Eggs, breeding, taming
 
-//Config Spawn + TidyUp EntityTypeRegistry
+//TODO: FINAL
+//Config spawn
+//Tidy up EntityTypeRegistry
 
 public class ButterflyLeviathanEntity extends WRDragonEntity
 {
@@ -712,7 +700,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         //goalSelector.addGoal(4, new AttackGoal());
         
         //goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1));
-        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,20));
+        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
         //goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 10,32,24));
 
 //        goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
