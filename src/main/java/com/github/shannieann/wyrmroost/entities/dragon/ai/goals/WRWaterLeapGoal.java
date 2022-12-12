@@ -69,7 +69,13 @@ public class WRWaterLeapGoal extends AnimatedGoal {
 
     @Override
     public boolean canContinueToUse() {
+        if (!step1Done && entity.getNavigation().isDone()) {
+            return false;
+        }
         if (!step1Done && !entity.isInWater()) {
+            return false;
+        }
+        if (!step2Done && entity.getNavigation().isDone()) {
             return false;
         }
         if (stopFlag) {
@@ -79,7 +85,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             return false;
         }
         //If it has finished all the steps and its had time to perform the return animation, stop the Goal.
-        if (finalTicks > 15) {
+        if (finalTicks > 30) {
             return false;
         }
         //If it's somehow using the landNavigator, do stop goal. Goal only makes sense for waterNavigator.
@@ -94,7 +100,6 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     public void start() {
         entity.getLookControl().setLookAt(initialPosition.x,initialPosition.y,initialPosition.z);
         entity.getNavigation().moveTo(initialPosition.x, initialPosition.y, initialPosition.z, speedTowardsTarget);
-        entity.setBreaching(true);
     }
 
     @Override
@@ -109,10 +114,11 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             //Check to see if we have reached the first position...
            if (entity.distanceToSqr(initialPosition.x, initialPosition.y, initialPosition.z) < 16.0F) {
                 step1Done = true;
-                //Move to next position, at increased speed
+                entity.setBreaching(true);
+               //Move to next position, at increased speed
                 super.start(breachStartAnimation, 1, 10,false);
-                //entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, 2*speedTowardsTarget);
-            } else if (entity.getNavigation().isDone()) {
+                entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, 2*speedTowardsTarget);
+            } else if (entity.getNavigation().isStuck()) {
                 stopFlag = true;
             }
         }
@@ -125,7 +131,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                 super.start(breachFlyAnimation, 1, 10, false);
                 entity.getNavigation().stop();
                 step2Done = true;
-            } else if (entity.getNavigation().isDone()) {
+            } else if (entity.getNavigation().isStuck()) {
                 //If navigation somehow stops and its still in the water, stop the goal..
                 stopFlag = true;
             } else {
@@ -134,14 +140,16 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         }
 
         //Step 3:
-        if (step2Done && this.entity.isInWater()) {
-            //As soon as it returns to the water...
-            //Play breach end...
-            super.start(breachEndAnimation, 1, 15,false);
-            step3Done = true;
-        } else {
-            //If it has not yet reached the water, keep flying...
-            super.start(breachFlyAnimation, 1, 10,false);
+        if (step2Done) {
+            if (this.entity.isInWater()) {
+                //As soon as it returns to the water...
+                //Play breach end...
+                super.start(breachEndAnimation, 1, 15, false);
+                step3Done = true;
+            } else {
+                //If it has not yet reached the water, keep flying...
+                super.start(breachFlyAnimation, 1, 10, false);
+            }
         }
 
         //Step 4:
@@ -159,8 +167,10 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         stopFlag = false;
         waterTargetPosition = null;
         initialPosition = null;
+        finalTicks = 0;
         entity.setBreaching(false);
         entity.getNavigation().stop();
+        System.out.println("GOAL STOPPED");
         super.stop();
     }
 }

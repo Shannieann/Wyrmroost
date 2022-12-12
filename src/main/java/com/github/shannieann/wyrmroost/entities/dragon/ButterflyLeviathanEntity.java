@@ -712,8 +712,8 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         //goalSelector.addGoal(4, new AttackGoal());
         
         //goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1));
-        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 2,12,20));
-        goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 10,32,24));
+        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,20));
+        //goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 10,32,24));
 
 //        goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
 //        goalSelector.addGoal(9, new RandomLookAroundGoal(this));

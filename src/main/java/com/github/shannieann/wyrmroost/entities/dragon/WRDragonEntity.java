@@ -402,7 +402,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return entityData.get(ANIMATION);
     }
 
-    public void setAnimation(String animation) {entityData.set(ANIMATION, animation);}
+    public void setAnimation(String animation) {
+        entityData.set(ANIMATION, animation);
+    }
 
     public int getAnimationType()
     {
