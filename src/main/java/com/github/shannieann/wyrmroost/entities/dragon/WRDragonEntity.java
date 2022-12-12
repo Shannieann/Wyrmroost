@@ -1119,6 +1119,61 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
 
+
+    public NavigationType getProperNavigator(){
+        //Priority order:
+        //1.- Swimming
+        //2.- Flying
+        //3.- Ground
+
+        //All the checks for speciesCanX is performed here...
+        //We only check the shouldCondition if it makes sense according to the speciesCanX...
+        boolean shouldUseFlyingNavigator = false;
+        boolean shouldUseSwimmingNavigator = false;
+        NavigationType navigationType = getNavigationType();
+        boolean isUsingSwimmingNavigator = (navigationType == NavigationType.SWIMMING);
+        boolean isUsingFlyingNavigator = (navigationType == NavigationType.FLYING);
+
+        if (speciesCanSwim()) {
+            //Local variable to avoid multiple method calls..
+            shouldUseSwimmingNavigator = shouldUseSwimmingNavigator();
+            if (shouldUseSwimmingNavigator != isUsingSwimmingNavigator) {
+                return NavigationType.SWIMMING;
+            }
+        }
+        if (speciesCanFly()) {
+            shouldUseFlyingNavigator = shouldUseFlyingNavigator();
+            if (shouldUseFlyingNavigator != isUsingFlyingNavigator) {
+                return NavigationType.FLYING;
+            }
+        }
+        if (speciesCanWalk()) {
+            if (!shouldUseFlyingNavigator && !shouldUseSwimmingNavigator) {
+                return NavigationType.GROUND;
+            }
+        }
+        //None of the conditions are met, we keep using the previous navigator.
+        return navigationType;
+    }
+
+    public NavigationType getNavigationType(){
+        PathNavigation navigation = this.getNavigation();
+        if (navigation instanceof WRSwimmingNavigator){
+            return NavigationType.SWIMMING;
+        }
+        else if (navigation instanceof FlyerPathNavigator){
+            return NavigationType.FLYING;
+        }
+        else if (navigation instanceof BetterPathNavigator){
+            return NavigationType.GROUND;
+        }
+        return NavigationType.GROUND;
+    }
+
+    public boolean isLandNavigator(){
+        return this.getNavigation() instanceof GroundPathNavigation;
+    }
+
     @Override
     protected BodyRotationControl createBodyControl()
     {
@@ -1129,6 +1184,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void travel(Vec3 vec3d){
         float speed = getTravelSpeed();
         boolean isFlying = isUsingFlyingNavigator();
+        //TODO: PASSENGER LOGIC
         if (canBeControlledByRider()) // Were being controlled; override ai movement
         {
             LivingEntity entity = (LivingEntity) getControllingPassenger();
@@ -1179,57 +1235,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
     }
 
-
-    public NavigationType getProperNavigator(){
-        //Priority order:
-            //1.- Swimming
-            //2.- Flying
-            //3.- Ground
-
-        //All the checks for speciesCanX is performed here...
-        //We only check the shouldCondition if it makes sense according to the speciesCanX...
-        boolean shouldUseFlyingNavigator = false;
-        boolean shouldUseSwimmingNavigator = false;
-        NavigationType navigationType = getNavigationType();
-        boolean isUsingSwimmingNavigator = (navigationType == NavigationType.SWIMMING);
-        boolean isUsingFlyingNavigator = (navigationType == NavigationType.FLYING);
-
-        if (speciesCanSwim()) {
-            //Local variable to avoid multiple method calls..
-            shouldUseSwimmingNavigator = shouldUseSwimmingNavigator();
-            if (shouldUseSwimmingNavigator != isUsingSwimmingNavigator) {
-                return NavigationType.SWIMMING;
-            }
-        }
-        if (speciesCanFly()) {
-            shouldUseFlyingNavigator = shouldUseFlyingNavigator();
-            if (shouldUseFlyingNavigator != isUsingFlyingNavigator) {
-                return NavigationType.FLYING;
-            }
-        }
-        if (speciesCanWalk()) {
-            if (!shouldUseFlyingNavigator && !shouldUseSwimmingNavigator) {
-                return NavigationType.GROUND;
-            }
-        }
-        //None of the conditions are met, we keep using the previous navigator.
-        return navigationType;
-    }
-
-    public NavigationType getNavigationType(){
-        PathNavigation navigation = this.getNavigation();
-        if (navigation instanceof WRSwimmingNavigator){
-            return NavigationType.SWIMMING;
-        }
-        else if (navigation instanceof FlyerPathNavigator){
-            return NavigationType.FLYING;
-        }
-        else if (navigation instanceof BetterPathNavigator){
-            return NavigationType.GROUND;
-        }
-        return NavigationType.GROUND;
-    }
-
     public boolean isIdling()
     {
         return getNavigation().isDone() && getTarget() == null && !isVehicle() && !isInWaterOrBubble() && !isUsingFlyingNavigator();
@@ -1257,11 +1262,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return false;
     }
 
-    public boolean isLandNavigator(){
-        return this.getNavigation() instanceof GroundPathNavigation;
-    }
-
-
 
     @Override
     public float getWalkTargetValue(BlockPos pPos, LevelReader pLevel) {
@@ -1277,46 +1277,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public abstract boolean speciesCanFly();
 
-
-    /*
-    public boolean isUsingFlyingNavigator()
-    {
-        return hasEntityDataAccessor(FLYING) && entityData.get(FLYING);
-    }
-
-     */
-
-    /*
-    public void setFlying(boolean fly)
-    {
-        if (isUsingFlyingNavigator() == fly) return;
-        entityData.set(FLYING, fly);
-        if (fly) {
-            if (liftOff()) {
-                System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
-                this.setMovingState(1);
-                navigation = new FlyerPathNavigator(this);
-            }
-        }
-        else {
-            System.out.println("BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB");
-            this.setMovingState(0);
-            navigation = new BetterPathNavigator(this);
-        }
-    }
-
-     */
-
-
-    /*
-    public boolean shouldFly()
-    {
-        return dragonCanFly() && getAltitude() > 1 && !isUsingSwimmingNavigator();
-    }
-     */
-
-    public boolean shouldUseFlyingNavigator()
-    {
+    public boolean shouldUseFlyingNavigator() {
         if (getAltitude() >1) {
             if (!speciesCanSwim() && isUnderWater()) {
                 return false;
@@ -1326,8 +1287,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return false;
     }
 
-    public boolean canLiftOff()
-    {
+    public boolean canLiftOff() {
         if (!dragonCanFly()) {
             return false;
         }
@@ -1352,8 +1312,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return getNavigation() instanceof FlyerPathNavigator;
     }
 
-    public double getAltitude()
-    {
+    public double getAltitude() {
         BlockPos.MutableBlockPos pos = blockPosition().mutable();
 
         // cap to the level void (y = 0)
@@ -1361,31 +1320,27 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return getY() - pos.getY();
     }
 
-    public int getFlightThreshold()
-    {
+    public int getFlightThreshold() {
         return (int) getBbHeight();
     }
 
-    public int getYawRotationSpeed()
-    {
+    public int getYawRotationSpeed() {
         return isUsingFlyingNavigator()? 6 : 75;
     }
 
-    public void flapWings()
-    {
+    //TODO: ???
+    public void flapWings() {
         playSound(WRSounds.WING_FLAP.get(), 3, 1, false);
         setDeltaMovement(getDeltaMovement().add(0, 1.285, 0));
     }
 
     @Override
-    protected float getJumpPower()
-    {
+    protected float getJumpPower() {
         return dragonCanFly()? (getBbHeight() * getBlockJumpFactor()) * 0.6f : super.getJumpPower();
     }
 
     @Override // Disable fall calculations if we can fly (fall damage etc.)
-    public boolean causeFallDamage(float distance, float damageMultiplier, DamageSource source)
-    {
+    public boolean causeFallDamage(float distance, float damageMultiplier, DamageSource source) {
         return !dragonCanFly() && super.causeFallDamage(distance - (int) (getBbHeight() * 0.8), damageMultiplier, source);
     }
 
@@ -1395,8 +1350,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public abstract boolean speciesCanSwim();
 
-    public boolean isUsingSwimmingNavigator()
-    {
+    public boolean isUsingSwimmingNavigator() {
         return getNavigation() instanceof WRSwimmingNavigator;
     }
 
