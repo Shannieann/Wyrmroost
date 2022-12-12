@@ -4,7 +4,6 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.LessShitLookController;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRWaterLeapGoal;
@@ -85,14 +84,14 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //Config spawn
 //Tidy up EntityTypeRegistry
 
-public class ButterflyLeviathanEntity extends WRDragonEntity
+public class EntityButterflyLeviathan extends WRDragonEntity
 {
     //TODO: Correct ALL Serializers
-    public static final EntitySerializer<ButterflyLeviathanEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+    public static final EntitySerializer<EntityButterflyLeviathan> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
-    public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(ButterflyLeviathanEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.BOOLEAN);
     public static final int CONDUIT_SLOT = 0;
     public final float entityDeltaPitchLimit = 1.0F;
     public final float entityYawAdjustment = 0.30F;
@@ -104,7 +103,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     public int lightningCooldown = 0;
     public boolean beached = true;
 
-    public ButterflyLeviathanEntity(EntityType<? extends WRDragonEntity> entityType, Level level)
+    public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level)
     {
         super(entityType, level);
         noCulling = WRConfig.NO_CULLING.get();
@@ -140,7 +139,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
     }
 
     @Override
-    public EntitySerializer<ButterflyLeviathanEntity> getSerializer()
+    public EntitySerializer<EntityButterflyLeviathan> getSerializer()
     {
         return SERIALIZER;
     }
@@ -750,15 +749,15 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
             if (getNavigation().isDone())
                 getNavigation().moveTo(target, 1.2);
 
-            if (isClose) yRot = (float) Mafs.getAngle(ButterflyLeviathanEntity.this, target) + 90f;
+            if (isClose) yRot = (float) Mafs.getAngle(EntityButterflyLeviathan.this, target) + 90f;
 
             /*
             if (noAnimations())
             {
                 if (distFromTarget > 225 && (isTame() || target.getType() == EntityType.PLAYER) && canZap())
-                    AnimationPacket.send(ButterflyLeviathanEntity.this, LIGHTNING_ANIMATION);
-                else if (isClose && Mth.degreesDifferenceAbs((float) Mafs.getAngle(ButterflyLeviathanEntity.this, target) + 90, yRot) < 30)
-                    AnimationPacket.send(ButterflyLeviathanEntity.this, BITE_ANIMATION);
+                    AnimationPacket.send(EntityButterflyLeviathan.this, LIGHTNING_ANIMATION);
+                else if (isClose && Mth.degreesDifferenceAbs((float) Mafs.getAngle(EntityButterflyLeviathan.this, target) + 90, yRot) < 30)
+                    AnimationPacket.send(EntityButterflyLeviathan.this, BITE_ANIMATION);
             }
 
              */

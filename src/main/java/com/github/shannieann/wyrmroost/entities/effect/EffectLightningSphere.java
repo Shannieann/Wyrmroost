@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entities.effect;
 
-import com.github.shannieann.wyrmroost.entities.dragon.ButterflyLeviathanEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.EntityButterflyLeviathan;
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -70,7 +70,7 @@ public class EffectLightningSphere extends Entity implements IEntityAdditionalSp
     }
 
     public boolean canImpactEntity(Entity entity) {
-        if (entity instanceof ButterflyLeviathanEntity) {
+        if (entity instanceof EntityButterflyLeviathan) {
             return false;
         }
         if (!entity.isAlive()) {

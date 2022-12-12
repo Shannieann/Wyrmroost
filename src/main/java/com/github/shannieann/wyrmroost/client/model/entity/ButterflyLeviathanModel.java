@@ -3,7 +3,7 @@ package com.github.shannieann.wyrmroost.client.model.entity;
 /*import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
-import com.github.shannieann.wyrmroost.entities.dragon.ButterflyLeviathanEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import com.mojang.blaze3d.matrix.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -23,7 +23,7 @@ import org.apache.commons.lang3.ArrayUtils;
 /**
  * butterfly leviathan - Kingdomall
  * Created using Tabula 8.0.0
-public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviathanEntity>
+public class ButterflyLeviathanModel extends DragonEntityModel<EntityButterflyLeviathan>
 {
     public static final ResourceLocation BLUE = texture("body_blue.png");
     public static final ResourceLocation PURPLE = texture("body_purple.png");
@@ -336,7 +336,7 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
     }
 
     @Override
-    public ResourceLocation getTexture(ButterflyLeviathanEntity entity)
+    public ResourceLocation getTexture(EntityButterflyLeviathan entity)
     {
         switch (entity.getVariant())
         {
@@ -351,13 +351,13 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
     }
 
     @Override
-    public float getShadowRadius(ButterflyLeviathanEntity entity)
+    public float getShadowRadius(EntityButterflyLeviathan entity)
     {
         return 2f;
     }
 
     @Override
-    public void scale(ButterflyLeviathanEntity entity, PoseStack ms, float partialTicks)
+    public void scale(EntityButterflyLeviathan entity, PoseStack ms, float partialTicks)
     {
         super.scale(entity, ms, partialTicks);
         ms.scale(3f, 3f, 3f);
@@ -370,7 +370,7 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
     }
 
     @Override
-    public void postProcess(ButterflyLeviathanEntity entity, PoseStack ms, MultiBufferSource buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks)
+    public void postProcess(EntityButterflyLeviathan entity, PoseStack ms, MultiBufferSource buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks)
     {
         float powerAlpha = Mth.clamp(entity.lightningCooldown, 1, 255);
         if (powerAlpha > 0)
@@ -384,7 +384,7 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
 
     private void renderConduit(PoseStack ms, MultiBufferSource buffer, int light, float age, float yaw, float pitch)
     {
-        if ((entity.getAnimation() == ButterflyLeviathanEntity.CONDUIT_ANIMATION && entity.getAnimationTick() < 15) || !entity.hasConduit())
+        if ((entity.getAnimation() == EntityButterflyLeviathan.CONDUIT_ANIMATION && entity.getAnimationTick() < 15) || !entity.hasConduit())
             return;
 
         float rotation = (age * -0.0375f) * (180f / Mafs.PI);
@@ -437,7 +437,7 @@ public class ButterflyLeviathanModel extends DragonEntityModel<ButterflyLeviatha
     }
 
     @Override
-    public void setupAnim(ButterflyLeviathanEntity entity, float limbSwing, float limbSwingAmount, float bob, float yaw, float pitch)
+    public void setupAnim(EntityButterflyLeviathan entity, float limbSwing, float limbSwingAmount, float bob, float yaw, float pitch)
     {
         reset();
         animator().tick(entity, this, partialTicks);

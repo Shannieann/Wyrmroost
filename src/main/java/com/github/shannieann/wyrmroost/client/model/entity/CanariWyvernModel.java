@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.model.entity;
 
 /*import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.CanariWyvernEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.EntityCanariWyvern;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import com.mojang.blaze3d.matrix.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -14,7 +14,7 @@ import java.util.Random;
 /**
  * WRCanariWyvern - Ukan
  * Created using Tabula 7.0.1
-public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity>
+public class CanariWyvernModel extends DragonEntityModel<EntityCanariWyvern>
 {
     private static final ResourceLocation[] TEXTURES = new ResourceLocation[10];
 
@@ -387,7 +387,7 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity>
     }
 
     @Override
-    public ResourceLocation getTexture(CanariWyvernEntity canari)
+    public ResourceLocation getTexture(EntityCanariWyvern canari)
     {
         if (canari.hasCustomName())
         {
@@ -403,13 +403,13 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity>
     }
 
     @Override
-    public float getShadowRadius(CanariWyvernEntity entity)
+    public float getShadowRadius(EntityCanariWyvern entity)
     {
         return 0.5f;
     }
 
     @Override
-    public void scale(CanariWyvernEntity entity, PoseStack ms, float partialTicks)
+    public void scale(EntityCanariWyvern entity, PoseStack ms, float partialTicks)
     {
         super.scale(entity, ms, partialTicks);
         ms.scale(0.5f, 0.5f, 0.5f);
@@ -423,7 +423,7 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity>
     }
 
     @Override
-    public void setupAnim(CanariWyvernEntity entity, float limbSwing, float limbSwingAmount, float bob, float yaw, float pitch)
+    public void setupAnim(EntityCanariWyvern entity, float limbSwing, float limbSwingAmount, float bob, float yaw, float pitch)
     {
         reset();
         animator().tick(entity, this, partialTicks);
@@ -467,7 +467,7 @@ public class CanariWyvernModel extends DragonEntityModel<CanariWyvernEntity>
 
         idle(bob);
 
-        if (this.entity.isUsingFlyingNavigator() && entity.getAnimation() != CanariWyvernEntity.ATTACK_ANIMATION)
+        if (this.entity.isUsingFlyingNavigator() && entity.getAnimation() != EntityCanariWyvern.ATTACK_ANIMATION)
             body1.xRot = pitch * (Mafs.PI / 180f);
         faceTarget(yaw, pitch, 1, neck1, neck2, head);
     }

@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon;
 
 import com.github.shannieann.wyrmroost.client.model.entity.dragon.ModelButterflyLeviathan;
-import com.github.shannieann.wyrmroost.entities.dragon.ButterflyLeviathanEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.EntityButterflyLeviathan;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
-public class RenderButterflyLeviathan extends GeoEntityRenderer<ButterflyLeviathanEntity> {
+public class RenderButterflyLeviathan extends GeoEntityRenderer<EntityButterflyLeviathan> {
     public RenderButterflyLeviathan(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelButterflyLeviathan());
         //TODO: Shadow?
@@ -21,20 +21,20 @@ public class RenderButterflyLeviathan extends GeoEntityRenderer<ButterflyLeviath
     }
 
     @Override
-    public RenderType getRenderType(ButterflyLeviathanEntity animatable, float partialTick, PoseStack poseStack, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight, ResourceLocation texture) {
+    public RenderType getRenderType(EntityButterflyLeviathan animatable, float partialTick, PoseStack poseStack, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight, ResourceLocation texture) {
         return RenderType.entityCutoutNoCull(texture);
     }
 
     //TODO: REMOVE
     @Override
-    protected int getBlockLightLevel(ButterflyLeviathanEntity entityIn, BlockPos partialTicks) {
+    protected int getBlockLightLevel(EntityButterflyLeviathan entityIn, BlockPos partialTicks) {
         return 15;
     }
     //TODO: Scale upwards based on age
 
 
     @Override
-    public void renderEarly(ButterflyLeviathanEntity animatable, PoseStack stackIn, float ticks,
+    public void renderEarly(EntityButterflyLeviathan animatable, PoseStack stackIn, float ticks,
                             MultiBufferSource renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn,
                             float red, float green, float blue, float partialTicks) {
         super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn,

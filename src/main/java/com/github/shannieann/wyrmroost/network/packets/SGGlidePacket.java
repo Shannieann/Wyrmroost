@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.network.packets;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.SilverGliderEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.EntitySilverGlider;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -33,9 +33,9 @@ public class SGGlidePacket
         if (reciever != null && !reciever.getPassengers().isEmpty())
         {
             Entity entity = reciever.getPassengers().get(0);
-            if (entity instanceof SilverGliderEntity)
+            if (entity instanceof EntitySilverGlider)
             {
-                ((SilverGliderEntity) entity).isGliding = gliding;
+                ((EntitySilverGlider) entity).isGliding = gliding;
                 context.get().setPacketHandled(true);
                 return true;
             }

@@ -1,38 +1,35 @@
 package com.github.shannieann.wyrmroost.client.model.entity.dragon;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.ButterflyLeviathanEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.EntityButterflyLeviathan;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
-import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
-public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathanEntity>
+public class ModelButterflyLeviathan extends AnimatedGeoModel<EntityButterflyLeviathan>
 {
     private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/butterfly_leviathan/butterfly_leviathan.json");
 
     //TODO: All model variants
     @Override
-    public ResourceLocation getModelLocation(ButterflyLeviathanEntity object) {
+    public ResourceLocation getModelLocation(EntityButterflyLeviathan object) {
         String modelLocation = "geo/entity/dragon/butterfly_leviathan/butterfly_leviathan_" + ((object.isAdult() ? "adult" : "child") + ".geo.json");
         return new ResourceLocation(Wyrmroost.MOD_ID, modelLocation);
     }
 
     @Override
-    public ResourceLocation getTextureLocation(ButterflyLeviathanEntity object) {
+    public ResourceLocation getTextureLocation(EntityButterflyLeviathan object) {
         String textureLocation = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_" + object.getVariant() + "_" + object.getGender() +".png";
         return new ResourceLocation(Wyrmroost.MOD_ID, textureLocation);
     }
 
     @Override
-    public ResourceLocation getAnimationFileLocation(ButterflyLeviathanEntity animatable) {
+    public ResourceLocation getAnimationFileLocation(EntityButterflyLeviathan animatable) {
         return ANIMATION_RESOURCE;
     }
 
     @Override
-    public void setCustomAnimations(ButterflyLeviathanEntity animatable, int instanceId, AnimationEvent animationEvent) {
+    public void setCustomAnimations(EntityButterflyLeviathan animatable, int instanceId, AnimationEvent animationEvent) {
         super.setCustomAnimations(animatable, instanceId, animationEvent);
         float rotationYawMultiplier = 1.4F;
         float rotationPitchMultiplier = 10.0F;

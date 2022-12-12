@@ -4,11 +4,8 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRunWhenLosingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entities.projectile.breath.FireBreathEntity;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.DragonArmorItem;
@@ -30,16 +27,7 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.npc.AbstractVillager;
-import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -47,13 +35,6 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import org.apache.commons.lang3.ArrayUtils;
-import software.bernie.geckolib3.core.IAnimatable;
-import software.bernie.geckolib3.core.PlayState;
-import software.bernie.geckolib3.core.builder.AnimationBuilder;
-import software.bernie.geckolib3.core.builder.ILoopType;
-import software.bernie.geckolib3.core.controller.AnimationController;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
 
 import javax.annotation.Nullable;
 import java.time.LocalDate;
@@ -62,7 +43,7 @@ import java.util.EnumSet;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-public class RoyalRedEntity extends WRDragonEntity {
+public class EntityRoyalRed extends WRDragonEntity {
     static {
         IDLE_ANIMATION_VARIANTS = 1;
         ATTACK_ANIMATION_VARIANTS = 3;
@@ -70,12 +51,12 @@ public class RoyalRedEntity extends WRDragonEntity {
         SLEEPING_ANIMATION_TIME = 60;
     }
 
-    public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(RoyalRedEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
 
-    private static final EntitySerializer<RoyalRedEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+    private static final EntitySerializer<EntityRoyalRed> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
-            .track(EntitySerializer.INT, "KnockOutTime", RoyalRedEntity::getKnockOutTime, RoyalRedEntity::setKnockoutTime));
+            .track(EntitySerializer.INT, "KnockOutTime", EntityRoyalRed::getKnockOutTime, EntityRoyalRed::setKnockoutTime));
 
     public static final int ARMOR_SLOT = 0;
     private static final int MAX_KNOCKOUT_TIME = 3600; // 3 minutes
@@ -105,7 +86,7 @@ public class RoyalRedEntity extends WRDragonEntity {
     public final LerpedFloat knockOutTimer = LerpedFloat.unit();
     private int knockOutTime = 0;
 
-    public RoyalRedEntity(EntityType<? extends WRDragonEntity> type, Level worldIn) {
+    public EntityRoyalRed(EntityType<? extends WRDragonEntity> type, Level worldIn) {
         super(type, worldIn);
         noCulling = WRConfig.NO_CULLING.get();
         setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0);
@@ -146,7 +127,7 @@ public class RoyalRedEntity extends WRDragonEntity {
     }
 
     @Override
-    public EntitySerializer<RoyalRedEntity> getSerializer() {
+    public EntitySerializer<EntityRoyalRed> getSerializer() {
         return SERIALIZER;
     }
 
@@ -598,7 +579,7 @@ public class RoyalRedEntity extends WRDragonEntity {
         // ====================================
 
         class RRAttackGoal extends AnimatedGoal {
-            private RoyalRedEntity entity;
+            private EntityRoyalRed entity;
 
             boolean animationPlaying;
             int ticksUntilNextAttack;
@@ -609,7 +590,7 @@ public class RoyalRedEntity extends WRDragonEntity {
             int disableShieldTime;
             private int elapsedTicks;
 
-            public RRAttackGoal(RoyalRedEntity entity) {
+            public RRAttackGoal(EntityRoyalRed entity) {
                 super(entity);
                 setFlags(EnumSet.of(Goal.Flag.MOVE, Flag.LOOK));
                 this.entity = entity;
@@ -728,7 +709,7 @@ public class RoyalRedEntity extends WRDragonEntity {
                 LivingEntity target = getTarget();
                 //GoalLogic: check we can perform an attack, timer set by AnimationLogic
                 if (this.ticksUntilNextAttack <= 0) {
-                    yBodyRot = (float) Mafs.getAngle(RoyalRedEntity.this, target) + 90;
+                    yBodyRot = (float) Mafs.getAngle(EntityRoyalRed.this, target) + 90;
                     setYRot(yBodyRot);
 
                     //AnimationLogic: decide which attack variant we are using

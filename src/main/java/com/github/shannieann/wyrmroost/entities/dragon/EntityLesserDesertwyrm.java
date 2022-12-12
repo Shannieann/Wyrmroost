@@ -1,6 +1,5 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
-import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.LDWyrmItem;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
@@ -40,12 +39,12 @@ import java.util.function.Predicate;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-public class LesserDesertwyrmEntity extends WRDragonEntity
+public class EntityLesserDesertwyrm extends WRDragonEntity
 {
     private int burrowTicks = 30;
-    private static final EntityDataAccessor<Boolean> BURROWED = SynchedEntityData.defineId(LesserDesertwyrmEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> BURROWED = SynchedEntityData.defineId(EntityLesserDesertwyrm.class, EntityDataSerializers.BOOLEAN);
 
-    public LesserDesertwyrmEntity(EntityType<? extends LesserDesertwyrmEntity> type, Level worldIn)
+    public EntityLesserDesertwyrm(EntityType<? extends EntityLesserDesertwyrm> type, Level worldIn)
     {
         super(type, worldIn);
     }
@@ -123,7 +122,7 @@ public class LesserDesertwyrmEntity extends WRDragonEntity
     {
         //Filter the entities we can attack, excluding LDWs
         Predicate<Entity> predicateFilter = filter -> {
-            if (filter instanceof LesserDesertwyrmEntity) {
+            if (filter instanceof EntityLesserDesertwyrm) {
                 return false;
 
             }

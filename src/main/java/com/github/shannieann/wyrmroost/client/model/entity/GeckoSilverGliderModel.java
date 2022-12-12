@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.model.entity;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.SilverGliderEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.EntitySilverGlider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
@@ -11,7 +11,7 @@ import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
 import static com.github.shannieann.wyrmroost.util.ModUtils.TEXTURE_FOLDER;
 
-public class GeckoSilverGliderModel<T extends SilverGliderEntity> extends AnimatedGeoModel<T> {
+public class GeckoSilverGliderModel<T extends EntitySilverGlider> extends AnimatedGeoModel<T> {
 
     private static final ResourceLocation modelResource = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/canari_wyvern.geo.json");
     private static final ResourceLocation animationResource = new ResourceLocation(Wyrmroost.MOD_ID, "animations/canari_wyvern.animation.json");
@@ -22,7 +22,7 @@ public class GeckoSilverGliderModel<T extends SilverGliderEntity> extends Animat
     }
 
     @Override
-    public ResourceLocation getTextureLocation(SilverGliderEntity dragon) {
+    public ResourceLocation getTextureLocation(EntitySilverGlider dragon) {
         if (dragon.hasCustomName() && dragon.getCustomName().getContents().equalsIgnoreCase("lady")){
             return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "canari_wyvern/lady.png");
         }

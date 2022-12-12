@@ -1213,7 +1213,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     moveZ = moveZ > 0? moveZ : 0;
                     if (ClientEvents.keybindFlight)
                         moveY = ClientEvents.getClient().options.keyJump.isDown()? 1f : WRKeybind.FLIGHT_DESCENT.isDown()? -1f : 0;
-                    else if (moveZ > 0) moveY = -entity.getXRot() * (Math.PI / 180);
+                    moveY = -entity.getXRot() * (Math.PI / 180);
                 }
                 else
                 {
@@ -1224,14 +1224,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 vec3d = new Vec3(moveX, moveY, moveZ);
                 setSpeed(speed);
             }
-            else if (entity instanceof Player)
+            /*else if (entity instanceof Player)
             {
                 calculateEntityAnimation(this, true);
                 setDeltaMovement(Vec3.ZERO);
                 if (!level.isClientSide && isFlying)
                     ((ServerPlayer) entity).connection.aboveGroundVehicleTickCount = 0;
-                return;
-            }
+            }*/
         } else {
             if (isFlying) {
                 // Move relative to yaw - handled in the move controller or by passenger

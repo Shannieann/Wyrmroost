@@ -41,10 +41,10 @@ import java.util.Random;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 
-public class SilverGliderEntity extends WRDragonEntity
+public class EntitySilverGlider extends WRDragonEntity
 {
     //TODO: BOIDS
-    private static final EntitySerializer<SilverGliderEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+    private static final EntitySerializer<EntitySilverGlider> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
     public final LerpedFloat sitTimer = LerpedFloat.unit();
@@ -53,13 +53,13 @@ public class SilverGliderEntity extends WRDragonEntity
     public TemptGoal temptGoal;
     public boolean isGliding; // controlled by player-gliding.
 
-    public SilverGliderEntity(EntityType<? extends WRDragonEntity> dragon, Level level)
+    public EntitySilverGlider(EntityType<? extends WRDragonEntity> dragon, Level level)
     {
         super(dragon, level);
     }
 
     @Override
-    public EntitySerializer<SilverGliderEntity> getSerializer()
+    public EntitySerializer<EntitySilverGlider> getSerializer()
     {
         return SERIALIZER;
     }
@@ -286,7 +286,7 @@ public class SilverGliderEntity extends WRDragonEntity
         return stack.is(ItemTags.FISHES);
     }
 
-    public static boolean getSpawnPlacement(EntityType<SilverGliderEntity> fEntityType, ServerLevelAccessor level, MobSpawnType spawnReason, BlockPos blockPos, Random random)
+    public static boolean getSpawnPlacement(EntityType<EntitySilverGlider> fEntityType, ServerLevelAccessor level, MobSpawnType spawnReason, BlockPos blockPos, Random random)
     {
         if (spawnReason == MobSpawnType.SPAWNER) return true;
         Block block = level.getBlockState(blockPos.below()).getBlock();

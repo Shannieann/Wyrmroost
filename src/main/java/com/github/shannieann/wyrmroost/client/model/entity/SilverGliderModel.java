@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.model.entity;
 
 /*import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.SilverGliderEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.EntitySilverGlider;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import com.mojang.blaze3d.matrix.PoseStack;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
 /**
  * WRSilverGlider - Kingdomall
  * Created using Tabula 7.1.0
-public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity>
+public class SilverGliderModel extends DragonEntityModel<EntitySilverGlider>
 {
     public static final ResourceLocation[] MALE_TEXTURES = new ResourceLocation[6]; // includes glow
     // Constant textures
@@ -388,7 +388,7 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity>
     }
 
     @Override
-    public ResourceLocation getTexture(SilverGliderEntity entity)
+    public ResourceLocation getTexture(EntitySilverGlider entity)
     {
         if (entity.getVariant() == -1) return SPECIAL;
         if (!entity.isMale()) return FEMALE;
@@ -397,7 +397,7 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity>
         return MALE_TEXTURES[index];
     }
 
-    public ResourceLocation getGlowTexture(SilverGliderEntity entity)
+    public ResourceLocation getGlowTexture(EntitySilverGlider entity)
     {
         if (entity.getVariant() == -1) return SPECIAL_GLOW;
         int index = entity.getVariant() + 3;
@@ -407,7 +407,7 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity>
     }
 
     @Override
-    public float getShadowRadius(SilverGliderEntity entity)
+    public float getShadowRadius(EntitySilverGlider entity)
     {
         return 1f;
     }
@@ -419,13 +419,13 @@ public class SilverGliderModel extends DragonEntityModel<SilverGliderEntity>
     }
 
     @Override
-    public void postProcess(SilverGliderEntity entity, PoseStack ms, MultiBufferSource buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks)
+    public void postProcess(EntitySilverGlider entity, PoseStack ms, MultiBufferSource buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks)
     {
         if (entity.isMale()) renderGlowOverlay(getGlowTexture(entity), ms, buffer);
     }
 
     @Override
-    public void setupAnim(SilverGliderEntity entityIn, float limbSwing, float limbSwingAmount, float bob, float netHeadYaw, float headPitch)
+    public void setupAnim(EntitySilverGlider entityIn, float limbSwing, float limbSwingAmount, float bob, float netHeadYaw, float headPitch)
     {
         reset();
 
