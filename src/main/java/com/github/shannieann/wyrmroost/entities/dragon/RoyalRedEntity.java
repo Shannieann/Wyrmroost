@@ -118,18 +118,6 @@ public class RoyalRedEntity extends WRDragonEntity
     //      A) Entity Data
     // ====================================
 
-    //todo Remove this, temporary for showing off layer
-
-
-    @Override
-    public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController(this, "generalController", 0, this::testPredicate));
-    }
-    public <E extends IAnimatable> PlayState testPredicate(AnimationEvent<E> event)
-    {
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
-        return PlayState.CONTINUE;
-    }
 
 
     @Override
@@ -475,7 +463,7 @@ public class RoyalRedEntity extends WRDragonEntity
     @Override
     public Vec3 getPassengerPosOffset(Entity entity, int index)
     {
-        return new Vec3(0, getBbHeight() * 0.85f, index == 0? 1.75f : 1.0);
+        return new Vec3(0, getBbHeight(), index == 0? 1.75f : 1.0);
     }
 
     //TODO: Whole keybind logic
