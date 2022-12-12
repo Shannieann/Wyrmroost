@@ -55,9 +55,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
 //TODO: Ask dev feedback on rotations
 
-//TODO: THIS RELEASE: lightning bolt if near lightning rods
-
-//TODO: CLASS:
+//TODO: CLASS: Tidy up
 
 //TODO: ASSETS:
 //TODO: Texture: Lightning on/off
@@ -70,7 +68,9 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: MOVEMENT: Return to water goal, test position, must be two deep
 //TODO: MOVEMENT: Test Nav Switch
 //TODO: ATTACK: Reimplement whole logic...
-//TODO: ATTACK: If lightning bolts near it, can attack
+//TODO: ATTACK: If lightning rods near it, can attack
+
+//TODO: GENERAL
 
 
 //TODO: Other goals
@@ -96,8 +96,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //Eggs, breeding, taming
 
 //Config Spawn + TidyUp EntityTypeRegistry
-
-//Finalize assets!
 
 public class ButterflyLeviathanEntity extends WRDragonEntity
 {
@@ -714,12 +712,11 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         //goalSelector.addGoal(4, new AttackGoal());
         
         //goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1));
-        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 2));
+        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 2,12,20));
         goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 10,32,24));
 
 //        goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
 //        goalSelector.addGoal(9, new RandomLookAroundGoal(this));
-
         /*
         targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));

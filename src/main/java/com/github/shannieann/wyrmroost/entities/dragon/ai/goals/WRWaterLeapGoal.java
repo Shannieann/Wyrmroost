@@ -4,7 +4,6 @@ import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 
@@ -14,25 +13,24 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     private final String breachStartAnimation = "breach_start";
     private final String breachFlyAnimation = "breach_fly";
     private final String breachEndAnimation = "breach_end";
-
     private final WRDragonEntity entity;
     private final double speedTowardsTarget;
-
+    private final int horizontalDistance;
+    private final int verticalDistance;
     private Vec3 waterTargetPosition;
     private Vec3 initialPosition;
-
     private boolean step1Done;
     private boolean step2Done;
     private boolean step3Done;
-
     private boolean stopFlag;
     private int finalTicks;
 
-    public WRWaterLeapGoal(WRDragonEntity entity, double speedIn)
-    {
+    public WRWaterLeapGoal(WRDragonEntity entity, double speedIn, int horizontalDistance, int verticalDistance) {
         super(entity);
         this.entity = entity;
         this.speedTowardsTarget = speedIn;
+        this.horizontalDistance = horizontalDistance;
+        this.verticalDistance = verticalDistance;
         this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
 
@@ -58,7 +56,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                 return false;
             }
             //Get the initial position, 20 blocks below the target position, plus a random variation on X / Z, +/- 12
-            BlockPos initialBlockPos = new BlockPos(waterTargetPosition.x+entity.getRandom().nextInt(25)-12,waterTargetPosition.y-20,waterTargetPosition.z+entity.getRandom().nextInt(25)-12);
+            BlockPos initialBlockPos = new BlockPos(waterTargetPosition.x+entity.getRandom().nextInt(horizontalDistance*2+1)-horizontalDistance,waterTargetPosition.y-verticalDistance,waterTargetPosition.z+entity.getRandom().nextInt(horizontalDistance*2+1)-horizontalDistance);
             if (!(entity.level.getFluidState(initialBlockPos).is(FluidTags.WATER))) {
                 return false;
             }
@@ -71,14 +69,13 @@ public class WRWaterLeapGoal extends AnimatedGoal {
 
     @Override
     public boolean canContinueToUse() {
+        if (!step1Done && !entity.isInWater()) {
+            return false;
+        }
         if (stopFlag) {
             return false;
         }
         if (entity.canBeControlledByRider()) {
-            return false;
-        }
-        //If it has not attacked the initial position yet, and the entity somehow leaves the water, stop the Goal.
-        if ((!step1Done || !step2Done) && (!entity.isInWater())) {
             return false;
         }
         //If it has finished all the steps and its had time to perform the return animation, stop the Goal.
@@ -98,40 +95,41 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         entity.getLookControl().setLookAt(initialPosition.x,initialPosition.y,initialPosition.z);
         entity.getNavigation().moveTo(initialPosition.x, initialPosition.y, initialPosition.z, speedTowardsTarget);
         entity.setBreaching(true);
-        super.start(breachStartAnimation, 1, 10,false);
     }
 
     @Override
     public void tick() {
-        //Step 1: Reach startPosition, below the target position
+        //Step 1: Reach startPosition, below the target position...
         //Step 2: Reach water target position and overshoot,flying out...
-        //Step 3: Return to the water.
-        //Step 4: Goal ending, hold for a couple of ticks to finish last animation
-        
+        //Step 3: Return to the water...
+        //Step 4: Goal ending, hold for a couple of ticks to finish last animation..
+
         //Step 1:
         if (!step1Done) {
             //Check to see if we have reached the first position...
-            if (entity.distanceToSqr(initialPosition.x, initialPosition.y, initialPosition.z) < 16.0F) {
+           if (entity.distanceToSqr(initialPosition.x, initialPosition.y, initialPosition.z) < 16.0F) {
                 step1Done = true;
-                //If we have, set breaching to true - unlocks pitch rotation...
-                entity.setBreaching(true);
                 //Move to next position, at increased speed
-                entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, 2*speedTowardsTarget);
+                super.start(breachStartAnimation, 1, 10,false);
+                //entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, 2*speedTowardsTarget);
             } else if (entity.getNavigation().isDone()) {
-                    stopFlag = true;
+                stopFlag = true;
             }
         }
 
+        //Step 2:
         if (step1Done) {
             //As soon as it leaves the water...
             if (!entity.isInWater()) {
                 //Start fly animation, proceed to next step
-                entity.getNavigation().moveTo(initialPosition.x, initialPosition.y, initialPosition.z,speedTowardsTarget);
-                super.start(breachFlyAnimation, 1, 10,false);
+                super.start(breachFlyAnimation, 1, 10, false);
+                entity.getNavigation().stop();
                 step2Done = true;
-            }  else if (entity.getNavigation().isDone()) {
+            } else if (entity.getNavigation().isDone()) {
                 //If navigation somehow stops and its still in the water, stop the goal..
                 stopFlag = true;
+            } else {
+                super.start(breachStartAnimation, 1, 10, false);
             }
         }
 

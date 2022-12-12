@@ -39,7 +39,7 @@ public class WRSwimmingMoveControl extends MoveControl {
                 else if ((this.entity.getTarget() != null) || this.entity.canBeControlledByRider()) {
                     maxTurnYaw = 15;
                 } else {
-                    maxTurnYaw = 4;
+                    maxTurnYaw = 6;
                 }
                 this.entity.setYRot(this.rotlerp(currentAngleYaw, desiredAngleYaw, maxTurnYaw));
                 this.entity.yBodyRot = this.entity.getYRot();
@@ -56,7 +56,7 @@ public class WRSwimmingMoveControl extends MoveControl {
                         float desiredAnglePitch = -((float)(Mth.atan2(entityToTargetY, horizontalDistanceToTarget) * (double)(180F / (float)Math.PI)));
                         desiredAnglePitch = Mth.clamp(Mth.wrapDegrees(desiredAnglePitch), (float)(-this.maxTurnPitch), (float)this.maxTurnPitch);
                         float currentAnglePitch = this.entity.getXRot();
-                        this.entity.setXRot(this.rotlerp(currentAnglePitch, desiredAnglePitch, 20.0F));
+                        this.entity.setXRot(this.rotlerp(currentAnglePitch, desiredAnglePitch, 5.0F));
                     }
                     //Adjust acceleration components, this ensures the entity does not freeze entirely when reaching its target...
                     float f4 = Mth.cos(this.entity.getXRot() * ((float)Math.PI / 180F));
