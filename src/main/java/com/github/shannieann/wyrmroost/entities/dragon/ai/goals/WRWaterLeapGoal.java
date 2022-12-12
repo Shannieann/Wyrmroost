@@ -100,7 +100,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             return false;
         }
         //If it has finished all the steps and its had time to perform the return animation, stop the Goal.
-        if (finalTicks > 40) {
+        if (finalTicks > 30) {
             return false;
         }
         //If it's somehow using the landNavigator, do stop goal. Goal only makes sense for waterNavigator.
@@ -129,7 +129,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             //Check to see if we have reached the first position...
            if (entity.distanceToSqr(initialPosition.x, initialPosition.y, initialPosition.z) < distanceCheck) {
                 step1Done = true;
-               //Move to target at regular speed for 10 ticks first, this ensures we align with target before accelerating...
+               //Move to target at reguwlar speed for 10 ticks first, this ensures we align with target before accelerating...
                entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget);
                //If the navigation is stopped, but not stuck, calculate a new path...
             } else if (!entity.getNavigation().isStuck() && entity.getNavigation().isDone()) {
@@ -146,7 +146,8 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                 super.start(breachFlyAnimation, 1, 5, false);
                 entity.getNavigation().stop();
                 step2Done = true;
-            } else if (step2Ticks >10 && !speedFlag) {
+            }
+            if (step2Ticks >10 && !speedFlag) {
                 //We have had time to align with target, now we accelerate and start the actual breaching..
                 speedFlag = true;
                 entity.setBreaching(true);
@@ -154,17 +155,20 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                 entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget*2);
             }
             //If the navigation is stopped, but not stuck, calculate a new path, with speed depending on whether we have had time to align with target or not
-            else if (!entity.getNavigation().isStuck() && entity.getNavigation().isDone()) {
+            if (!entity.getNavigation().isStuck() && entity.getNavigation().isDone()) {
                 if (speedFlag) {
                     entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget*2);
                 } else {
                     entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget);
                 }
             }
-            else {
-                super.start(breachStartAnimation, 1, 10, false);
-                step2Ticks++;
+            //Once we approach the target position, launch us out of the water
+            if (waterTargetPosition.y-entity.position().y < 6) {
+                entity.getDeltaMovement().add(0,1.0,0);
             }
+            super.start(breachStartAnimation, 1, 10, false);
+            step2Ticks++;
+
         }
 
         //Step 3:
