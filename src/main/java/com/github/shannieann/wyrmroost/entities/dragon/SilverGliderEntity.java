@@ -1,9 +1,9 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.DragonBreedGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.FlyerWanderGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.WRAvoidEntityGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.WRFollowOwnerGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DragonBreedGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.FlyerWanderGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRAvoidEntityGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRFollowOwnerGoal;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.network.packets.SGGlidePacket;
 import com.github.shannieann.wyrmroost.registry.WRSounds;

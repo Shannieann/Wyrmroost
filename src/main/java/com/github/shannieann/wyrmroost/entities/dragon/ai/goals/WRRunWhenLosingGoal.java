@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.goals;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.world.entity.LivingEntity;
@@ -6,8 +6,6 @@ import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.phys.Vec3;
-
-import java.util.Random;
 
 // When a dragon is at low health and wants to run away
 public class WRRunWhenLosingGoal extends AvoidEntityGoal<LivingEntity> {

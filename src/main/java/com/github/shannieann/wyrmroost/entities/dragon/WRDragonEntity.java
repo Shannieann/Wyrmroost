@@ -4,11 +4,13 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.WRSwimmingNavigator;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.AnimatedGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.*;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.WRSitGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.aquatics.WRSwimmingMoveControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.aquatics.WRSwimmingLookControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.aquatics.WRSwimmingNavigator;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.*;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSitGoal;
 import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggProperties;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.DragonArmorItem;
@@ -1107,7 +1109,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 break;
             }
             case SWIMMING: {
-                 this.moveControl = new WRSwimControl(this);
+                 this.moveControl = new WRSwimmingMoveControl(this);
                 this.lookControl = new WRSwimmingLookControl(this, 10);
                 this.navigation = new WRSwimmingNavigator(this);
                 this.setMovingState(2);

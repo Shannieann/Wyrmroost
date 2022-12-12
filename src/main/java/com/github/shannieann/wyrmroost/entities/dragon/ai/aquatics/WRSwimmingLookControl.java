@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.aquatics;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;

@@ -1,9 +1,8 @@
-package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai;
+package com.github.shannieann.wyrmroost.entities.dragon.ai;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
-import net.minecraft.world.entity.ai.util.AirRandomPos;
 import net.minecraft.world.entity.ai.util.HoverRandomPos;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
 import net.minecraft.world.phys.Vec3;

@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.goals;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
@@ -6,7 +6,6 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.common.ForgeMod;
 
 import java.util.EnumSet;
 

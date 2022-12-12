@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai;
+package com.github.shannieann.wyrmroost.entities.dragon.ai;
 
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;

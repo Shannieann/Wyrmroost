@@ -1,6 +1,5 @@
-package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.goals;
 
-import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;

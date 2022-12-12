@@ -2,12 +2,12 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.WRRunWhenLosingGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.DefendHomeGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.DragonBreedGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.MoveToHomeGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.WRFollowOwnerGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRunWhenLosingGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DefendHomeGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DragonBreedGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.MoveToHomeGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRFollowOwnerGoal;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.book.action.BookActions;
 import com.github.shannieann.wyrmroost.network.packets.AddPassengerPacket;

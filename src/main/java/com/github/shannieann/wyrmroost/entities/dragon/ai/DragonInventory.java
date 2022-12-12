@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.helpers;
+package com.github.shannieann.wyrmroost.entities.dragon.ai;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;

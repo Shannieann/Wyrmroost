@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.goals;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.world.entity.ai.goal.Goal;

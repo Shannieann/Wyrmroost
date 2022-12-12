@@ -2,9 +2,9 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 
 /*import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.model.entity.DragonFruitDrakeModel;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.DragonBreedGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.MoveToHomeGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.WRFollowOwnerGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DragonBreedGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.MoveToHomeGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRFollowOwnerGoal;
 import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggProperties;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
