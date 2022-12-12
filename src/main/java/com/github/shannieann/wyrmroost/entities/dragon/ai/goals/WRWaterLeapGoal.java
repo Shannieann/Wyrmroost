@@ -40,7 +40,6 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
 
-    //TODO: Check navigation does not stop before step1
     @Override
     public boolean canUse() {
         if (entity.isInSittingPose()) {
@@ -52,6 +51,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         if (!entity.isUnderWater()) {
             return false;
         }
+        //TODO: Re-enable random chance
           //if (entity.getRandom().nextDouble() < 0.05) {
         //Get a random position...
         Vec3 randomPosition = (BehaviorUtils.getRandomSwimmablePos(this.entity, 32, 0));
