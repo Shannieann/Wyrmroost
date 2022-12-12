@@ -297,6 +297,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //Ensures swimmers do not just stay rigid in water, will always swim even in place...
         if (this.isUsingSwimmingNavigator()) {
             event.getController().setAnimation(new AnimationBuilder().  addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
         }
         event.getController().setAnimation(new AnimationBuilder().  addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
