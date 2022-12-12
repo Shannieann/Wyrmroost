@@ -8,7 +8,6 @@ import javax.annotation.Nullable;
 import java.util.EnumSet;
 
 public class WRRandomSwimmingGoal extends Goal {
-
     protected final WRDragonEntity entity;
     protected double x;
     protected double y;
@@ -32,15 +31,12 @@ public class WRRandomSwimmingGoal extends Goal {
         if (this.entity.isVehicle()) {
             return false;
         }
-
         if (this.entity.getTarget() != null){
             return false;
         }
-
         if (!this.entity.isUsingSwimmingNavigator()) {
             return false;
         }
-
         else {
             Vec3 targetPosition = this.getPosition();
             if (targetPosition == null) {
