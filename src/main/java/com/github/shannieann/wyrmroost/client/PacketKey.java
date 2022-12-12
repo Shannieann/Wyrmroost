@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.client;
 
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.TestClass;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.DebuggingTool;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
@@ -18,7 +18,7 @@ public class PacketKey {
             context.get().enqueueWork(() -> {
                 ServerPlayer player = context.get().getSender();
                 if (player != null) {
-                    TestClass test = new TestClass(player);
+                    DebuggingTool test = new DebuggingTool(player);
                 }
             });
             context.get().setPacketHandled(true);

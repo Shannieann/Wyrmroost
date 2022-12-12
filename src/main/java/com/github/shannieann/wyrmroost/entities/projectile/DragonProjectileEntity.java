@@ -39,7 +39,8 @@ public class DragonProjectileEntity extends Projectile implements IEntityAdditio
     public DragonProjectileEntity(EntityType<? extends DragonProjectileEntity> type, WRDragonEntity shooter, Vec3 position, Vec3 direction)
     {
         super(type, shooter.level);
-
+        //TODO: DEBUG METHODS
+        direction = (shooter.debugTarget).subtract(position);
         direction = direction.add(random.nextGaussian() * getAccelerationOffset(), random.nextGaussian() * getAccelerationOffset(), random.nextGaussian() * getAccelerationOffset());
         double length = direction.length();
         this.acceleration = new Vec3(direction.x / length * getMotionFactor(), direction.y / length * getMotionFactor(), direction.z / length * getMotionFactor());

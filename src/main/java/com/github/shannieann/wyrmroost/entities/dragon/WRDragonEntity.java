@@ -124,6 +124,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float setExtremityPitch;
     public float adjustExtremityPitch;
     public float adjustmentExtremityPitch;
+    public Vec3 debugTarget;
 
 
     public enum NavigationType {

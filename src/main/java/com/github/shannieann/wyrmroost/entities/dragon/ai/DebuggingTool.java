@@ -1,25 +1,30 @@
-package com.github.shannieann.wyrmroost.entities.dragon.ai.goals;
+package com.github.shannieann.wyrmroost.entities.dragon.ai;
 
+import com.github.shannieann.wyrmroost.entities.dragon.RoyalRedEntity;
 import com.github.shannieann.wyrmroost.entities.effect.EffectLightningSphere;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.world.NoteBlockEvent;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
-public class TestClass {
+public class DebuggingTool {
     int numberOfPoints = 40;
-    public TestClass(Player player){
+    public DebuggingTool(Player player){
 
         //ArrayList<Vec3> listOfVectors=listOfVectors();
         //summonEntities(listOfVectors,player);
-        summonLightningSphere(player);
+        //summonLightningSphere(player);
+        forceRoyalRedTarget(player);
   }
 
   public ArrayList<Vec3> listOfVectors() {
@@ -56,4 +61,16 @@ public class TestClass {
       lightningSphere.setPos(player.position().add(10,0,0));
       player.level.addFreshEntity(lightningSphere);
   }
+
+  public void forceRoyalRedTarget(Player player) {
+        AABB aabb = player.getBoundingBox().inflate(40);
+        List<RoyalRedEntity> royalReds = player.level.getEntitiesOfClass(RoyalRedEntity.class,aabb);
+        if (!royalReds.isEmpty()) {
+            for (int i = 0; i < royalReds.size(); i++) {
+                RoyalRedEntity test = royalReds.get(i);
+                test.debugTarget = player.position();
+                test.setBreathingFire(true);
+            }
+        }
+    }
 }
