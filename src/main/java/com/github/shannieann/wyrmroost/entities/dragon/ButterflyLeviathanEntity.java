@@ -4,9 +4,9 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.goals.WRRandomSwimmingGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.DragonInventory;
-import com.github.shannieann.wyrmroost.entities.dragon.helpers.ai.LessShitLookController;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRandomSwimmingGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.LessShitLookController;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.book.action.BookActions;
 import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
@@ -56,11 +56,14 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //TODO: THIS RELEASE: lightning bolt if near lightning rods
 
-//TODO: ASSETS
+//TODO: ASSETS:
 //TODO: Texture: Lightning on/off
 //TODO: Texture Variants: base0, base1, special
 //TODO: No sexual dimorphism, remove logic
 //TODO: Child textures
+
+//TODO: GOALS:
+//TODO: MOVEMENT: Jump out of water goal
 //TODO: Jump out of water goal
 //TODO: Nav switch, return to water goal
 
@@ -696,7 +699,7 @@ public class ButterflyLeviathanEntity extends WRDragonEntity
         
         //goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1));
         //goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1));
-        goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 0.01, 10,32,24));
+        goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 10,32,24));
 
 //        goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
 //        goalSelector.addGoal(9, new RandomLookAroundGoal(this));

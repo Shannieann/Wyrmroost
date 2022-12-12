@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.helpers.ai;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.aquatics;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
@@ -7,11 +7,11 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraftforge.common.ForgeMod;
 
-public class WRSwimControl extends MoveControl {
+public class WRSwimmingMoveControl extends MoveControl {
     private final float maxTurnPitch = 85;
     private final WRDragonEntity entity;
 
-    public WRSwimControl(WRDragonEntity entity) {
+    public WRSwimmingMoveControl(WRDragonEntity entity) {
         super(entity);
         this.entity = entity;
     }
@@ -45,7 +45,7 @@ public class WRSwimControl extends MoveControl {
                 this.entity.yBodyRot = this.entity.getYRot();
                 this.entity.yHeadRot = this.entity.getYRot();
 
-                float speed = ((float) this.entity.getAttributeValue(ForgeMod.SWIM_SPEED.get()));
+                float speed = ((float) (this.entity.getAttributeValue(ForgeMod.SWIM_SPEED.get()) * this.speedModifier));
                 if (this.entity.isInWater() || this.entity.level.getBlockState(new BlockPos(entity.position()).below()).is(Blocks.WATER)) {
                     this.entity.setSpeed(speed);
                     double horizontalDistanceToTarget = Math.sqrt(entityToTargetX * entityToTargetX + entityToTargetZ * entityToTargetZ);
