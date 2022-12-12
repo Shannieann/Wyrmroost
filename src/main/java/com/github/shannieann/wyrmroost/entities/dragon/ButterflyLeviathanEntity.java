@@ -77,7 +77,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //DO NOT CALC PITCH IF GROUND IS BENEATH IT
 
 //TODO: TAMING
-//Ride logic + rewrite keybinds
+//Ride logic + rewrite key-binds
 //All goals when tamed
 //Eggs, breeding, taming
 

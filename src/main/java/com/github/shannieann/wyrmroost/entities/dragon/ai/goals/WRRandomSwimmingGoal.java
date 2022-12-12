@@ -34,6 +34,7 @@ public class WRRandomSwimmingGoal extends Goal {
         if (this.entity.getTarget() != null){
             return false;
         }
+        //TODO: Do not use on land. If block below is solid and NOT IN WATER. Do not just check water, else water surface will result in us getting stuck
         if (!this.entity.isUsingSwimmingNavigator()) {
             return false;
         }
