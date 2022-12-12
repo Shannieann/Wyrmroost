@@ -37,6 +37,7 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
         float rotationYawMultiplier = 1.4F;
         float rotationPitchMultiplier = 10.0F;
 
+        //TODO: Head pitch conflicts with dynamic pitch, enable head yaw only
         /*
         IBone head = this.getAnimationProcessor().getBone("head");
         EntityModelData extraData = (EntityModelData) animationEvent.getExtraDataOfType(EntityModelData.class).get(0);
@@ -54,7 +55,7 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<ButterflyLeviathan
         }
         this.getAnimationProcessor().getBone("ibody1").setRotationX(-setPitchValue);
 
-        if (animatable.isUsingSwimmingNavigator()) {
+        if (animatable.isUsingSwimmingNavigator() && !animatable.getBreaching()) {
             //deltaYaw operations
             float setYawValue = animatable.prevSetYaw+(animatable.setYaw-animatable.prevSetYaw)*animationEvent.getPartialTick();
             this.getAnimationProcessor().getBone("ibody2").setRotationY(setYawValue * rotationYawMultiplier);
