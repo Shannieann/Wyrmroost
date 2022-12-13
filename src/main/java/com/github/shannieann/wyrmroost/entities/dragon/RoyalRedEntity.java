@@ -259,11 +259,11 @@ public class RoyalRedEntity extends WRDragonEntity {
             // =====================
 
             //TODO: DEBUG METHODS
-            /*if (getBreathingFire() && getControllingPlayer() == null && getTarget() == null)
+            if (getBreathingFire() && getControllingPlayer() == null && getTarget() == null)
                 setBreathingFire(false);
 
 
-             */
+
             if (breathTimer.get() == 1) {
                 //TODO: Reposition fire breath start point
                 level.addFreshEntity(new FireBreathEntity(this));
@@ -572,7 +572,7 @@ public class RoyalRedEntity extends WRDragonEntity {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-/*
+
         goalSelector.addGoal(4, new MoveToHomeGoal(this));
         //goalSelector.addGoal(4, new WRRunWhenLosingGoal(this, 0.1f, 40, 0.95f, 0.99f ));
         goalSelector.addGoal(5, new RRAttackGoal(this));
@@ -591,7 +591,7 @@ public class RoyalRedEntity extends WRDragonEntity {
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false,
                 e -> e.getType() == EntityType.PLAYER || e instanceof Animal || e instanceof AbstractVillager));
     }
- */
+
 
         // ====================================
         //      F.n) Goals: RRAttackGoal
@@ -617,18 +617,16 @@ public class RoyalRedEntity extends WRDragonEntity {
 
             @Override
             public void start() {
+                float test;
             }
 
             @Override
             public boolean canUse() {
                 LivingEntity target = getTarget();
                 if (target != null && target.isAlive()) {
-                /*if (!isWithinRestriction(target.blockPosition())) return false;
-                return TargetingConditions.forCombat().test(null, target);
-
-                 */
-                    return true;
-                }
+                        if (!isWithinRestriction(target.blockPosition())) return false;
+                        return TargetingConditions.forCombat().test(null, target);
+                    }
                 return false;
             }
 
@@ -772,6 +770,243 @@ public class RoyalRedEntity extends WRDragonEntity {
                         //GoalLogic: Do melee attack, with parameters coming from animation logic
                         this.attackIsQueued = true;
                     }
+                }
+            }
+        }
+
+
+    class AttackGoalImproved extends AnimatedGoal {
+        private RoyalRedEntity entity;
+
+        boolean animationPlaying;
+        int ticksUntilNextAttack;
+        private boolean attackIsQueued;
+        private int queuedAttackTimer;
+        private int attackQueueTimer = 0;
+        double inflateValue;
+        int disableShieldTime;
+        private int elapsedTicks;
+        private boolean goalKillFlag;
+        private long lastCanUseCheck;
+
+
+        public AttackGoalImproved(RoyalRedEntity entity) {
+            super(entity);
+            setFlags(EnumSet.of(Goal.Flag.MOVE, Flag.LOOK));
+            this.entity = entity;
+        }
+
+        @Override
+        public void start() {
+            float test = 0;
+        }
+
+        //TODO: If works, copy canUse method entirely over
+        //TODO: If works, test with / without extra setPaths
+        @Override
+        public boolean canUse() {
+            long i = level.getGameTime();
+            if (i - this.lastCanUseCheck < 40L) {
+                return false;
+            } else {
+                this.lastCanUseCheck = i;
+                LivingEntity target = getTarget();
+                if (target != null && target.isAlive()) {
+                    if (!isWithinRestriction(target.blockPosition())) {
+                        return false;
+                    }
+                    if (getSensing().hasLineOfSight(target)) {
+                        if (TargetingConditions.forCombat().test(null, target)) {
+                            return getNavigation().moveTo(target.getX(), target.getX(), target.getY(), !isUsingFlyingNavigator() && getBreathingFire() ? 0.8d : 1.3d);
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
+        @Override
+        public boolean canContinueToUse() {
+            LivingEntity target = getTarget();
+            if (goalKillFlag) {
+                return false;
+            }
+            if (target != null && target.isAlive()) {
+                if (!isWithinRestriction(target.blockPosition())) {
+                    return false;
+                }
+                return TargetingConditions.forCombat().test(null, target);
+            }
+            return false;
+        }
+
+        @Override
+        public void tick() {
+            //If we have an attack queued, do not proceed with the attack selection logic
+
+            //If animation is over (checked via Goal class) in AnimationLogic update the local variable for the GoalLogic
+            if (animationPlaying) {
+                if (super.canContinueToUse()) {
+                    super.tick();
+                } else {
+                    super.stop();
+                    animationPlaying = false;
+                }
+            }
+            LivingEntity target = getTarget();
+            if (target != null) {
+                double distFromTarget = distanceToSqr(target);
+                boolean isBreathingFire = getBreathingFire();
+                boolean canSeeTarget = getSensing().hasLineOfSight(target);
+                getLookControl().setLookAt(target, 90, 90);
+                if (attackIsQueued) {
+                    if (this.attackQueueTimer == queuedAttackTimer) {
+                        attackQueueTimer = 0;
+                        attackIsQueued = false;
+                        attackInBox(getOffsetBox(getBbWidth()).inflate(inflateValue), disableShieldTime);
+                    } else {
+                        attackQueueTimer++;
+                    }
+                } else {
+                    //Attack Logic:
+                    // 1.- Determines whether we should fly or walk while attacking.
+                    // 2.- Determines whether we should use a melee attack or breathe fire.
+
+                    this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
+
+                    //Random chance to start flying / fly when target is far away...
+                    if (!isUsingFlyingNavigator() && (getRandom().nextDouble() < 0.001 || distFromTarget > 900)) {
+                        setNavigator(NavigationType.FLYING);
+                    }
+
+
+                    //GoalLogic: Do either breathe fire or melee attack
+                    //Goal Logic: Option 1 - Breathe Fire
+                    if (entity.shouldBreatheFire() != isBreathingFire) {
+                        //AnimationLogic: Only breathe fire if we can animate correspondingly...
+                        if (!animationPlaying) {
+                            //GoalLogic: Start breathing fire
+                            setBreathingFire(entity.shouldBreatheFire());
+                            //AnimationLogic: Start fire breath animation...
+                            animationPlaying = true;
+                            super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME, FIRE_ANIMATION_MOVES);
+                        }
+                    }
+
+                    //Goal Logic: Option 2 - Melee Attack
+                    else if (distFromTarget <= 24 && !isBreathingFire && canSeeTarget) {
+                        this.ticksUntilNextAttack = Math.max(this.ticksUntilNextAttack - 1, 0);
+                        //GoalLogic: try to perform a melee attack
+                        this.checkAndPerformAttack();
+                    }
+                }
+
+                //Attack Move Logic:
+                //If our target is flying, just attempt to go to it, do not attempt to fly above it...
+                //Else, if our target is on the ground and we are flying, random chance to try and move above it instead of moving to it...
+                boolean isFlyingTarget = target instanceof WRDragonEntity && ((WRDragonEntity) target).isUsingFlyingNavigator();
+                boolean goAboveRandom = getRandom().nextDouble() > 0.1;
+                boolean goAbove = goAboveRandom && !isFlyingTarget && isUsingFlyingNavigator();
+                double y = target.getY() + (goAbove ? 8 : 0);
+
+                if (getNavigation().isDone() && !getNavigation().isStuck()) {
+                    //Navigation has stopped, and we are not stuck...
+                    //Try and set a new path...
+                    if (!getNavigation().moveTo(target.getX(), y, target.getZ(), !isUsingFlyingNavigator() && isBreathingFire ? 0.8d : 1.3d)) {
+                        // We failed at setting a new path to the target, path returned null
+                        //At this point: If we are not flying, start flying. This might resolve the problem next tick by giving us new navigation options...
+                        if (!isUsingFlyingNavigator() && canLiftOff()) {
+                            setNavigator(NavigationType.FLYING);
+                        } else {
+                            goalKillFlag = true;
+                            /*
+                            //We are already using the flying navigator. Options are limited. Let us do one final check.
+                            if (goAbove) {
+                                //If we tried to go above the target, perhaps this is what caused the issue.
+                                // Try one final time to path to the other alternative position
+                                if (!getNavigation().moveTo(target.getX(), target.getY(), target.getZ(), !isUsingFlyingNavigator() && isBreathingFire ? 0.8d : 1.3d)) {
+                                    //We failed at finding a path, even with new adjustment, time to kill the goal.
+                                    goalKillFlag = true;
+                                }
+                                //We did not try to go above the target, perhaps by going above we can fix the issue.
+                                // Try one final time to path to the other alternative position
+                            } else {
+                                if (!getNavigation().moveTo(target.getX(), target.getY() + 8, target.getZ(), !isUsingFlyingNavigator() && isBreathingFire ? 0.8d : 1.3d)) {
+                                    //We failed at finding a path, even with new adjustment, time to kill the goal.
+                                    goalKillFlag = true;
+                                }
+                            }
+
+                             */
+                        }
+                    }
+                } else if (getNavigation().isStuck()) {
+                    //TODO: Try and provide alternatives if stuck?
+                    goalKillFlag = true;
+                }
+            }
+        }
+
+        @Override
+        public void stop () {
+            LivingEntity livingentity = this.entity.getTarget();
+            if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
+                this.entity.setTarget((LivingEntity) null);
+            }
+            this.entity.setAggressive(false);
+            this.entity.getNavigation().stop();
+            this.entity.setBreathingFire(false);
+            goalKillFlag = false;
+            super.stop();
+        }
+
+        protected void checkAndPerformAttack () {
+            LivingEntity target = getTarget();
+            //GoalLogic: check we can perform an attack, timer set by AnimationLogic
+            if (this.ticksUntilNextAttack <= 0) {
+                yBodyRot = (float) Mafs.getAngle(RoyalRedEntity.this, target) + 90;
+                setYRot(yBodyRot);
+
+                //AnimationLogic: decide which attack variant we are using
+                int attackVariant = entity.random.nextInt(ATTACK_ANIMATION_VARIANTS) + 1;
+                String attackAnimation = ATTACK_ANIMATION + attackVariant;
+                int attackAnimationTime = 0;
+
+                //GoalLogic: check reset attack cooldown based on AnimationLogic, animation time
+                switch (attackVariant) {
+                    case 1:
+                        attackAnimationTime = ATTACK_ANIMATION_TIME_1;
+                        this.ticksUntilNextAttack = (int) ATTACK_ANIMATION_TIME_1;
+                        inflateValue = 0.2;
+                        disableShieldTime = 50;
+                        this.queuedAttackTimer = ATTACK_QUEUE_TIME_1;
+                        break;
+                    case 2:
+                        attackAnimationTime = ATTACK_ANIMATION_TIME_2;
+                        this.ticksUntilNextAttack = (int) ATTACK_ANIMATION_TIME_2;
+                        inflateValue = 0.2;
+                        disableShieldTime = 50;
+                        this.queuedAttackTimer = ATTACK_QUEUE_TIME_2;
+
+                        break;
+
+                    case 3:
+                        attackAnimationTime = ATTACK_ANIMATION_TIME_3;
+                        this.ticksUntilNextAttack = (int) ATTACK_ANIMATION_TIME_3;
+                        inflateValue = 0.2;
+                        disableShieldTime = 50;
+                        this.queuedAttackTimer = ATTACK_QUEUE_TIME_3;
+
+                        break;
+                }
+
+                //AnimationLogic: Only do melee attack if we can animate correspondingly...
+                if (!animationPlaying) {
+                    animationPlaying = true;
+                    //AnimationLogic: start corresponding animation
+                    super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime, ATTACK_ANIMATION_MOVES);
+                    //GoalLogic: Do melee attack, with parameters coming from animation logic
+                    this.attackIsQueued = true;
                 }
             }
         }
