@@ -31,6 +31,8 @@ public class AnimatedGoal extends Goal {
         //It should only use this Goal -directly- if the animation was set manually...
         //Meaning, if the animation was -NOT- set via a Goal that extends this class and called the start() method...
         //And was instead set directly in methods such as tick(), etc.
+        //TODO: Two goals will not run simultaneously.
+        //TODO: Manual animation setting will only work if no goals are being executed.
         if (entity.getManualAnimationCall()) {
             return !animationName.equals("base");
         }
