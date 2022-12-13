@@ -66,7 +66,10 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //Child textures
 
 //TODO: GOALS:
+//MOVEMENT: Random Swimming Goal..
+    //Increment max distance
 //MOVEMENT: Jump out of water goal
+    //SHOWCASE AND DONE!
 //MOVEMENT: Return to water goal, test position, must be two deep
 //MOVEMENT: Test Nav Switch
 //ATTACK: Reimplement whole logic...
