@@ -4,9 +4,11 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.aquatics.WRSwimmingMoveControl;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.aquatics.WRSwimmingLookControl;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.aquatics.WRSwimmingNavigator;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.swimming.WRSwimmingMoveControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.swimming.WRSwimmingLookControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.swimming.WRSwimmingNavigator;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.flying.FlyerMoveController;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.flying.FlyerPathNavigator;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.*;
@@ -835,7 +837,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (properNavigator != this.getNavigationType()) {
             setNavigator(properNavigator);
         }
-        
+
         // todo figure out a better target system?
         LivingEntity target = getTarget();
         if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
