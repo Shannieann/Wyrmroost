@@ -346,6 +346,7 @@ public class EntityRoyalRed extends WRDragonEntity {
         return false;
     }
 
+
     // ====================================
     //      C) Navigation and Control
     // ====================================
@@ -412,7 +413,7 @@ public class EntityRoyalRed extends WRDragonEntity {
 
     @Override
     public Vec3 getPassengerPosOffset(Entity entity, int index) {
-        return new Vec3(0, getBbHeight(), index == 0 ? 1.75f : 1.0);
+        return new Vec3(0, getBbHeight() * 1.15, index == 0 ? 1.75f : 1.0);
     }
 
     //TODO: Whole keybind logic
@@ -577,6 +578,8 @@ public class EntityRoyalRed extends WRDragonEntity {
         // ====================================
         //      F.n) Goals: RRAttackGoal
         // ====================================
+
+
 
         class RRAttackGoal extends AnimatedGoal {
             private EntityRoyalRed entity;
