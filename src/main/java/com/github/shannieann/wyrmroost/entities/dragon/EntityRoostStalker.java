@@ -52,17 +52,17 @@ import javax.annotation.Nullable;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 
-public class RoostStalkerEntity extends WRDragonEntity
+public class EntityRoostStalker extends WRDragonEntity
 {
     public static final int ITEM_SLOT = 0;
     //TODO: What are we using this serializer for?
-    //public static final EntitySerializer<RoostStalkerEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+    //public static final EntitySerializer<EntityRoostStalker> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
     //        .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
     //        .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
-    private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(RoostStalkerEntity.class, EntityDataSerializers.ITEM_STACK);
-    private static final EntityDataAccessor<Boolean> SCAVENGING = SynchedEntityData.defineId(RoostStalkerEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(EntityRoostStalker.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<Boolean> SCAVENGING = SynchedEntityData.defineId(EntityRoostStalker.class, EntityDataSerializers.BOOLEAN);
 
-    public RoostStalkerEntity(EntityType<? extends RoostStalkerEntity> stalker, Level level)
+    public EntityRoostStalker(EntityType<? extends EntityRoostStalker> stalker, Level level)
     {
         super(stalker, level);
         maxUpStep = 0;
@@ -376,7 +376,7 @@ public class RoostStalkerEntity extends WRDragonEntity
 
         public ScavengeGoal(double speed)
         {
-            super(RoostStalkerEntity.this, speed, 16);
+            super(EntityRoostStalker.this, speed, 16);
         }
 
         //TODO: START?

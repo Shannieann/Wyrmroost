@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.client.sound;
 
-/*import com.github.shannieann.wyrmroost.entities.dragon.RoyalRedEntity;
+/*import com.github.shannieann.wyrmroost.entities.dragon.EntityRoyalRed;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
@@ -9,9 +9,9 @@ import net.minecraft.world.phys.Vec3;
 
 public class BreathSound extends AbstractTickableSoundInstance
 {
-    private final RoyalRedEntity dragon;
+    private final EntityRoyalRed dragon;
 
-    public BreathSound(RoyalRedEntity dragon)
+    public BreathSound(EntityRoyalRed dragon)
     {
         super(WRSounds.FIRE_BREATH.get(), SoundSource.PLAYERS);
         this.dragon = dragon;
@@ -36,7 +36,7 @@ public class BreathSound extends AbstractTickableSoundInstance
         z = (float) mouth.z;
     }
 
-    public static void play(RoyalRedEntity dragon)
+    public static void play(EntityRoyalRed dragon)
     {
         Minecraft.getInstance().getSoundManager().play(new BreathSound(dragon));
     }

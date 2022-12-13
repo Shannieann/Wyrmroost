@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entities.dragon.ai;
 
-import com.github.shannieann.wyrmroost.entities.dragon.RoyalRedEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.EntityRoyalRed;
 import com.github.shannieann.wyrmroost.entities.effect.EffectLightningSphere;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import net.minecraft.core.BlockPos;
@@ -9,7 +9,6 @@ import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.world.NoteBlockEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,10 +63,10 @@ public class DebuggingTool {
 
   public void forceRoyalRedTarget(Player player) {
         AABB aabb = player.getBoundingBox().inflate(40);
-        List<RoyalRedEntity> royalReds = player.level.getEntitiesOfClass(RoyalRedEntity.class,aabb);
+        List<EntityRoyalRed> royalReds = player.level.getEntitiesOfClass(EntityRoyalRed.class,aabb);
         if (!royalReds.isEmpty()) {
             for (int i = 0; i < royalReds.size(); i++) {
-                RoyalRedEntity test = royalReds.get(i);
+                EntityRoyalRed test = royalReds.get(i);
                 test.debugTarget = player.position();
                 test.setBreathingFire(true);
             }

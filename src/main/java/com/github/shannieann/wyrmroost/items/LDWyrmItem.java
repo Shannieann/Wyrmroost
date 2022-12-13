@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.items;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.LesserDesertwyrmEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.EntityLesserDesertwyrm;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.ModUtils;
@@ -44,7 +44,7 @@ public class LDWyrmItem extends Item
                 {
                     BlockPos pos = context.getClickedPos().relative(context.getClickedFace());
                     CompoundTag contents = tag.getCompound(DATA_CONTENTS);
-                    LesserDesertwyrmEntity entity = WREntityTypes.LESSER_DESERTWYRM.get().create(level);
+                    EntityLesserDesertwyrm entity = WREntityTypes.LESSER_DESERTWYRM.get().create(level);
 
                     entity.deserializeNBT(contents);
                     if (stack.hasCustomHoverName())

@@ -9,7 +9,6 @@ import com.github.shannieann.wyrmroost.entities.projectile.GeodeTippedArrowEntit
 import com.github.shannieann.wyrmroost.entities.projectile.SoulCrystalEntity;
 import com.github.shannieann.wyrmroost.entities.projectile.breath.FireBreathEntity;
 import com.google.common.collect.ImmutableSet;
-import cpw.mods.util.Lazy;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.*;
@@ -37,50 +36,50 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
 {
     public static final DeferredRegister<EntityType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.ENTITIES, Wyrmroost.MOD_ID);
 
-    public static final RegistryObject<EntityType<LesserDesertwyrmEntity>> LESSER_DESERTWYRM =
-            creature("lesser_desertwyrm", LesserDesertwyrmEntity::new)
+    public static final RegistryObject<EntityType<EntityLesserDesertwyrm>> LESSER_DESERTWYRM =
+            creature("lesser_desertwyrm", EntityLesserDesertwyrm::new)
                     .size(0.6f, 0.2f)
-                    .attributes(LesserDesertwyrmEntity::getAttributeSupplier)
-                    .spawnPlacement(ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, LesserDesertwyrmEntity::getSpawnPlacement)
+                    .attributes(EntityLesserDesertwyrm::getAttributeSupplier)
+                    .spawnPlacement(ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EntityLesserDesertwyrm::getSpawnPlacement)
                     .spawnEgg(0xD6BCBC, 0xDEB6C7)
                     .dragonEgg(new DragonEggProperties(0.15f, 0.1f, 10000))
                     .packetInterval(5)
                     .build();
 
-    public static final RegistryObject<EntityType<OverworldDrakeEntity>> OVERWORLD_DRAKE =
-            creature("overworld_drake", OverworldDrakeEntity::new)
+    public static final RegistryObject<EntityType<EntityOverworldDrake>> OVERWORLD_DRAKE =
+            creature("overworld_drake", EntityOverworldDrake::new)
                     .size(2.376f, 2.58f)
-                    .attributes(OverworldDrakeEntity::getAttributeSupplier)
+                    .attributes(EntityOverworldDrake::getAttributeSupplier)
                     .spawnPlacement()
                     .spawnEgg(0x788716, 0x3E623E)
                     .dragonEgg(new DragonEggProperties(0.35f, 0.6f, 18000))
                     .trackingRange(10)
                     .build();
-    public static final RegistryObject<EntityType<SilverGliderEntity>> SILVER_GLIDER =
-            creature("silver_glider", SilverGliderEntity::new)
+    public static final RegistryObject<EntityType<EntitySilverGlider>> SILVER_GLIDER =
+            creature("silver_glider", EntitySilverGlider::new)
                     .size(1.5f, 0.75f)
-                    .attributes(SilverGliderEntity::getAttributeSupplier)
-                    .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, SilverGliderEntity::getSpawnPlacement)
+                    .attributes(EntitySilverGlider::getAttributeSupplier)
+                    .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, EntitySilverGlider::getSpawnPlacement)
                     .spawnEgg(0xC8C8C8, 0xC4C4C4)
                     .dragonEgg(new DragonEggProperties(0.2f, 0.35f, 12000))
                     .trackingRange(8)
                     .build();
 
-    public static final RegistryObject<EntityType<RoostStalkerEntity>> ROOST_STALKER =
-            creature("roost_stalker", RoostStalkerEntity::new)
+    public static final RegistryObject<EntityType<EntityRoostStalker>> ROOST_STALKER =
+            creature("roost_stalker", EntityRoostStalker::new)
                     .size(0.65f, 0.5f)
-                    .attributes(RoostStalkerEntity::getAttributeSupplier)
+                    .attributes(EntityRoostStalker::getAttributeSupplier)
                     .spawnPlacement()
                     .spawnEgg(0x52100D, 0x959595)
                     .dragonEgg(new DragonEggProperties(0.175f, 0.3f, 6000))
                     .build();
 
-    public static final RegistryObject<EntityType<ButterflyLeviathanEntity>> BUTTERFLY_LEVIATHAN =
-            ofGroup("butterfly_leviathan", ButterflyLeviathanEntity::new,MobCategory.CREATURE)
+    public static final RegistryObject<EntityType<EntityButterflyLeviathan>> BUTTERFLY_LEVIATHAN =
+            ofGroup("butterfly_leviathan", EntityButterflyLeviathan::new,MobCategory.CREATURE)
                     .size(5.0f, 5.0f)
-                    .attributes(ButterflyLeviathanEntity::getAttributeSupplier)
+                    .attributes(EntityButterflyLeviathan::getAttributeSupplier)
                     .packetInterval(2)
-                    .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.OCEAN_FLOOR_WG, ButterflyLeviathanEntity::getSpawnPlacement)
+                    .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.OCEAN_FLOOR_WG, EntityButterflyLeviathan::getSpawnPlacement)
                     .spawnEgg(0x17283C, 0x7A6F5A)
                     .dragonEgg(new DragonEggProperties(0.5f, 0.8f, 40000).setConditions(Entity::isInWater))
                     .trackingRange(8)
@@ -99,9 +98,9 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
      */
 
     /*
-    public static final RegistryObject<EntityType<CanariWyvernEntity>> CANARI_WYVERN = creature("canari_wyvern", CanariWyvernEntity::new)
+    public static final RegistryObject<EntityType<EntityCanariWyvern>> CANARI_WYVERN = creature("canari_wyvern", EntityCanariWyvern::new)
             .size(0.65f, 0.85f)
-            .attributes(CanariWyvernEntity::getAttributeSupplier)
+            .attributes(EntityCanariWyvern::getAttributeSupplier)
             .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, WRDragonEntity::canFlyerSpawn)
             .spawnEgg(0x1D1F28, 0x492E0E)
             .dragonEgg(new DragonEggProperties(0.175f, 0.275f, 6000).setConditions(c -> c.level.getBlockState(c.blockPosition().below()).getBlock() == Blocks.JUNGLE_LEAVES))
@@ -113,9 +112,9 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
 
 
 
-    public static final RegistryObject<EntityType<RoyalRedEntity>> ROYAL_RED = creature("royal_red", RoyalRedEntity::new)
+    public static final RegistryObject<EntityType<EntityRoyalRed>> ROYAL_RED = creature("royal_red", EntityRoyalRed::new)
             .size(3f, 3.9f)
-            .attributes(RoyalRedEntity::getAttributeSupplier)
+            .attributes(EntityRoyalRed::getAttributeSupplier)
             .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, WRDragonEntity::canFlyerSpawn)
             .spawnEgg(0x8a0900, 0x0)
             .dragonEgg(new DragonEggProperties(0.45f, 0.7f, 72000))

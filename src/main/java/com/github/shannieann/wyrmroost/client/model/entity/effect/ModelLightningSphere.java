@@ -1,7 +1,6 @@
 package com.github.shannieann.wyrmroost.client.model.entity.effect;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.LesserDesertwyrmEntity;
 import com.github.shannieann.wyrmroost.entities.effect.EffectLightningSphere;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;

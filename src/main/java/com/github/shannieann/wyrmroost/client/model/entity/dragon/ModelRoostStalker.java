@@ -2,24 +2,24 @@ package com.github.shannieann.wyrmroost.client.model.entity.dragon;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.layer.DragonEyesLayer;
-import com.github.shannieann.wyrmroost.entities.dragon.RoostStalkerEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.EntityRoostStalker;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
-public class ModelRoostStalker extends AnimatedGeoModel<RoostStalkerEntity> {
+public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
     private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/roost_stalker/roost_stalker.geo.json");
     private static final ResourceLocation TEXTURE_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/roost_stalker.png");
     private static final ResourceLocation TEXTURE_RESOURCE_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/roost_stalker_sp.png");
     private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/roost_stalker/roost_stalker.json");
 
     @Override
-    public ResourceLocation getModelLocation(RoostStalkerEntity object) {
+    public ResourceLocation getModelLocation(EntityRoostStalker object) {
         return MODEL_RESOURCE;
     }
 
     @Override
-    public ResourceLocation getTextureLocation(RoostStalkerEntity object) {
+    public ResourceLocation getTextureLocation(EntityRoostStalker object) {
         switch (object.getVariant()){
             case "special" -> { return TEXTURE_RESOURCE_SPECIAL;}
             default -> {return  TEXTURE_RESOURCE;}
@@ -27,11 +27,11 @@ public class ModelRoostStalker extends AnimatedGeoModel<RoostStalkerEntity> {
     }
 
     @Override
-    public ResourceLocation getAnimationFileLocation(RoostStalkerEntity animatable) {
+    public ResourceLocation getAnimationFileLocation(EntityRoostStalker animatable) {
         return ANIMATION_RESOURCE;
     }
 
-    public static class RoostStalkerEyesLayer<T extends RoostStalkerEntity> extends DragonEyesLayer<T> {
+    public static class RoostStalkerEyesLayer<T extends EntityRoostStalker> extends DragonEyesLayer<T> {
 
         private static final ResourceLocation EYES_TEXTURE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/roost_stalker_eyes.png");
         private static final ResourceLocation EYES_TEXTURE_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/roost_stalker_eyes_sp.png");

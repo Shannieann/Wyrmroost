@@ -56,9 +56,9 @@ import javax.annotation.Nullable;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-public class OverworldDrakeEntity extends WRDragonEntity
+public class EntityOverworldDrake extends WRDragonEntity
 {
-    private static final EntitySerializer<OverworldDrakeEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+    private static final EntitySerializer<EntityOverworldDrake> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
             //.track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
             //.track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping));
@@ -69,24 +69,24 @@ public class OverworldDrakeEntity extends WRDragonEntity
     public static final int CHEST_SLOT = 2;
 
     // Dragon Entity Data
-    private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(OverworldDrakeEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(EntityOverworldDrake.class, EntityDataSerializers.BOOLEAN);
 
     // Dragon Entity Animations
-    //public static final Animation GRAZE_ANIMATION = LogicalAnimation.create(35, OverworldDrakeEntity::grazeAnimation, () -> OverworldDrakeModel::grazeAnimation);
-    //public static final Animation HORN_ATTACK_ANIMATION = LogicalAnimation.create(15, OverworldDrakeEntity::hornAttackAnimation, () -> OverworldDrakeModel::hornAttackAnimation);
-    //public static final Animation ROAR_ANIMATION = LogicalAnimation.create(86, OverworldDrakeEntity::hornAttackAnimation, () -> OverworldDrakeModel::roarAnimation);
+    //public static final Animation GRAZE_ANIMATION = LogicalAnimation.create(35, EntityOverworldDrake::grazeAnimation, () -> OverworldDrakeModel::grazeAnimation);
+    //public static final Animation HORN_ATTACK_ANIMATION = LogicalAnimation.create(15, EntityOverworldDrake::hornAttackAnimation, () -> OverworldDrakeModel::hornAttackAnimation);
+    //public static final Animation ROAR_ANIMATION = LogicalAnimation.create(86, EntityOverworldDrake::hornAttackAnimation, () -> OverworldDrakeModel::roarAnimation);
     //public static final Animation[] ANIMATIONS = new Animation[]{GRAZE_ANIMATION, HORN_ATTACK_ANIMATION, ROAR_ANIMATION};
 
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public LivingEntity thrownPassenger;
 
-    public OverworldDrakeEntity(EntityType<? extends OverworldDrakeEntity> drake, Level level)
+    public EntityOverworldDrake(EntityType<? extends EntityOverworldDrake> drake, Level level)
     {
         super(drake, level);
     }
 
     @Override
-    public EntitySerializer<OverworldDrakeEntity> getSerializer()
+    public EntitySerializer<EntityOverworldDrake> getSerializer()
     {
         return SERIALIZER;
     }
@@ -321,7 +321,7 @@ public class OverworldDrakeEntity extends WRDragonEntity
         setSprinting(flag);
 
         /*if (flag && prev != target && target.getType() == EntityType.PLAYER && !isTame() && noAnimations())
-            AnimationPacket.send(this, OverworldDrakeEntity.ROAR_ANIMATION);*/ // TODO ADD
+            AnimationPacket.send(this, EntityOverworldDrake.ROAR_ANIMATION);*/ // TODO ADD
     }
 
     /*@Override

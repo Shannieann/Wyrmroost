@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.model.entity;
 
 /*import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.RoyalRedEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.EntityRoyalRed;
 import com.mojang.blaze3d.matrix.PoseStack;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -13,7 +13,7 @@ import net.minecraft.util.ResourceLocation;
  * WRRoyalRed - Ukan
  * Created using Tabula 8.0.0
 
-public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
+public class RoyalRedModel extends DragonEntityModel<EntityRoyalRed>
 {
     public static final ResourceLocation[] TEXTURES = new ResourceLocation[20];
 
@@ -698,7 +698,7 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
     }
 
     @Override
-    public ResourceLocation getTexture(RoyalRedEntity entity)
+    public ResourceLocation getTexture(EntityRoyalRed entity)
     {
         int index = entity.isHatchling()? 2 : entity.isMale()? 0 : 1;
         if (entity.getVariant() == -1) index |= 4;
@@ -712,7 +712,7 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
         return TEXTURES[index];
     }
 
-    public ResourceLocation getEyesTexture(RoyalRedEntity entity)
+    public ResourceLocation getEyesTexture(EntityRoyalRed entity)
     {
         int index = 8;
         if (entity.isHatchling()) index |= 2;
@@ -728,13 +728,13 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
     }
 
     @Override
-    public float getShadowRadius(RoyalRedEntity entity)
+    public float getShadowRadius(EntityRoyalRed entity)
     {
         return 2.5f;
     }
 
     @Override
-    public void scale(RoyalRedEntity entity, PoseStack ms, float partialTicks)
+    public void scale(EntityRoyalRed entity, PoseStack ms, float partialTicks)
     {
         super.scale(entity, ms, partialTicks);
         ms.scale(3.6f, 3.6f, 3.6f);
@@ -747,14 +747,14 @@ public class RoyalRedModel extends DragonEntityModel<RoyalRedEntity>
     }
 
     @Override
-    public void postProcess(RoyalRedEntity entity, PoseStack ms, MultiBufferSource buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks)
+    public void postProcess(EntityRoyalRed entity, PoseStack ms, MultiBufferSource buffer, int light, float limbSwing, float limbSwingAmount, float age, float yaw, float pitch, float partialTicks)
     {
         if (!entity.isSleeping() && !entity.isKnockedOut() && entity.tickCount % 200 > 3) renderEyes(getEyesTexture(entity), ms, buffer);
         renderArmorOverlay(ms, buffer, light);
     }
 
     @Override
-    public void setupAnim(RoyalRedEntity entity, float limbSwing, float limbSwingAmount, float bob, float yaw, float pitch)
+    public void setupAnim(EntityRoyalRed entity, float limbSwing, float limbSwingAmount, float bob, float yaw, float pitch)
     {
         float flightTime = entity.flightTimer.get(partialTicks);
         float sitTime = entity.sitTimer.get(partialTicks);

@@ -40,7 +40,7 @@ public class WRConfig
 
     public static int getBreedLimitFor(EntityType<?> dragon)
     {
-        return BREED_LIMITS_CACHE.getOrDefault(dragon.getRegistryName().getPath(), 0);
+        return BREED_LIMITS_CACHE.getOrDefault(dragon.getRegistryName().getPath(), 5);
     }
 
     public static boolean deckTheHalls()

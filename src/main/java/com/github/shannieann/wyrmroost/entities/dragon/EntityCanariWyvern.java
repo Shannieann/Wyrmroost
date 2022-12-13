@@ -35,15 +35,15 @@ import java.util.EnumSet;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 
-public class CanariWyvernEntity extends WRDragonEntity
+public class EntityCanariWyvern extends WRDragonEntity
 {
-    private static final EntitySerializer<CanariWyvernEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+    private static final EntitySerializer<EntityCanariWyvern> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
 
     public Player pissedOffTarget;
 
-    public CanariWyvernEntity(EntityType<? extends WRDragonEntity> dragon, Level level)
+    public EntityCanariWyvern(EntityType<? extends WRDragonEntity> dragon, Level level)
     {
         super(dragon, level);
 
@@ -81,7 +81,7 @@ public class CanariWyvernEntity extends WRDragonEntity
     }
 
     @Override
-    public EntitySerializer<CanariWyvernEntity> getSerializer()
+    public EntitySerializer<EntityCanariWyvern> getSerializer()
     {
         return SERIALIZER;
     }
@@ -277,7 +277,7 @@ public class CanariWyvernEntity extends WRDragonEntity
             {
                 if (getNavigation().isDone())
                 {
-                    Vec3 vec3d = DefaultRandomPos.getPosAway(CanariWyvernEntity.this, 16, 7, target.position());
+                    Vec3 vec3d = DefaultRandomPos.getPosAway(EntityCanariWyvern.this, 16, 7, target.position());
                     if (vec3d != null) getNavigation().moveTo(vec3d.x, vec3d.y, vec3d.z, 1.5);
                 }
             }
@@ -343,7 +343,7 @@ public class CanariWyvernEntity extends WRDragonEntity
             {
                 attackDelay = 20 + getRandom().nextInt(10);
                 swing(InteractionHand.MAIN_HAND);
-                //AnimationPacket.send(CanariWyvernEntity.this, ATTACK_ANIMATION);
+                //AnimationPacket.send(EntityCanariWyvern.this, ATTACK_ANIMATION);
                 doHurtTarget(target);
             }
         }

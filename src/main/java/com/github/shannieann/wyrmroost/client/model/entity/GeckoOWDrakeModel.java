@@ -4,11 +4,11 @@ package com.github.shannieann.wyrmroost.client.model.entity;// Made with Blockbe
 
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.OverworldDrakeEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.EntityOverworldDrake;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
-public class GeckoOWDrakeModel<T extends OverworldDrakeEntity> extends AnimatedGeoModel<T> {
+public class GeckoOWDrakeModel<T extends EntityOverworldDrake> extends AnimatedGeoModel<T> {
 
 	private static final ResourceLocation modelResource = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/overworld_drake.geo.json");
 	private static final ResourceLocation textureResource = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/overworld_drake/drake_body.png");
@@ -19,7 +19,7 @@ public class GeckoOWDrakeModel<T extends OverworldDrakeEntity> extends AnimatedG
 	}
 
 	@Override
-	public ResourceLocation getTextureLocation(OverworldDrakeEntity object) {
+	public ResourceLocation getTextureLocation(EntityOverworldDrake object) {
 		switch (object.getVariant()){
 			default: return textureResource;
 		}

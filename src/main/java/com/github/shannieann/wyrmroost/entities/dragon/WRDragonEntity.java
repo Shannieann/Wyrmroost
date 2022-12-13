@@ -205,7 +205,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController(this, "generalController", 0, this::generalPredicate));
+        // TODO I feel like there should be some transition while there aren't animations between walking and flying
+        data.addAnimationController(new AnimationController(this, "generalController", 10, this::generalPredicate));
     }
 
     @Override
@@ -222,6 +223,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!animation.equals("base")) {
             //If it's a moving animation, run that logic, add the ability animation to a moving animation..
             int animationType = this.getAnimationType();
+
+        // TODO add all these back, just wanted to get the locomotion animations only for the sick video
             //Ability + move Animations:
             if (this.getIsMovingAnimation()) {
                 //Ability + move (slow) Animations:
@@ -273,7 +276,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         */
         //This moving only plays if it's *just* moving and not doing anything else, as its only reached under those conditions...
         NavigationType navigationType = this.getNavigationType();
-        if (this.getDeltaMovement().length() !=0 && this.isAggressive()) {
+        // These don't work without checking event.isMoving as well for some reason
+        if (this.getDeltaMovement().length() !=0 && event.isMoving() && this.isAggressive()) {
             switch (navigationType) {
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
                 case FLYING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly_fast", ILoopType.EDefaultLoopTypes.LOOP));
@@ -281,7 +285,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             return PlayState.CONTINUE;
         }
-        if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
+        if (this.getDeltaMovement().length() !=0 && event.isMoving() && !this.isAggressive()) {
             switch (navigationType) {
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
                 case FLYING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
@@ -300,7 +304,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             event.getController().setAnimation(new AnimationBuilder().  addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
-        event.getController().setAnimation(new AnimationBuilder().  addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
+        event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle0", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
 
@@ -497,7 +501,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float getTravelSpeed()
     {
         //@formatter:off
-        return isUsingFlyingNavigator()? (float) getAttributeValue(FLYING_SPEED)
+        return (isUsingFlyingNavigator() && getAttributes().hasAttribute(FLYING_SPEED))? (float) getAttributeValue(FLYING_SPEED)
                 : (float) getAttributeValue(MOVEMENT_SPEED);
         //@formatter:on
     }
@@ -1098,30 +1102,29 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     public void setNavigator(NavigationType navigator) {
+        if (navigator == getNavigationType()) return;
         switch (navigator) {
-            case GROUND: {
+            case GROUND -> {
                 this.moveControl = new MoveControl(this);
                 this.lookControl = new LessShitLookController(this);
                 this.navigation = new BetterPathNavigator(this);
                 this.setMovingState(0);
-                break;
             }
-            case FLYING: {
+            case FLYING -> {
                 this.moveControl = new FlyerMoveController(this);
                 this.lookControl = new LessShitLookController(this);
                 this.navigation = new FlyerPathNavigator(this);
                 this.setMovingState(1);
                 setOrderedToSit(false);
                 setSleeping(false);
-                jumpFromGround();
-                break;
+                //jumpFromGround(); TODO removing this for now, we don't want this to always jump from ground after flying is set.
+
             }
-            case SWIMMING: {
-                 this.moveControl = new WRSwimmingMoveControl(this);
+            case SWIMMING -> {
+                this.moveControl = new WRSwimmingMoveControl(this);
                 this.lookControl = new WRSwimmingLookControl(this, 10);
                 this.navigation = new WRSwimmingNavigator(this);
                 this.setMovingState(2);
-                break;
             }
         }
     }
@@ -1188,9 +1191,65 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return new DragonBodyController(this);
     }
 
+    // TODO dragon flapping wings sound
+    // I feel like this is super messy rn, but I just wanted to get this working. TODO clean this up
     @Override
     public void travel(Vec3 vec3d){
-        float speed = getTravelSpeed();
+        if (this.isAlive()) {
+            if (this.isVehicle() && this.canBeControlledByRider()) {
+                LivingEntity livingentity = (LivingEntity)this.getControllingPassenger();
+                this.setYRot(livingentity.getYRot());
+                this.yRotO = this.getYRot();
+                this.setXRot(livingentity.getXRot() * 0.5F);
+                this.setRot(this.getYRot(), this.getXRot());
+                this.yBodyRot = this.getYRot();
+                this.yHeadRot = this.yBodyRot;
+                float groundX = livingentity.xxa * 0.5F;
+                float groundZ = livingentity.zza;
+                if (groundZ <= 0.0F) {
+                    groundZ *= 0.25F;
+                }
+
+                // TODO add water control
+                this.flyingSpeed = this.getSpeed() * 0.1F;
+                if (this.isControlledByLocalInstance()) {
+                    // handle flying movement
+                    float speed = getTravelSpeed();
+                    if (isUsingFlyingNavigator())
+                    {
+                        if (getAltitude() <= getFlightThreshold()) setNavigator(NavigationType.GROUND);
+                        this.setSpeed(speed * (25.0f/3.0f));
+                        double moveX = livingentity.xxa;
+                        double moveZ = livingentity.zza;
+                        double moveY;
+                        if (ClientEvents.keybindFlight)
+                            moveY = ClientEvents.getClient().options.keyJump.isDown()? 2.5f : WRKeybind.FLIGHT_DESCENT.isDown()? -3f : 0;
+                        else moveY = -livingentity.getXRot() * (Math.PI / 180);
+                        super.travel(new Vec3(moveX, moveY, moveZ));
+                    }
+                    else
+                    {
+                        //speed *= 0.225f;
+                        // normal movement
+                        if (ClientEvents.getClient().options.keyJump.isDown()) jumpFromGround();
+                        if (dragonCanFly() && getAltitude() > getFlightThreshold()) setNavigator(NavigationType.FLYING);
+                        else {
+                            this.setSpeed(speed);
+                            super.travel(new Vec3(groundX, vec3d.y, groundZ));
+                        }
+                    }
+                } else if (livingentity instanceof Player) {
+                    this.setDeltaMovement(Vec3.ZERO);
+                }
+
+                this.calculateEntityAnimation(this, isUsingFlyingNavigator());
+                this.tryCheckInsideBlocks();
+            } else {
+                this.flyingSpeed = getTravelSpeed();
+                super.travel(vec3d);
+            }
+        }
+        /*float speed = getTravelSpeed();
         boolean isFlying = isUsingFlyingNavigator();
         //TODO: PASSENGER LOGIC
         if (canBeControlledByRider()) // Were being controlled; override ai movement
@@ -1213,7 +1272,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     moveZ = moveZ > 0? moveZ : 0;
                     if (ClientEvents.keybindFlight)
                         moveY = ClientEvents.getClient().options.keyJump.isDown()? 1f : WRKeybind.FLIGHT_DESCENT.isDown()? -1f : 0;
-                    else if (moveZ > 0) moveY = -entity.getXRot() * (Math.PI / 180);
+                    else moveY = -entity.getXRot() * (Math.PI / 180);
                 }
                 else
                 {
@@ -1221,16 +1280,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     if (entity.jumping && dragonCanFly()) setNavigator(NavigationType.FLYING);
                 }
 
-                vec3d = new Vec3(moveX, moveY, moveZ);
+                setDeltaMovement(new Vec3(moveX, moveY, moveZ));
                 setSpeed(speed);
             }
-            else if (entity instanceof Player)
+            /*else if (entity instanceof Player)
             {
                 calculateEntityAnimation(this, true);
                 setDeltaMovement(Vec3.ZERO);
                 if (!level.isClientSide && isFlying)
                     ((ServerPlayer) entity).connection.aboveGroundVehicleTickCount = 0;
-                return;
             }
         } else {
             if (isFlying) {
@@ -1240,7 +1298,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 setDeltaMovement(getDeltaMovement().scale(0.9f));
                 calculateEntityAnimation(this, true);
             } else super.travel(vec3d);
-        }
+        }*/
+    }
+    @Override
+    public boolean isNoGravity() {
+        return isUsingFlyingNavigator();
     }
 
     public boolean isIdling()
@@ -1263,6 +1325,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         return getVehicle() != null;
     }
+
 
     @Override
     public boolean isSuppressingSlidingDownLadder()
