@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.ai;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.flying;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.util.Mafs;

@@ -1,29 +1,39 @@
-package com.github.shannieann.wyrmroost.entities.dragon.ai.flyers;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.flying;
 
-import com.google.common.collect.ImmutableSet;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.FluidTags;
-import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.block.*;
-import net.minecraft.world.level.block.state.BlockBehaviour;
-import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.FluidState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.FlyNodeEvaluator;
-import net.minecraft.world.level.pathfinder.Node;
-import net.minecraft.world.level.pathfinder.PathComputationType;
-
-/*
-import java.util.EnumSet;
 
 public class WRFlyNodeEvaluator extends FlyNodeEvaluator {
 
+
+    @Override
+    public BlockPathTypes getBlockPathType(BlockGetter pLevel, int pX, int pY, int pZ) {
+        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
+        BlockPathTypes blockpathtypes = getBlockPathTypeRaw(pLevel, blockpos$mutableblockpos.set(pX, pY, pZ));
+        if (blockpathtypes == BlockPathTypes.OPEN && pY >= pLevel.getMinBuildHeight() + 1) {
+            BlockPathTypes blockpathtypes1 = getBlockPathTypeRaw(pLevel, blockpos$mutableblockpos.set(pX, pY - 1, pZ));
+            if (blockpathtypes1 != BlockPathTypes.DAMAGE_FIRE && blockpathtypes1 != BlockPathTypes.LAVA) {
+                if (blockpathtypes1 == BlockPathTypes.DAMAGE_CACTUS) {
+                    blockpathtypes = BlockPathTypes.DAMAGE_CACTUS;
+                } else if (blockpathtypes1 == BlockPathTypes.DAMAGE_OTHER) {
+                    blockpathtypes = BlockPathTypes.DAMAGE_OTHER;
+                } else if (blockpathtypes1 == BlockPathTypes.COCOA) {
+                    blockpathtypes = BlockPathTypes.COCOA;
+                } else if (blockpathtypes1 == BlockPathTypes.FENCE) {
+                    blockpathtypes = BlockPathTypes.FENCE;
+                } else {
+                    blockpathtypes = blockpathtypes1 != BlockPathTypes.WALKABLE && blockpathtypes1 != BlockPathTypes.OPEN && blockpathtypes1 != BlockPathTypes.WATER ? BlockPathTypes.WALKABLE : BlockPathTypes.OPEN;
+                }
+            } else {
+                blockpathtypes = BlockPathTypes.DAMAGE_FIRE;
+            }
+        }
+        return blockpathtypes;
+    }
+}
+    /*
     private final Long2ObjectMap<BlockPathTypes> pathTypeByPosCache = new Long2ObjectOpenHashMap<>();
 
     @Override
@@ -162,6 +172,4 @@ public class WRFlyNodeEvaluator extends FlyNodeEvaluator {
     }
 }
 
-
-
- */
+     */

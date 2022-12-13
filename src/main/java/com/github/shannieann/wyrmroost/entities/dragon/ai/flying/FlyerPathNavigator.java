@@ -1,9 +1,10 @@
-package com.github.shannieann.wyrmroost.entities.dragon.ai;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.flying;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
+import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.phys.Vec3;
 
 public class FlyerPathNavigator extends FlyingPathNavigation
@@ -14,7 +15,14 @@ public class FlyerPathNavigator extends FlyingPathNavigation
     }
 
     @Override
-    @SuppressWarnings("ConstantConditions") // IT CAN BE NULL DAMNIT
+    protected PathFinder createPathFinder(int pMaxVisitedNodes) {
+        this.nodeEvaluator = new WRFlyNodeEvaluator();
+        this.nodeEvaluator.setCanPassDoors(true);
+        return new PathFinder(this.nodeEvaluator, pMaxVisitedNodes);
+    }
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
     public void tick()
     {
         if (!isDone() && canUpdatePath())

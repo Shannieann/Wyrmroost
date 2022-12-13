@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.ai.aquatics;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.swimming;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
