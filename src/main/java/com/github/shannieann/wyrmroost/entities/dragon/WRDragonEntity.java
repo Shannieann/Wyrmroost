@@ -205,8 +205,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     public void registerControllers(AnimationData data) {
-        // TODO I feel like there should be some transition while there aren't animations between walking and flying
-        data.addAnimationController(new AnimationController(this, "generalController", 10, this::generalPredicate));
+        // TODO: Transitions between animations. Discuss and implement method that does not break logic.
+        data.addAnimationController(new AnimationController(this, "generalController", 0, this::generalPredicate));
     }
 
     @Override
@@ -239,6 +239,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     return PlayState.CONTINUE;
                 }
                 //Ability + move (fast) Animations:
+                //TODO: remove !
                 if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
                     NavigationType navigationType = this.getNavigationType();
                     animation = switch (navigationType) {
@@ -274,10 +275,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
         */
-        //This moving only plays if it's *just* moving and not doing anything else, as its only reached under those conditions...
+        //This moving only plays if it's *just* moving and not doing anything else, as it's only reached under those conditions...
         NavigationType navigationType = this.getNavigationType();
-        // These don't work without checking event.isMoving as well for some reason
-        if (this.getDeltaMovement().length() !=0 && event.isMoving() && this.isAggressive()) {
+        //TODO: Animations should play based only on setDeltaMovement, without need isMoving
+        //TODO: Verify this indeed works.
+        if (this.getDeltaMovement().length() !=0 /*&& event.isMoving()*/ && this.isAggressive()) {
             switch (navigationType) {
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
                 case FLYING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly_fast", ILoopType.EDefaultLoopTypes.LOOP));
@@ -285,7 +287,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             return PlayState.CONTINUE;
         }
-        if (this.getDeltaMovement().length() !=0 && event.isMoving() && !this.isAggressive()) {
+        if (this.getDeltaMovement().length() !=0  /*&& event.isMoving()*/ && !this.isAggressive()) {
             switch (navigationType) {
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
                 case FLYING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
@@ -296,15 +298,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //Idle:
         if (this.getRandom().nextDouble() < 0.001) {
             int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
-            event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
         //Ensures swimmers do not just stay rigid in water, will always swim even in place...
         if (this.isUsingSwimmingNavigator()) {
-            event.getController().setAnimation(new AnimationBuilder().  addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
-        event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle0", ILoopType.EDefaultLoopTypes.LOOP));
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("idle0", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
 
@@ -455,6 +457,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
 
+    //TODO: Remove
     public int getMovingState()
     {
         return entityData.get(MOVING_STATE);
@@ -827,17 +830,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void tick() {
         super.tick();
-        if (!level.isClientSide) {
-            NavigationType properNavigator = getProperNavigator();
-            if (properNavigator != this.getNavigationType()) {
-                setNavigator(properNavigator);
-            }
 
-            // todo figure out a better target system?
-            LivingEntity target = getTarget();
-            if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
-                setTarget(null);
+        NavigationType properNavigator = getProperNavigator();
+        if (properNavigator != this.getNavigationType()) {
+            setNavigator(properNavigator);
         }
+        
+        // todo figure out a better target system?
+        LivingEntity target = getTarget();
+        if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
+            setTarget(null);
+
+
 
 
         updateAgeProgress();
