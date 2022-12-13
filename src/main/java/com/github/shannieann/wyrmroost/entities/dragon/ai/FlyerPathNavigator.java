@@ -6,9 +6,6 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * todo: I guess make our own node processor. Derivative of WalkAndSwim, just ditch all the water related shit.
- */
 public class FlyerPathNavigator extends FlyingPathNavigation
 {
     public FlyerPathNavigator(WRDragonEntity entity)
