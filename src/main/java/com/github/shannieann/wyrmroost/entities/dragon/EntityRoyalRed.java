@@ -54,7 +54,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class EntityRoyalRed extends WRDragonEntity {
     //TODO: Breath + Nether Portals
-    //TODO: Furher breath optimizations + evaluator
+    //TODO: Further breath optimizations + evaluator
     //TODO: Sleeping logic
     //TODO: Dynamic animations
     static {
