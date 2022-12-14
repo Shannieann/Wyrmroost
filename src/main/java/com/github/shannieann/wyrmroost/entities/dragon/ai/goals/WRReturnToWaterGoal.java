@@ -83,7 +83,7 @@ public class WRReturnToWaterGoal extends Goal {
 
     @Override
     public void start() {
-        this.entity.level.setBlock(new BlockPos(this.x,this.y,this.z),Blocks.TARGET.defaultBlockState(),2);
+        this.entity.getNavigation().moveTo(this.x,this.y,this.z,this.speed);
     }
 
     @Override
