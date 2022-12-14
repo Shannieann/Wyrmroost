@@ -58,21 +58,6 @@ public class WRGroundPathNavigator extends GroundPathNavigation {
         }
     }
 
-
-
-    private boolean isPathLongEnough(Vec3 entityPosition)
-    {
-        if (path.getNextNodeIndex() + 1 >= path.getNodeCount()) return false;
-
-        Vec3 pathPos = Vec3.atBottomCenterOf(path.getNextNodePos());
-        if (!entityPosition.closerThan(pathPos, maxDistanceToWaypoint)) return false;
-
-        Vec3 nextPathPos = Vec3.atBottomCenterOf(path.getNodePos(path.getNextNodeIndex() + 1));
-        Vec3 midOfNextAndCurrent = nextPathPos.subtract(pathPos);
-        Vec3 midOfEntityAndCurrent = entityPosition.subtract(pathPos);
-        return midOfNextAndCurrent.dot(midOfEntityAndCurrent) > 0;
-    }
-
     @Override
     public boolean isStableDestination(BlockPos pPos) {
         if (!entity.speciesCanSwim()) {
