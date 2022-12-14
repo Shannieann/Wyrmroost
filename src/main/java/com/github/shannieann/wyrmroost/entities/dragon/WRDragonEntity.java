@@ -4,15 +4,15 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.swimming.WRSwimmingMoveControl;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.swimming.WRSwimmingLookControl;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.swimming.WRSwimmingNavigator;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.flying.FlyerMoveController;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.flying.FlyerPathNavigator;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.*;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSitGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.swimming.WRSwimmingLookControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.swimming.WRSwimmingMoveControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.swimming.WRSwimmingNavigator;
 import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggProperties;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.DragonArmorItem;
@@ -106,6 +106,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     private int sleepCooldown;
     public int breedCount;
     private float ageProgress = 1;
+    public float dragonFlightRotation = 0;
 
     //Only for swimmers:
     public float prevYRot;
@@ -155,7 +156,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<Float> BREACH_ATTACK_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
-
+    public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
     public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
@@ -207,7 +208,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     public void registerControllers(AnimationData data) {
-        // TODO: Transitions between animations. Discuss and implement method that does not break logic.
         data.addAnimationController(new AnimationController(this, "generalController", 0, this::generalPredicate));
     }
 
@@ -241,7 +241,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     return PlayState.CONTINUE;
                 }
                 //Ability + move (fast) Animations:
-                //TODO: remove !
                 if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
                     NavigationType navigationType = this.getNavigationType();
                     animation = switch (navigationType) {
@@ -277,11 +276,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
         */
-        //This moving only plays if it's *just* moving and not doing anything else, as it's only reached under those conditions...
+        //This moving only plays if it's *just* moving and not doing anything else, as its only reached under those conditions...
         NavigationType navigationType = this.getNavigationType();
-        //TODO: Animations should play based only on setDeltaMovement, without need isMoving
-        //TODO: Verify this indeed works.
-        if (this.getDeltaMovement().length() !=0 /*&& event.isMoving()*/ && this.isAggressive()) {
+        // These don't work without checking event.isMoving as well for some reason
+        if (this.getDeltaMovement().length() !=0 && event.isMoving() && this.isAggressive()) {
             switch (navigationType) {
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
                 case FLYING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly_fast", ILoopType.EDefaultLoopTypes.LOOP));
@@ -289,7 +287,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             return PlayState.CONTINUE;
         }
-        if (this.getDeltaMovement().length() !=0  /*&& event.isMoving()*/ && !this.isAggressive()) {
+        if (this.getDeltaMovement().length() !=0 && event.isMoving() && !this.isAggressive()) {
             switch (navigationType) {
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
                 case FLYING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
@@ -300,15 +298,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //Idle:
         if (this.getRandom().nextDouble() < 0.001) {
             int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
+            event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
         //Ensures swimmers do not just stay rigid in water, will always swim even in place...
         if (this.isUsingSwimmingNavigator()) {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
+            event.getController().setAnimation(new AnimationBuilder().  addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("idle0", ILoopType.EDefaultLoopTypes.LOOP));
+        event.getController().setAnimation(new AnimationBuilder().  addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
 
@@ -330,6 +328,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(AGE, 0);
         entityData.define(BREACHING, false);
         entityData.define(BREACH_ATTACK_COOLDOWN, 600F);
+        entityData.define(DRAGON_X_ROTATION, 0f);
         entityData.define(GENDER, "male");
         entityData.define(SLEEPING, false);
         entityData.define(VARIANT, "base0");
@@ -459,7 +458,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
 
-    //TODO: Remove
     public int getMovingState()
     {
         return entityData.get(MOVING_STATE);
@@ -832,18 +830,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void tick() {
         super.tick();
+        if (!level.isClientSide) {
+            NavigationType properNavigator = getProperNavigator();
+            if (properNavigator != this.getNavigationType()) {
+                setNavigator(properNavigator);
+            }
 
-        NavigationType properNavigator = getProperNavigator();
-        if (properNavigator != this.getNavigationType()) {
-            setNavigator(properNavigator);
+            // todo figure out a better target system?
+            LivingEntity target = getTarget();
+            if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
+                setTarget(null);
         }
-
-        // todo figure out a better target system?
-        LivingEntity target = getTarget();
-        if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
-            setTarget(null);
-
-
 
 
         updateAgeProgress();
@@ -1197,9 +1194,85 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return new DragonBodyController(this);
     }
 
+    // Test dragonriding method
+    @Override
+    public void travel(Vec3 vec3d){
+        if (this.isAlive()) {
+            if (this.isVehicle() && this.canBeControlledByRider()) {
+                LivingEntity livingentity = (LivingEntity)this.getControllingPassenger();
+                //this.setYRot(livingentity.getYRot());
+                //this.yRotO = this.getYRot();
+                this.setXRot(livingentity.getXRot() * 0.5F);
+                this.setRot(this.getYRot(), this.getXRot());
+                //this.yBodyRot = this.getYRot();
+                //this.yHeadRot = this.yBodyRot;
+                float groundX = livingentity.xxa * 0.5F;
+                float groundZ = livingentity.zza;
+                if (groundZ <= 0.0F) {
+                    groundZ *= 0.25F;
+                }
+
+                // TODO add water control
+                this.flyingSpeed = this.getSpeed() * 0.1F;
+                if (this.isControlledByLocalInstance()) {
+                    // handle flying movement
+                    float speed = getTravelSpeed();
+                    if (isUsingFlyingNavigator())
+                    {
+                        if (getAltitude() <= getFlightThreshold()) setNavigator(NavigationType.GROUND);
+                        this.setSpeed(speed * (25.0f/3.0f));
+                        Vec3 vec = new Vec3(1, 1, 1);
+                        double moveX = livingentity.xxa;
+                        double moveZ = livingentity.zza;
+                        //double moveY = 0.0f;
+                        //if (ClientEvents.keybindFlight)
+                            //moveY = ClientEvents.getClient().options.keyJump.isDown()? 2.5f : WRKeybind.FLIGHT_DESCENT.isDown()? -3f : 0;
+                        //else moveY = -livingentity.getXRot() * (Math.PI / 180);
+                        float rotationChange;
+                        if (ClientEvents.keybindFlight)
+                            rotationChange = ClientEvents.getClient().options.keyJump.isDown()? 1.0f : WRKeybind.FLIGHT_DESCENT.isDown()? -1.0f : 0;
+                        else rotationChange = 0;
+                        setDragonXRotation(getDragonXRotation() + rotationChange);
+                        if (ClientEvents.getClient().options.keyUp.isDown()) {
+                            vec.yRot(getDragonXRotation());
+                            System.out.println(getDragonXRotation());
+                            System.out.println(vec);
+                            super.travel(new Vec3(moveX, vec.y, moveZ));
+                        }
+                    }
+                    else
+                    {
+                        //speed *= 0.225f;
+                        // normal movement
+                        if (ClientEvents.getClient().options.keyJump.isDown()) jumpFromGround();
+                        if (dragonCanFly() && getAltitude() > getFlightThreshold()) setNavigator(NavigationType.FLYING);
+                        else {
+                            this.setSpeed(speed);
+                            super.travel(new Vec3(groundX, vec3d.y, groundZ));
+                        }
+                    }
+                } else if (livingentity instanceof Player) {
+                    this.setDeltaMovement(Vec3.ZERO);
+                }
+
+                this.calculateEntityAnimation(this, isUsingFlyingNavigator());
+                this.tryCheckInsideBlocks();
+            } else {
+                this.flyingSpeed = getTravelSpeed();
+                super.travel(vec3d);
+            }
+        }
+    }
+    public void setDragonXRotation(float rotation){
+        dragonFlightRotation = rotation;
+        getEntityData().set(DRAGON_X_ROTATION, rotation);
+    }
+    public float getDragonXRotation(){
+        return dragonFlightRotation;
+    }
     // TODO dragon flapping wings sound
     // I feel like this is super messy rn, but I just wanted to get this working. TODO clean this up
-    @Override
+    /*@Override
     public void travel(Vec3 vec3d){
         if (this.isAlive()) {
             if (this.isVehicle() && this.canBeControlledByRider()) {
@@ -1255,57 +1328,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 super.travel(vec3d);
             }
         }
-        /*float speed = getTravelSpeed();
-        boolean isFlying = isUsingFlyingNavigator();
-        //TODO: PASSENGER LOGIC
-        if (canBeControlledByRider()) // Were being controlled; override ai movement
-        {
-            LivingEntity entity = (LivingEntity) getControllingPassenger();
-            double moveX = entity.xxa * 0.5;
-            double moveY = vec3d.y;
-            double moveZ = entity.zza;
 
-            // rotate head to match driver. yaw is handled relative to this.
-            yHeadRot = entity.yHeadRot;
-            setXRot(entity.getXRot() * 0.65f);
-            setYRot(Mth.rotateIfNecessary(yHeadRot, getYRot(), getYawRotationSpeed()));
-
-            if (isControlledByLocalInstance())
-            {
-                if (isFlying)
-                {
-                    moveX = vec3d.x;
-                    moveZ = moveZ > 0? moveZ : 0;
-                    if (ClientEvents.keybindFlight)
-                        moveY = ClientEvents.getClient().options.keyJump.isDown()? 1f : WRKeybind.FLIGHT_DESCENT.isDown()? -1f : 0;
-                    else moveY = -entity.getXRot() * (Math.PI / 180);
-                }
-                else
-                {
-                    speed *= 0.225f;
-                    if (entity.jumping && dragonCanFly()) setNavigator(NavigationType.FLYING);
-                }
-
-                setDeltaMovement(new Vec3(moveX, moveY, moveZ));
-                setSpeed(speed);
-            }
-            /*else if (entity instanceof Player)
-            {
-                calculateEntityAnimation(this, true);
-                setDeltaMovement(Vec3.ZERO);
-                if (!level.isClientSide && isFlying)
-                    ((ServerPlayer) entity).connection.aboveGroundVehicleTickCount = 0;
-            }
-        } else {
-            if (isFlying) {
-                // Move relative to yaw - handled in the move controller or by passenger
-                moveRelative(speed, vec3d);
-                move(MoverType.SELF, getDeltaMovement());
-                setDeltaMovement(getDeltaMovement().scale(0.9f));
-                calculateEntityAnimation(this, true);
-            } else super.travel(vec3d);
-        }*/
-    }
+    }*/
     @Override
     public boolean isNoGravity() {
         return isUsingFlyingNavigator();
