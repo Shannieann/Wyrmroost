@@ -1513,9 +1513,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
         }
         */
-
-        //Having performed all previous checks, if it is underwater, return true
-        return this.isUnderWater();
+        //By the time it reaches water, switch to water navigator,
+        // unless it can also fly, in which case check for it being entirely underwater
+        return speciesCanFly()?this.isUnderWater():this.isInWater();
     }
 
 
