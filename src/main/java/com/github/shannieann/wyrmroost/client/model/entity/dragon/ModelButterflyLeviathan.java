@@ -45,12 +45,14 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<EntityButterflyLev
         */
 
         float setPitchValue;
-        if (!animatable.getBreaching()) {
-            setPitchValue = (animatable.currentPitchRadians+(animatable.targetPitchRadians-animatable.currentPitchRadians)*animationEvent.getPartialTick());
-        } else {
-            setPitchValue = animatable.currentPitchRadians;
+        if (animatable.isUsingSwimmingNavigator()) {
+            if (!animatable.getBreaching()) {
+                setPitchValue = (animatable.currentPitchRadians+(animatable.targetPitchRadians-animatable.currentPitchRadians)*animationEvent.getPartialTick());
+            } else {
+                setPitchValue = animatable.currentPitchRadians;
+            }
+            this.getAnimationProcessor().getBone("ibody1").setRotationX(-setPitchValue);
         }
-        this.getAnimationProcessor().getBone("ibody1").setRotationX(-setPitchValue);
 
         if (animatable.isUsingSwimmingNavigator() && !animatable.getBreaching()) {
             //deltaYaw operations
