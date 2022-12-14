@@ -5,9 +5,9 @@ import com.github.shannieann.wyrmroost.entities.dragon.EntityRoostStalker;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
-public class RenderRoostStalker extends GeoEntityRenderer<EntityRoostStalker> {
+public class RenderRoostStalker extends WRDragonRender<EntityRoostStalker> {
         public RenderRoostStalker(EntityRendererProvider.Context renderManager) {
-            super(renderManager, new ModelRoostStalker());
+            super(renderManager, new ModelRoostStalker(), "");
             this.addLayer(new ModelRoostStalker.RoostStalkerEyesLayer<>(this));
             //TODO: Shadow?
             this.shadowRadius = 0.0F;
