@@ -20,7 +20,7 @@ public class WRGroundPathNavigator extends GroundPathNavigation {
 
     @Override
     protected PathFinder createPathFinder(int pMaxVisitedNodes) {
-        this.nodeEvaluator = new WRWalkNodeEvaluator();
+        this.nodeEvaluator = new WRWalkNodeEvaluator(((WRDragonEntity)(mob)).speciesCanSwim());
         return new PathFinder(this.nodeEvaluator, pMaxVisitedNodes);
     }
 
@@ -66,4 +66,6 @@ public class WRGroundPathNavigator extends GroundPathNavigation {
         BlockPos blockpos = pPos.below();
         return this.level.getFluidState(blockpos).is(FluidTags.WATER) || this.level.getBlockState(pPos).isSolidRender(this.level, pPos);
     }
+
+
 }

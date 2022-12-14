@@ -5,6 +5,7 @@ import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRRetur
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
+import net.minecraft.util.Mth;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
@@ -13,6 +14,12 @@ import net.minecraft.world.level.pathfinder.*;
 
 public class WRWalkNodeEvaluator extends WalkNodeEvaluator {
     //TODO: Check all methods in super class and perhaps override and optimize more
+
+    private boolean amphibious;
+
+    public WRWalkNodeEvaluator(boolean amphibious) {
+        this.amphibious = amphibious;
+    }
 
     @Override
     public BlockPathTypes getBlockPathType(BlockGetter pLevel, int pX, int pY, int pZ) {
@@ -31,7 +38,6 @@ public class WRWalkNodeEvaluator extends WalkNodeEvaluator {
             return BlockPathTypes.WATER;
         }  else return getBlockPathTypeStatic(pLevel, blockpos$mutableblockpos);
     }
-
 
     public static BlockPathTypes getBlockPathTypeStatic(BlockGetter pLevel, BlockPos.MutableBlockPos pPos) {
         int i = pPos.getX();
@@ -82,6 +88,39 @@ public class WRWalkNodeEvaluator extends WalkNodeEvaluator {
             //Anything else that does not block motions, berry bushes, plants, etc, we will just treat as air, we can walk right through it..
             return BlockPathTypes.OPEN;
         }
+    }
+
+
+    @Override
+    public int getNeighbors(Node[] p_164676_, Node p_164677_) {
+        int i = super.getNeighbors(p_164676_, p_164677_);
+        if (this.isAmphibious()) {
+            BlockPathTypes blockpathtypes = this.getCachedBlockType(this.mob, p_164677_.x, p_164677_.y + 1, p_164677_.z);
+            BlockPathTypes blockpathtypes1 = this.getCachedBlockType(this.mob, p_164677_.x, p_164677_.y, p_164677_.z);
+            int j;
+            if (this.mob.getPathfindingMalus(blockpathtypes) >= 0.0F) {
+                j = Mth.floor(Math.max(1.0F, this.mob.maxUpStep));
+            } else {
+                j = 0;
+            }
+
+            double d0 = this.getFloorLevel(new BlockPos(p_164677_.x, p_164677_.y, p_164677_.z));
+            Node node = this.findAcceptedNode(p_164677_.x, p_164677_.y + 1, p_164677_.z, Math.max(0, j - 1), d0, Direction.UP, blockpathtypes1);
+            Node node1 = this.findAcceptedNode(p_164677_.x, p_164677_.y - 1, p_164677_.z, j, d0, Direction.DOWN, blockpathtypes1);
+            if (this.isNeighborValid(node, p_164677_)) {
+                p_164676_[i++] = node;
+            }
+
+            if (this.isNeighborValid(node1, p_164677_)) {
+                p_164676_[i++] = node1;
+            }
+        }
+        return i;
+    }
+
+    @Override
+    public boolean isAmphibious(){
+        return this.amphibious;
     }
 }
 
