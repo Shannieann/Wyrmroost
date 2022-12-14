@@ -5,10 +5,10 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.LessShitLookController;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRandomSwimmingGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRReturnToWaterGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRWaterLeapGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.LessShitLookController;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRWaterLeapGoal;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.book.action.BookActions;
 import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
@@ -35,6 +35,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
@@ -52,7 +53,6 @@ import net.minecraftforge.common.ForgeMod;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Random;
-import java.util.function.Predicate;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
@@ -72,7 +72,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //ANIMATIONS: Sleeping
 //ANIMATIONS: Awakening
 //Animations: Idle (if on ground)
-
 
 //TODO: GOALS:
 //Showcase of water movement goals
@@ -701,8 +700,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity
 //        goalSelector.addGoal(2, new WRFollowOwnerGoal(this));
 //        goalSelector.addGoal(3, new DragonBreedGoal(this));
 
-        //goalSelector.addGoal(4, new AttackGoal());
-        
+
+        goalSelector.addGoal(4, new BFLAttackGoal());
         goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,8));
         goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
         goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 64,48));
@@ -712,14 +711,14 @@ public class EntityButterflyLeviathan extends WRDragonEntity
 
         //targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
         //targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
-        //targetSelector.addGoal(3, new HurtByTargetGoal(this));
+        targetSelector.addGoal(3, new HurtByTargetGoal(this));
         //targetSelector.addGoal(4, new DefendHomeGoal(this));
-        //targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, aquaticRandomTargetPredicate));
+        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, aquaticRandomTargetPredicate));
     }
 
-    private class AttackGoal extends Goal
+    private class BFLAttackGoal extends Goal
     {
-        public AttackGoal()
+        public BFLAttackGoal()
         {
             setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
@@ -731,9 +730,17 @@ public class EntityButterflyLeviathan extends WRDragonEntity
         }
 
         @Override
+        public boolean canContinueToUse() {
+            LivingEntity target = getTarget();
+            if (target == null) {
+                return false;
+            }
+            return true;
+        }
+
+        @Override
         public void tick()
         {
-            System.out.print(getAnimation());
             LivingEntity target = getTarget();
             if (target == null) return;
             double distFromTarget = distanceToSqr(target);
@@ -743,6 +750,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity
             boolean isClose = distFromTarget < 40;
 
             //TODO: Fix crashes
+
+            //Only generate a new path is Navigation is NOT stuck and if distance to target is greater than some value...
             if (getNavigation().isDone())
                 getNavigation().moveTo(target, 1.2);
 
