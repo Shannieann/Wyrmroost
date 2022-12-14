@@ -6,6 +6,7 @@ import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.LessShitLookController;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRWaterLeapGoal;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.book.action.BookActions;
@@ -702,8 +703,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity
         //goalSelector.addGoal(4, new AttackGoal());
         
         //goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1));
-        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
-        //goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 10,32,24));
+        //goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
+        goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 10,64,48));
 
 //        goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
 //        goalSelector.addGoal(9, new RandomLookAroundGoal(this));
