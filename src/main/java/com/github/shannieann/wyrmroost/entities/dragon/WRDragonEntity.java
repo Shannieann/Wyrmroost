@@ -4,15 +4,17 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.flying.FlyerMoveController;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.flying.FlyerPathNavigator;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.BetterPathNavigator;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.LessShitLookController;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.FlyerMoveController;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.FlyerPathNavigator;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.*;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSitGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.swimming.WRSwimmingLookControl;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.swimming.WRSwimmingMoveControl;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.swimming.WRSwimmingNavigator;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming.WRSwimmingLookControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming.WRSwimmingMoveControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming.WRSwimmingNavigator;
 import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggProperties;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.DragonArmorItem;
@@ -43,7 +45,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
@@ -73,7 +74,6 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
@@ -1091,10 +1091,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public Predicate<LivingEntity> aquaticRandomTargetPredicate = e -> {
         EntityType<?> type = e.getType();
-        return
-                //If we are not in water, we can target entities in water and out of water...
-                //If we are in water, only target entities in water...
-                (!this.isInWater() || e.isInWater());
+        if (canAttack(e)) {
+            return
+                    //If we are not in water, we can target entities in water and out of water...
+                    //If we are in water, only target entities in water...
+                    (!this.isInWater() || e.isInWater());
+        }
+        return false;
     };
 
     // ====================================
