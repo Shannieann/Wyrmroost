@@ -317,7 +317,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
         //If the entity is flying and it is not doing anything else that warrants an animation, it will just fly place.
         if (this.isUsingFlyingNavigator()) {
-            event.getController().setAnimation(new AnimationBuilder().  addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
+            event.getController().setAnimation(new AnimationBuilder().  addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
         //If the entity is on ground and it is not doing anything else that warrants an animation, it will just stand ("naturally") in place
@@ -327,7 +327,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
         //Default case
         //If nothing else was triggered, reset the entity to its base animation
-        event.getController().setAnimation(new AnimationBuilder().  addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
+        event.getController().  setAnimation(new AnimationBuilder().  addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
 
