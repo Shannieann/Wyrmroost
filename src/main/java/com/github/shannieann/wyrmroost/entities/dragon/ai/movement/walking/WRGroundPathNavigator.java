@@ -1,25 +1,29 @@
-package com.github.shannieann.wyrmroost.entities.dragon.ai.movement;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.WRFlyNodeEvaluator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.phys.Vec3;
 
-/**
- * Im not actually sure if this is a good solution or not... but it seems to be working a little bit....
- */
-public class BetterPathNavigator extends GroundPathNavigation
+//TODO: Improve
+
+public class WRGroundPathNavigator extends GroundPathNavigation
 {
-    //TODO: Improve
     WRDragonEntity entity;
-    public BetterPathNavigator(WRDragonEntity entity)
+    public WRGroundPathNavigator(WRDragonEntity entity)
     {
         super(entity, entity.level);
         this.entity = entity;
     }
 
+    @Override
+    protected PathFinder createPathFinder(int pMaxVisitedNodes) {
+        this.nodeEvaluator = new WRWalkNodeEvaluator();
+        return new PathFinder(this.nodeEvaluator, pMaxVisitedNodes);
+    }
 
     @Override
     protected void followThePath()

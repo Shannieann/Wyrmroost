@@ -9,6 +9,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class FlyerPathNavigator extends FlyingPathNavigation
 {
+    //TODO: DO NOT USE THIS FOR ANYTHING BUT BEHEMOTHS / APEXES
     public FlyerPathNavigator(WRDragonEntity entity)
     {
         super(entity, entity.level);

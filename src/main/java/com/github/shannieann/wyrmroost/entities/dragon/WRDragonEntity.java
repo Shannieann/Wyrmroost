@@ -4,7 +4,7 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.BetterPathNavigator;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundPathNavigator;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.LessShitLookController;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.FlyerMoveController;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.FlyerPathNavigator;
@@ -1125,7 +1125,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     protected PathNavigation createNavigation(Level levelIn)
     {
-        return new BetterPathNavigator(this);
+        return new WRGroundPathNavigator(this);
     }
 
     public void setNavigator(NavigationType navigator) {
@@ -1134,7 +1134,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             case GROUND -> {
                 this.moveControl = new MoveControl(this);
                 this.lookControl = new LessShitLookController(this);
-                this.navigation = new BetterPathNavigator(this);
+                this.navigation = new WRGroundPathNavigator(this);
                 this.setMovingState(0);
             }
             case FLYING -> {
@@ -1202,7 +1202,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         else if (navigation instanceof FlyerPathNavigator){
             return NavigationType.FLYING;
         }
-        else if (navigation instanceof BetterPathNavigator){
+        else if (navigation instanceof WRGroundPathNavigator){
             return NavigationType.GROUND;
         }
         return NavigationType.GROUND;
@@ -1398,7 +1398,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
     public boolean isUsingLandNavigator() {
-        return getNavigation() instanceof BetterPathNavigator;
+        return getNavigation() instanceof WRGroundPathNavigator;
     }
 
     // ====================================
