@@ -22,6 +22,7 @@ public class WRWalkNodeEvaluator extends WalkNodeEvaluator {
         this.amphibious = amphibious;
     }
 
+
     @Override
     public BlockPathTypes getBlockPathType(BlockGetter pBlockaccess, int pX, int pY, int pZ, Mob pEntityliving, int pXSize, int pYSize, int pZSize, boolean pCanBreakDoors, boolean pCanEnterDoors) {
         EnumSet<BlockPathTypes> enumset = EnumSet.noneOf(BlockPathTypes.class);
@@ -48,7 +49,8 @@ public class WRWalkNodeEvaluator extends WalkNodeEvaluator {
         //It can swim but it's on land..
         //Perform extra checks to see if it should do amphibious navigation: Only if it's trying to get to water
         //Only do the extra amphibious block checks if the current node is WATER
-        if (((WRDragonEntity)mob).speciesCanSwim() && mob.goalSelector.getRunningGoals().anyMatch(g -> (g.getGoal() instanceof WRReturnToWaterGoal)) && (blockpathtypes == BlockPathTypes.WATER)) {
+
+        if (((WRDragonEntity)mob).speciesCanSwim() /*&& mob.goalSelector.getRunningGoals().anyMatch(g -> (g.getGoal() instanceof WRReturnToWaterGoal))*/ && (blockpathtypes == BlockPathTypes.WATER)) {
             for (Direction direction : Direction.values()) {
                 BlockPathTypes blockpathtypes1 = getBlockPathTypeRaw(pLevel, blockpos$mutableblockpos.set(pX, pY, pZ).move(direction));
                 if (blockpathtypes1 == BlockPathTypes.BLOCKED) {
@@ -57,6 +59,28 @@ public class WRWalkNodeEvaluator extends WalkNodeEvaluator {
             }
             return BlockPathTypes.WATER;
         }  else return getBlockPathTypeStatic(pLevel, blockpos$mutableblockpos);
+    }
+
+    @Override
+    public BlockPathTypes getBlockPathTypes(BlockGetter pLevel, int pX, int pY, int pZ, int pXSize, int pYSize, int pZSize, boolean pCanOpenDoors, boolean pCanEnterDoors, EnumSet<BlockPathTypes> pNodeTypeEnum, BlockPathTypes pNodeType, BlockPos pPos) {
+        for(int i = 0; i < pXSize; ++i) {
+            for(int j = 0; j < pYSize; ++j) {
+                for(int k = 0; k < pZSize; ++k) {
+                    int l = i + pX;
+                    int i1 = j + pY;
+                    int j1 = k + pZ;
+                    BlockPathTypes blockpathtypes = this.getBlockPathType(pLevel, l, i1, j1);
+                    //blockpathtypes = this.evaluateBlockPathType(pLevel, pCanOpenDoors, pCanEnterDoors, pPos, blockpathtypes);
+                    if (i == 0 && j == 0 && k == 0) {
+                        pNodeType = blockpathtypes;
+                    }
+
+                    pNodeTypeEnum.add(blockpathtypes);
+                }
+            }
+        }
+
+        return pNodeType;
     }
 
     public static BlockPathTypes getBlockPathTypeStatic(BlockGetter pLevel, BlockPos.MutableBlockPos pPos) {
