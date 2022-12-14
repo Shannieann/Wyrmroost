@@ -839,11 +839,20 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void tick() {
         super.tick();
-        
+
         NavigationType properNavigator = getProperNavigator();
         if (properNavigator != this.getNavigationType()) {
             setNavigator(properNavigator);
         }
+
+        NavigationType navigationType = this.getNavigationType();
+        switch (navigationType) {
+            case FLYING -> System.out.print("NAVIGATOR: FLYING");
+            case SWIMMING -> System.out.print("NAVIGATOR: SWIMMING");
+            case GROUND ->  System.out.print("NAVIGATOR: GROUND");
+        }
+
+
 
         // todo figure out a better target system?
         LivingEntity target = getTarget();
@@ -1084,6 +1093,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (isImmuneToArrows() && source == DamageSource.CACTUS) return true;
         return super.isInvulnerableTo(source);
     }
+
+    public Predicate<LivingEntity> aquaticRandomTargetPredicate = e -> {
+        EntityType<?> type = e.getType();
+        return
+                //If we are not in water, we can target entities in water and out of water...
+                //If we are in water, only target entities in water...
+                (!this.isInWater() || e.isInWater());
+    };
 
     // ====================================
     //      B.2) Tick and AI: Sit
@@ -1470,27 +1487,34 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     public boolean shouldUseSwimmingNavigator() {
-        //If it's in 1-block-deep water, switch to land navigator
-        if (this.isInWater() && this.level.getBlockState(blockPosition().below()).getMaterial().isSolid() && this.level.getBlockState(blockPosition().above()).is(Blocks.AIR)) {
-            return false;
-        }
-        //...else, if it's not in water and it's on the ground, switch to land navigator
-        if (!this.isInWater() && this.isOnGround()) {
-            return false;
-        }
-        //If it's on water surface, switch to water navigator
-        if (!this.isInWater() && this.level.getFluidState(blockPosition().below()).is(FluidTags.WATER)) {
+        //If it cannot fly and i's not in Water and it's not on the ground either, it's falling..
+        //Use swimming navigator here for animation purposes
+        if (!speciesCanFly() && !this.isInWater() && !this.isOnGround()) {
             return true;
         }
-        //If it's falling and cannot fly, still use water navigator
-        if (!speciesCanFly() && !this.isInWater() && !this.isOnGround() && this.level.getBlockState(new BlockPos(position())).is(Blocks.AIR)) {
-            return true;
+
+        /*
+        //If this is flyer + swimmer, we switch to water navigator once we are underwater
+        if (this.speciesCanFly()) {
+            return isUnderWater();
         }
-        //If it's in swimmable water (meaning, at least two blocks deep), switch to water navigator
-        if (this.isInWater() && !this.level.getBlockState(blockPosition().below()).canOcclude()) {
-            return true;
+
+         */
+
+        /*
+        //If it's touching water but not underwater check if it is deep enough to swim
+        if (this.isInWater() && !this.isUnderWater()) {
+            if (!this.level.getBlockState(blockPosition().below()).getMaterial().isSolid())  {
+                //If it's touching water, and it does not have a solid block beneath (meaning: water is deep)..
+                //We should use swimming navigator, unless we can fly
+                //For swimming + flyers we will only switch to water navigator if we are entirely underwater...
+                return true;
+            }
         }
-        return false;
+        */
+
+        //Having performed all previous checks, if it is underwater, return true
+        return this.isUnderWater();
     }
 
 
