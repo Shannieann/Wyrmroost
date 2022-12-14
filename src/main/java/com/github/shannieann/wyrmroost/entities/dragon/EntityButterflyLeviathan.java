@@ -711,7 +711,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity
 
         //goalSelector.addGoal(4, new AttackGoal());
         
-        goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,5));
+        goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,8));
         goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
         goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 64,48));
 
@@ -724,8 +724,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity
         //targetSelector.addGoal(4, new DefendHomeGoal(this));
         //targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, aquaticRandomTargetPredicate));
     }
-
-    //TODO: Extract
 
     private class AttackGoal extends Goal
     {
