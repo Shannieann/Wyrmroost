@@ -1,5 +1,8 @@
 package com.github.shannieann.wyrmroost.entities.dragon.ai;
 
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import net.minecraft.core.BlockPos;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.phys.Vec3;
@@ -10,9 +13,11 @@ import net.minecraft.world.phys.Vec3;
 public class BetterPathNavigator extends GroundPathNavigation
 {
     //TODO: Improve
-    public BetterPathNavigator(Mob entity)
+    WRDragonEntity entity;
+    public BetterPathNavigator(WRDragonEntity entity)
     {
         super(entity, entity.level);
+        this.entity = entity;
     }
 
 
@@ -46,5 +51,14 @@ public class BetterPathNavigator extends GroundPathNavigation
         Vec3 midOfNextAndCurrent = nextPathPos.subtract(pathPos);
         Vec3 midOfEntityAndCurrent = entityPosition.subtract(pathPos);
         return midOfNextAndCurrent.dot(midOfEntityAndCurrent) > 0;
+    }
+
+    @Override
+    public boolean isStableDestination(BlockPos pPos) {
+        if (entity.speciesCanSwim()) {
+            return !this.level.getBlockState(pPos).isSolidRender(this.level, pPos);
+        }
+        BlockPos blockpos = pPos.below();
+        return this.level.getFluidState(blockpos).is(FluidTags.WATER);
     }
 }
