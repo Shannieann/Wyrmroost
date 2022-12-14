@@ -1,18 +1,17 @@
 package com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.WRFlyNodeEvaluator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
+import net.minecraft.world.level.pathfinder.AmphibiousNodeEvaluator;
 import net.minecraft.world.level.pathfinder.PathFinder;
+import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.Vec3;
 
-//TODO: Improve
-
-public class WRGroundPathNavigator extends GroundPathNavigation
-{
+public class WRGroundPathNavigator extends GroundPathNavigation {
     WRDragonEntity entity;
+
     public WRGroundPathNavigator(WRDragonEntity entity)
     {
         super(entity, entity.level);
@@ -25,6 +24,7 @@ public class WRGroundPathNavigator extends GroundPathNavigation
         return new PathFinder(this.nodeEvaluator, pMaxVisitedNodes);
     }
 
+    //TODO: Analyze and improve
     @Override
     protected void followThePath()
     {
@@ -57,12 +57,13 @@ public class WRGroundPathNavigator extends GroundPathNavigation
         return midOfNextAndCurrent.dot(midOfEntityAndCurrent) > 0;
     }
 
+    //TODO: CORRECT AND IMPROVE
     @Override
     public boolean isStableDestination(BlockPos pPos) {
-        if (entity.speciesCanSwim()) {
-            return !this.level.getBlockState(pPos).isSolidRender(this.level, pPos);
+        if (!entity.speciesCanSwim()) {
+            return this.level.getBlockState(pPos).isSolidRender(this.level, pPos);
         }
         BlockPos blockpos = pPos.below();
-        return this.level.getFluidState(blockpos).is(FluidTags.WATER);
+        return this.level.getFluidState(blockpos).is(FluidTags.WATER) || this.level.getBlockState(pPos).isSolidRender(this.level, pPos);
     }
 }
