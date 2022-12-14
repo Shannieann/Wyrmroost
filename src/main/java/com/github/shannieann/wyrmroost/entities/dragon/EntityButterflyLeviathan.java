@@ -7,6 +7,7 @@ import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.LessShitLookController;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRandomSwimmingGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRReturnToWaterGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRWaterLeapGoal;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.book.action.BookActions;
@@ -34,6 +35,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -50,6 +52,7 @@ import net.minecraftforge.common.ForgeMod;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Random;
+import java.util.function.Predicate;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
@@ -141,7 +144,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity
     {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 180)
-                .add(MOVEMENT_SPEED, 0.08)
+                .add(MOVEMENT_SPEED, 0.08F)
                 .add(ForgeMod.SWIM_SPEED.get(), 0.15F)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, 14)
@@ -708,24 +711,18 @@ public class EntityButterflyLeviathan extends WRDragonEntity
 
         //goalSelector.addGoal(4, new AttackGoal());
         
-        //goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1));
+        goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,5));
         goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
-        goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 10,64,48));
+        goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 64,48));
 
 //        goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
 //        goalSelector.addGoal(9, new RandomLookAroundGoal(this));
-        /*
-        targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
-        targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
-        targetSelector.addGoal(3, new HurtByTargetGoal(this));
-        targetSelector.addGoal(4, new DefendHomeGoal(this));
-        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, e ->
-        {
-            EntityType<?> type = e.getType();
-            return e.isInWater() == isInWater() && (type == EntityType.PLAYER || type == EntityType.GUARDIAN || type == EntityType.SQUID);
-        }));
 
-         */
+        //targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
+        //targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
+        //targetSelector.addGoal(3, new HurtByTargetGoal(this));
+        //targetSelector.addGoal(4, new DefendHomeGoal(this));
+        //targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, aquaticRandomTargetPredicate));
     }
 
     //TODO: Extract
