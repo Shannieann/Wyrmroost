@@ -74,16 +74,18 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //Animations: Idle (if on ground)
 
 //TODO: GOALS:
-//Showcase of water movement goals
-
 //ATTACK: Reimplement whole logic...
 //ATTACK: If lightning rods near it, can attack
 //LOOKING: re-implement
+//TAMED GOALS
 
 //TODO: TAMING
 //Ride logic + rewrite key-binds
 //All goals when tamed
 //Eggs, breeding, taming
+
+//TODO: TEST AND SHOWCASE
+//Water movement
 
 //TODO: FINAL
 //Config spawn
@@ -115,6 +117,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity
         //moveControl = new MoveController();
         maxUpStep = 2;
         setPathfindingMalus(BlockPathTypes.WATER, 0);
+        setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0);
         this.deltaPitchLimit = entityDeltaPitchLimit;
         this.adjustmentYaw = entityYawAdjustment;
         this.adjustmentExtremityPitch = entityExtremityPitchAdjustment;
@@ -149,10 +152,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity
         return SERIALIZER;
     }
 
-    public boolean hasConduit()
-    {
-        return entityData.get(HAS_CONDUIT);
-    }
 
     @Override
     public boolean checkSpawnRules(LevelAccessor pLevel, MobSpawnType pReason) {
@@ -183,12 +182,19 @@ public class EntityButterflyLeviathan extends WRDragonEntity
         return MobType.WATER;
     }
 
+
+    public boolean hasConduit()
+    {
+        return entityData.get(HAS_CONDUIT);
+    }
+
     public Vec3 getConduitPos()
     {
         return getEyePosition(1)
                 .add(0, 0.4, 0.35)
                 .add(calculateViewVector(xRot, yHeadRot).scale(4.15));
     }
+
     // ====================================
     //      A.4) Entity Data: HOME
     // ====================================
@@ -202,6 +208,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity
     // ====================================
     //      A.5) Entity Data: SLEEP
     // ====================================
+
+    //TODO: BFLs now sleep
     @Override
     public boolean shouldSleep()
     {
