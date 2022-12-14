@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.ai.goals;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;

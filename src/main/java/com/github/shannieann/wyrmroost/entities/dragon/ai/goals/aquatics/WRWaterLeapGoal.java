@@ -1,6 +1,7 @@
-package com.github.shannieann.wyrmroost.entities.dragon.ai.goals;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
@@ -51,7 +52,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         if (!entity.isUsingSwimmingNavigator()) {
             return false;
         }
-        if (entity.getRandom().nextDouble() < 0.005) {
+        if (entity.getRandom().nextDouble() < 0.001) {
         //Get a random position...
             Vec3 randomPosition = (BehaviorUtils.getRandomSwimmablePos(this.entity, 32, 0));
             if (randomPosition != null) {
@@ -99,7 +100,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             return false;
         }
         //If it has finished all the steps and its had time to perform the return animation, stop the Goal.
-        if (finalTicks > 20) {
+        if (finalTicks > 25) {
             return false;
         }
         //If it's somehow using the landNavigator, do stop goal. Goal only makes sense for waterNavigator.
@@ -188,7 +189,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             finalTicks++;
             if (finalTicks > 5 && !animationFlag) {
                 animationFlag = true;
-                super.start(breachEndAnimation, 2, 15, false);
+                super.start(breachEndAnimation, 3, 15, false);
             }
         }
     }

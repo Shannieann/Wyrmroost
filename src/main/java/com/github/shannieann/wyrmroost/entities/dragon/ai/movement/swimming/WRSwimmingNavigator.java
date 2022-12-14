@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.ai.swimming;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;

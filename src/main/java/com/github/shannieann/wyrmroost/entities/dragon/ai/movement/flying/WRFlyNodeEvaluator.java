@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.ai.flying;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;

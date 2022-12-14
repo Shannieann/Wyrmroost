@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.ai.swimming;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming;
 
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
