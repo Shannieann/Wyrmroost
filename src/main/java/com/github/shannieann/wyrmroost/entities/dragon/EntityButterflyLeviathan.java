@@ -75,18 +75,11 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 
 //TODO: GOALS:
-//MOVEMENT: Random Swimming Goal..
-    //Increment max distance
-//MOVEMENT: Jump out of water goal
-    //SHOWCASE AND DONE!
-//MOVEMENT: Return to water goal, test position, must be two deep
-//MOVEMENT: Test Nav Switch
+//Showcase of water movement goals
+
 //ATTACK: Reimplement whole logic...
 //ATTACK: If lightning rods near it, can attack
 //LOOKING: re-implement
-
-//TODO: ANIMATIONS
-//DO NOT CALC PITCH IF GROUND IS BENEATH IT
 
 //TODO: TAMING
 //Ride logic + rewrite key-binds
@@ -706,7 +699,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity
 //        goalSelector.addGoal(0, new WRSitGoal(this));
 //        goalSelector.addGoal(1, new MoveToHomeGoal(this));
 //        goalSelector.addGoal(2, new WRFollowOwnerGoal(this));
-
 //        goalSelector.addGoal(3, new DragonBreedGoal(this));
 
         //goalSelector.addGoal(4, new AttackGoal());
