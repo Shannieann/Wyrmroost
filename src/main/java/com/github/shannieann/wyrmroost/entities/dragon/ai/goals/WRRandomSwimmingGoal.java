@@ -1,8 +1,10 @@
 package com.github.shannieann.wyrmroost.entities.dragon.ai.goals;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -14,15 +16,15 @@ public class WRRandomSwimmingGoal extends Goal {
     protected double z;
     protected final double speed;
     protected int executionChance;
-    protected int horizontalDistance;
+    protected int radius;
     protected int verticalDistance;
 
-    public WRRandomSwimmingGoal(WRDragonEntity entity, double speedIn, int chance, int horizontalDistance, int verticalDistance) {
+    public WRRandomSwimmingGoal(WRDragonEntity entity, double speedIn, int chance, int radius, int verticalDistance) {
         this.entity = entity;
         this.speed = speedIn;
         this.executionChance = chance;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE));
-        this.horizontalDistance = horizontalDistance;
+        this.radius = radius;
         this.verticalDistance = verticalDistance;
     }
 
@@ -34,7 +36,9 @@ public class WRRandomSwimmingGoal extends Goal {
         if (this.entity.getTarget() != null){
             return false;
         }
-        //TODO: Do not use on land. If block below is solid and NOT IN WATER. Do not just check water, else water surface will result in us getting stuck
+        if (!this.entity.isInWater() && this.entity.level.getBlockState(this.entity.blockPosition().below()).getMaterial().isSolid()) {
+            return false;
+        }
         if (!this.entity.isUsingSwimmingNavigator()) {
             return false;
         }
@@ -53,12 +57,12 @@ public class WRRandomSwimmingGoal extends Goal {
 
     @Nullable
     protected Vec3 getPosition() {
-        Vec3 targetVec =  BehaviorUtils.getRandomSwimmablePos(this.entity, horizontalDistance, verticalDistance);
+        Vec3 targetVec =  BehaviorUtils.getRandomSwimmablePos(this.entity, radius, verticalDistance);
         if (targetVec != null) {
             Vec3 entityPos = this.entity.position();
             double distance = entityPos.subtract(targetVec).length();
 
-            if (distance < 10) {
+            if (distance < 24) {
                 return null;
             }
             return (targetVec);
@@ -68,8 +72,8 @@ public class WRRandomSwimmingGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        //TODO: TEST distance + avoid loops
-        if (this.entity.distanceToSqr(this.x,this.y,this.z) < 75) {
+        //If it's close enough to assume it has reached the Goal
+        if (this.entity.distanceToSqr(this.x,this.y,this.z) < 100) {
             return false;
         }
         if (!this.entity.isUsingSwimmingNavigator()) {
@@ -78,7 +82,10 @@ public class WRRandomSwimmingGoal extends Goal {
         if (this.entity.getTarget() != null){
             return false;
         }
-        return !this.entity.getNavigation().isDone() && !this.entity.isVehicle();
+        if (this.entity.canBeControlledByRider()){
+            return false;
+        }
+        return !this.entity.getNavigation().isDone();
     }
     @Override
     public void start() {
