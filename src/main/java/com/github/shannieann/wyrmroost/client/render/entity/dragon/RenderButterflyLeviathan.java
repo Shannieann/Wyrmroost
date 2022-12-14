@@ -12,9 +12,9 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
-public class RenderButterflyLeviathan extends GeoEntityRenderer<EntityButterflyLeviathan> {
+public class RenderButterflyLeviathan extends WRDragonRender<EntityButterflyLeviathan> {
     public RenderButterflyLeviathan(EntityRendererProvider.Context renderManager) {
-        super(renderManager, new ModelButterflyLeviathan());
+        super(renderManager, new ModelButterflyLeviathan(), "");
         //TODO: Shadow?
 
 

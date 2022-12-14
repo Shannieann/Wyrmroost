@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.github.shannieann.wyrmroost.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "GameRendererMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+  ],
+  "refmap": "wyrmroost.refmap.json"
+}

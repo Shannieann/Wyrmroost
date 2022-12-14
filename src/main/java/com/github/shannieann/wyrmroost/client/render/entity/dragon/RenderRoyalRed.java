@@ -12,9 +12,9 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
-public class RenderRoyalRed extends GeoEntityRenderer<EntityRoyalRed> {
+public class RenderRoyalRed extends WRDragonRender<EntityRoyalRed> {
     public RenderRoyalRed(EntityRendererProvider.Context renderManager) {
-        super(renderManager, new ModelRoyalRed());
+        super(renderManager, new ModelRoyalRed(), "body2");
         this.addLayer(new RiderLayer<>(this));
         //TODO: Shadow?
     }

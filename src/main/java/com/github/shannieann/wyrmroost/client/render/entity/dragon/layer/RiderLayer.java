@@ -1,17 +1,22 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon.layer;
 
+import ca.weblite.objc.Client;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
 import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.provider.GeoModelProvider;
@@ -41,7 +46,7 @@ public class RiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
             for (Entity passenger : dragon.getPassengers()) {
                 ClientEvents.dragonRiders.remove(passenger.getUUID());
                 float riderRot = passenger.yRotO + (passenger.getYRot() - passenger.yRotO) * partialTicks;
-                translateToBody(matrixStackIn, model, passengerIndex); // TODO maybe make this only activate on needed frames?
+                translateToBody(matrixStackIn, model, passengerIndex, passenger); // TODO maybe make this only activate on needed frames?
                 matrixStackIn.translate(0.0, -0.5, 0.0);
                 matrixStackIn.pushPose();
                 matrixStackIn.mulPose(new Quaternion(Vector3f.YP, riderRot + 180, true));
@@ -55,13 +60,16 @@ public class RiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
     }
 
     // TODO there's a known bug where the second passenger is flying above randomly... is it due to rider placement in the model or something here?
-    protected void translateToBody(PoseStack stack, GeoModel model, int passengerIndex) {
+    protected void translateToBody(PoseStack stack, GeoModel model, int passengerIndex, Entity passenger) {
         if (model.getBone("rider" + passengerIndex).isEmpty()) {
             throw new ReportedException(CrashReport.forThrowable(new Throwable(), "Dragon should have a bone named 'rider" + passengerIndex + "' to have a rider layer!"));
         }
         GeoBone bone = model.getBone("rider" + passengerIndex).get();
         stack.translate(bone.getModelPosition().x * 00.0625F, bone.getModelPosition().y * 00.0625F, bone.getModelPosition().z * 00.0625F);
         stack.mulPoseMatrix(bone.getModelRotationMat());
+
+        ClientEvents.dragonBonePositions.put(passenger.getUUID(), bone.getWorldPosition());
+        ClientEvents.boneRotationMatrices.put(passenger.getUUID(), bone.getModelRotationMat());
     }
 
 
