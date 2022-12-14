@@ -15,6 +15,11 @@ import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.registry.*;
 import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.mojang.authlib.minecraft.client.MinecraftClient;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Matrix4f;
+import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.CameraType;
@@ -25,7 +30,9 @@ import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.core.Rotations;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeableLeatherItem;
@@ -36,13 +43,13 @@ import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.lwjgl.glfw.GLFW;
+import software.bernie.shadowed.eliotlash.mclib.utils.MathHelper;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * EventBus listeners on CLIENT distribution
@@ -53,6 +60,9 @@ public class ClientEvents
 {
     public static Set<UUID> dragonRiders = new HashSet<>();
     public static boolean keybindFlight = true;
+
+
+    public static Vector3f left;
 
     public static void init()
     {
@@ -71,7 +81,6 @@ public class ClientEvents
         forgeBus.addListener(RenderHelper::renderEntities);
         forgeBus.addListener(ClientEvents::cameraPerspective);
         forgeBus.addListener(ClientEvents::preLivingRender);
-        forgeBus.addListener(ClientEvents::postLivingRender);
         //forgeBus.addListener(ClientEvents::postLivingRender);
         forgeBus.addListener(ClientEvents::onKeyInput);
 
@@ -146,6 +155,8 @@ public class ClientEvents
     //      Forge Bus
     // =====================
 
+
+
     private static void cancelIfRidingDragon(RenderLivingEvent event){
         Entity entity = event.getEntity().getVehicle();
         if (entity instanceof WRDragonEntity dragon) {
@@ -157,9 +168,33 @@ public class ClientEvents
     private static void preLivingRender(RenderLivingEvent.Pre event){
         cancelIfRidingDragon(event);
     }
-    private static void postLivingRender(RenderLivingEvent.Post event){
-        cancelIfRidingDragon(event);
+
+
+    // THIS MIXIN CODE IS INSPIRED BY THE MOD "DO A BARREL ROLL" by enjarai
+    public static final float TORAD = (float) Math.PI / 180;
+    private static final float TODEG = 1 / TORAD;
+
+    public static Map<UUID, Vector3d> dragonBonePositions = new HashMap<>();
+    public static Map<UUID, Matrix4f> boneRotationMatrices = new HashMap<>();
+
+
+
+    public static void onWorldRender(Minecraft client, PoseStack cameraPose) {
+
+        if (client.player != null && dragonRiders.contains(client.player.getUUID())) {
+
+            UUID uuid = client.player.getUUID();
+
+            if (!boneRotationMatrices.containsKey(uuid)) return;
+            Matrix4f matrix = boneRotationMatrices.remove(uuid);
+            Vector3d bonePos = dragonBonePositions.remove(uuid);
+            matrix.multiply(TODEG);
+            cameraPose.mulPoseMatrix(matrix);
+            cameraPose.translate(bonePos.x * 00.0625F, bonePos.y * 00.0625F, bonePos.z * 00.0625F);
+        }
     }
+
+
 
     private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event)
     {
@@ -167,10 +202,11 @@ public class ClientEvents
         Entity entity = mc.player.getVehicle();
         if (!(entity instanceof WRDragonEntity)) return;
         CameraType view = mc.options.getCameraType();
-
         if (view != CameraType.FIRST_PERSON)
             ((WRDragonEntity) entity).setMountCameraAngles(view == CameraType.THIRD_PERSON_BACK, event);
     }
+
+
 
     // =====================
 
