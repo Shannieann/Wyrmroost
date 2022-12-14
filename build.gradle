@@ -42,7 +42,7 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            args '--username', 'Dev###'
+            args '--username', 'DevWyrmroost'
 
             mods {
                 wyrmroost {
@@ -50,9 +50,15 @@ minecraft {
                 }
             }
         }
-
         client2 {
-            parent(null, "client")
+            workingDirectory project.file('run')
+            args '--username', 'Dev###'
+
+            mods {
+                wyrmroost {
+                    sources sourceSets.main
+                }
+            }
         }
 
         server {
