@@ -846,15 +846,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setNavigator(properNavigator);
         }
 
-        NavigationType navigationType = this.getNavigationType();
-        switch (navigationType) {
-            case FLYING -> System.out.print("NAVIGATOR: FLYING");
-            case SWIMMING -> System.out.print("NAVIGATOR: SWIMMING");
-            case GROUND ->  System.out.print("NAVIGATOR: GROUND");
-        }
-
-
-
+        //TODO: Is this necessary?
+        //Won't targets get cleared automatically elsewhere?
+        //Perhaps we only need to check for player not creative / spectator
         // todo figure out a better target system?
         LivingEntity target = getTarget();
         if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
