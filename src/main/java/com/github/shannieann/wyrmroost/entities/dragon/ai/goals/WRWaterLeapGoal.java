@@ -16,8 +16,8 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     private final String breachEndAnimation = "breach_end";
     private final WRDragonEntity entity;
     private final double speedTowardsTarget;
-    private final int horizontalDistance;
-    private final int verticalDistance;
+    private final int horizontalOffset;
+    private final int minWaterDistance;
     private final float distanceCheck;
     private Vec3 waterTargetPosition;
     private Vec3 initialPosition;
@@ -30,12 +30,12 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     private boolean animationFlag;
     private int step2Ticks;
 
-    public WRWaterLeapGoal(WRDragonEntity entity, double speedIn, int horizontalDistance, int verticalDistance, float distanceCheck) {
+    public WRWaterLeapGoal(WRDragonEntity entity, double speedIn, int horizontalOffset, int minWaterDistance, float distanceCheck) {
         super(entity);
         this.entity = entity;
         this.speedTowardsTarget = speedIn;
-        this.horizontalDistance = horizontalDistance;
-        this.verticalDistance = verticalDistance;
+        this.horizontalOffset = horizontalOffset;
+        this.minWaterDistance = minWaterDistance;
         this.distanceCheck = distanceCheck;
         this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
@@ -51,26 +51,25 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         if (!entity.isUnderWater()) {
             return false;
         }
-        //TODO: Re-enable random chance
-          //if (entity.getRandom().nextDouble() < 0.05) {
+        if (entity.getRandom().nextDouble() < 0.05) {
         //Get a random position...
-        Vec3 randomPosition = (BehaviorUtils.getRandomSwimmablePos(this.entity, 32, 0));
-        if (randomPosition != null) {
-            //Shift the random position to the water surface, and check if we have indeed reached water...
-            BlockPos waterTargetBlockPos = entity.level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, new BlockPos(randomPosition)).below();
-            waterTargetPosition = new Vec3(waterTargetBlockPos.getX(),waterTargetBlockPos.getY(),waterTargetBlockPos.getZ());
-            if (!(entity.level.getFluidState(waterTargetBlockPos).is(FluidTags.WATER))) {
-                return false;
+            Vec3 randomPosition = (BehaviorUtils.getRandomSwimmablePos(this.entity, 32, 0));
+            if (randomPosition != null) {
+                //Shift the random position to the water surface, and check if we have indeed reached water...
+                BlockPos waterTargetBlockPos = entity.level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, new BlockPos(randomPosition)).below();
+                waterTargetPosition = new Vec3(waterTargetBlockPos.getX(),waterTargetBlockPos.getY(),waterTargetBlockPos.getZ());
+                if (!(entity.level.getFluidState(waterTargetBlockPos).is(FluidTags.WATER))) {
+                    return false;
+                }
+                //Get the initial position, 20 blocks below the target position, plus a random variation on X / Z, +/- 12
+                BlockPos initialBlockPos = new BlockPos(waterTargetPosition.x+entity.getRandom().nextInt(horizontalOffset*2+1)-horizontalOffset,waterTargetPosition.y-minWaterDistance,waterTargetPosition.z+entity.getRandom().nextInt(horizontalOffset*2+1)-horizontalOffset);
+                if (!(entity.level.getFluidState(initialBlockPos).is(FluidTags.WATER))) {
+                    return false;
+                }
+                initialPosition = new Vec3(initialBlockPos.getX(),initialBlockPos.getY(),initialBlockPos.getZ());
+                return true;
             }
-            //Get the initial position, 20 blocks below the target position, plus a random variation on X / Z, +/- 12
-            BlockPos initialBlockPos = new BlockPos(waterTargetPosition.x+entity.getRandom().nextInt(horizontalDistance*2+1)-horizontalDistance,waterTargetPosition.y-verticalDistance,waterTargetPosition.z+entity.getRandom().nextInt(horizontalDistance*2+1)-horizontalDistance);
-            if (!(entity.level.getFluidState(initialBlockPos).is(FluidTags.WATER))) {
-                return false;
-            }
-            initialPosition = new Vec3(initialBlockPos.getX(),initialBlockPos.getY(),initialBlockPos.getZ());
-            return true;
         }
-   // }
         return false;
     }
 
@@ -96,11 +95,11 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             return false;
         }
         //Tick Counter for step 2 - ensures if we somehow miss the breach the goals gets stopped.
-        if (step2Ticks > 80) {
+        if (step2Ticks > 60) {
             return false;
         }
         //If it has finished all the steps and its had time to perform the return animation, stop the Goal.
-        if (finalTicks > 30) {
+        if (finalTicks > 20) {
             return false;
         }
         //If it's somehow using the landNavigator, do stop goal. Goal only makes sense for waterNavigator.
