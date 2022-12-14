@@ -295,17 +295,26 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             return PlayState.CONTINUE;
         }
+        //TODO: Only idle if on land
         //Idle:
-        if (this.getRandom().nextDouble() < 0.001) {
+        if (this.getRandom().nextDouble() < 0.001 && this.isOnGround()) {
             int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
             event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
+
         //Ensures swimmers do not just stay rigid in water, will always swim even in place...
         if (this.isUsingSwimmingNavigator()) {
             event.getController().setAnimation(new AnimationBuilder().  addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
+        //If on ground and not moving or doing anything
+        if (this.isUsingLandNavigator()) {
+            event.getController().setAnimation(new AnimationBuilder().  addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+
+
         event.getController().setAnimation(new AnimationBuilder().  addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
@@ -830,17 +839,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void tick() {
         super.tick();
-        if (!level.isClientSide) {
-            NavigationType properNavigator = getProperNavigator();
-            if (properNavigator != this.getNavigationType()) {
-                setNavigator(properNavigator);
-            }
-
-            // todo figure out a better target system?
-            LivingEntity target = getTarget();
-            if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
-                setTarget(null);
+        
+        NavigationType properNavigator = getProperNavigator();
+        if (properNavigator != this.getNavigationType()) {
+            setNavigator(properNavigator);
         }
+
+        // todo figure out a better target system?
+        LivingEntity target = getTarget();
+        if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
+            setTarget(null);
+
 
 
         updateAgeProgress();
@@ -1152,7 +1161,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             //Local variable to avoid multiple method calls..
             shouldUseSwimmingNavigator = shouldUseSwimmingNavigator();
             if (shouldUseSwimmingNavigator != isUsingSwimmingNavigator) {
-                return NavigationType.SWIMMING;
+                return shouldUseSwimmingNavigator ? NavigationType.SWIMMING : NavigationType.GROUND;
             }
         }
         if (speciesCanFly()) {
@@ -1371,6 +1380,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     public abstract boolean speciesCanWalk();
+
+
+    public boolean isUsingLandNavigator() {
+        return getNavigation() instanceof BetterPathNavigator;
+    }
 
     // ====================================
     //      C.1) Navigation and Control: Flying
