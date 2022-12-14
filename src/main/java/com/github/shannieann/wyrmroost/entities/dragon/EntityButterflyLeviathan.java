@@ -64,6 +64,12 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //Texture Variants: base0, base1, special
 //No sexual dimorphism, remove logic
 //Child textures
+//ANIMATIONS: Sitting
+//ANIMATIONS: STANDING
+//ANIMATIONS: Sleeping
+//ANIMATIONS: Awakening
+//Animations: Idle (if on ground)
+
 
 //TODO: GOALS:
 //MOVEMENT: Random Swimming Goal..
@@ -703,7 +709,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity
         //goalSelector.addGoal(4, new AttackGoal());
         
         //goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1));
-        //goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
+        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
         goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 10,64,48));
 
 //        goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
