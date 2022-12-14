@@ -6,19 +6,39 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.pathfinder.*;
 
+import java.util.EnumSet;
+
 
 public class WRWalkNodeEvaluator extends WalkNodeEvaluator {
-    //TODO: Check all methods in super class and perhaps override and optimize more
 
-    private boolean amphibious;
-
+    private final boolean amphibious;
     public WRWalkNodeEvaluator(boolean amphibious) {
         this.amphibious = amphibious;
+    }
+
+    @Override
+    public BlockPathTypes getBlockPathType(BlockGetter pBlockaccess, int pX, int pY, int pZ, Mob pEntityliving, int pXSize, int pYSize, int pZSize, boolean pCanBreakDoors, boolean pCanEnterDoors) {
+        EnumSet<BlockPathTypes> enumset = EnumSet.noneOf(BlockPathTypes.class);
+        BlockPathTypes blockpathtypes = BlockPathTypes.BLOCKED;
+        BlockPos blockpos = pEntityliving.blockPosition();
+        blockpathtypes = this.getBlockPathTypes(pBlockaccess, pX, pY, pZ, pXSize, pYSize, pZSize, pCanBreakDoors, pCanEnterDoors, enumset, blockpathtypes, blockpos);
+        BlockPathTypes blockpathtypes1 = BlockPathTypes.BLOCKED;
+
+        for(BlockPathTypes blockpathtypes2 : enumset) {
+            if (pEntityliving.getPathfindingMalus(blockpathtypes2) < 0.0F) {
+                return blockpathtypes2;
+            }
+            if (pEntityliving.getPathfindingMalus(blockpathtypes2) >= pEntityliving.getPathfindingMalus(blockpathtypes1)) {
+                blockpathtypes1 = blockpathtypes2;
+            }
+        }
+        return blockpathtypes == BlockPathTypes.OPEN && pEntityliving.getPathfindingMalus(blockpathtypes1) == 0.0F && pXSize <= 1 ? BlockPathTypes.OPEN : blockpathtypes1;
     }
 
     @Override
@@ -72,7 +92,7 @@ public class WRWalkNodeEvaluator extends WalkNodeEvaluator {
 
     protected static BlockPathTypes getBlockPathTypeRaw(BlockGetter pLevel, BlockPos pPos) {
         BlockState blockstate = pLevel.getBlockState(pPos);
-        FluidState fluidstate = pLevel.getFluidState(pPos);
+        FluidState fluidstate = blockstate.getFluidState();
         //We are only interested in checking for a few possible BlockTypes that are of interest to us...
         //All else, fences, walls, doors, etc, we can treat as SOLID
         if (fluidstate.is(FluidTags.LAVA)) {
