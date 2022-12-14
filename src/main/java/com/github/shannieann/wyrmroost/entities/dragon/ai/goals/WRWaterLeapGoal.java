@@ -48,7 +48,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         if (entity.canBeControlledByRider()) {
             return false;
         }
-        if (!entity.isUnderWater()) {
+        if (!entity.isUsingSwimmingNavigator()) {
             return false;
         }
         if (entity.getRandom().nextDouble() < 0.05) {
