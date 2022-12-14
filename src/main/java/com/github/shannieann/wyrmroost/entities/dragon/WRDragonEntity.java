@@ -84,6 +84,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.living.BabyEntitySpawnEvent;
+import net.minecraftforge.event.world.NoteBlockEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -198,8 +199,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         DragonInventory inv = createInv();
         inventory = LazyOptional.of(inv == null? null : () -> inv);
         //TODO: DEFAULT NAVIGATORS
-
-
+        //TODO: Test pushing entities and moving? Check for push, do not proceed if push
     }
 
     // =====================
@@ -218,68 +218,74 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public <E extends IAnimatable> PlayState generalPredicate(AnimationEvent<E> event)
     {
-        //TODO: Test pushing entities and moving? Check for push, do not proceed if push
+        //All animations to be played are stored as DataParameters Strings
+        //We begin by getting the animation that should be played.
+        //This string may have been set as part of an AnimatedGoal that requires a one-shot ability animation to play..
         String animation = this.getAnimation();
-//      Boolean playingAnimation = this.getPlayingAnimation();
-        //If we do have an Ability animation play that
+        //If we do have an one-shot ability animation, we will play that.
+        //"base" is the null value for getAnimation
         if (!animation.equals("base")) {
-            //If it's a moving animation, run that logic, add the ability animation to a moving animation..
+            //If we do have an ability animation, we get the type (Loop, Play once, Hold on last frame)
             int animationType = this.getAnimationType();
-
-        // TODO add all these back, just wanted to get the locomotion animations only for the sick video
-            //Ability + move Animations:
+            ILoopType loopType;
+            switch (animationType) {
+                case 1 -> loopType = ILoopType.EDefaultLoopTypes.LOOP;
+                case 2 -> loopType = ILoopType.EDefaultLoopTypes.PLAY_ONCE;
+                case 3 -> loopType = ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME;
+                default -> {return PlayState.STOP;}
+            }
+            //We check if the animation should be layered on top of base locomotion.
+            //For instance, running an ability while we keep moving.
+            //If it indeed a "moving animation", we check if we are indeed moving: (getDeltaMovement() is a non-zero vector
+            //If we are indeed moving, we play the corresponding moving+ability animation
+            //This will change based on whether we are walk, flying, swim
+            //And will also change based on whether we are doing so fast (running) or not
+            //This means that each ability animation could potentially have up to -9- variants...
             if (this.getIsMovingAnimation()) {
-                //Ability + move (slow) Animations:
                 if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
+                    //Ability + Move Regular Animations
                     NavigationType navigationType = this.getNavigationType();
                     switch (navigationType) {
                         case GROUND -> animation = "walk_" + animation;
                         case FLYING -> animation = "fly_" + animation;
                         case SWIMMING -> animation = "swim_" + animation;
                     }
-                    event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, ILoopType.EDefaultLoopTypes.LOOP));
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
                     return PlayState.CONTINUE;
                 }
                 //Ability + move (fast) Animations:
                 if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
+                    //Ability + Move Fast Animations
                     NavigationType navigationType = this.getNavigationType();
                     animation = switch (navigationType) {
                         case GROUND -> "walk_fast_" + animation;
                         case FLYING -> "fly_fast_" + animation;
                         case SWIMMING -> "swim_fast_" + animation;
                     };
-                    event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, ILoopType.EDefaultLoopTypes.LOOP));
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
                     return PlayState.CONTINUE;
                 }
             }
-            ILoopType loopType;
-            switch (animationType) {
-                case 1: loopType = ILoopType.EDefaultLoopTypes.LOOP;
-                    break;
-                case 2: loopType = ILoopType.EDefaultLoopTypes.PLAY_ONCE;
-                    break;
-                case 3: loopType = ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME;
-                    break;
-                default:
-                    return PlayState.STOP;
-            }
+            //If the ability is not a "moving ability" animation, we just proceed to play the ability animation without movement
             event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
             return PlayState.CONTINUE;
         }
-        //Else, do basic locomotion
+        //If we do not have an ability animation, we will proceed to do Basic Locomotion:
+
         //TODO: Custom Death Animations
         /*
-        //Death
+        //Basic Locomotion: Death
         if ((this.dead || this.getHealth() < 0.01 || this.isDeadOrDying())) {
             event.getController().setAnimation(new AnimationBuilder().addAnimation("death", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
             return PlayState.CONTINUE;
         }
+       */
 
-        */
-        //This moving only plays if it's *just* moving and not doing anything else, as its only reached under those conditions...
+        //Basic Locomotion: Movement
+        //These moving animations only play if the entity is just moving and not doing anything else
+        //We select between slow or fast movement based on whether the entity is aggressive or not
         NavigationType navigationType = this.getNavigationType();
-        // These don't work without checking event.isMoving as well for some reason
-        if (this.getDeltaMovement().length() !=0 && event.isMoving() && this.isAggressive()) {
+        if (this.getDeltaMovement().length() !=0 && this.isAggressive()) {
             switch (navigationType) {
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
                 case FLYING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly_fast", ILoopType.EDefaultLoopTypes.LOOP));
@@ -287,7 +293,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             return PlayState.CONTINUE;
         }
-        if (this.getDeltaMovement().length() !=0 && event.isMoving() && !this.isAggressive()) {
+        if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
             switch (navigationType) {
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
                 case FLYING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
@@ -295,26 +301,32 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             return PlayState.CONTINUE;
         }
-        //TODO: Only idle if on land
-        //Idle:
+
+        //Basic Locomotion: Idle:
+        //If the entity is onGround and not doing anything else, have a chance for it to perform an idle animation
         if (this.getRandom().nextDouble() < 0.001 && this.isOnGround()) {
             int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
             event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
-
-        //Ensures swimmers do not just stay rigid in water, will always swim even in place...
+        //Basic Locomotion: Default cases
+        //If the entity is swimming and it is not doing anything else that warrants an animation, it will just swim in place.
         if (this.isUsingSwimmingNavigator()) {
             event.getController().setAnimation(new AnimationBuilder().  addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
-        //If on ground and not moving or doing anything
+        //If the entity is flying and it is not doing anything else that warrants an animation, it will just fly place.
+        if (this.isUsingFlyingNavigator()) {
+            event.getController().setAnimation(new AnimationBuilder().  addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+        //If the entity is on ground and it is not doing anything else that warrants an animation, it will just stand ("naturally") in place
         if (this.isUsingLandNavigator()) {
             event.getController().setAnimation(new AnimationBuilder().  addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
-
-
+        //Default case
+        //If nothing else was triggered, reset the entity to its base animation
         event.getController().setAnimation(new AnimationBuilder().  addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
