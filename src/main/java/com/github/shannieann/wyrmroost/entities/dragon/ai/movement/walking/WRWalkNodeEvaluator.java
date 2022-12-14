@@ -6,28 +6,41 @@ import net.minecraft.world.level.pathfinder.*;
 
 public class WRWalkNodeEvaluator extends WalkNodeEvaluator {
 
-    @Override
-    public BlockPathTypes getBlockPathType(BlockGetter pLevel, int pX, int pY, int pZ) {
-        BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();
-        BlockPathTypes blockpathtypes = getBlockPathTypeRaw(pLevel, blockpos$mutableblockpos.set(pX, pY, pZ));
-        if (blockpathtypes == BlockPathTypes.OPEN && pY >= pLevel.getMinBuildHeight() + 1) {
-            BlockPathTypes blockpathtypes1 = getBlockPathTypeRaw(pLevel, blockpos$mutableblockpos.set(pX, pY - 1, pZ));
-            if (blockpathtypes1 != BlockPathTypes.DAMAGE_FIRE && blockpathtypes1 != BlockPathTypes.LAVA) {
-                if (blockpathtypes1 == BlockPathTypes.DAMAGE_CACTUS) {
-                    blockpathtypes = BlockPathTypes.DAMAGE_CACTUS;
-                } else if (blockpathtypes1 == BlockPathTypes.DAMAGE_OTHER) {
-                    blockpathtypes = BlockPathTypes.DAMAGE_OTHER;
-                } else if (blockpathtypes1 == BlockPathTypes.COCOA) {
-                    blockpathtypes = BlockPathTypes.COCOA;
-                } else if (blockpathtypes1 == BlockPathTypes.FENCE) {
-                    blockpathtypes = BlockPathTypes.FENCE;
-                } else {
-                    blockpathtypes = blockpathtypes1 != BlockPathTypes.WALKABLE && blockpathtypes1 != BlockPathTypes.OPEN && blockpathtypes1 != BlockPathTypes.WATER ? BlockPathTypes.WALKABLE : BlockPathTypes.OPEN;
-                }
-            } else {
+    public static BlockPathTypes getBlockPathTypeStatic(BlockGetter pLevel, BlockPos.MutableBlockPos pPos) {
+        int i = pPos.getX();
+        int j = pPos.getY();
+        int k = pPos.getZ();
+        BlockPathTypes blockpathtypes = getBlockPathTypeRaw(pLevel, pPos);
+        if (blockpathtypes == BlockPathTypes.OPEN && j >= pLevel.getMinBuildHeight() + 1) {
+            BlockPathTypes blockpathtypes1 = getBlockPathTypeRaw(pLevel, pPos.set(i, j - 1, k));
+            blockpathtypes = blockpathtypes1 != BlockPathTypes.WALKABLE && blockpathtypes1 != BlockPathTypes.OPEN && blockpathtypes1 != BlockPathTypes.WATER && blockpathtypes1 != BlockPathTypes.LAVA ? BlockPathTypes.WALKABLE : BlockPathTypes.OPEN;
+            if (blockpathtypes1 == BlockPathTypes.DAMAGE_FIRE) {
                 blockpathtypes = BlockPathTypes.DAMAGE_FIRE;
             }
+
+            if (blockpathtypes1 == BlockPathTypes.DAMAGE_CACTUS) {
+                blockpathtypes = BlockPathTypes.DAMAGE_CACTUS;
+            }
+
+            if (blockpathtypes1 == BlockPathTypes.DAMAGE_OTHER) {
+                blockpathtypes = BlockPathTypes.DAMAGE_OTHER;
+            }
+
+            if (blockpathtypes1 == BlockPathTypes.STICKY_HONEY) {
+                blockpathtypes = BlockPathTypes.STICKY_HONEY;
+            }
+
+            if (blockpathtypes1 == BlockPathTypes.POWDER_SNOW) {
+                blockpathtypes = BlockPathTypes.DANGER_POWDER_SNOW;
+            }
         }
+
+        /*
+        if (blockpathtypes == BlockPathTypes.WALKABLE) {
+            blockpathtypes = checkNeighbourBlocks(pLevel, pPos.set(i, j, k), blockpathtypes);
+        }
+        */
+
         return blockpathtypes;
     }
 }
