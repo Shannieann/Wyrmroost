@@ -15,14 +15,12 @@ public class WRRandomSwimmingGoal extends Goal {
     protected double y;
     protected double z;
     protected final double speed;
-    protected int executionChance;
     protected int radius;
     protected int verticalDistance;
 
-    public WRRandomSwimmingGoal(WRDragonEntity entity, double speedIn, int chance, int radius, int verticalDistance) {
+    public WRRandomSwimmingGoal(WRDragonEntity entity, double speedIn, int radius, int verticalDistance) {
         this.entity = entity;
         this.speed = speedIn;
-        this.executionChance = chance;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE));
         this.radius = radius;
         this.verticalDistance = verticalDistance;
@@ -34,9 +32,6 @@ public class WRRandomSwimmingGoal extends Goal {
             return false;
         }
         if (this.entity.getTarget() != null){
-            return false;
-        }
-        if (!this.entity.isInWater() && this.entity.level.getBlockState(this.entity.blockPosition().below()).getMaterial().isSolid()) {
             return false;
         }
         if (!this.entity.isUsingSwimmingNavigator()) {

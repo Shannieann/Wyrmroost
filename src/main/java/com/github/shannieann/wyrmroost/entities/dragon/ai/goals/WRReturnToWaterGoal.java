@@ -13,44 +13,56 @@ import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 
 
 public class WRReturnToWaterGoal extends Goal {
-    private final WRDragonEntity entity;
-    private final float speed;
-    private BlockPos targetPos;
-    private int tickCounter;
+    protected final WRDragonEntity entity;
+    protected double x;
+    protected double y;
+    protected double z;
+    protected final double speed;
+    protected int radius;
+    protected int verticalDistance;
 
-    public WRReturnToWaterGoal(WRDragonEntity entity, float speedIn) {
+    public WRReturnToWaterGoal(WRDragonEntity entity, double speedIn, int radius, int verticalDistance) {
         this.entity = entity;
         this.speed = speedIn;
+        this.radius = radius;
+        this.verticalDistance = verticalDistance;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
     }
 
 
     @Override
     public boolean canUse() {
-        //canUse if it's on ground, outside of the water...
-        if (this.entity.isInWater() && !this.entity.isOnGround()){
-            return false;
-        }
         if (this.entity.canBeControlledByRider()) {
             return false;
         }
-        //canUse if it's in 1-block-deep water
-        if (this.entity.isInWater() && this.entity.level.getBlockState(this.entity.blockPosition().below()).canOcclude() && this.entity.level.getBlockState(this.entity.blockPosition().above()).is(Blocks.AIR)) {
-            targetPos = getPosition();
-            return targetPos != null;
+
+        if (this.entity.isUsingLandNavigator()){
+            Vec3 targetPosition = this.getPosition();
+            if (targetPosition == null) {
+                return false;
+            } else {
+                this.x = targetPosition.x;
+                this.y = targetPosition.y;
+                this.z = targetPosition.z;
+                return true;
+            }
         }
         return false;
     }
 
     @Nullable
-    protected BlockPos getPosition() {
-        Vec3 targetVec =  BehaviorUtils.getRandomSwimmablePos(this.entity, 32,8);
+    protected Vec3 getPosition() {
+        Vec3 targetVec =  BehaviorUtils.getRandomSwimmablePos(this.entity, radius, verticalDistance);
         if (targetVec != null) {
-            BlockPos blockPos = new BlockPos(targetVec);
-            BlockPos heightMapPos = this.entity.level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, blockPos);
-            if (this.entity.level.getFluidState(heightMapPos.below()).is(FluidTags.WATER) && this.entity.level.getFluidState(heightMapPos).is(FluidTags.WATER)) {
-                return heightMapPos.below();
+            BlockPos.MutableBlockPos targetPosMutable = new BlockPos.MutableBlockPos(targetVec.x,targetVec.y,targetVec.z);
+            //Check to see found position is at least 3 blocks deep in water
+            for (int i = 0; i <4; i++) {
+                targetPosMutable = targetPosMutable.below(i).mutable();
+                if (!this.entity.level.getFluidState(targetPosMutable).is(FluidTags.WATER)) {
+                    return null;
+                }
             }
+            return targetVec;
         }
         return null;
     }
@@ -71,8 +83,7 @@ public class WRReturnToWaterGoal extends Goal {
 
     @Override
     public void start() {
-        this.entity.level.setBlock(targetPos,Blocks.REDSTONE_BLOCK.defaultBlockState(),2);
-        //this.entity.getNavigation().moveTo(targetPos.getX(),targetPos.getY(),targetPos.getZ(), this.speed);
+        this.entity.level.setBlock(new BlockPos(this.x,this.y,this.z),Blocks.TARGET.defaultBlockState(),2);
     }
 
     @Override
