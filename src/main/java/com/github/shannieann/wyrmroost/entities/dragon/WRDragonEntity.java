@@ -672,7 +672,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public boolean hasRestriction()
     {
-        return getHomePos() != null;
+        return this.getHomePos() != BlockPos.ZERO;
+
     }
 
     @Override
