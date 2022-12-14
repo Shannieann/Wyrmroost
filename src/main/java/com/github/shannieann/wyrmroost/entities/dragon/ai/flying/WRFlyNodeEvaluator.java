@@ -7,7 +7,7 @@ import net.minecraft.world.level.pathfinder.FlyNodeEvaluator;
 
 public class WRFlyNodeEvaluator extends FlyNodeEvaluator {
 
-
+    //TODO: Further optimization, do not check for trivialities such as fences, doors, walls, etc.
     @Override
     public BlockPathTypes getBlockPathType(BlockGetter pLevel, int pX, int pY, int pZ) {
         BlockPos.MutableBlockPos blockpos$mutableblockpos = new BlockPos.MutableBlockPos();

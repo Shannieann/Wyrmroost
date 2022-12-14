@@ -10,6 +10,7 @@ import net.minecraftforge.common.ForgeMod;
 public class WRSwimmingMoveControl extends MoveControl {
     private final float maxTurnPitch = 85;
     private final WRDragonEntity entity;
+//TODO: Call method with maxTurnYaw and maxTurnPitch values
 
     public WRSwimmingMoveControl(WRDragonEntity entity) {
         super(entity);
