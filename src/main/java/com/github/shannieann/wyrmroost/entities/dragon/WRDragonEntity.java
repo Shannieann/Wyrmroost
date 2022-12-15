@@ -1146,8 +1146,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         switch (navigator) {
             case GROUND -> {
                 this.moveControl = new MoveControl(this);
-                this.lookControl = new LookControl(this);
-                this.navigation = new GroundPathNavigation(this,this.level);
+                this.lookControl = new WRGroundLookControl(this);
+                this.navigation = new WRGroundPathNavigator(this);
                 this.setMovingState(0);
             }
             case FLYING -> {
