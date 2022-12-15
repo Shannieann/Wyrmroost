@@ -35,6 +35,7 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<EntityButterflyLev
         float rotationPitchMultiplier = 10.0F;
 
         //TODO: Head pitch conflicts with dynamic pitch, enable head yaw only
+        //TODO: Test head pitch again. Ensure maxRot is not excessive.
         /*
         IBone head = this.getAnimationProcessor().getBone("head");
         EntityModelData extraData = (EntityModelData) animationEvent.getExtraDataOfType(EntityModelData.class).get(0);
