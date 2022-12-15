@@ -42,8 +42,10 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<EntityButterflyLev
         EntityModelData extraData = (EntityModelData) animationEvent.getExtraDataOfType(EntityModelData.class).get(0);
         if (head != null) {
             head.setRotationY(extraData.netHeadYaw * Mth.DEG_TO_RAD);
+            if (!animatable.isUsingSwimmingNavigator()) {
+                head.setRotationX(extraData.headPitch * Mth.DEG_TO_RAD);
+            }
         }
-        //TODO: Head Pitch... Ony if on ground
 
 
         float setPitchValue;
