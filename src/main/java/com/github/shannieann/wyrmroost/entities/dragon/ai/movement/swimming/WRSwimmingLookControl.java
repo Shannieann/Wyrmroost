@@ -17,11 +17,11 @@ public class WRSwimmingLookControl extends LookControl {
     public void tick() {
         if (this.lookAtCooldown > 0) {
             --this.lookAtCooldown;
-            this.getYRotD().ifPresent((p_181134_) -> {
-                this.mob.yHeadRot = this.rotateTowards(this.mob.yHeadRot, p_181134_ + 20.0F, this.yMaxRotSpeed);
+            this.getYRotD().ifPresent((rot) -> {
+                this.mob.yHeadRot = this.rotateTowards(this.mob.yHeadRot, rot + 20.0F, this.yMaxRotSpeed);
             });
-            this.getXRotD().ifPresent((p_181132_) -> {
-                this.mob.setXRot(this.rotateTowards(this.mob.getXRot(), p_181132_ + 10.0F, this.xMaxRotAngle));
+            this.getXRotD().ifPresent((rot) -> {
+                this.mob.setXRot(this.rotateTowards(this.mob.getXRot(), rot + 10.0F, this.xMaxRotAngle));
             });
         } else {
             if (this.mob.getNavigation().isDone()) {
