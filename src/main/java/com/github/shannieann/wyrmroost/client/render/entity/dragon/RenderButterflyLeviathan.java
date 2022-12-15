@@ -40,6 +40,6 @@ public class RenderButterflyLeviathan extends WRDragonRender<EntityButterflyLevi
         super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn,
                 red, green, blue, partialTicks);
 
-        stackIn.scale(4.0F, 4.0F, 4.0F);
+        stackIn.scale(2.4F, 2.4F, 2.4F);
     }
 }

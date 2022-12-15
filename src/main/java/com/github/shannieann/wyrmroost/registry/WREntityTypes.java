@@ -76,7 +76,7 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
 
     public static final RegistryObject<EntityType<EntityButterflyLeviathan>> BUTTERFLY_LEVIATHAN =
             ofGroup("butterfly_leviathan", EntityButterflyLeviathan::new,MobCategory.CREATURE)
-                    .size(5.0f, 5.0f)
+                    .size(3.0f, 3.0f)
                     .attributes(EntityButterflyLeviathan::getAttributeSupplier)
                     .packetInterval(2)
                     .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.OCEAN_FLOOR_WG, EntityButterflyLeviathan::getSpawnPlacement)
