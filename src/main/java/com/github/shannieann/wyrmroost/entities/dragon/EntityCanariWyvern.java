@@ -70,12 +70,6 @@ public class EntityCanariWyvern extends WRDragonEntity
     }
 
     @Override
-    protected BodyRotationControl createBodyControl()
-    {
-        return new DragonBodyController(this);
-    }
-
-    @Override
     public boolean speciesCanWalk() {
         return true;
     }
