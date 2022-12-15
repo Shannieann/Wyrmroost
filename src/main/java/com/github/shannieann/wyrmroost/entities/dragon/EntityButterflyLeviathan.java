@@ -5,7 +5,8 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.LessShitLookController;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRWaterLeapGoal;
@@ -21,6 +22,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
@@ -35,6 +37,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
@@ -50,6 +53,8 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.common.extensions.IForgeEntity;
+
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Random;
@@ -91,7 +96,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //Config spawn
 //Tidy up EntityTypeRegistry
 
-public class EntityButterflyLeviathan extends WRDragonEntity
+public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity
 {
     //TODO: Correct ALL Serializers
     public static final EntitySerializer<EntityButterflyLeviathan> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
@@ -378,7 +383,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity
 
     public void conduitAnimation(int time)
     {
-        if (getLookControl() instanceof LessShitLookController) ((LessShitLookController) getLookControl()).stopLooking();
+        if (getLookControl() instanceof WRGroundLookControl) ((WRGroundLookControl) getLookControl()).stopLooking();
         if (time == 0) playSound(WRSounds.ENTITY_BFLY_ROAR.get(), 5f, 1, true);
         else if (time == 15)
         {
@@ -709,13 +714,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity
 //        goalSelector.addGoal(3, new DragonBreedGoal(this));
 
 
-        goalSelector.addGoal(4, new BFLAttackGoal());
-        goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,8));
-        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
-        goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 64,48));
+        goalSelector.addGoal(4, new BFLAttackGoal(this));
+        //goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,8));
+        //goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
+        //goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 64,48));
 
-//        goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f));
-//        goalSelector.addGoal(9, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f,1));
+        //goalSelector.addGoal(9, new RandomLookAroundGoal(this));
 
         //targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
         //targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
@@ -724,22 +729,37 @@ public class EntityButterflyLeviathan extends WRDragonEntity
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, aquaticRandomTargetPredicate));
     }
 
-    private class BFLAttackGoal extends Goal
+    private class BFLAttackGoal extends AnimatedGoal
     {
-        public BFLAttackGoal()
+        private int navRecalculationTicks;
+        private double pathedTargetX;
+        private double pathedTargetY;
+        private double pathedTargetZ;
+
+        LivingEntity target;
+        public BFLAttackGoal(EntityButterflyLeviathan entity)
         {
+            super(entity);
             setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
 
         @Override
         public boolean canUse()
         {
-            return !canBeControlledByRider() && getTarget() != null;
+            target = getTarget();
+            return !canBeControlledByRider() && target != null;
+        }
+
+        @Override
+        public void start(){
+            this.entity.getNavigation().moveTo(target,1.5);
+            this.entity.setAggressive(true);
+            this.navRecalculationTicks = 0;
         }
 
         @Override
         public boolean canContinueToUse() {
-            LivingEntity target = getTarget();
+            target = entity.getTarget();
             if (target == null) {
                 return false;
             }
@@ -747,34 +767,44 @@ public class EntityButterflyLeviathan extends WRDragonEntity
         }
 
         @Override
-        public void tick()
-        {
-            LivingEntity target = getTarget();
-            if (target == null) return;
-            double distFromTarget = distanceToSqr(target);
+        public void tick() {
+            target = getTarget();
 
-            getLookControl().setLookAt(target, getMaxHeadYRot(), getMaxHeadXRot());
+            if (target != null) {
+                getLookControl().setLookAt(target.getX(),target.getEyeY(),target.getZ());
+                double distanceToTargetSqr = this.entity.distanceToSqr(target.getX(), target.getY(), target.getZ());
+                this.navRecalculationTicks = Math.max(this.navRecalculationTicks - 1, 0);
+                //Recalculate navigation if we can see target, if we have not recently recalculated and if target has moved..
+                if ((this.entity.getSensing().hasLineOfSight(target))
+                        && this.navRecalculationTicks <= 0
+                        && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D
+                            || target.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= 1.0D
+                            || this.entity.getRandom().nextFloat() < 0.05F)) {
+                    //Store target's current position + adjust recalculation timer
+                    this.pathedTargetX = target.getX();
+                    this.pathedTargetY = target.getY();
+                    this.pathedTargetZ = target.getZ();
+                    this.navRecalculationTicks = 4 + this.entity.getRandom().nextInt(7);
 
-            boolean isClose = distFromTarget < 40;
+                    //We will perform faster recalculations if we are close to the target..
+                    if (distanceToTargetSqr > 1024.0D) {
+                        this.navRecalculationTicks += 10;
+                    } else if (distanceToTargetSqr > 256.0D) {
+                        this.navRecalculationTicks += 5;
+                    }
 
-            //TODO: Fix crashes
+                    //Attempt moveTo, if we fail add to the recalculation timer..
+                    //This prevents endless recalculation loops
+                    if (!this.entity.getNavigation().moveTo(target, 1.5)) {
+                        this.navRecalculationTicks += 15;
+                    }
 
-            //Only generate a new path is Navigation is NOT stuck and if distance to target is greater than some value...
-            if (getNavigation().isDone())
-                getNavigation().moveTo(target, 1.2);
-
-            if (isClose) yRot = (float) Mafs.getAngle(EntityButterflyLeviathan.this, target) + 90f;
-
-            /*
-            if (noAnimations())
-            {
-                if (distFromTarget > 225 && (isTame() || target.getType() == EntityType.PLAYER) && canZap())
-                    AnimationPacket.send(EntityButterflyLeviathan.this, LIGHTNING_ANIMATION);
-                else if (isClose && Mth.degreesDifferenceAbs((float) Mafs.getAngle(EntityButterflyLeviathan.this, target) + 90, yRot) < 30)
-                    AnimationPacket.send(EntityButterflyLeviathan.this, BITE_ANIMATION);
+                    this.navRecalculationTicks = this.adjustedTickDelay(this.navRecalculationTicks);
+                }
+                this.navRecalculationTicks = Math.max(this.navRecalculationTicks - 1, 0);
+                //this.ATTEMPTATTACK;
             }
 
-             */
         }
     }
 }
