@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DragonBreedGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.FlyerWanderGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRAvoidEntityGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRFollowOwnerGoal;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;

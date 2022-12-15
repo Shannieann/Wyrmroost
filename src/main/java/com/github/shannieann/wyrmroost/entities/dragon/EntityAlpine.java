@@ -3,7 +3,7 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 /*import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.model.entity.AlpineModel;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DragonBreedGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.FlyerWanderGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.MoveToHomeGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRFollowOwnerGoal;
 import com.github.shannieann.wyrmroost.entities.projectile.WindGustEntity;
