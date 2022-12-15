@@ -45,9 +45,9 @@ public class WRGroundLookControl extends LookControl
         return Optional.of((float) (-(Mth.atan2(y, sqrt) * (double)(180f / Mth.PI))));
     }
 
-    public void stopLooking() {
-        //Method called to ensure we no longer look at targets while asleep
-        //A smarter way to do it would be not allow target selection while asleep
+    public void stopLooking()
+    {
+        //Method called to ensure we no longer look at targets, if something must lock rotation
         this.stopLooking = true;
     }
 }
