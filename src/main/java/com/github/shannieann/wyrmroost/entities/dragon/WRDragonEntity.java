@@ -1228,7 +1228,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     public int getMaxHeadYRot() {
-        return 15;
+        return 30;
     }
 
 
@@ -2109,6 +2109,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     protected void registerGoals()
     {
         //Goal will only get called when we manually set an animation and want the time counter to apply to it
+        //TODO: Goal will NOT get called if anything else is happening, goal-wise
         goalSelector.addGoal(0,new AnimatedGoal(this,this.getAnimation(),this.getAnimationType(),this.getAnimationTime()));
         //goalSelector.addGoal(0, new FloatGoal(this));
         goalSelector.addGoal(1, new WRSitGoal(this));
