@@ -4,13 +4,13 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.WRBodyControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundPathNavigator;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.LessShitLookController;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.FlyerMoveController;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.FlyerPathNavigator;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.*;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSitGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming.WRSwimmingLookControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming.WRSwimmingMoveControl;
@@ -58,6 +58,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
+import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -84,7 +85,6 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.ForgeEventFactory;
 import net.minecraftforge.event.entity.living.BabyEntitySpawnEvent;
-import net.minecraftforge.event.world.NoteBlockEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -153,7 +153,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public static final EntityDataAccessor<Integer> AGE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
-    //TODO: These two are probably better to do inside an interface, IBreachable
     public static final EntityDataAccessor<Float> BREACH_ATTACK_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
@@ -218,6 +217,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public <E extends IAnimatable> PlayState generalPredicate(AnimationEvent<E> event)
     {
+        //TODO: Extract all basic locomotion logic to another predicate
+        //TODO: Transition times, adjust all set animations..
         //All animations to be played are stored as DataParameters Strings
         //We begin by getting the animation that should be played.
         //This string may have been set as part of an AnimatedGoal that requires a one-shot ability animation to play..
@@ -880,7 +881,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         if (sleepCooldown > 0) --sleepCooldown;
         if (isSleeping()) {
-            if (getLookControl() instanceof LessShitLookController) ((LessShitLookController) getLookControl()).stopLooking();
+            if (getLookControl() instanceof WRGroundLookControl) ((WRGroundLookControl) getLookControl()).stopLooking();
             if (getHealth() < getMaxHealth() && getRandom().nextDouble() < 0.005) heal(1);
 
             if (shouldWakeUp()) {
@@ -1145,13 +1146,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         switch (navigator) {
             case GROUND -> {
                 this.moveControl = new MoveControl(this);
-                this.lookControl = new LessShitLookController(this);
-                this.navigation = new WRGroundPathNavigator(this);
+                this.lookControl = new LookControl(this);
+                this.navigation = new GroundPathNavigation(this,this.level);
                 this.setMovingState(0);
             }
             case FLYING -> {
                 this.moveControl = new FlyerMoveController(this);
-                this.lookControl = new LessShitLookController(this);
+                this.lookControl = new WRGroundLookControl(this);
                 this.navigation = new FlyerPathNavigator(this);
                 this.setMovingState(1);
                 setOrderedToSit(false);
@@ -1224,11 +1225,23 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return this.getNavigation() instanceof GroundPathNavigation;
     }
 
+
+    @Override
+    public int getMaxHeadYRot() {
+        return 15;
+    }
+
+
+    @Override
+    public int getMaxHeadXRot() {
+        return 20;
+    }
     @Override
     protected BodyRotationControl createBodyControl()
     {
-        return new DragonBodyController(this);
+        return new WRBodyControl(this);
     }
+
 
     // Test dragonriding method
     @Override
@@ -1380,6 +1393,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         return getBoundingBox().move(Vec3.directionFromRotation(0, yBodyRot).scale(offset));
     }
+
 
     public void setRotation(float yaw, float pitch)
     {
@@ -2086,11 +2100,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!isSleeping()) super.playAmbientSound();
     }
 
-
-    @Override
-    public void setYRot(float yRot){
-        this.yRot = yRot;
-    }
 
     // ====================================
     //      F) Goals
