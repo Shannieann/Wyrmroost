@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entities.dragon.ai.movement;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.util.Mafs;
