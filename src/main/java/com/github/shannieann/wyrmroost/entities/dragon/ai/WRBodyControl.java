@@ -32,8 +32,8 @@ public class WRBodyControl extends BodyRotationControl
             this.lastStableYHeadRot = this.entity.yHeadRot;
             this.headStableTime = 0;
         } else {
-            //Changed from Vanilla Behavior - will attempt to update head faster
-            //This results in smoother, non-jittery body movement
+            //Changed from Vanilla Behavior - will attempt to update head faster if not moving
+            //This results in smoother, non-jittery body movement when stationary and looking
             //It will still allow a difference between head and body equal to MaxHeadYRot
             if (Math.abs(this.entity.yHeadRot - this.lastStableYHeadRot) > 0) {
                 this.headStableTime = 0;
