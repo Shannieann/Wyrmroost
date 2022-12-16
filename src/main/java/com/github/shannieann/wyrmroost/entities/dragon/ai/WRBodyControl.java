@@ -26,7 +26,7 @@ public class WRBodyControl extends BodyRotationControl
     }
 
     public void clientTick() {
-        if (this.isMoving() && this.entity.getTarget() ==null) {
+        if (this.isMoving()) {
             this.entity.yBodyRot = this.entity.getYRot();
             this.rotateHeadToMatchBodyIfNecessary();
             this.lastStableYHeadRot = this.entity.yHeadRot;
