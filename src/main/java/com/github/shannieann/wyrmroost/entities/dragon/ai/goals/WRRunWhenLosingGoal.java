@@ -37,11 +37,11 @@ public class WRRunWhenLosingGoal extends AvoidEntityGoal<LivingEntity> {
         if (dragon.getRandom().nextFloat() > chanceToRun) return false;
 
 
-
-        this.toAvoid = dragon.getLastHurtByMob() != null? dragon.getLastHurtByMob() : this.dragon.level.getNearestEntity(this.dragon.level.getEntitiesOfClass(this.avoidClass, this.dragon.getBoundingBox().inflate(this.maxDist, 3.0D, this.maxDist), (p_148078_) -> {
+        LivingEntity defaultAvoidEntity = this.dragon.level.getNearestEntity(this.dragon.level.getEntitiesOfClass(this.avoidClass, this.dragon.getBoundingBox().inflate(this.maxDist, 3.0D, this.maxDist), (p_148078_) -> {
             return true;
-        }), this.runAwayTargeting, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());;
-        System.out.println(toAvoid);
+        }), this.runAwayTargeting, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
+
+        this.toAvoid = dragon.getLastHurtByMob() != null? dragon.getLastHurtByMob() : defaultAvoidEntity;
 
         if (this.toAvoid == null) return false;
         if (this.dragon.isTame() && this.toAvoid.getUUID() == this.dragon.getOwnerUUID()) return false; // in short, if its tamed and the owner is the one hitting it, don't run

@@ -42,6 +42,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.client.model.generators.ModelBuilder;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nullable;
@@ -413,8 +414,8 @@ public class EntityRoyalRed extends WRDragonEntity {
     public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event) {
         if (backView)
             event.getCamera().move(ClientEvents.getViewCollision(-8.5, this), 0, 0);
-        else
-            event.getCamera().move(ClientEvents.getViewCollision(-5, this), -0.75, 0);
+        //else
+            //event.getCamera().move(ClientEvents.getViewCollision(-5, this), -0.75, 0);
     }
 
     @Override
@@ -712,7 +713,7 @@ public class EntityRoyalRed extends WRDragonEntity {
         public void stop() {
             LivingEntity livingentity = this.entity.getTarget();
             if (!EntitySelector.NO_CREATIVE_OR_SPECTATOR.test(livingentity)) {
-                this.entity.setTarget((LivingEntity) null);
+                this.entity.setTarget(null);
             }
             this.entity.setAggressive(false);
             this.entity.getNavigation().stop();
