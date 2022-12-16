@@ -6,6 +6,7 @@ import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.WRBodyControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundLookControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundMoveControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundPathNavigator;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.FlyerMoveController;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.FlyerPathNavigator;
@@ -130,6 +131,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float setExtremityPitch;
     public float adjustExtremityPitch;
     public float adjustmentExtremityPitch;
+    public float groundMaxYaw;
     public Vec3 debugTarget;
 
     // Used in setting 1st person camera positions when flying but set in RiderLayer & WRDragonRender
@@ -1158,8 +1160,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (navigator == getNavigationType()) return;
         switch (navigator) {
             case GROUND -> {
-                this.moveControl = new MoveControl(this);
-                this.lookControl = new WRGroundLookControl(this);
+                this.moveControl = new WRGroundMoveControl(this, groundMaxYaw);
+                this.lookControl = new LookControl(this);
                 this.navigation = new WRGroundPathNavigator(this);
                 this.setMovingState(0);
             }
@@ -1238,22 +1240,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return this.getNavigation() instanceof GroundPathNavigation;
     }
 
-
-    @Override
-    public int getMaxHeadYRot() {
-        return 30;
-    }
-
-
-    @Override
-    public int getMaxHeadXRot() {
-        return 20;
-    }
     @Override
     protected BodyRotationControl createBodyControl()
     {
         return new WRBodyControl(this);
     }
+
 
 
     // Test dragonriding method
@@ -1535,28 +1527,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!speciesCanFly() && !this.isInWater() && !this.isOnGround()) {
             return true;
         }
-
-        /*
-        //If this is flyer + swimmer, we switch to water navigator once we are underwater
-        if (this.speciesCanFly()) {
-            return isUnderWater();
-        }
-
-         */
-
-        /*
-        //If it's touching water but not underwater check if it is deep enough to swim
-        if (this.isInWater() && !this.isUnderWater()) {
-            if (!this.level.getBlockState(blockPosition().below()).getMaterial().isSolid())  {
-                //If it's touching water, and it does not have a solid block beneath (meaning: water is deep)..
-                //We should use swimming navigator, unless we can fly
-                //For swimming + flyers we will only switch to water navigator if we are entirely underwater...
-                return true;
-            }
-        }
-        */
-        //By the time it reaches water, switch to water navigator,
-        // unless it can also fly, in which case check for it being entirely underwater
         return speciesCanFly()?this.isUnderWater():this.isInWater();
     }
 
@@ -1602,7 +1572,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setXRot(player.getXRot() / 2);
             yHeadRot = yBodyRot = yRotO  = player.getYRot();
             setYRot(yHeadRot);
-            setRotation(player.yHeadRot, player.getXRot());
+            setRotation(
+
+                    player.yHeadRot, player.getXRot());
 
             Vec3 vec3d = getRidingPosOffset(index);
             if (player.isFallFlying())
