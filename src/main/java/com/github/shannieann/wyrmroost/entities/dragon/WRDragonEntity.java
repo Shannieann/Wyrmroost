@@ -139,6 +139,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public Vector3f cameraRotVector = Vector3f.ZERO;
     public Map<UUID, Vector3d> cameraBonePos = new HashMap<>();
 
+    //TODO: CANCEL DAMAGE FROM CACTUS AND BERRY BUSHES AND OTHERS
 
     public enum NavigationType {
         GROUND,
