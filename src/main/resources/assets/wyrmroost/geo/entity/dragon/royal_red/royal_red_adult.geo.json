@@ -7,8 +7,8 @@
 				"texture_width": 1024,
 				"texture_height": 512,
 				"visible_bounds_width": 28,
-				"visible_bounds_height": 8.5,
-				"visible_bounds_offset": [0, 3.75, 0]
+				"visible_bounds_height": 11,
+				"visible_bounds_offset": [0, 4.5, 0]
 			},
 			"bones": [
 				{
@@ -1827,6 +1827,16 @@
 					]
 				},
 				{
+					"name": "rider1",
+					"parent": "body1",
+					"pivot": [0, 76.5, -31]
+				},
+				{
+					"name": "rider2",
+					"parent": "body1",
+					"pivot": [0, 76.5, -10]
+				},
+				{
 					"name": "leg1Left",
 					"parent": "body2",
 					"pivot": [7, 44.5, -7],
@@ -2149,16 +2159,6 @@
 							}
 						}
 					]
-				},
-				{
-					"name": "rider2",
-					"parent": "body2",
-					"pivot": [0, 52.5, -10]
-				},
-				{
-					"name": "rider1",
-					"parent": "body2",
-					"pivot": [0, 52.5, -31]
 				}
 			]
 		}

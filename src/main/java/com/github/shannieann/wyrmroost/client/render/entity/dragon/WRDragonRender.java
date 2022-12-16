@@ -3,10 +3,12 @@ package com.github.shannieann.wyrmroost.client.render.entity.dragon;
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import org.jetbrains.annotations.Nullable;
+import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
@@ -27,14 +29,21 @@ public abstract class WRDragonRender<T extends WRDragonEntity> extends GeoEntity
 
     @Override
     public void render(GeoModel model, T animatable, float partialTick, RenderType type, PoseStack poseStack, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
+        // Sets the default rotation that the dragon should be at.
+        // For example, the Royal Red's main bone is at 6 degrees by default, so without this it would always be slightly tilted downward.
         if (!rotIsSet && !mainBoneName.isEmpty()) {
             defaultXRot = modelProvider.getBone(mainBoneName).getRotationX();
             rotIsSet = true;
         }
 
         poseStack.pushPose();
+        // Set rotations based on stuff in WRDragonEntity class
+        // For flying
         if (model.getBone(mainBoneName).isPresent()) {
-            model.getBone(mainBoneName).get().setRotationX(defaultXRot + (animatable.getDragonXRotation()/90));
+            GeoBone bone = model.getBone(mainBoneName).get();
+            bone.setRotationX(defaultXRot + (animatable.getDragonXRotation()/57));
+            System.out.println(animatable.getDragonXRotation());
+            animatable.cameraRotVector = new Vector3f((defaultXRot + animatable.getDragonXRotation()), bone.getRotationY(), bone.getRotationZ());
         }
         super.render(model, animatable, partialTick, type, poseStack, bufferSource, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         poseStack.popPose();
