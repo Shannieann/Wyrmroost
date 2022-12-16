@@ -27,6 +27,8 @@ import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.datafixers.util.Pair;
+import com.mojang.math.Vector3d;
+import com.mojang.math.Vector3f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
@@ -129,6 +131,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float adjustExtremityPitch;
     public float adjustmentExtremityPitch;
     public Vec3 debugTarget;
+
+    // Used in setting 1st person camera positions when flying but set in RiderLayer & WRDragonRender
+    // EDIT: made this a hashmap because I realized there could be more than one passenger lmao
+    public Vector3f cameraRotVector = Vector3f.ZERO;
+    public Map<UUID, Vector3d> cameraBonePos = new HashMap<>();
 
 
     public enum NavigationType {
@@ -297,7 +304,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
             switch (navigationType) {
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
-                case FLYING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
+                case FLYING ->
+                        {
+                            if (getDragonXRotation() > 270.0f && getDragonXRotation() < 320.0f){
+                                event.getController().setAnimation(new AnimationBuilder().addAnimation("dive", ILoopType.EDefaultLoopTypes.LOOP));
+                            }
+                            else event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
+                        }
                 case SWIMMING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
             }
             return PlayState.CONTINUE;
@@ -316,7 +329,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             event.getController().setAnimation(new AnimationBuilder().  addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
-        //If the entity is flying and it is not doing anything else that warrants an animation, it will just fly place.
+        //If the entity is flying and it is not doing anything else that warrants an animation, it will just fly in place.
         if (this.isUsingFlyingNavigator()) {
             event.getController().setAnimation(new AnimationBuilder().  addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
@@ -1249,12 +1262,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (this.isAlive()) {
             if (this.isVehicle() && this.canBeControlledByRider()) {
                 LivingEntity livingentity = (LivingEntity)this.getControllingPassenger();
-                //this.setYRot(livingentity.getYRot());
-                //this.yRotO = this.getYRot();
+                this.setYRot(livingentity.getYRot());
+                this.yRotO = this.getYRot();
                 this.setXRot(livingentity.getXRot() * 0.5F);
                 this.setRot(this.getYRot(), this.getXRot());
                 //this.yBodyRot = this.getYRot();
-                //this.yHeadRot = this.yBodyRot;
+                this.yHeadRot = this.yBodyRot;
                 float groundX = livingentity.xxa * 0.5F;
                 float groundZ = livingentity.zza;
                 if (groundZ <= 0.0F) {
@@ -1268,31 +1281,37 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     float speed = getTravelSpeed();
                     if (isUsingFlyingNavigator())
                     {
-                        if (getAltitude() <= getFlightThreshold()) setNavigator(NavigationType.GROUND);
+                        // Convert to ground nav if applicable
+                        if (getAltitude() <= getFlightThreshold()) {
+                            setNavigator(NavigationType.GROUND);
+                        }
+
+                        // Speed needs to be multiplied to make the values not seemingly unreasonably large in attributes
                         this.setSpeed(speed * (25.0f/3.0f));
-                        Vec3 vec = new Vec3(1, 1, 1);
-                        double moveX = livingentity.xxa;
-                        double moveZ = livingentity.zza;
-                        //double moveY = 0.0f;
-                        //if (ClientEvents.keybindFlight)
-                            //moveY = ClientEvents.getClient().options.keyJump.isDown()? 2.5f : WRKeybind.FLIGHT_DESCENT.isDown()? -3f : 0;
-                        //else moveY = -livingentity.getXRot() * (Math.PI / 180);
+
+                        //Set rotation based on input
                         float rotationChange;
                         if (ClientEvents.keybindFlight)
-                            rotationChange = ClientEvents.getClient().options.keyJump.isDown()? 1.0f : WRKeybind.FLIGHT_DESCENT.isDown()? -1.0f : 0;
+                            rotationChange = ClientEvents.getClient().options.keyJump.isDown()? 2.0f : WRKeybind.FLIGHT_DESCENT.isDown()? -3.0f : 0;
                         else rotationChange = 0;
-                        setDragonXRotation(getDragonXRotation() + rotationChange);
+
+                        // Convert to real degrees (ex. 361 = 1)
+                        float newRotation = getDragonXRotation() + rotationChange;
+                        newRotation = (float) (newRotation + Math.ceil( -newRotation / 360 ) * 360);
+                        // Set dragon's body rotation (rendering handled in dragon entity renderer superclass)
+                        setDragonXRotation(newRotation);
+                        // Set direction to travel
+                        Vec3 vec = Vec3.directionFromRotation(-getDragonXRotation(), livingentity.getYRot());
                         if (ClientEvents.getClient().options.keyUp.isDown()) {
-                            vec.yRot(getDragonXRotation());
-                            System.out.println(getDragonXRotation());
-                            System.out.println(vec);
-                            super.travel(new Vec3(moveX, vec.y, moveZ));
+                            //vec.yRot(getDragonXRotation());
+                            super.travel(new Vec3(livingentity.xxa, vec.y, livingentity.zza));
                         }
                     }
                     else
                     {
                         //speed *= 0.225f;
                         // normal movement
+                        setDragonXRotation(0); // Shouldn't be rotated on ground
                         if (ClientEvents.getClient().options.keyJump.isDown()) jumpFromGround();
                         if (dragonCanFly() && getAltitude() > getFlightThreshold()) setNavigator(NavigationType.FLYING);
                         else {

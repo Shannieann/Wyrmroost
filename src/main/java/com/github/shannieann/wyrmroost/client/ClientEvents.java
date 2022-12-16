@@ -170,40 +170,37 @@ public class ClientEvents
     }
 
 
-    // THIS MIXIN CODE IS INSPIRED BY THE MOD "DO A BARREL ROLL" by enjarai
-    public static final float TORAD = (float) Math.PI / 180;
-    private static final float TODEG = 1 / TORAD;
-
-    public static Map<UUID, Vector3d> dragonBonePositions = new HashMap<>();
-    public static Map<UUID, Matrix4f> boneRotationMatrices = new HashMap<>();
 
 
-
-    public static void onWorldRender(Minecraft client, PoseStack cameraPose) {
-
-        if (client.player != null && dragonRiders.contains(client.player.getUUID())) {
-
-            UUID uuid = client.player.getUUID();
-
-            if (!boneRotationMatrices.containsKey(uuid)) return;
-            Matrix4f matrix = boneRotationMatrices.remove(uuid);
-            Vector3d bonePos = dragonBonePositions.remove(uuid);
-            matrix.multiply(TODEG);
-            cameraPose.mulPoseMatrix(matrix);
-            cameraPose.translate(bonePos.x * 00.0625F, bonePos.y * 00.0625F, bonePos.z * 00.0625F);
-        }
-    }
-
-
-
+    // todo for some reason getting the position of the dragon causes jittering? My guess is positions aren't 100% synced from client to server, so this is the best solution i could think of
+    // other than creating a data accessor in WRDragonEntity that holds the actual position... which may be worth doing for accuracy? Also not that resource-intensive. idk
     private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event)
     {
         Minecraft mc = getClient();
         Entity entity = mc.player.getVehicle();
-        if (!(entity instanceof WRDragonEntity)) return;
+        if (!(entity instanceof WRDragonEntity dragon)) return;
         CameraType view = mc.options.getCameraType();
+        // Third person camera views
         if (view != CameraType.FIRST_PERSON)
-            ((WRDragonEntity) entity).setMountCameraAngles(view == CameraType.THIRD_PERSON_BACK, event);
+            dragon.setMountCameraAngles(view == CameraType.THIRD_PERSON_BACK, event);
+        else{ // 1st person
+            // Set camera rotations based on bone values set in dragon renderer
+            UUID uuid = mc.player.getUUID();
+            float xRot = -dragon.cameraRotVector.x();
+            float yRot = dragon.cameraRotVector.y();
+            float zRot = dragon.cameraRotVector.z();
+            Vector3d bonePos = dragon.cameraBonePos.get(uuid);
+            if (bonePos != null) {
+                Vec3 vecBonePos = new Vec3(bonePos.x, bonePos.y - 3.5, bonePos.z); // todo remove this negative y offset and replace it with a better solution to move the camera. Maybe the above solution?
+                // Set camera position
+                Vec3 cameraPos = event.getCamera().getPosition();
+                event.getCamera().setPosition(vecBonePos.add(cameraPos)); // Not using move() here because it does weird stuff when you look around... (center of rotation messed up)
+            }
+            // Allows for complete alteration of camera rotations for some sick clips
+            event.setPitch(xRot + event.getPitch());
+            event.setYaw(yRot + event.getYaw());
+            event.setRoll(zRot + event.getRoll());
+        }
     }
 
 
