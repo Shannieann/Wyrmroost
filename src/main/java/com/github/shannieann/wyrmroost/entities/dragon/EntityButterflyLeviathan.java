@@ -384,9 +384,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         return true;
     }
 
+    public boolean isOnFire() {
+        return false;
+    }
+
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
-        return ModUtils.contains(source, DamageSource.LIGHTNING_BOLT, DamageSource.IN_FIRE, DamageSource.IN_WALL) || super.isInvulnerableTo(source);
+        return ModUtils.contains(source, DamageSource.LIGHTNING_BOLT, DamageSource.IN_FIRE, DamageSource.IN_WALL, DamageSource.ON_FIRE) || super.isInvulnerableTo(source);
     }
 
     public boolean canPerformLightningAttack() {
@@ -394,8 +398,11 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             if (isInWaterRainOrBubble()) {
                 return true;
             }
+            if (this.level.getBlockState(new BlockPos(position()).below()).is(Blocks.GOLD_BLOCK)) {
+                return true;
+            }
         }
-        return isInWaterRainOrBubble() && lightningCooldown <= 0;
+        return false;
     }
 
     // ====================================
@@ -673,6 +680,15 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         private double pathedTargetZ;
 
         LivingEntity target;
+        boolean lightningLineQueued;
+        int lightningCounter;
+        Vec3 toTarget;
+        Vec3 toTarget1;
+        Vec3 toTarget2;
+        Vec3 strikePos;
+        Vec3 strikePos1;
+        Vec3 strikePos2;
+
 
         public BFLAttackGoal(EntityButterflyLeviathan entity) {
             super(entity);
@@ -704,36 +720,67 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         @Override
         public void tick() {
-            target = getTarget();
+            if (lightningLineQueued) {
+                if (lightningCounter < 25) {
+                    for (int i = 1; i < 2; i++) {
+                        //Instantiate 3 lightning bolts
+                        LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT,entity.level);
+                        LightningBolt lightningBolt1 = new LightningBolt(EntityType.LIGHTNING_BOLT,entity.level);
+                        LightningBolt lightningBolt2 = new LightningBolt(EntityType.LIGHTNING_BOLT,entity.level);
+                        //Set all of their damages to double the normal lightning bolt damage
+                        lightningBolt.setDamage(10F);
+                        lightningBolt1.setDamage(10F);
+                        lightningBolt2.setDamage(10F);
+                        //Calculate all of their strike positions
+                        strikePos = strikePos.add(toTarget.scale(2));
+                        strikePos1 = strikePos1.add(toTarget1.scale(2));
+                        strikePos2 = strikePos2.add(toTarget2.scale(2));
+                        //Set all of the actual lightning bolt's positions
+                        lightningBolt.setPos(strikePos);
+                        lightningBolt1.setPos(strikePos1);
+                        lightningBolt2.setPos(strikePos2);
+                        //Add the lightning bolts to the world
+                        entity.level.addFreshEntity(lightningBolt);
+                        entity.level.addFreshEntity(lightningBolt1);
+                        entity.level.addFreshEntity(lightningBolt2);
 
-            if (target != null) {
-                //getLookControl().setLookAt(target);
-                double distanceToTargetSqr = this.entity.distanceToSqr(target);
-                //Recalculate navigation if we can see target, if we have not recently recalculated and if target has moved..
-                if ((this.entity.getSensing().hasLineOfSight(target))
-                        && this.navRecalculationTicks <= 0
-                        && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D
-                        || target.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= 1.0D
-                        || this.entity.getRandom().nextFloat() < 0.05F)) {
-                    //Store target's current position + adjust recalculation timer
-                    this.pathedTargetX = target.getX();
-                    this.pathedTargetY = target.getY();
-                    this.pathedTargetZ = target.getZ();
-                    this.navRecalculationTicks = 4 + this.entity.getRandom().nextInt(7);
-
-                    //We will perform faster recalculations if we are close to the target..
-                    if (distanceToTargetSqr > 1024.0D) {
-                        this.navRecalculationTicks += 10;
-                    } else if (distanceToTargetSqr > 256.0D) {
-                        this.navRecalculationTicks += 5;
+                        lightningCounter++;
                     }
+                } else {
+                    lightningLineQueued = false;
+                    lightningCounter = 0;
+                }
+                //Do not navigate or do other attacks performing lightning line attack
+            } else {
+                target = getTarget();
+                if (target != null) {
+                    //getLookControl().setLookAt(target);
+                    double distanceToTargetSqr = this.entity.distanceToSqr(target);
+                    //Recalculate navigation if we can see target, if we have not recently recalculated and if target has moved..
+                    if ((this.entity.getSensing().hasLineOfSight(target))
+                            && this.navRecalculationTicks <= 0
+                            && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D
+                            || target.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= 1.0D
+                            || this.entity.getRandom().nextFloat() < 0.05F)) {
+                        //Store target's current position + adjust recalculation timer
+                        this.pathedTargetX = target.getX();
+                        this.pathedTargetY = target.getY();
+                        this.pathedTargetZ = target.getZ();
+                        this.navRecalculationTicks = 4 + this.entity.getRandom().nextInt(7);
 
-                    //Get our final path point, ensure it is still close to the target...
-                    //We only recalculate the path if our final path point (and hence our path) will not get us to within a reasonable distance of target...
-                    Node finalPathPoint;
-                    if (this.entity.getNavigation().getPath() == null || ((finalPathPoint = this.entity.getNavigation().getPath().getEndNode()) == null) || target.distanceToSqr(finalPathPoint.x,finalPathPoint.y,finalPathPoint.z) > 25){
-                        if (!this.entity.getNavigation().moveTo(target, 1.5)) {
-                            this.navRecalculationTicks += 15;
+                        //We will perform faster recalculations if we are close to the target..
+                        if (distanceToTargetSqr > 1024.0D) {
+                            this.navRecalculationTicks += 10;
+                        } else if (distanceToTargetSqr > 256.0D) {
+                            this.navRecalculationTicks += 5;
+                        }
+
+                        //Get our final path point, ensure it is still close to the target...
+                        //We only recalculate the path if our final path point (and hence our path) will not get us to within a reasonable distance of target...
+                        Node finalPathPoint;
+                        if (this.entity.getNavigation().getPath() == null || ((finalPathPoint = this.entity.getNavigation().getPath().getEndNode()) == null) || target.distanceToSqr(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) > 25) {
+                            if (!this.entity.getNavigation().moveTo(target, 1.5)) {
+                                this.navRecalculationTicks += 15;
                             }
                         }
                     }
@@ -742,11 +789,29 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 }
                 //Reduce by 1 if not already at 0
                 this.navRecalculationTicks = Math.max(this.navRecalculationTicks - 1, 0);
-                //this.ATTEMPTATTACK;
-            //TODO: ON ATTACK (IF ENTITY CLOSE) ROTATE IMMEDIATELY TO FACE ENTITY
+                //Decide which attack to use: LightningAttack or MeleeAttack
+                if (canPerformLightningAttack()) {
+                    performLightningAttack();
+
+                }
+            }
 
         }
 
+        public void performLightningAttack(){
+            LivingEntity target = entity.getTarget();
+            //If on ground, queue a lightning line...
+            //TODO: ANIMATIONS
+            if (this.entity.isOnGround() && target != null) {
+                toTarget = target.position().subtract(entity.position()).normalize();
+                toTarget1 = toTarget.yRot(0.523599F);
+                toTarget2 = toTarget.yRot(-0.523599F);
+                lightningLineQueued = true;
+                strikePos = entity.position();
+                strikePos1 = entity.position();
+                strikePos2 = entity.position();
+            }
+        }
     }
 }
 
