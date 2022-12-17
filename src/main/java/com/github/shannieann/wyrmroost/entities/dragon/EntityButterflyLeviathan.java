@@ -913,12 +913,10 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 // We are not checking for lightningAttacks each tick, only every 40 ticks
                 lightningAttackCooldown = Math.max(lightningAttackCooldown-1,0);
 
-                /*if (checkForLightningCounter <=0) {
-                    checkForLightningCounter = 40;*/
-                    if (canPerformLightningAttack()) {
-                        performLightningAttack();
-                    }
-                /*}*/ else if (canPerformMeleeAttack()) {
+                if (canPerformLightningAttack()) {
+                    performLightningAttack();
+                }
+                else if (canPerformMeleeAttack()) {
                     //performMeleeAttack();
                     //ToDo: Implement logic
                 }
@@ -936,7 +934,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 }
 
                 if (level.getBlockState(new BlockPos(position()).below()).is(Blocks.GOLD_BLOCK)) {
-                    //ToDo: Add debug statement again
                     return false;
                 }
             }
