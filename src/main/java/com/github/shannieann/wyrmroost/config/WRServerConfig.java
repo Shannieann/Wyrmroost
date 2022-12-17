@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 
 public final class WRServerConfig {
     //TODO: LANG FILE
+    //TODO: Config attributes
     public static ForgeConfigSpec SERVER_CONFIG;
     private static final ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
     public static final Server SERVER;
@@ -46,7 +47,7 @@ public final class WRServerConfig {
             builder.push("dragon_options");
             this.fireSpread = builder
                     .comment("Base Flammability or spread of fire from Dragon Fire Breath",
-                            "A value of 0 completely disables fire block damage completely.")
+                            "A value of 0 completely disables fire block damage.")
                     .translation(LANG_PREFIX + "breath_fire_spread")
                     .defineInRange("breath_fire_spread", 0.8, 0, 1);
             this.homeRadius = builder
@@ -78,8 +79,8 @@ public final class WRServerConfig {
                     .comment("If true and not respecting mob griefing rules (`respect_mob_griefing`),",
                             "Allow dragons to destroy blocks.",
                             "Note: not all dragons destroy blocks and not all are as destructive as the next.")
-                    .translation(LANG_PREFIX + "respect_mob_griefing")
-                    .define("respect_mob_griefing", true);
+                    .translation(LANG_PREFIX + "dragon_griefing")
+                    .define("dragon_griefing", false);
             builder.pop();
         }
     }
