@@ -217,7 +217,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController(this, "generalController", 0, this::generalPredicate));
+        data.addAnimationController(new AnimationController(this, "controllerAbility", 10, this::predicateAbility));
+        data.addAnimationController(new AnimationController(this, "controllerBasicLocomotion", 10, this::predicateBasicLocomotion));
+
     }
 
     @Override
@@ -225,11 +227,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return this.factory;
     }
 
-    public <E extends IAnimatable> PlayState generalPredicate(AnimationEvent<E> event)
+    public <E extends IAnimatable> PlayState predicateAbility(AnimationEvent<E> event)
     {
-        //TODO: Extract all basic locomotion logic to another predicate
-        //TODO: Transition times, adjust all set animations..
-        //All animations to be played are stored as DataParameters Strings
+        //All Ability Animations to be played are stored as DataParameters Strings
         //We begin by getting the animation that should be played.
         //This string may have been set as part of an AnimatedGoal that requires a one-shot ability animation to play..
         String animation = this.getAnimation();
@@ -245,45 +245,28 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 case 3 -> loopType = ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME;
                 default -> {return PlayState.STOP;}
             }
-            //We check if the animation should be layered on top of base locomotion.
-            //For instance, running an ability while we keep moving.
-            //If it indeed a "moving animation", we check if we are indeed moving: (getDeltaMovement() is a non-zero vector
-            //If we are indeed moving, we play the corresponding moving+ability animation
-            //This will change based on whether we are walk, flying, swim
-            //And will also change based on whether we are doing so fast (running) or not
-            //This means that each ability animation could potentially have up to -9- variants...
-            if (this.getIsMovingAnimation()) {
-                if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
-                    //Ability + Move Regular Animations
-                    NavigationType navigationType = this.getNavigationType();
-                    switch (navigationType) {
-                        case GROUND -> animation = "walk_" + animation;
-                        case FLYING -> animation = "fly_" + animation;
-                        case SWIMMING -> animation = "swim_" + animation;
-                    }
-                    event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
-                    return PlayState.CONTINUE;
-                }
-                //Ability + move (fast) Animations:
-                if (this.getDeltaMovement().length() !=0 && !this.isAggressive()) {
-                    //Ability + Move Fast Animations
-                    NavigationType navigationType = this.getNavigationType();
-                    animation = switch (navigationType) {
-                        case GROUND -> "walk_fast_" + animation;
-                        case FLYING -> "fly_fast_" + animation;
-                        case SWIMMING -> "swim_fast_" + animation;
-                    };
-                    event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
-                    return PlayState.CONTINUE;
-                }
-            }
-            //If the ability is not a "moving ability" animation, we just proceed to play the ability animation without movement
+            //We proceed to play the corresponding animation...
             event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
             return PlayState.CONTINUE;
         }
-        //If we do not have an ability animation, we will proceed to do Basic Locomotion:
+        //If we do not have an ability animation, we will proceed to try and perform Idle:
+        //Idle:
+        //If the entity is onGround and not doing anything else, have a chance for it to perform an idle animation
+        if (this.getRandom().nextDouble() < 0.001 && this.isOnGround() && !this.isAggressive()) {
+            int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
+            event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+        //Else, just return base:
+        //This will not cause a transition to a stiff pose, as walking animations will be running concurrently...
+        //We are only resetting the position of the iBones/Bones here
+        //TODO: DETERMINE BONE TYPE
+        event.getController().  setAnimation(new AnimationBuilder().  addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
+        return PlayState.CONTINUE;
 
-        //TODO: Custom Death Animations
+    }
+
+    public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
         /*
         //Basic Locomotion: Death
         if ((this.dead || this.getHealth() < 0.01 || this.isDeadOrDying())) {
@@ -291,9 +274,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return PlayState.CONTINUE;
         }
        */
-
         //Basic Locomotion: Movement
-        //These moving animations only play if the entity is just moving and not doing anything else
+        //These moving animations play whenever the entity is moving
+        //TODO: DETERMINE BONE TYPE
+        //By using regular bones for these abilities as opposed to invisible ones, we both animations to overlay...
         //We select between slow or fast movement based on whether the entity is aggressive or not
         NavigationType navigationType = this.getNavigationType();
         if (this.getDeltaMovement().length() !=0 && this.isAggressive()) {
@@ -310,6 +294,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 case FLYING ->
                         {
                             if (getDragonXRotation() > 270.0f && getDragonXRotation() < 320.0f){
+                                //ToDo: Account for more flying cases
                                 event.getController().setAnimation(new AnimationBuilder().addAnimation("dive", ILoopType.EDefaultLoopTypes.LOOP));
                             }
                             else event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
@@ -319,13 +304,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return PlayState.CONTINUE;
         }
 
-        //Basic Locomotion: Idle:
-        //If the entity is onGround and not doing anything else, have a chance for it to perform an idle animation
-        if (this.getRandom().nextDouble() < 0.001 && this.isOnGround()) {
-            int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
-            event.getController().setAnimation(new AnimationBuilder().  addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        }
         //Basic Locomotion: Default cases
         //If the entity is swimming and it is not doing anything else that warrants an animation, it will just swim in place.
         if (this.isUsingSwimmingNavigator()) {

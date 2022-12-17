@@ -31,8 +31,7 @@ public class AnimatedGoal extends Goal {
         //It should only use this Goal -directly- if the animation was set manually...
         //Meaning, if the animation was -NOT- set via a Goal that extends this class and called the start() method...
         //And was instead set directly in methods such as tick(), etc.
-        //TODO: Two goals will not run simultaneously.
-        //TODO: Manual animation setting will only work if no goals are being executed.
+        //TODO: Two Goals will not run simultaneously, manual animation setting will only work if no goals are being executed.
         if (entity.getManualAnimationCall()) {
             return !animationName.equals("base");
         }
@@ -43,7 +42,8 @@ public class AnimatedGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        if (elapsedTime > animationTime) {
+        //Accounts for 10 transition ticks
+        if (elapsedTime > animationTime+10) {
             return false;
         }
         return true;
@@ -57,11 +57,10 @@ public class AnimatedGoal extends Goal {
         //Just proceed to count ticks directly...
     }
 
-    public void start(String animationName, int animationType, int animationTime, boolean isMovingAnimation){
+    public void start(String animationName, int animationType, int animationTime){
         this.entity.setAnimation(this.animationName = animationName);
         this.entity.setAnimationType(this.animationType = animationType);
         this.entity.setAnimationTime(this.animationTime = animationTime);
-        this.entity.setIsMovingAnimation(this.isMovingAnimation = isMovingAnimation);
     }
 
     @Override
