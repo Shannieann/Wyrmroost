@@ -41,6 +41,9 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
 
+    //TODO: ANIMATION WHEN LEAPING, ENSURE NO OVERLAY WITH OTHER STUFF...
+    //TODO: Somehow do not play basic locomotion or just navigator ground
+
     @Override
     public boolean canUse() {
         if (entity.isInSittingPose()) {
@@ -143,7 +146,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             if (!entity.isInWater()) {
                 entity.getNavigation().stop();
                 //Start fly animation, proceed to next step
-                super.start(breachFlyAnimation, 1, 5, false);
+                super.start(breachFlyAnimation, 1, 5);
                 entity.getNavigation().stop();
                 step2Done = true;
             }
@@ -151,7 +154,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                 //We have had time to align with target, now we accelerate and start the actual breaching..
                 speedFlag = true;
                 entity.setBreaching(true);
-                super.start(breachStartAnimation, 1, 10,false);
+                super.start(breachStartAnimation, 1, 10);
                 entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget*2);
             }
             //If the navigation is stopped, but not stuck, calculate a new path, with speed depending on whether we have had time to align with target or not
@@ -166,7 +169,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             if (waterTargetPosition.y-entity.position().y < 6) {
                 entity.getDeltaMovement().add(0,1.0,0);
             }
-            super.start(breachStartAnimation, 1, 10, false);
+            super.start(breachStartAnimation, 1, 10);
             step2Ticks++;
 
         }
@@ -180,7 +183,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                 entity.getNavigation().moveTo(initialPosition.x, initialPosition.y, initialPosition.z, speedTowardsTarget);
             } else {
                 //If it has not yet reached the water, keep flying...
-                super.start(breachFlyAnimation, 1, 5, false);
+                super.start(breachFlyAnimation, 1, 5);
             }
         }
         //Step 4:
@@ -189,7 +192,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             finalTicks++;
             if (finalTicks > 5 && !animationFlag) {
                 animationFlag = true;
-                super.start(breachEndAnimation, 3, 15, false);
+                super.start(breachEndAnimation, 3, 15);
             }
         }
     }

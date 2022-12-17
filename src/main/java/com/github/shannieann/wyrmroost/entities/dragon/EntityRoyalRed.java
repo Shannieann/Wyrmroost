@@ -688,7 +688,7 @@ public class EntityRoyalRed extends WRDragonEntity {
                         setBreathingFire(entity.shouldBreatheFire());
                         //AnimationLogic: Start fire breath animation...
                         animationPlaying = true;
-                        super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME, FIRE_ANIMATION_MOVES);
+                        super.start(FIRE_ANIMATION, FIRE_ANIMATION_TYPE, FIRE_ANIMATION_TIME);
                     }
                 }
 
@@ -765,7 +765,7 @@ public class EntityRoyalRed extends WRDragonEntity {
                 if (!animationPlaying) {
                     animationPlaying = true;
                     //AnimationLogic: start corresponding animation
-                    super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime, ATTACK_ANIMATION_MOVES);
+                    super.start(attackAnimation, ATTACK_ANIMATION_TYPE, attackAnimationTime);
                     //GoalLogic: Do melee attack, with parameters coming from animation logic
                     this.attackIsQueued = true;
                 }
