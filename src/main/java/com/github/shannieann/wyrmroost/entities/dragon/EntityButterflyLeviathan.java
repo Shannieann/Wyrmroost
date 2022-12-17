@@ -52,6 +52,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
@@ -70,6 +71,20 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //This class: See which methods are needed, which are not
 //Fix serializer
 
+//TODO: GOALS:
+//ATTACK: Reimplement whole logic...
+//ATTACK: If lightning rods near it, can attack
+//Test all regular goals before tamed goals
+//TAMED GOALS
+
+//TODO: ANIMATIONS
+//Test new animation method, write animation logic
+
+//TODO: TAMING
+//All goals when tamed
+//Eggs, breeding, taming
+//Ride logic + rewrite key-binds
+
 //TODO: ASSETS:
 //Texture: Lightning on/off
 //Texture Variants: base0, base1, special
@@ -81,22 +96,12 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //ANIMATIONS: Awakening
 //Animations: Idle (if on ground)
 
-//TODO: GOALS:
-//ATTACK: Reimplement whole logic...
-//ATTACK: If lightning rods near it, can attack
-//LOOKING: re-implement
-//TAMED GOALS
-
-//TODO: TAMING
-//Ride logic + rewrite key-binds
-//All goals when tamed
-//Eggs, breeding, taming
-
 //TODO: TEST AND SHOWCASE
 //Water movement
 
 //TODO: FINAL
 //Config spawn
+//Config attributes
 //Tidy up EntityTypeRegistry
 
 public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity {
@@ -113,8 +118,12 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public final LerpedFloat beachedTimer = LerpedFloat.unit();
     public final LerpedFloat swimTimer = LerpedFloat.unit();
     public final LerpedFloat sitTimer = LerpedFloat.unit();
-    public int lightningCooldown = 0;
     public boolean beached = true;
+
+    public static final String LIGHTNING_ANIMATION = "lightning";
+    public static final int LIGHTNING_ANIMATION_TYPE = 2;
+    public static final int LIGHTNING_ANIMATION_TIME = 100;
+    public static final int LIGHTNING_ANIMATION_QUEUE = 100;
 
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
         super(entityType, level);
@@ -261,7 +270,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         sitTimer.add(isInSittingPose() ? 0.1f : -0.1f);
 
 
-        if (lightningCooldown > 0) --lightningCooldown;
+        //TODO: TAMED LIGHTNING COOLDOWN
+        //if (lightningCooldown > 0) --lightningCooldown;
         // =====================
         //       Beached Logic
         // =====================
@@ -331,6 +341,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     // ====================================
 
 
+    /*
     //TODO: Extract logic
     public void lightningAnimation(int time) {
         lightningCooldown += 6;
@@ -347,7 +358,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             }
         }
     }
-
+     */
+    //TODO: REMOVE
     public void conduitAnimation(int time) {
         if (getLookControl() instanceof WRGroundLookControl) ((WRGroundLookControl) getLookControl()).stopLooking();
         if (time == 0) playSound(WRSounds.ENTITY_BFLY_ROAR.get(), 5f, 1, true);
@@ -364,13 +376,14 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             }
         }
     }
-
+    //TODO: REMOVE
     public void biteAnimation(int time) {
         if (time == 0) playSound(WRSounds.ENTITY_BFLY_HURT.get(), 1, 1, true);
         else if (time == 6)
             attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUnderWater() ? xRot : 0, yHeadRot).scale(5.5f)).inflate(0.85), 40);
     }
 
+    //TODO: REMOVE
     private static void createLightning(Level level, Vec3 position, boolean effectOnly) {
         if (level.isClientSide) return;
         LightningBolt entity = EntityType.LIGHTNING_BOLT.create(level);
@@ -393,15 +406,16 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         return ModUtils.contains(source, DamageSource.LIGHTNING_BOLT, DamageSource.IN_FIRE, DamageSource.IN_WALL, DamageSource.ON_FIRE) || super.isInvulnerableTo(source);
     }
 
-    public boolean canPerformLightningAttack() {
-        if (lightningCooldown <= 0) {
+
+    public boolean tamedLightningCheck() {
+        //if (lightningCooldown <= 0) {
             if (isInWaterRainOrBubble()) {
                 return true;
             }
             if (this.level.getBlockState(new BlockPos(position()).below()).is(Blocks.GOLD_BLOCK)) {
                 return true;
             }
-        }
+        //}
         return false;
     }
 
@@ -531,9 +545,12 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     @Override
     public void recievePassengerKeybind(int key, int mods, boolean pressed) {
+        //TODO: TYPO
+        //TODO: Lightning strikes when tamed, set of different methods
+
         if (pressed /*&& noAnimations()*/) {
             if (key == KeybindHandler.MOUNT_KEY) /*setAnimation(BITE_ANIMATION)*/ ;
-            else if (key == KeybindHandler.ALT_MOUNT_KEY && !level.isClientSide && canPerformLightningAttack()) {
+            else if (key == KeybindHandler.ALT_MOUNT_KEY && !level.isClientSide && tamedLightningCheck()) {
                 EntityHitResult ertr = Mafs.clipEntities(getControllingPlayer(), 40, e -> e instanceof LivingEntity && e != this);
                 if (ertr != null && wantsToAttack((LivingEntity) ertr.getEntity(), getOwner())) {
                     setTarget((LivingEntity) ertr.getEntity());
@@ -564,19 +581,22 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack) {
-        if (((beached && lightningCooldown > 60 && level.isRainingAt(blockPosition())) || player.isCreative() || isHatchling()) && isFood(stack)) {
+       /* if (((beached && lightningCooldown > 60 && level.isRainingAt(blockPosition())) || player.isCreative() || isHatchling()) && isFood(stack)) {
             eat(stack);
             if (!level.isClientSide) tame(getRandom().nextDouble() < 0.2, player);
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
 
+        */
         return super.playerInteraction(player, hand, stack);
+
+
     }
 
 
     @Override
     public ItemStack eat(Level level, ItemStack stack) {
-        lightningCooldown = 0;
+        //lightningCooldown = 0;
         return super.eat(level, stack);
     }
 
@@ -681,7 +701,11 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         LivingEntity target;
         boolean lightningLineQueued;
-        int lightningCounter;
+        boolean lightningLineSetup;
+        boolean regularLightningAttackQueued;
+        boolean animationPlaying;
+        int lightningLineCounter;
+        int lightningAttackCooldown;
         Vec3 toTarget;
         Vec3 toTarget1;
         Vec3 toTarget2;
@@ -720,38 +744,79 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         @Override
         public void tick() {
-            if (lightningLineQueued) {
-                if (lightningCounter < 25) {
-                    for (int i = 1; i < 2; i++) {
-                        //Instantiate 3 lightning bolts
-                        LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT,entity.level);
-                        LightningBolt lightningBolt1 = new LightningBolt(EntityType.LIGHTNING_BOLT,entity.level);
-                        LightningBolt lightningBolt2 = new LightningBolt(EntityType.LIGHTNING_BOLT,entity.level);
-                        //Set all of their damages to double the normal lightning bolt damage
-                        lightningBolt.setDamage(10F);
-                        lightningBolt1.setDamage(10F);
-                        lightningBolt2.setDamage(10F);
-                        //Calculate all of their strike positions
-                        strikePos = strikePos.add(toTarget.scale(2));
-                        strikePos1 = strikePos1.add(toTarget1.scale(2));
-                        strikePos2 = strikePos2.add(toTarget2.scale(2));
-                        //Set all of the actual lightning bolt's positions
-                        lightningBolt.setPos(strikePos);
-                        lightningBolt1.setPos(strikePos1);
-                        lightningBolt2.setPos(strikePos2);
-                        //Add the lightning bolts to the world
-                        entity.level.addFreshEntity(lightningBolt);
-                        entity.level.addFreshEntity(lightningBolt1);
-                        entity.level.addFreshEntity(lightningBolt2);
-
-                        lightningCounter++;
-                    }
+            target = getTarget();
+            if (animationPlaying) {
+                if (super.canContinueToUse()) {
+                    super.tick();
                 } else {
-                    lightningLineQueued = false;
-                    lightningCounter = 0;
+                    super.stop();
+                    animationPlaying = false;
                 }
-                //Do not navigate or do other attacks performing lightning line attack
-            } else {
+                if (lightningLineQueued) {
+                    //Animation Logic: If lightingLine is queued and we have reached the appropriate time, call the GoalLogic...
+                    if (elapsedTime == LIGHTNING_ANIMATION_QUEUE) {
+                        //If we have not yet setup the appropriate directions for the lightningLine, do that..
+                        if (!lightningLineSetup) {
+                            toTarget = target.position().subtract(entity.position()).normalize();
+                            toTarget1 = toTarget.yRot(0.523599F);
+                            toTarget2 = toTarget.yRot(-0.523599F);
+                            strikePos = entity.position();
+                            strikePos1 = entity.position();
+                            strikePos2 = entity.position();
+                            lightningLineSetup = true;
+                        }
+                        //Else, just summon the lightning line...
+                        if (lightningLineCounter < 25) {
+                            for (int i = 1; i < 2; i++) {
+                                //Goal Logic: Instantiate 3 lightning bolts
+                                LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT,entity.level);
+                                LightningBolt lightningBolt1 = new LightningBolt(EntityType.LIGHTNING_BOLT,entity.level);
+                                LightningBolt lightningBolt2 = new LightningBolt(EntityType.LIGHTNING_BOLT,entity.level);
+                                //Goal Logic: Set all of their damages to double the normal lightning bolt damage
+                                lightningBolt.setDamage(10F);
+                                lightningBolt1.setDamage(10F);
+                                lightningBolt2.setDamage(10F);
+                                //Goal Logic: Calculate all of their strike positions
+                                strikePos = strikePos.add(toTarget.scale(2));
+                                strikePos1 = strikePos1.add(toTarget1.scale(2));
+                                strikePos2 = strikePos2.add(toTarget2.scale(2));
+                                //Goal Logic: Set all of the actual lightning bolt's positions
+                                lightningBolt.setPos(strikePos);
+                                lightningBolt1.setPos(strikePos1);
+                                lightningBolt2.setPos(strikePos2);
+                                //Goal Logic: Add the lightning bolts to the world
+                                entity.level.addFreshEntity(lightningBolt);
+                                entity.level.addFreshEntity(lightningBolt1);
+                                entity.level.addFreshEntity(lightningBolt2);
+
+                                lightningLineCounter++;
+                            }
+                        } else {
+                            //Once we reach the limit, reset the lightningLine variables
+                            //TODO: Ensure animation duration does not end before lightningLine logic ends
+                            //TODO I.E: Ensure animation logic does not clip AttackLogic for lightningLine
+                            lightningLineQueued = false;
+                            lightningLineSetup = false;
+                            lightningLineCounter = 0;
+                        }
+                    }
+
+                }
+                if (regularLightningAttackQueued) {
+                    //Animation Logic: If regularLightning is queued and we have reached the appropriate time, call the AttackLogic...
+                    if (elapsedTime == LIGHTNING_ANIMATION_QUEUE) {
+                        LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT,entity.level);
+                        lightningBolt.setDamage(10F);
+                        lightningBolt.setPos(target.position());
+                        entity.level.addFreshEntity(lightningBolt);
+                        regularLightningAttackQueued = false;
+                    }
+
+                }
+
+            }
+            //Do not navigate or attempt other attacks if performing either lightning attack
+            if (!lightningLineQueued && !regularLightningAttackQueued) {
                 target = getTarget();
                 if (target != null) {
                     //getLookControl().setLookAt(target);
@@ -790,27 +855,73 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 //Reduce by 1 if not already at 0
                 this.navRecalculationTicks = Math.max(this.navRecalculationTicks - 1, 0);
                 //Decide which attack to use: LightningAttack or MeleeAttack
+                //ToDo: Add counter for last lightning check
                 if (canPerformLightningAttack()) {
                     performLightningAttack();
-
+                } else if (canPerformMeleeAttack()) {
+                    //ToDo: Implement logic
                 }
             }
 
         }
 
-        public void performLightningAttack(){
-            LivingEntity target = entity.getTarget();
-            //If on ground, queue a lightning line...
-            //TODO: ANIMATIONS
-            if (this.entity.isOnGround() && target != null) {
-                toTarget = target.position().subtract(entity.position()).normalize();
-                toTarget1 = toTarget.yRot(0.523599F);
-                toTarget2 = toTarget.yRot(-0.523599F);
-                lightningLineQueued = true;
-                strikePos = entity.position();
-                strikePos1 = entity.position();
-                strikePos2 = entity.position();
+        public boolean canPerformLightningAttack() {
+            if (lightningAttackCooldown <= 0) {
+                if (isInWaterRainOrBubble()) {
+                    return true;
+                }
+                AABB aabb = entity.getBoundingBox();
+                if (entity.level.getBlockStates(aabb.inflate(5)).anyMatch(e -> e.is(Blocks.LIGHTNING_ROD))) {
+                    //ToDo: Explode lightning rod?
+                    //ToDo: Other alternatives, charge faster with lightning rods, etc.
+                    return true;
+                }
+
+                if (entity.level.getBlockState(new BlockPos(position()).below()).is(Blocks.GOLD_BLOCK)) {
+                    return true;
+                }
+            } else {
+                lightningAttackCooldown = Math.max(lightningAttackCooldown-1,0);
             }
+            return false;
+        }
+
+        private void performLightningAttack(){
+            LivingEntity target = entity.getTarget();
+
+            //TODO: canPerformLightningAttack
+                //TODO: LIGHTNING COOLDOWN, SHARED
+                //TODO: Lightning Rods
+            //TODO: Melee attack + rotate
+            //TODO: Goal STOP
+            if (target !=null && !animationPlaying) {
+                //If on ground, queue a lightning line...
+                if (this.entity.isUsingLandNavigator() && target != null && !animationPlaying) {
+                    //Attack Logic: Queue up ability to play when animation reaches the appropriate point
+                    lightningLineQueued = true;
+                    //Attack Logic: Stop moving in preparation for Lightning Strike
+                    entity.getNavigation().stop();
+                    //Animation Logic: Set the animationPlaying flag correctly, start playing the animation via the super class
+                    animationPlaying =true;
+                    super.start(LIGHTNING_ANIMATION, LIGHTNING_ANIMATION_TYPE, LIGHTNING_ANIMATION_TIME);
+                    //TODO: Water attack! - TEST
+                } else (entity.isUsingSwimmingNavigator() && entity.isUsingLandNavigator() && target != null && !animationPlaying) {
+                    //Attack Logic: Queue up ability to play when animation reaches the appropriate point
+                    regularLightningAttackQueued = true;
+                    //Attack Logic: Stop moving in preparation for lightning strike
+                    entity.getNavigation().stop();
+                    //Animation Logic: Set the animationPlaying flag correctly, start playing the animation via the super class
+                    animationPlaying =true;
+                    super.start(LIGHTNING_ANIMATION, LIGHTNING_ANIMATION_TYPE, LIGHTNING_ANIMATION_TIME);
+                }
+                //ToDo: Tweak values
+                lightningAttackCooldown = 300;
+            }
+
+        }
+
+        private boolean canPerformMeleeAttack() {
+            return true;
         }
     }
 }
