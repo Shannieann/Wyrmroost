@@ -79,6 +79,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //TODO: ANIMATIONS
 //Test new animation method, write animation logic
+//Test water leap and anim transition time
 
 //TODO: TAMING
 //All goals when tamed
@@ -120,10 +121,21 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public boolean beached = true;
 
+    //TODO: ADJUST TIMES - animation and actual strike
+
+    protected static int ATTACK_ANIMATION_VARIANTS = 2;
+
     public static final String LIGHTNING_ANIMATION = "lightning";
     public static final int LIGHTNING_ANIMATION_TYPE = 2;
     public static final int LIGHTNING_ANIMATION_TIME = 100;
-    public static final int LIGHTNING_ANIMATION_QUEUE = 100;
+    public static final int LIGHTNING_ANIMATION_QUEUE = 20;
+
+    public static final String ATTACK_ANIMATION = "attack";
+    public static final int ATTACK_ANIMATION_TYPE = 2;
+    public static final int ATTACK_ANIMATION_TIME_1 = 20;
+    public static final int ATTACK_ANIMATION_TIME_2 = 13;
+    public static final int ATTACK_QUEUE_TIME_1 = 9;
+    public static final int ATTACK_QUEUE_TIME_2 = 9;
 
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
         super(entityType, level);
@@ -704,8 +716,19 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         boolean lightningLineSetup;
         boolean regularLightningAttackQueued;
         boolean animationPlaying;
+        boolean meleeAttackQueued;
+
         int lightningLineCounter;
         int lightningAttackCooldown;
+        int checkForLightningCounter;
+
+        int attackVariant;
+
+
+        float inflateValue;
+        int disableShieldTime;
+        int attackQueueTime;
+
         Vec3 toTarget;
         Vec3 toTarget1;
         Vec3 toTarget2;
@@ -742,6 +765,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             return true;
         }
 
+        //TODO: LOWER COOLDOWN TO 0, THEN TEST TO SEE STRIKEPOS IS BEING RESET CORRECTLY
         @Override
         public void tick() {
             target = getTarget();
@@ -752,9 +776,17 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     super.stop();
                     animationPlaying = false;
                 }
+                if (meleeAttackQueued) {
+                    if (elapsedTime == attackQueueTime) {
+                        //TODO: GET ANGLE TO TARGET, THEN SET Y ROT TO FACE TARGET
+                        entity.setYRot(00);
+                        attackInBox(getOffsetBox(getBbWidth()).inflate(inflateValue), disableShieldTime);
+                    }
+                }
                 if (lightningLineQueued) {
                     //Animation Logic: If lightingLine is queued and we have reached the appropriate time, call the GoalLogic...
-                    if (elapsedTime == LIGHTNING_ANIMATION_QUEUE) {
+                    //Keep calling so long as we exceed the approriate time as this must be performed over multiple ticks
+                    if (elapsedTime > LIGHTNING_ANIMATION_QUEUE) {
                         //If we have not yet setup the appropriate directions for the lightningLine, do that..
                         if (!lightningLineSetup) {
                             toTarget = target.position().subtract(entity.position()).normalize();
@@ -767,7 +799,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                         }
                         //Else, just summon the lightning line...
                         if (lightningLineCounter < 25) {
-                            for (int i = 1; i < 2; i++) {
+                            for (int i = 0; i < 2; i++) {
                                 //Goal Logic: Instantiate 3 lightning bolts
                                 LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT,entity.level);
                                 LightningBolt lightningBolt1 = new LightningBolt(EntityType.LIGHTNING_BOLT,entity.level);
@@ -854,10 +886,17 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 }
                 //Reduce by 1 if not already at 0
                 this.navRecalculationTicks = Math.max(this.navRecalculationTicks - 1, 0);
-                //Decide which attack to use: LightningAttack or MeleeAttack
-                //ToDo: Add counter for last lightning check
-                if (canPerformLightningAttack()) {
-                    performLightningAttack();
+                //Reduce by 1 if not already at 0
+                checkForLightningCounter = Math.max(checkForLightningCounter- 1, 0);
+                //Decide which attack to use: LightningAttack or MeleeAttack.
+                // We are not checking for lightningAttacks each tick, only every 40 ticks
+                lightningAttackCooldown = Math.max(lightningAttackCooldown-1,0);
+
+                if (checkForLightningCounter <=0) {
+                    checkForLightningCounter = 40;
+                    if (canPerformLightningAttack()) {
+                        performLightningAttack();
+                    }
                 } else if (canPerformMeleeAttack()) {
                     //ToDo: Implement logic
                 }
@@ -870,18 +909,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 if (isInWaterRainOrBubble()) {
                     return true;
                 }
-                AABB aabb = entity.getBoundingBox();
-                if (entity.level.getBlockStates(aabb.inflate(5)).anyMatch(e -> e.is(Blocks.LIGHTNING_ROD))) {
-                    //ToDo: Explode lightning rod?
-                    //ToDo: Other alternatives, charge faster with lightning rods, etc.
+                if (entity.level.getBlockStates(entity.getBoundingBox().inflate(5)).anyMatch(test -> test.is(Blocks.LIGHTNING_ROD))) {
                     return true;
                 }
 
                 if (entity.level.getBlockState(new BlockPos(position()).below()).is(Blocks.GOLD_BLOCK)) {
                     return true;
                 }
-            } else {
-                lightningAttackCooldown = Math.max(lightningAttackCooldown-1,0);
             }
             return false;
         }
@@ -890,13 +924,11 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             LivingEntity target = entity.getTarget();
 
             //TODO: canPerformLightningAttack
-                //TODO: LIGHTNING COOLDOWN, SHARED
                 //TODO: Lightning Rods
-            //TODO: Melee attack + rotate
             //TODO: Goal STOP
             if (target !=null && !animationPlaying) {
                 //If on ground, queue a lightning line...
-                if (this.entity.isUsingLandNavigator() && target != null && !animationPlaying) {
+                if (this.entity.isUsingLandNavigator()) {
                     //Attack Logic: Queue up ability to play when animation reaches the appropriate point
                     lightningLineQueued = true;
                     //Attack Logic: Stop moving in preparation for Lightning Strike
@@ -921,7 +953,32 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         }
 
         private boolean canPerformMeleeAttack() {
-            return true;
+            if (target != null && distanceToSqr(target) <= 30 && !animationPlaying) {
+                //GoalLogic: try to perform a melee attack
+                return true;
+            }
+            return false;
+        }
+
+        //TODO: TWEAK VALUES
+        public void performMeleeAttack() {
+            attackVariant = 1+entity.getRandom().nextInt(ATTACK_ANIMATION_VARIANTS);
+            meleeAttackQueued = true;
+            switch (attackVariant) {
+                case 1 ->
+                        {
+                    inflateValue = 0.2F;
+                    disableShieldTime = 50;
+                    attackQueueTime = ATTACK_QUEUE_TIME_1;
+                    super.start(ATTACK_ANIMATION+attackVariant,ATTACK_ANIMATION_TYPE,ATTACK_ANIMATION_TIME_1);
+                        }
+                case 2 -> {
+                    inflateValue = 0.2F;
+                    disableShieldTime = 50;
+                    attackQueueTime = ATTACK_QUEUE_TIME_2;
+                    super.start(ATTACK_ANIMATION+attackVariant,ATTACK_ANIMATION_TYPE,ATTACK_ANIMATION_TIME_2);
+                }
+            }
         }
     }
 }
