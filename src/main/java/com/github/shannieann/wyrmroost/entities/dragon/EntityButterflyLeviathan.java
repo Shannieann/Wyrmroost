@@ -942,10 +942,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         private void performLightningAttack(){
             LivingEntity target = getTarget();
-
-            //TODO: canPerformLightningAttack
-                //TODO: Lightning Rods
-            //TODO: Goal STOP
             if (target !=null && !animationPlaying) {
                 //If on ground, queue a lightning line...
                 if (isUsingLandNavigator()) {
@@ -981,7 +977,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         }
 
         //TODO: TWEAK VALUES ACCORDING TO ANIMATIONS
-        //TODO: Account for water vs. land attacks
+        //TODO: Account for water vs. land attacks - TEST
         public void performMeleeAttack() {
             //Randomly define an attack variant...
             attackVariant = 1+getRandom().nextInt(ATTACK_ANIMATION_VARIANTS);
