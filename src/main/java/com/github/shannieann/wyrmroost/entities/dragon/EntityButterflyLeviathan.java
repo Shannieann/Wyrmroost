@@ -905,7 +905,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     animationPlaying =true;
                     super.start(LIGHTNING_ANIMATION, LIGHTNING_ANIMATION_TYPE, LIGHTNING_ANIMATION_TIME);
                     //TODO: Water attack! - TEST
-                } else (entity.isUsingSwimmingNavigator() && entity.isUsingLandNavigator() && target != null && !animationPlaying) {
+                } else {
                     //Attack Logic: Queue up ability to play when animation reaches the appropriate point
                     regularLightningAttackQueued = true;
                     //Attack Logic: Stop moving in preparation for lightning strike
