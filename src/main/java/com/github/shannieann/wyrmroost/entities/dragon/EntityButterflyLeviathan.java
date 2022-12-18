@@ -224,17 +224,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public boolean defendsHome() {
         return true;
     }
-
-    // ====================================
-    //      A.5) Entity Data: SLEEP
-    // ====================================
-
-    //TODO: BFLs now sleep
-    @Override
-    public boolean shouldSleep() {
-        return false;
-    }
-
+    
     // ====================================
     //      A.6) Entity Data: VARIANT
     // ====================================
