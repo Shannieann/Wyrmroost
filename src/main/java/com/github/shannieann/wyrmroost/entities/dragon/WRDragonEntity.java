@@ -846,12 +846,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void tick() {
         super.tick();
 
-
-        if (level.isClientSide){
-            System.out.println("Client Says: " + position());
-
-        } else System.out.println("Server Says: " + position());
-
         if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0); // Shouldn't be rotated on ground
         if (getDragonXRotation() != 0 && getDeltaMovement().length() <= 0.25){ // Every tick, slowly orient the dragon back to normal if its barely moving so it isn't just awkwardly pointing down or up
             if (getDragonXRotation() > 180) { // This is done like this because rotation numbers are weird.
