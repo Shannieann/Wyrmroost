@@ -734,26 +734,20 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      A.5) Entity Data: SLEEP
     // ====================================
 
-    public boolean isSleeping()
-    {
+    public boolean isSleeping() {
         return hasEntityDataAccessor(SLEEPING) && entityData.get(SLEEPING);
     }
 
-    public void setSleeping(boolean sleep)
-    {
+    public void setSleeping(boolean sleep) {
+        //If it is already sleeping or already awake, return...
+        if (isSleeping() == sleep) {
+            return;
+        }
 
-        if (isSleeping() == sleep) return;
-
+        //Adjust the data parameter
         entityData.set(SLEEPING, sleep);
-        if (!level.isClientSide)
-        {
-            if (sleep)
-            {
-                setAnimation("sleeping");
-                setAnimationTime(SLEEPING_ANIMATION_TIME);
-                setAnimationType(3);
-                setManualAnimationCall(true);
-                setIsMovingAnimation(false);
+        if (!level.isClientSide) {
+            if (sleep) {
                 clearAI();
                 setXRot(0);
             }
@@ -761,26 +755,43 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
     }
 
-    public boolean shouldSleep()
-    {
-        if (sleepCooldown > 0) return false;
-        if (level.isDay()) return false;
-        if (!isIdling()) return false;
+    public boolean shouldSleep() {
+        //Only sleep on ground, or if we can swim, underwater
+        if (!isOnGround() || (speciesCanSwim() && !isUnderWater())) {
+            return false;
+        }
+        //Sleep only if dragon did not recently sleep / woke up
+        if (sleepCooldown > 0) {
+            return false;
+        }
+        //Sleep only at night
+        if (level.isDay()) {
+            return false;
+        }
+        //Sleep only if not doing any other activities...
+        if (!isIdling())  {
+            return false;
+        }
+        //If tamed, sleep only if at home and at reasonable health...
+        //Or if set to sit down and all previous conditions are met...
         if (isTame())
         {
-            if (isAtHome())
-            {
-                if (defendsHome()) return getHealth() < getMaxHealth() * 0.25;
+            if (isAtHome()) {
+                if (defendsHome()) {
+                    return getHealth() < getMaxHealth() * 0.25;
+                }
             }
-            else if (!isInSittingPose()) return false;
+            else if (!isInSittingPose()) {
+                return false;
+            }
         }
 
-        return getRandom().nextDouble() < 0.0065;
+        //return getRandom().nextDouble() < 0.0065;
+        return true;
     }
 
 
-    public boolean shouldWakeUp()
-    {
+    public boolean shouldWakeUp() {
         return level.isDay() && getRandom().nextDouble() < 0.0065;
     }
 
@@ -881,11 +892,23 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             else if (age > 0) setAge(--age);
         }
 
-        if (sleepCooldown > 0) --sleepCooldown;
-        if (isSleeping()) {
-            if (getLookControl() instanceof WRGroundLookControl) ((WRGroundLookControl) getLookControl()).stopLooking();
-            if (getHealth() < getMaxHealth() && getRandom().nextDouble() < 0.005) heal(1);
 
+        if (sleepCooldown > 0) {
+            sleepCooldown = Math.max(sleepCooldown-1,sleepCooldown);
+        }
+
+        if (isSleeping()) {
+            LookControl lookControl = getLookControl();
+            if (lookControl instanceof WRGroundLookControl) {
+                ((WRGroundLookControl)lookControl).stopLooking();
+            }
+            if (lookControl instanceof WRSwimmingLookControl) {
+                ((WRSwimmingLookControl)lookControl).stopLooking();
+            }
+            //ToDo: Flying look Control
+            if (getHealth() < getMaxHealth() && getRandom().nextDouble() < 0.005) {
+                heal(1);
+            }
             if (shouldWakeUp()) {
                 setSleeping(false);
             }
@@ -896,19 +919,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //Animations:
         //Sleeping
         if (this.isSleeping()) {
-            this.setAnimation("sleep");
+            this.setAnimation("sleeping");
             this.setAnimationType(1);
             this.setAnimationTime(20);
-            this.setManualAnimationCall(true);
-            setIsMovingAnimation(false);
         }
         //Sitting
         if (this.isInSittingPose()) {
             this.setAnimation("sit");
             this.setAnimationType(2);
             this.setAnimationTime(20);
-            this.setManualAnimationCall(true);
-            setIsMovingAnimation(false);
         }
 
         if (isUsingSwimmingNavigator() && level.isClientSide){
@@ -1148,12 +1167,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         switch (navigator) {
             case GROUND -> {
                 this.moveControl = new WRGroundMoveControl(this, groundMaxYaw);
-                this.lookControl = new LookControl(this);
+                this.lookControl = new WRGroundLookControl(this);
                 this.navigation = new WRGroundPathNavigator(this);
                 this.setMovingState(0);
             }
             case FLYING -> {
                 this.moveControl = new FlyerMoveController(this);
+                //ToDo: Flying look Control
                 this.lookControl = new WRGroundLookControl(this);
                 this.navigation = new FlyerPathNavigator(this);
                 this.setMovingState(1);
