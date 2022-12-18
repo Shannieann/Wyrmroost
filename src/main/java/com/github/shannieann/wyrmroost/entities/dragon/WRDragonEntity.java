@@ -228,6 +228,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public <E extends IAnimatable> PlayState predicateAbility(AnimationEvent<E> event)
     {
+        //BoneType: invisible Bones
         //All Ability Animations to be played are stored as DataParameters Strings
         //We begin by getting the animation that should be played.
         //This string may have been set as part of an AnimatedGoal that requires a one-shot ability animation to play..
@@ -266,6 +267,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
+        //BoneType: regular Bones
         /*
         //Basic Locomotion: Death
         if ((this.dead || this.getHealth() < 0.01 || this.isDeadOrDying())) {
@@ -275,7 +277,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
        */
         //Basic Locomotion: Movement
         //These moving animations play whenever the entity is moving
-        //TODO: DETERMINE BONE TYPE
         //By using regular bones for these abilities as opposed to invisible ones, we both animations to overlay...
         //We select between slow or fast movement based on whether the entity is aggressive or not
         NavigationType navigationType = this.getNavigationType();
@@ -305,19 +306,21 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         //Basic Locomotion: Default cases
         //If the entity is swimming and it is not doing anything else that warrants an animation, it will just swim in place.
-        if (this.isUsingSwimmingNavigator()) {
-            event.getController().setAnimation(new AnimationBuilder().  addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        }
-        //If the entity is flying and it is not doing anything else that warrants an animation, it will just fly in place.
-        if (this.isUsingFlyingNavigator()) {
-            event.getController().setAnimation(new AnimationBuilder().  addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        }
-        //If the entity is on ground and it is not doing anything else that warrants an animation, it will just stand ("naturally") in place
-        if (this.isUsingLandNavigator()) {
-            event.getController().setAnimation(new AnimationBuilder().  addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
+        if (!this.isSleeping() && !this.isInSittingPose()) {
+            if (this.isUsingSwimmingNavigator()) {
+                event.getController().setAnimation(new AnimationBuilder().  addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
+                return PlayState.CONTINUE;
+            }
+            //If the entity is flying and it is not doing anything else that warrants an animation, it will just fly in place.
+            if (this.isUsingFlyingNavigator()) {
+                event.getController().setAnimation(new AnimationBuilder().  addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
+                return PlayState.CONTINUE;
+            }
+            //If the entity is on ground and it is not doing anything else that warrants an animation, it will just stand ("naturally") in place
+            if (this.isUsingLandNavigator()) {
+                event.getController().setAnimation(new AnimationBuilder().  addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
+                return PlayState.CONTINUE;
+            }
         }
         //Default case
         //If nothing else was triggered, reset the entity to its base animation
