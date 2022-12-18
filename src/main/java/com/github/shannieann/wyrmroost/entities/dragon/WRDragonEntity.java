@@ -216,8 +216,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     public void registerControllers(AnimationData data) {
-        data.addAnimationController(new AnimationController(this, "controllerAbility", 10, this::predicateAbility));
-        data.addAnimationController(new AnimationController(this, "controllerBasicLocomotion", 10, this::predicateBasicLocomotion));
+        data.addAnimationController(new AnimationController(this, "controllerAbility", 0, this::predicateAbility));
+        data.addAnimationController(new AnimationController(this, "controllerBasicLocomotion", 0, this::predicateBasicLocomotion));
 
     }
 
