@@ -364,8 +364,13 @@
 					]
 				},
 				{
-					"name": "mouthBottom",
+					"name": "imouthBottom",
 					"parent": "head",
+					"pivot": [-0.2, 10.8, -42.8]
+				},
+				{
+					"name": "mouthBottom",
+					"parent": "imouthBottom",
 					"pivot": [-0.2, 10.8, -42.8],
 					"rotation": [-0.25, 0, 0],
 					"cubes": [
