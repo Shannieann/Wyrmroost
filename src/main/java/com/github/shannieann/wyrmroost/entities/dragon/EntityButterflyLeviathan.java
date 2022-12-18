@@ -127,16 +127,20 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     protected static int ATTACK_ANIMATION_VARIANTS = 1;
 
     public static final String LIGHTNING_ANIMATION = "lightning";
-    public static final int LIGHTNING_ANIMATION_TYPE = 2;
     public static final int LIGHTNING_ANIMATION_TIME = 100;
     public static final int LIGHTNING_ANIMATION_QUEUE = 20;
 
     public static final String ATTACK_ANIMATION = "attack_";
-    public static final int ATTACK_ANIMATION_TYPE = 2;
-    public static final int ATTACK_ANIMATION_TIME_1 = 20;
-    public static final int ATTACK_ANIMATION_TIME_2 = 13;
-    public static final int ATTACK_QUEUE_TIME_1 = 9;
-    public static final int ATTACK_QUEUE_TIME_2 = 9;
+    public static final int LAND_ATTACK_ANIMATION_TIME_1 = 20;
+    public static final int SWIM_ATTACK_ANIMATION_TIME_1 = 13;
+    public static final int LAND_ATTACK_ANIMATION_TIME_2 = 20;
+    public static final int SWIM_ATTACK_ANIMATION_TIME_2 = 13;
+
+    public static final int LAND_ATTACK_QUEUE_TIME_1 = 9;
+    public static final int SWIM_ATTACK_QUEUE_TIME_1 = 9;
+    public static final int LAND_ATTACK_QUEUE_TIME_2 = 9;
+    public static final int SWIM_ATTACK_QUEUE_TIME_2 = 9;
+
 
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
         super(entityType, level);
@@ -952,8 +956,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     //Animation Logic: Set the animationPlaying flag correctly, start playing the animation via the super class
                     animationPlaying =true;
                     super.start(LIGHTNING_ANIMATION, LIGHTNING_ANIMATION_TYPE, LIGHTNING_ANIMATION_TIME);
-                    //TODO: Water attack! - TEST
                 } else {
+                    //TODO: Water attack! - TEST
                     //Attack Logic: Queue up ability to play when animation reaches the appropriate point
                     regularLightningAttackQueued = true;
                     //Attack Logic: Stop moving in preparation for lightning strike
@@ -986,21 +990,24 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             //An animation is now playing, we will not call any other melee attacks...
             animationPlaying =true;
             //Start the animation with the selected variant...
-            String navVariant = isUsingSwimmingNavigator()? "water_" : "land_";
+            boolean swimming = isUsingSwimmingNavigator();
+            String navVariant = swimming? "water" : "land";
 
             switch (attackVariant) {
                 case 1 ->
                         {
                     inflateValue = 0.2F;
                     disableShieldTime = 50;
-                    attackQueueTime = ATTACK_QUEUE_TIME_1;
-                    super.start(ATTACK_ANIMATION+navVariant+attackVariant,ATTACK_ANIMATION_TYPE,ATTACK_ANIMATION_TIME_1);
+                    int time = swimming? SWIM_ATTACK_ANIMATION_TIME_1 : LAND_ATTACK_ANIMATION_TIME_1;
+                    attackQueueTime = swimming? SWIM_ATTACK_QUEUE_TIME_1 : LAND_ATTACK_QUEUE_TIME_1;
+                    super.start(ATTACK_ANIMATION+navVariant+attackVariant,2,time);
                         }
                 case 2 -> {
                     inflateValue = 0.2F;
                     disableShieldTime = 50;
-                    attackQueueTime = ATTACK_QUEUE_TIME_2;
-                    super.start(ATTACK_ANIMATION+navVariant+attackVariant,ATTACK_ANIMATION_TYPE,ATTACK_ANIMATION_TIME_2);
+                    int time = swimming? SWIM_ATTACK_ANIMATION_TIME_2 : LAND_ATTACK_ANIMATION_TIME_2;
+                    attackQueueTime = swimming? SWIM_ATTACK_QUEUE_TIME_2 : LAND_ATTACK_QUEUE_TIME_2;
+                    super.start(ATTACK_ANIMATION+navVariant+attackVariant,2,time);
                 }
             }
             //Rotate the entity to face the target...
