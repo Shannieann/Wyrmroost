@@ -192,11 +192,23 @@ public class ClientEvents
             Vector3d bonePos = dragon.cameraBonePos.get(uuid);
             Vec3 dragonPos = dragon.position();
             if (bonePos != null) {
-                Vec3 vecBonePos = new Vec3(bonePos.x, bonePos.y, bonePos.z); // todo remove this negative y offset and replace it with a better solution to move the camera. Maybe the above solution?
+                Vec3 vecBonePos = new Vec3(bonePos.x, bonePos.y-5.7F, bonePos.z);
+                Vec3 vecBonePosMoving = new Vec3(bonePos.x, bonePos.y, bonePos.z); // todo remove this negative y offset and replace it with a better solution to move the camera. Maybe the above solution?
                 // Set camera position
+
+                //Sniffity: Previous method was forcing the camera position to update to the Dragon's position.
+                //This essentially caused the camera to no longer transition smoothly from position A to B if the dragon was moving
+                //It would instead jump from position A to B..
+                //Getting the camera position and adding an offset on top of that is a safer way of doing things.
+                //On vecBonePos, we adjust the Y offset, which will always compensate for the camera being too high up...
+                //Last thing to do is properly moving the camera slightly backwards alongside the player-aligned x-axis
+                //This prevents the camera from being too far "ahead" of the dragon...
                 Vec3 cameraPos = event.getCamera().getPosition();
-                event.getCamera().setPosition(vecBonePos.add(dragonPos)); // Not using move() here because it does weird stuff when you look around... (center of rotation messed up)
+                event.getCamera().setPosition(cameraPos.add(vecBonePos)); // Not using move() here because it does weird stuff when you look around... (center of rotation messed up)
+                event.getCamera().move(-calcCameraDistance(1.0, dragon), 0, 0);
+
             }
+
             // Allows for complete alteration of camera rotations for some sick clips
             event.setPitch(xRot + event.getPitch());
             event.setYaw(yRot + event.getYaw());
@@ -204,6 +216,35 @@ public class ClientEvents
         }
     }
 
+    public static double calcCameraDistance(double startingDistance, Entity vehicle) {
+        Camera info = Minecraft.getInstance().gameRenderer.getMainCamera();
+        Vec3 position = info.getPosition().add(0, 1, 0);
+        Vector3f view = info.getLookVector();
+
+        for (int i = 0; i < 8; ++i) {
+            float f = (float) ((i & 1) * 2 - 1);
+            float f1 = (float) ((i >> 1 & 1) * 2 - 1);
+            float f2 = (float) ((i >> 2 & 1) * 2 - 1);
+            f = f * 0.1F;
+            f1 = f1 * 0.1F;
+            f2 = f2 * 0.1F;
+            Vec3 vector3d = position.add((double) f, (double) f1, (double) f2);
+            Vec3 vector3d1 = new Vec3(position.x - (double) view.x() * startingDistance + (double) f + (double) f2, position.y - (double) view.y() * startingDistance + (double) f1, position.z - (double) view.z() * startingDistance + (double) f2);
+            HitResult raytraceresult = vehicle.level.clip(new ClipContext(vector3d, vector3d1, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, vehicle));
+            if (raytraceresult.getType() != HitResult.Type.MISS) {
+                double d0 = raytraceresult.getLocation().distanceTo(position);
+                if (d0 < startingDistance) {
+                    //Note: These values, which prevent camera clipping, may need some tweaks.
+                    if (d0<0.2){
+                        startingDistance = d0-3.0F;
+                    } else {
+                        startingDistance = d0-1.5F;
+                    }
+                }
+            }
+        }
+        return startingDistance;
+    }
 
 
     // =====================
