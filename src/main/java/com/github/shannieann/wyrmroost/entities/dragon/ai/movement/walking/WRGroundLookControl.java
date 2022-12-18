@@ -34,17 +34,6 @@ public class WRGroundLookControl extends LookControl
         }
     }
 
-    @Override
-    protected Optional<Float> getXRotD()
-    {
-        Vec3 mouthPos = dragon.getApproximateMouthPos();
-        double x = wantedX - mouthPos.x();
-        double y = wantedY - mob.getEyeY();
-        double z = wantedZ - mouthPos.z();
-        double sqrt = Mth.sqrt((float) (x * x + z * z));
-        return Optional.of((float) (-(Mth.atan2(y, sqrt) * (double)(180f / Mth.PI))));
-    }
-
     public void stopLooking()
     {
         //Method called to ensure we no longer look at targets, if something must lock rotation

@@ -6,8 +6,7 @@ import net.minecraft.world.entity.ai.control.LookControl;
 
 public class WRSwimmingLookControl extends LookControl {
     private final int maxYRotFromCenter;
-    private static final int HEAD_TILT_X = 10;
-    private static final int HEAD_TILT_Y = 20;
+    private boolean stopLooking;
 
     public WRSwimmingLookControl(Mob pMob, int pMaxYRotFromCenter) {
         super(pMob);
@@ -15,6 +14,7 @@ public class WRSwimmingLookControl extends LookControl {
     }
 
     public void tick() {
+        stopLooking = false;
         if (this.lookAtCooldown > 0) {
             --this.lookAtCooldown;
             this.getYRotD().ifPresent((rot) -> {
@@ -40,5 +40,19 @@ public class WRSwimmingLookControl extends LookControl {
             this.mob.yBodyRot += 4.0F;
         }
 
+    }
+
+    @Override
+    public void setLookAt(double x, double y, double z, float speed, float maxAngle)
+    {
+        if (!stopLooking) {
+            super.setLookAt(x, y, z, speed, maxAngle);
+        }
+    }
+
+    public void stopLooking()
+    {
+        //Method called to ensure we no longer look at targets, if something must lock rotation
+        this.stopLooking = true;
     }
 }
