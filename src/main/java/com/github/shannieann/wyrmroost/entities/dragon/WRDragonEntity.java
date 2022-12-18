@@ -110,7 +110,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     private int sleepCooldown;
     public int breedCount;
     private float ageProgress = 1;
-    public float dragonFlightRotation = 0;
 
     //Only for swimmers:
     public float prevYRot;
@@ -293,7 +292,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
                 case FLYING ->
                         {
-                            if (getDragonXRotation() > 270.0f && getDragonXRotation() < 320.0f){
+                            if (isDiving()){
                                 //ToDo: Account for more flying cases
                                 event.getController().setAnimation(new AnimationBuilder().addAnimation("dive", ILoopType.EDefaultLoopTypes.LOOP));
                             }
@@ -843,11 +842,26 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     //      B) Tick and AI
     // ====================================
-
     @Override
     public void tick() {
         super.tick();
 
+
+        if (level.isClientSide){
+            System.out.println("Client Says: " + position());
+
+        } else System.out.println("Server Says: " + position());
+
+        if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0); // Shouldn't be rotated on ground
+        if (getDragonXRotation() != 0 && getDeltaMovement().length() <= 0.25){ // Every tick, slowly orient the dragon back to normal if its barely moving so it isn't just awkwardly pointing down or up
+            if (getDragonXRotation() > 180) { // This is done like this because rotation numbers are weird.
+                // Normally, if a dragon is at say 350 degrees, it would rotate all the way back around to 0 rather than going
+                // to 360 and having it set to 0
+                setDragonXRotation(Mth.approach(getDragonXRotation(), 360, 1));
+            } else {
+                setDragonXRotation(Mth.approach(getDragonXRotation(), 0, 1));
+            }
+        }
         NavigationType properNavigator = getProperNavigator();
         if (properNavigator != this.getNavigationType()) {
             setNavigator(properNavigator);
@@ -1227,6 +1241,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
 
+    private float sinceLastUpdate = 1.0f;
+    private float diveAcc = 0.0f;
     // Test dragonriding method
     @Override
     public void travel(Vec3 vec3d){
@@ -1237,7 +1253,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 this.yRotO = this.getYRot();
                 this.setXRot(livingentity.getXRot() * 0.5F);
                 this.setRot(this.getYRot(), this.getXRot());
-                //this.yBodyRot = this.getYRot();
+                this.yBodyRot = this.getYRot();
                 this.yHeadRot = this.yBodyRot;
                 float groundX = livingentity.xxa * 0.5F;
                 float groundZ = livingentity.zza;
@@ -1257,32 +1273,42 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                             setNavigator(NavigationType.GROUND);
                         }
 
-                        // Speed needs to be multiplied to make the values not seemingly unreasonably large in attributes
-                        this.setSpeed(speed * (25.0f/3.0f));
 
                         //Set rotation based on input
-                        float rotationChange;
-                        if (ClientEvents.keybindFlight)
-                            rotationChange = ClientEvents.getClient().options.keyJump.isDown()? 2.0f : WRKeybind.FLIGHT_DESCENT.isDown()? -3.0f : 0;
-                        else rotationChange = 0;
-
-                        // Convert to real degrees (ex. 361 = 1)
-                        float newRotation = getDragonXRotation() + rotationChange;
-                        newRotation = (float) (newRotation + Math.ceil( -newRotation / 360 ) * 360);
-                        // Set dragon's body rotation (rendering handled in dragon entity renderer superclass)
-                        setDragonXRotation(newRotation);
+                        if (getDeltaMovement().length() >= 0.25) { // Don't allow them to rotate unless they're moving a lot!
+                            float rotationChange;
+                            if (ClientEvents.keybindFlight)
+                                // TODO maybe make these rotation values different for every dragon?
+                                // Bigger dragons would definitely be slower at rotating than smaller, more agile ones
+                                rotationChange = ClientEvents.getClient().options.keyJump.isDown() ? 2.0f : WRKeybind.FLIGHT_DESCENT.isDown() ? -3.0f : 0;
+                            else rotationChange = 0;
+                            // Convert to real degrees (ex. 361 = 1)
+                            float newRotation = getDragonXRotation() + rotationChange;
+                            // Set dragon's body rotation (rendering handled in dragon entity renderer superclass)
+                            setDragonXRotation(newRotation);
+                        }
                         // Set direction to travel
-                        Vec3 vec = Vec3.directionFromRotation(-getDragonXRotation(), livingentity.getYRot());
+                        Vec3 lookVec = Vec3.directionFromRotation(-getDragonXRotation(), livingentity.getYRot());
+                        Vec3 moveVec = new Vec3(xxa, lookVec.y, zza);
+
+                        // Acceleration for diving speed boost
+                        diveAcc = Mth.approach(diveAcc, getDivingAcceleration(), (diveAcc < getDivingAcceleration())? 0.03f : 0.025f);
+                        // Speed needs to be multiplied to make the values not seemingly unreasonably large in attributes
+                        this.setSpeed((speed) * (25.0f/3.0f) + diveAcc);
+
                         if (ClientEvents.getClient().options.keyUp.isDown()) {
-                            //vec.yRot(getDragonXRotation());
-                            super.travel(new Vec3(livingentity.xxa, vec.y, livingentity.zza));
+                            // update for "sliding" speed
+                            sinceLastUpdate = 1.0f;
+                            super.travel(moveVec);
+                        } else { // If not moving, still update the slide before going to a stop. Sudden stopping looks kinda weird
+                            sinceLastUpdate = Mth.clamp(sinceLastUpdate - 0.02f, 0.0f, 1.0f);
+                            super.travel(moveVec.scale(sinceLastUpdate));
                         }
                     }
                     else
                     {
                         //speed *= 0.225f;
                         // normal movement
-                        setDragonXRotation(0); // Shouldn't be rotated on ground
                         if (ClientEvents.getClient().options.keyJump.isDown()) jumpFromGround();
                         if (dragonCanFly() && getAltitude() > getFlightThreshold()) setNavigator(NavigationType.FLYING);
                         else {
@@ -1303,11 +1329,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
     }
     public void setDragonXRotation(float rotation){
-        dragonFlightRotation = rotation;
-        getEntityData().set(DRAGON_X_ROTATION, rotation);
+        getEntityData().set(DRAGON_X_ROTATION, (float) (rotation + Math.ceil(-rotation / 360) * 360)); //  Basically normalizes the rotation to a value between 0 and 360
     }
     public float getDragonXRotation(){
-        return dragonFlightRotation;
+        return getEntityData().get(DRAGON_X_ROTATION);
     }
     // TODO dragon flapping wings sound
     // I feel like this is super messy rn, but I just wanted to get this working. TODO clean this up
@@ -1350,7 +1375,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                         //speed *= 0.225f;
                         // normal movement
                         if (ClientEvents.getClient().options.keyJump.isDown()) jumpFromGround();
-                        if (dragonCanFly() && getAltitude() > getFlightThreshold()) setNavigator(NavigationType.FLYING);
                         else {
                             this.setSpeed(speed);
                             super.travel(new Vec3(groundX, vec3d.y, groundZ));
@@ -1424,7 +1448,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public abstract boolean speciesCanFly();
 
     public boolean shouldUseFlyingNavigator() {
-        if (getAltitude() >1) {
+        if (getAltitude() > 1) {
             if (!speciesCanSwim() && isUnderWater()) {
                 return false;
             }
@@ -1451,6 +1475,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public boolean dragonCanFly()
     {
         return isJuvenile() && !isLeashed() && speciesCanFly();
+    }
+
+    public boolean isDiving(){
+        return getDragonXRotation() > 270.0f && getDragonXRotation() < 320.0f;
+    }
+    // For getting y acceleration
+    public float getDivingAcceleration(){
+        if (!isDiving()){
+            return 0.0f;
+        } else {
+            return (0.4f - ((getDragonXRotation() * 0.4f)-270)/50) + 0.1f; // Fully diving is 0.5, barely diving is 0.1
+        }
     }
 
     public boolean isUsingFlyingNavigator()
@@ -1524,7 +1560,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void rideTick()
     {
         super.rideTick();
-
         Entity entity = getVehicle();
 
         if (entity == null || !entity.isAlive())

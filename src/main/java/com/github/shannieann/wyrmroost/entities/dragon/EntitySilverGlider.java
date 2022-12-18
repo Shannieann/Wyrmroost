@@ -111,7 +111,7 @@ public class EntitySilverGlider extends WRDragonEntity
 
         sitTimer.add((isInSittingPose() || isSleeping())? 0.2f : -0.2f);
         sleepTimer.add(isSleeping()? 0.05f : -0.1f);
-        flightTimer.add(isUsingFlyingNavigator() || isGliding()? 0.1f : -0.1f);
+        flightTimer.add(isUsingFlyingNavigator() || isDiving()? 0.1f : -0.1f);
     }
 
     @Override
@@ -192,7 +192,7 @@ public class EntitySilverGlider extends WRDragonEntity
         if (player.isFallFlying()) return false;
         if (player.isInWater()) return false;
         if (player.getDeltaMovement().y > 0) return false;
-        if (isGliding() && !player.isOnGround()) return true;
+        if (isDiving() && !player.isOnGround()) return true;
         return getAltitude() - 1.8 > 4;
     }
 
@@ -255,7 +255,7 @@ public class EntitySilverGlider extends WRDragonEntity
     @Override
     public boolean shouldUseFlyingNavigator()
     {
-        return isRiding()? isGliding() : super.shouldUseFlyingNavigator();
+        return isRiding()? isDiving() : super.shouldUseFlyingNavigator();
     }
 
     @Override
@@ -275,7 +275,7 @@ public class EntitySilverGlider extends WRDragonEntity
         return false;
     }
 
-    public boolean isGliding()
+    public boolean isDiving()
     {
         return isGliding;
     }

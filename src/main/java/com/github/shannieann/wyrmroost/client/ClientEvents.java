@@ -190,11 +190,12 @@ public class ClientEvents
             float yRot = dragon.cameraRotVector.y();
             float zRot = dragon.cameraRotVector.z();
             Vector3d bonePos = dragon.cameraBonePos.get(uuid);
+            Vec3 dragonPos = dragon.position();
             if (bonePos != null) {
-                Vec3 vecBonePos = new Vec3(bonePos.x, bonePos.y - 3.5, bonePos.z); // todo remove this negative y offset and replace it with a better solution to move the camera. Maybe the above solution?
+                Vec3 vecBonePos = new Vec3(bonePos.x, bonePos.y, bonePos.z); // todo remove this negative y offset and replace it with a better solution to move the camera. Maybe the above solution?
                 // Set camera position
                 Vec3 cameraPos = event.getCamera().getPosition();
-                event.getCamera().setPosition(vecBonePos.add(cameraPos)); // Not using move() here because it does weird stuff when you look around... (center of rotation messed up)
+                event.getCamera().setPosition(vecBonePos.add(dragonPos)); // Not using move() here because it does weird stuff when you look around... (center of rotation messed up)
             }
             // Allows for complete alteration of camera rotations for some sick clips
             event.setPitch(xRot + event.getPitch());
