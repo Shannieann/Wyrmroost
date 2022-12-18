@@ -738,6 +738,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
 
     public boolean isSleeping() {
+        //ToDo: If sleeping do not run goals
         return hasEntityDataAccessor(SLEEPING) && entityData.get(SLEEPING);
     }
 
@@ -749,18 +750,20 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         //Adjust the data parameter
         entityData.set(SLEEPING, sleep);
-        if (!level.isClientSide) {
-            if (sleep) {
-                clearAI();
-                setXRot(0);
-            }
-            else sleepCooldown = 350;
+        if (sleep) {
+            clearAI();
+            setXRot(0);
         }
+        //Else, if we should wake up, set a sleep cooldown
+        else sleepCooldown = 350;
     }
 
     public boolean shouldSleep() {
-        //Only sleep on ground, or if we can swim, underwater
-        if (!isOnGround() || (speciesCanSwim() && !isUnderWater())) {
+        //ToDo: Aquatics only sleep underwater
+        if (speciesCanSwim() && !isUnderWater()) {
+            return false;
+        }
+        if (!speciesCanSwim() && !isOnGround()) {
             return false;
         }
         //Sleep only if dragon did not recently sleep / woke up
@@ -768,10 +771,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return false;
         }
         //Sleep only at night
-        if (level.isDay()) {
+        if (level.getDayTime() < 14000 && level.getDayTime() > 23500) {
             return false;
         }
         //Sleep only if not doing any other activities...
+        //ToDo: check no sleep in the middle of goals
         if (!isIdling())  {
             return false;
         }
@@ -795,6 +799,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
     public boolean shouldWakeUp() {
+        //ToDo: Wake up if entity nearby
+        if (level.getDayTime() > 14000 && level.getDayTime() < 23500) {
+            return false;
+        }
+        if (speciesCanSwim() && !isUnderWater()) {
+            return false;
+        }
         return level.isDay() && getRandom().nextDouble() < 0.0065;
     }
 
@@ -897,7 +908,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
         if (sleepCooldown > 0) {
-            sleepCooldown = Math.max(sleepCooldown-1,sleepCooldown);
+            sleepCooldown = Math.max(sleepCooldown-1,0);
         }
 
         if (isSleeping()) {
@@ -919,11 +930,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 this.setAnimationType(1);
                 this.setAnimationTime(20);
             }
-
         } else if (shouldSleep()) {
             setSleeping(true);
         }
-        
+
         //Sitting
         if (this.isInSittingPose()) {
             this.setAnimation("sit");
@@ -968,7 +978,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
             //PITCH OPERATIONS:
-            //TODO: Breaching if checks, organize
+            //TODO: Breaching if checks and model class checks, organize
             if (!this.getBreaching()) {
                 //Calculate deltaPitch, between our target (xRot) and the previous value we applied to the model...
                 deltaPitch = this.xRot - adjustedPitch;
@@ -1415,7 +1425,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public boolean isIdling()
     {
-        return getNavigation().isDone() && getTarget() == null && !isVehicle() && !isInWaterOrBubble() && !isUsingFlyingNavigator();
+        return getNavigation().isDone() && getTarget() == null && !isVehicle() && (speciesCanSwim() || !isInWaterOrBubble()) && !isUsingFlyingNavigator();
     }
 
     public AABB getOffsetBox(float offset)
