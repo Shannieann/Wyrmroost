@@ -804,10 +804,10 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 if (meleeAttackQueued) {
                     if (elapsedTime == attackQueueTime) {
                         //Rotate the entity to face the target...
-                        float desiredAngleYaw = (float)(Mth.atan2(target.position().z-position().z, target.position().x - position().x) * (double)(180F / (float)Math.PI)) - 90.0F;
-                        setYRot(desiredAngleYaw);
-                        lookControl.setLookAt(target);
-                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(5.5f)).inflate(0.85), 40);
+                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67), 40);
+                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(4.0f)).inflate(0.67), 40);
+                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(6.0f)).inflate(0.67), 40);
+
                         meleeAttackQueued = false;
                     }
                 }
@@ -850,8 +850,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                             lightningLineCounter++;
                         } else {
                             //Once we reach the limit, reset the lightningLine variables
-                            //TODO: Ensure animation duration does not end before lightningLine logic ends
-                            //TODO I.E: Ensure animation logic does not clip AttackLogic for lightningLine
+                            //TODO: Ensure animation duration does not end before lightningLine logic ends - I.E: Ensure animation logic does not clip AttackLogic for lightningLine
                             lightningLineQueued = false;
                             lightningLineSetup = false;
                             lightningLineCounter = 0;
@@ -920,12 +919,11 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 //Decide which attack to use: LightningAttack or MeleeAttack.
                 // We are not checking for lightningAttacks each tick, only every 40 ticks
                 lightningAttackCooldown = Math.max(lightningAttackCooldown-1,0);
-                //TODO: Uncomment
-                /*
+
                 if (canPerformLightningAttack()) {
                     performLightningAttack();
                 }
-                else*/ if (canPerformMeleeAttack()) {
+                else if (canPerformMeleeAttack()) {
                     performMeleeAttack();
                 }
             }
@@ -939,10 +937,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 }
                 if (level.getBlockStates(getBoundingBox().inflate(5)).anyMatch(test -> test.is(Blocks.LIGHTNING_ROD))) {
                     return true;
-                }
-
-                if (level.getBlockState(new BlockPos(position()).below()).is(Blocks.GOLD_BLOCK)) {
-                    return false;
                 }
             }
             return false;
@@ -962,7 +956,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     animationPlaying =true;
                     super.start(LIGHTNING_ANIMATION, 2, LIGHTNING_ANIMATION_TIME);
                 } else {
-                    //TODO: Water attack! - TEST
                     //Attack Logic: Queue up ability to play when animation reaches the appropriate point
                     regularLightningAttackQueued = true;
                     //Attack Logic: Stop moving in preparation for lightning strike
@@ -992,8 +985,11 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             animationPlaying =true;
             //Start the animation with the selected variant...
             boolean swimming = isUsingSwimmingNavigator();
-            String navVariant = swimming? "water" : "water";
-
+            String navVariant = swimming? "water" : "land";
+            float desiredAngleYaw = (float)(Mth.atan2(target.position().z-position().z, target.position().x - position().x) * (double)(180F / (float)Math.PI)) - 90.0F;
+            setYRot(desiredAngleYaw);
+            yHeadRot = desiredAngleYaw;
+            yBodyRot = desiredAngleYaw;
             switch (attackVariant) {
                 case 1 ->
                         {
