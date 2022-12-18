@@ -41,8 +41,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
 
-    //TODO: ANIMATION WHEN LEAPING, ENSURE NO OVERLAY WITH OTHER STUFF...
-    //TODO: Somehow do not play basic locomotion or just navigator ground
+    //TODO: ANIMATION WHEN LEAPING, ENSURE NO OVERLAY WITH OTHER STUFF - Somehow do not play basic locomotion or just navigator ground
 
     @Override
     public boolean canUse() {
