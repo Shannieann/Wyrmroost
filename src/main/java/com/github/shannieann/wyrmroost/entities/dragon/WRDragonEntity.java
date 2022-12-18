@@ -914,18 +914,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             if (shouldWakeUp()) {
                 setSleeping(false);
+            } else {
+                this.setAnimation("sleep");
+                this.setAnimationType(1);
+                this.setAnimationTime(20);
             }
+
         } else if (shouldSleep()) {
             setSleeping(true);
         }
-
-        //Animations:
-        //Sleeping
-        if (this.isSleeping()) {
-            this.setAnimation("sleeping");
-            this.setAnimationType(1);
-            this.setAnimationTime(20);
-        }
+        
         //Sitting
         if (this.isInSittingPose()) {
             this.setAnimation("sit");
