@@ -14,6 +14,7 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<EntityButterflyLev
     private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/butterfly_leviathan/butterfly_leviathan.json");
 
     //TODO: All model variants
+    //TODO: Conduits
     @Override
     public ResourceLocation getModelLocation(EntityButterflyLeviathan object) {
         String modelLocation = "geo/entity/dragon/butterfly_leviathan/butterfly_leviathan_" + ((object.isAdult() ? "adult" : "child") + ".geo.json");
