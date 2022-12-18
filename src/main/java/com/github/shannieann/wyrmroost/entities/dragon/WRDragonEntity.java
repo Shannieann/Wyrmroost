@@ -906,7 +906,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             else if (age > 0) setAge(--age);
         }
 
-
+        //ToDo: TEST COOLDOWN!
+        //ToDo: Sleep Counter?
+        //ToDo: Override AI when sleeping
+        //ToDo: Wake up if entity nearby
+        //ToDo: Kill all other animations if sleeping, not just default cases
         if (sleepCooldown > 0) {
             sleepCooldown = Math.max(sleepCooldown-1,0);
         }
