@@ -955,7 +955,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     getNavigation().stop();
                     //Animation Logic: Set the animationPlaying flag correctly, start playing the animation via the super class
                     animationPlaying =true;
-                    super.start(LIGHTNING_ANIMATION, LIGHTNING_ANIMATION_TYPE, LIGHTNING_ANIMATION_TIME);
+                    super.start(LIGHTNING_ANIMATION, 2, LIGHTNING_ANIMATION_TIME);
                 } else {
                     //TODO: Water attack! - TEST
                     //Attack Logic: Queue up ability to play when animation reaches the appropriate point
@@ -964,7 +964,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     getNavigation().stop();
                     //Animation Logic: Set the animationPlaying flag correctly, start playing the animation via the super class
                     animationPlaying =true;
-                    super.start(LIGHTNING_ANIMATION, LIGHTNING_ANIMATION_TYPE, LIGHTNING_ANIMATION_TIME);
+                    super.start(LIGHTNING_ANIMATION, 2, LIGHTNING_ANIMATION_TIME);
                 }
                 //ToDo: Tweak values
                 lightningAttackCooldown = 400;
