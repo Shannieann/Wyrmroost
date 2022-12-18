@@ -6,6 +6,7 @@ import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSleepGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
@@ -678,16 +679,16 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     @Override
     protected void registerGoals() {
+        goalSelector.addGoal(0, new WRSleepGoal(this));
 //        goalSelector.addGoal(0, new WRSitGoal(this));
 //        goalSelector.addGoal(1, new MoveToHomeGoal(this));
 //        goalSelector.addGoal(2, new WRFollowOwnerGoal(this));
 //        goalSelector.addGoal(3, new DragonBreedGoal(this));
 
-
         goalSelector.addGoal(4, new BFLAttackGoal(this));
         //goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,8));
         //goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
-        //goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 64,48));
+        goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 64,48));
 
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
         //goalSelector.addGoal(9, new RandomLookAroundGoal(this));

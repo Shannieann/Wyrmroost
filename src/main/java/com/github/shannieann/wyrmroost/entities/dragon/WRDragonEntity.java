@@ -107,7 +107,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED
 
 public abstract class WRDragonEntity extends TamableAnimal implements IAnimatable, MenuProvider {
 
-    private int sleepCooldown;
+    public int sleepCooldown;
     public int breedCount;
     private float ageProgress = 1;
 
@@ -132,6 +132,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float adjustmentExtremityPitch;
     public float groundMaxYaw;
     public Vec3 debugTarget;
+    public int WAKE_UP_ANIMATION_TIME;
+    public int WAKE_UP_WATER_ANIMATION_TIME;
 
     // Used in setting 1st person camera positions when flying but set in RiderLayer & WRDragonRender
     // EDIT: made this a hashmap because I realized there could be more than one passenger lmao
@@ -195,9 +197,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      * Case 2: Swimming
      */
     private static final EntityDataAccessor<Integer> ANIMATION_TIME = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Integer> MOVING_STATE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
-    private static final EntityDataAccessor<Boolean> MANUAL_ANIMATION_CALL = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
-    private static final EntityDataAccessor<Boolean> IS_MOVING_ANIMATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
     protected WRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -260,7 +259,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //Else, just return base:
         //This will not cause a transition to a stiff pose, as walking animations will be running concurrently...
         //We are only resetting the position of the iBones/Bones here
-        //TODO: DETERMINE BONE TYPE
         event.getController().  setAnimation(new AnimationBuilder().  addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
 
@@ -338,10 +336,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         this.entityData.define(ANIMATION, "base");
         this.entityData.define(ANIMATION_TYPE, 1);
-        this.entityData.define(MOVING_STATE, 0);
         this.entityData.define(ANIMATION_TIME, 0);
-        this.entityData.define(MANUAL_ANIMATION_CALL, false);
-        this.entityData.define(IS_MOVING_ANIMATION, false);
         entityData.define(HOME_POS, BlockPos.ZERO);
         entityData.define(AGE, 0);
         entityData.define(BREACHING, false);
@@ -456,36 +451,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         entityData.set(ANIMATION_TIME, animationTime);
     }
-
-    public boolean getManualAnimationCall() {
-        return entityData.get(MANUAL_ANIMATION_CALL);
-    }
-
-    public void setManualAnimationCall(boolean manualAnimationCall)
-    {
-        entityData.set(MANUAL_ANIMATION_CALL, manualAnimationCall);
-    }
-
-    public boolean getIsMovingAnimation() {
-        return entityData.get(IS_MOVING_ANIMATION);
-    }
-
-    public void setIsMovingAnimation(boolean movingAnimation)
-    {
-        entityData.set(IS_MOVING_ANIMATION, movingAnimation);
-    }
-
-
-    public int getMovingState()
-    {
-        return entityData.get(MOVING_STATE);
-    }
-
-    public void setMovingState(int movingState)
-    {
-        entityData.set(MOVING_STATE, movingState);
-    }
-
 
     public void setBreaching(boolean breaching) {
         entityData.set(BREACHING, breaching);
@@ -738,7 +703,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
 
     public boolean isSleeping() {
-        //ToDo: If sleeping do not run goals
         return hasEntityDataAccessor(SLEEPING) && entityData.get(SLEEPING);
     }
 
@@ -747,15 +711,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (isSleeping() == sleep) {
             return;
         }
-
         //Adjust the data parameter
         entityData.set(SLEEPING, sleep);
-        if (sleep) {
-            clearAI();
-            setXRot(0);
-        }
-        //Else, if we should wake up, set a sleep cooldown
-        else sleepCooldown = 350;
     }
 
     public boolean shouldSleep() {
@@ -909,12 +866,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //ToDo: TEST COOLDOWN!
         //ToDo: Sleep Counter?
         //ToDo: Override AI when sleeping
-        //ToDo: Wake up if entity nearby
         //ToDo: Kill all other animations if sleeping, not just default cases
+
         if (sleepCooldown > 0) {
             sleepCooldown = Math.max(sleepCooldown-1,0);
         }
 
+        /*
         if (isSleeping()) {
             LookControl lookControl = getLookControl();
             if (lookControl instanceof WRGroundLookControl) {
@@ -937,6 +895,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         } else if (shouldSleep()) {
             setSleeping(true);
         }
+        */
 
         //Sitting
         if (this.isInSittingPose()) {
@@ -1162,8 +1121,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setAnimation("sitting");
             setAnimationType(3);
             setAnimationTime(20);
-            setManualAnimationCall(true);
-            setIsMovingAnimation(false);
         }
     }
 
@@ -1184,14 +1141,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 this.moveControl = new WRGroundMoveControl(this, groundMaxYaw);
                 this.lookControl = new WRGroundLookControl(this);
                 this.navigation = new WRGroundPathNavigator(this);
-                this.setMovingState(0);
             }
             case FLYING -> {
                 this.moveControl = new FlyerMoveController(this);
                 //ToDo: Flying look Control
                 this.lookControl = new WRGroundLookControl(this);
                 this.navigation = new FlyerPathNavigator(this);
-                this.setMovingState(1);
                 setOrderedToSit(false);
                 setSleeping(false);
                 //jumpFromGround(); TODO removing this for now, we don't want this to always jump from ground after flying is set.
@@ -1201,7 +1156,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 this.moveControl = new WRSwimmingMoveControl(this);
                 this.lookControl = new WRSwimmingLookControl(this, 10);
                 this.navigation = new WRSwimmingNavigator(this);
-                this.setMovingState(2);
             }
         }
     }
@@ -2138,16 +2092,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     //      F) Goals
     // ====================================
-
-    @Override
-    protected void registerGoals()
-    {
-        //Goal will only get called when we manually set an animation and want the time counter to apply to it
-        //TODO: Goal will NOT get called if anything else is happening, goal-wise
-        goalSelector.addGoal(0,new AnimatedGoal(this,this.getAnimation(),this.getAnimationType(),this.getAnimationTime()));
-        //goalSelector.addGoal(0, new FloatGoal(this));
-        goalSelector.addGoal(1, new WRSitGoal(this));
-    }
 
     // ====================================
     //      F.n) Goals: n

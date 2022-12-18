@@ -3,7 +3,7 @@ package com.github.shannieann.wyrmroost.entities.dragon.ai.goals;
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
 
-public class AnimatedGoal extends Goal {
+public abstract class AnimatedGoal extends Goal {
     public WRDragonEntity entity;
     public String animationName;
     public int animationType;
@@ -23,22 +23,6 @@ public class AnimatedGoal extends Goal {
         this.animationTime = animationTime;
         this.elapsedTime = 0;
     }
-
-
-    @Override
-    public boolean canUse(){
-        //This method will get called whenever the entity tries to execute an animation...
-        //It should only use this Goal -directly- if the animation was set manually...
-        //Meaning, if the animation was -NOT- set via a Goal that extends this class and called the start() method...
-        //And was instead set directly in methods such as tick(), etc.
-        //TODO: Two Goals will not run simultaneously, manual animation setting will only work if no goals are being executed.
-        if (entity.getManualAnimationCall()) {
-            return !animationName.equals("base");
-        }
-
-        return false;
-    }
-
 
     @Override
     public boolean canContinueToUse() {
@@ -78,8 +62,5 @@ public class AnimatedGoal extends Goal {
         this.entity.setAnimation("base");
         this.entity.setAnimationType(1);
         this.entity.setAnimationTime(0);
-        this.entity.setManualAnimationCall(false);
-        //TODO: Remove
-        this.entity.setIsMovingAnimation(false);
     }
 }
