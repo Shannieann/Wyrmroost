@@ -74,7 +74,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //TODO: GOALS:
 //ATTACK: Reimplement whole logic...
-//ATTACK: If lightning rods near it, can attack
 //Test all regular goals before tamed goals
 //TAMED GOALS
 
@@ -131,15 +130,15 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public static final int LIGHTNING_ANIMATION_QUEUE = 20;
 
     public static final String ATTACK_ANIMATION = "attack_";
-    public static final int LAND_ATTACK_ANIMATION_TIME_1 = 20;
-    public static final int SWIM_ATTACK_ANIMATION_TIME_1 = 13;
-    public static final int LAND_ATTACK_ANIMATION_TIME_2 = 20;
-    public static final int SWIM_ATTACK_ANIMATION_TIME_2 = 13;
+    public static final int LAND_ATTACK_ANIMATION_TIME_1 = 10;
+    public static final int SWIM_ATTACK_ANIMATION_TIME_1 = 10;
+    public static final int LAND_ATTACK_ANIMATION_TIME_2 = 0;
+    public static final int SWIM_ATTACK_ANIMATION_TIME_2 = 0;
 
-    public static final int LAND_ATTACK_QUEUE_TIME_1 = 9;
-    public static final int SWIM_ATTACK_QUEUE_TIME_1 = 9;
-    public static final int LAND_ATTACK_QUEUE_TIME_2 = 9;
-    public static final int SWIM_ATTACK_QUEUE_TIME_2 = 9;
+    public static final int LAND_ATTACK_QUEUE_TIME_1 = 4;
+    public static final int SWIM_ATTACK_QUEUE_TIME_1 = 7;
+    public static final int LAND_ATTACK_QUEUE_TIME_2 = 0;
+    public static final int SWIM_ATTACK_QUEUE_TIME_2 = 0;
 
 
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
@@ -755,7 +754,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         @Override
         public void start() {
-            getNavigation().moveTo(target, 1.5);
             getLookControl().setLookAt(target);
             setAggressive(true);
             this.navRecalculationTicks = 0;
@@ -805,7 +803,12 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 }
                 if (meleeAttackQueued) {
                     if (elapsedTime == attackQueueTime) {
-                        attackInBox(getOffsetBox(getBbWidth()).inflate(inflateValue), disableShieldTime);
+                        //Rotate the entity to face the target...
+                        float desiredAngleYaw = (float)(Mth.atan2(target.position().z-position().z, target.position().x - position().x) * (double)(180F / (float)Math.PI)) - 90.0F;
+                        setYRot(desiredAngleYaw);
+                        lookControl.setLookAt(target);
+                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(5.5f)).inflate(0.85), 40);
+                        meleeAttackQueued = false;
                     }
                 }
                 if (lightningLineQueued) {
@@ -878,6 +881,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     //Recalculate navigation if we can see target, if we have not recently recalculated and if target has moved..
                     if ((getSensing().hasLineOfSight(target))
                             && this.navRecalculationTicks <= 0
+                            && distanceToTargetSqr >= 64
                             && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D
                             || target.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= 1.0D
                             || getRandom().nextFloat() < 0.05F)) {
@@ -916,13 +920,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 //Decide which attack to use: LightningAttack or MeleeAttack.
                 // We are not checking for lightningAttacks each tick, only every 40 ticks
                 lightningAttackCooldown = Math.max(lightningAttackCooldown-1,0);
-
+                //TODO: Uncomment
+                /*
                 if (canPerformLightningAttack()) {
                     performLightningAttack();
                 }
-                else if (canPerformMeleeAttack()) {
-                    //performMeleeAttack();
-                    //ToDo: Implement logic
+                else*/ if (canPerformMeleeAttack()) {
+                    performMeleeAttack();
                 }
             }
 
@@ -945,6 +949,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         }
 
         private void performLightningAttack(){
+            //ToDo: Age
             LivingEntity target = getTarget();
             if (target !=null && !animationPlaying) {
                 //If on ground, queue a lightning line...
@@ -966,22 +971,18 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     animationPlaying =true;
                     super.start(LIGHTNING_ANIMATION, 2, LIGHTNING_ANIMATION_TIME);
                 }
-                //ToDo: Tweak values
                 lightningAttackCooldown = 400;
             }
 
         }
 
         private boolean canPerformMeleeAttack() {
-            if (target != null && distanceToSqr(target) <= 30 && !animationPlaying) {
-                //GoalLogic: try to perform a melee attack
+            if (target != null && distanceToSqr(target) <= 64 && !animationPlaying) {
                 return true;
             }
             return false;
         }
 
-        //TODO: TWEAK VALUES ACCORDING TO ANIMATIONS
-        //TODO: Account for water vs. land attacks - TEST
         public void performMeleeAttack() {
             //Randomly define an attack variant...
             attackVariant = 1+getRandom().nextInt(ATTACK_ANIMATION_VARIANTS);
@@ -991,28 +992,21 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             animationPlaying =true;
             //Start the animation with the selected variant...
             boolean swimming = isUsingSwimmingNavigator();
-            String navVariant = swimming? "water" : "land";
+            String navVariant = swimming? "water" : "water";
 
             switch (attackVariant) {
                 case 1 ->
                         {
-                    inflateValue = 0.2F;
-                    disableShieldTime = 50;
                     int time = swimming? SWIM_ATTACK_ANIMATION_TIME_1 : LAND_ATTACK_ANIMATION_TIME_1;
                     attackQueueTime = swimming? SWIM_ATTACK_QUEUE_TIME_1 : LAND_ATTACK_QUEUE_TIME_1;
                     super.start(ATTACK_ANIMATION+navVariant+attackVariant,2,time);
                         }
                 case 2 -> {
-                    inflateValue = 0.2F;
-                    disableShieldTime = 50;
                     int time = swimming? SWIM_ATTACK_ANIMATION_TIME_2 : LAND_ATTACK_ANIMATION_TIME_2;
                     attackQueueTime = swimming? SWIM_ATTACK_QUEUE_TIME_2 : LAND_ATTACK_QUEUE_TIME_2;
                     super.start(ATTACK_ANIMATION+navVariant+attackVariant,2,time);
                 }
             }
-            //Rotate the entity to face the target...
-            float desiredAngleYaw = (float)(Mth.atan2(target.position().z-position().z, target.position().x - position().x) * (double)(180F / (float)Math.PI)) - 90.0F;
-            setYRot(desiredAngleYaw);
         }
     }
 }
