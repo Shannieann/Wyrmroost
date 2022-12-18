@@ -28,7 +28,7 @@ public class WRSwimmingMoveControl extends MoveControl {
             if (distanceToTargetSqr < (double)2.5000003E-7F) {
                 this.entity.setZza(0.0F);
             } else {
-                //Yaw: Adjust currentAngle to match desiredAngle, but do gradually, only allowing incrmeents of maxTurnYaw
+                //Yaw: Adjust currentAngle to match desiredAngle, but do gradually, only allowing increments of maxTurnYaw
                 //Else, control movement to reach the target
                 float desiredAngleYaw = (float)(Mth.atan2(entityToTargetZ, entityToTargetX) * (double)(180F / (float)Math.PI)) - 90.0F;
                 float currentAngleYaw = this.entity.getYRot();
