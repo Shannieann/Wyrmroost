@@ -131,6 +131,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float adjustExtremityPitch;
     public float adjustmentExtremityPitch;
     public float groundMaxYaw;
+
     public Vec3 debugTarget;
     public int WAKE_UP_ANIMATION_TIME;
     public int WAKE_UP_WATER_ANIMATION_TIME;
@@ -715,45 +716,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(SLEEPING, sleep);
     }
 
-    public boolean shouldSleep() {
-        if (speciesCanSwim() && !isUnderWater()) {
-            return false;
-        }
-        if (!speciesCanSwim() && !isOnGround()) {
-            return false;
-        }
-        //Sleep only if dragon did not recently sleep / woke up
-        if (sleepCooldown > 0) {
-            return false;
-        }
-        //Sleep only at night
-        if (level.getDayTime() < 14000 && level.getDayTime() > 23500) {
-            return false;
-        }
-        //Sleep only if not doing any other activities...
-        //ToDo: check no sleep in the middle of goals
-        if (!isIdling())  {
-            return false;
-        }
-        //If tamed, sleep only if at home and at reasonable health...
-        //Or if set to sit down and all previous conditions are met...
-        if (isTame())
-        {
-            if (isAtHome()) {
-                if (defendsHome()) {
-                    return getHealth() < getMaxHealth() * 0.25;
-                }
-            }
-            else if (!isInSittingPose()) {
-                return false;
-            }
-        }
-
-        //return getRandom().nextDouble() < 0.0065;
-        return true;
-    }
-
-
     public boolean shouldWakeUp() {
         //ToDo: Wake up if entity nearby
         if (level.getDayTime() > 14000 && level.getDayTime() < 23500) {
@@ -860,11 +822,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             if (age < 0) setAge(++age);
             else if (age > 0) setAge(--age);
         }
-
-        //ToDo: TEST COOLDOWN!
-        //ToDo: Sleep Counter?
-        //ToDo: Override AI when sleeping
-        //ToDo: Kill all other animations if sleeping, not just default cases
 
         if (sleepCooldown > 0) {
             sleepCooldown = Math.max(sleepCooldown-1,0);

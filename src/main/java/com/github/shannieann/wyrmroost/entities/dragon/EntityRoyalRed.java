@@ -164,16 +164,6 @@ public class EntityRoyalRed extends WRDragonEntity {
 
 
     // ====================================
-    //      A.5) Entity Data: SLEEP
-    // ====================================
-
-    @Override
-    public boolean shouldSleep() {
-        return !isKnockedOut() && super.shouldSleep();
-    }
-
-
-    // ====================================
     //      A.6) Entity Data: VARIANT
     // ====================================
 
