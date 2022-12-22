@@ -21,7 +21,7 @@ public class ModelRoyalRed extends AnimatedGeoModel<EntityRoyalRed>
     //TODO: Different set of textures for babies
     @Override
     public ResourceLocation getTextureLocation(EntityRoyalRed object) {
-        String textureLocation = "textures/entity/dragon/royal_red/royal_red_" + object.getVariant() + "_" + object.getGender() + "_" + (object.isUsingFlyingNavigator()? "fly" : "land") + ".png";
+        String textureLocation = "textures/entity/dragon/royal_red/royal_red_" + object.getVariant() + "_" + object.getGender() + "_" + (object.isUsingFlyingNavigator() && !object.isDiving()? "fly" : "land") + ".png";
         return new ResourceLocation(Wyrmroost.MOD_ID, textureLocation);
     }
 
