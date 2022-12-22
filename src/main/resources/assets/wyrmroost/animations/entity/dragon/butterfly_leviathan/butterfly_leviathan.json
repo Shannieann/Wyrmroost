@@ -2118,6 +2118,114 @@
 				}
 			}
 		},
+		"sleep_water": {
+			"loop": true,
+			"bones": {
+				"body1": {
+					"rotation": ["-85+math.sin((query.anim_time - 0.2) * 90) *0.3", 0, 0],
+					"scale": 1
+				},
+				"body2": {
+					"rotation": [0, "math.cos((query.anim_time - 0.1) * 60) *0.25", 0]
+				},
+				"tail1": {
+					"rotation": [0, "math.cos((query.anim_time - 0.0) * 90) *0.25", 0]
+				},
+				"tail2": {
+					"rotation": [0, "math.cos((query.anim_time - 0.3) * 90) *0.25", 0]
+				},
+				"tail3": {
+					"rotation": [0, "math.cos((query.anim_time - 0.4) * 90) *0.4", 0]
+				},
+				"tail4": {
+					"rotation": [0, "math.cos((query.anim_time - 0.5) * 90) *0.65", 0]
+				},
+				"tail5": {
+					"rotation": [0, "math.cos((query.anim_time - 0.6) * 90) *0.9", 0]
+				},
+				"tail6": {
+					"rotation": [0, "math.cos((query.anim_time - 0.7) * 90) *1.0", 0]
+				},
+				"tail7": {
+					"rotation": [0, "math.cos((query.anim_time - 0.8) * 90) *1.05", 0]
+				},
+				"leg1Right": {
+					"rotation": ["math.cos((query.anim_time - 0.2) * 90) *2", 0, 0]
+				},
+				"leg2Right": {
+					"rotation": ["math.cos((query.anim_time - 0.2) * 90) *1.5", 0, 0]
+				},
+				"footRight": {
+					"rotation": ["math.cos((query.anim_time - 0.2) * 90) *2", 0, 0]
+				},
+				"leg1Left": {
+					"rotation": ["math.cos((query.anim_time - 0.3) * 90) *2", 0, 0]
+				},
+				"leg2Left": {
+					"rotation": ["math.cos((query.anim_time - 0.2) * 90) *1.5", 0, 0]
+				},
+				"footLeft": {
+					"rotation": ["math.cos((query.anim_time - 0.2) * 90) *2", 0, 0]
+				},
+				"neck1": {
+					"rotation": ["math.sin((query.anim_time - 0.2) * 90) *0.1", "math.cos((query.anim_time - 0.3) * 90) *0.25", 0]
+				},
+				"neck2": {
+					"rotation": ["-2.5+math.sin((query.anim_time - 0.1) * 90) *0.1", 0, 0]
+				},
+				"neck3": {
+					"rotation": [5, 0, 0]
+				},
+				"neck4": {
+					"rotation": ["2.5+math.cos((query.anim_time - 0.2) * 90) *0.5", 0, 0]
+				},
+				"head": {
+					"rotation": [32.5, 0, 0]
+				},
+				"topWingArm1Right": {
+					"rotation": ["12.5-math.sin((query.anim_time - 0.25) * 90) *2", "42.5-math.sin((query.anim_time - 0.2) * 90) *0.25", 0]
+				},
+				"bottomWingArm1Right": {
+					"rotation": ["-20+math.sin((query.anim_time - 0.2) * 90) *2", "60+math.sin((query.anim_time - 0.2) * 90) *0.25", 0]
+				},
+				"topWingArm1Left": {
+					"rotation": ["12.5+math.sin((query.anim_time - 0.2) * 90) *2", "-42.5+math.sin((query.anim_time - 0.2) * 90) *0.25", 0]
+				},
+				"bottomWingArm1Left": {
+					"rotation": ["-20-math.sin((query.anim_time - 0.25) * 90) *2", "-60-math.sin((query.anim_time - 0.25) * 90) *0.25", 0]
+				},
+				"legThighRight": {
+					"rotation": [0, 0, "-math.cos((query.anim_time - 0.2) * 90) *1"]
+				},
+				"legThighLeft": {
+					"rotation": [0, 0, "math.cos((query.anim_time - 0.3) * 90) *1"]
+				},
+				"topWingArm2Right": {
+					"rotation": [0, -17.5, 0]
+				},
+				"topWingMembraneElbow2Right": {
+					"rotation": [0, -87.5, 0]
+				},
+				"bottomWingArm2Right": {
+					"rotation": [0, -12.5, 0]
+				},
+				"topWingMembraneElbowRight": {
+					"rotation": [0, -55, 0]
+				},
+				"topWingArm2Left": {
+					"rotation": [0, 17.5, 0]
+				},
+				"topWingMembraneElbow2Left": {
+					"rotation": [0, 87.5, 0]
+				},
+				"bottomWingArm2Left": {
+					"rotation": [0, 12.5, 0]
+				},
+				"bottomWingMembrane3Left": {
+					"rotation": [0, 2.5, 0]
+				}
+			}
+		},
 		"attack_land1": {
 			"animation_length": 1,
 			"override_previous_animation": true,

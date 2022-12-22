@@ -64,6 +64,7 @@ public class WRSleepGoal extends AnimatedGoal{
         if (entity.speciesCanSwim() && entity.isUnderWater()) {
             underwaterSleeping = true;
         }
+        entity.clearAI();
         entity.setXRot(0);
     }
 
@@ -85,7 +86,6 @@ public class WRSleepGoal extends AnimatedGoal{
 
             if (shouldWakeUp()) {
                 wakeUp = true;
-                super.start(underwaterSleeping? "wakeup_water" : "wakeup", 2,underwaterSleeping? entity.WAKE_UP_WATER_ANIMATION_TIME : entity.WAKE_UP_ANIMATION_TIME);
             } else {
                 super.start(underwaterSleeping? "sleep_water" : "sleep",1,20);
             }
@@ -104,14 +104,14 @@ public class WRSleepGoal extends AnimatedGoal{
             return entity.getRandom().nextDouble() < 0.0065;
         }
         if (underwaterSleeping && !entity.isUnderWater()) {
-            return false;
+            return true;
         }
         //Allows us to check for other methods, elsewhere, that might have set the DataParameter to false
         //For instance, the hurt method...
         if (!entity.isSleeping()){
-            return false;
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
