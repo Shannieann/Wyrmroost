@@ -41,6 +41,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
@@ -686,12 +687,12 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 //        goalSelector.addGoal(3, new DragonBreedGoal(this));
 
         goalSelector.addGoal(4, new BFLAttackGoal(this));
-        //goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,8));
-        //goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
+        goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,8));
+        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
         goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 64,48));
 
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
-        //goalSelector.addGoal(9, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(9, new RandomLookAroundGoal(this));
 
         //targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
         //targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
