@@ -443,12 +443,12 @@ public class EntityOverworldDrake extends WRDragonEntity
     }
 
     @Override
-    public String determineVariant()
+    public int determineVariant()
     {
-        if (getRandom().nextDouble() < 0.008) return "special";
+        if (getRandom().nextDouble() < 0.008) return -1;
 
-        if (Biome.getBiomeCategory(level.getBiome(blockPosition())) == Biome.BiomeCategory.SAVANNA) return "base1";
-        return "base0";
+        if (Biome.getBiomeCategory(level.getBiome(blockPosition())) == Biome.BiomeCategory.SAVANNA) return 1;
+        return 0;
     }
 
 

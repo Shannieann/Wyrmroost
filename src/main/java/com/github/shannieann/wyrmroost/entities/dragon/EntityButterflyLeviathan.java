@@ -109,7 +109,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity {
     //TODO: Correct ALL Serializers
     public static final EntitySerializer<EntityButterflyLeviathan> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.BOOLEAN);
@@ -232,8 +232,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
 
     @Override
-    public String determineVariant() {
-        return getRandom().nextDouble() < 0.02 ? "special" : "base" + getRandom().nextInt(2);
+    public int determineVariant() {
+        return getRandom().nextDouble() < 0.02 ? -1 : 0 + getRandom().nextInt(1);
     }
 
     // ====================================
@@ -642,7 +642,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     @Override
     public void doSpecialEffects() {
-        if (getVariant().equals("special") && tickCount % 25 == 0) {
+        if (getVariant() == -1 && tickCount % 25 == 0) {
             double x = getX() + (Mafs.nextDouble(getRandom()) * getBbWidth() + 1);
             double y = getY() + (getRandom().nextDouble() * getBbHeight() + 1);
             double z = getZ() + (Mafs.nextDouble(getRandom()) * getBbWidth() + 1);
