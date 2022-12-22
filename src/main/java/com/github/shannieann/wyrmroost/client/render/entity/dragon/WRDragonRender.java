@@ -42,7 +42,6 @@ public abstract class WRDragonRender<T extends WRDragonEntity> extends GeoEntity
         if (model.getBone(mainBoneName).isPresent()) {
             GeoBone bone = model.getBone(mainBoneName).get();
             bone.setRotationX(defaultXRot + (animatable.getDragonXRotation()/57));
-            System.out.println(animatable.getDragonXRotation());
             animatable.cameraRotVector = new Vector3f((defaultXRot + animatable.getDragonXRotation()), bone.getRotationY(), bone.getRotationZ());
         }
         super.render(model, animatable, partialTick, type, poseStack, bufferSource, buffer, packedLight, packedOverlay, red, green, blue, alpha);
