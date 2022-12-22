@@ -154,13 +154,6 @@ public class EntityCanariWyvern extends WRDragonEntity
         container.addAction(BookActions.TARGET);
     }
 
-
-    @Override
-    public boolean shouldSleep()
-    {
-        return !isPissed() && super.shouldSleep();
-    }
-
     @Override
     public boolean defendsHome()
     {
@@ -190,10 +183,10 @@ public class EntityCanariWyvern extends WRDragonEntity
 
 
     @Override
-    public String determineVariant()
+    public int determineVariant()
     {
 
-        return "base"+getRandom().nextInt(5);
+        return getRandom().nextInt(5);
     }
 
     @Override

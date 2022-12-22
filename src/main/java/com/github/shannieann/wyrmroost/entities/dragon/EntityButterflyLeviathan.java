@@ -41,6 +41,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
@@ -109,7 +110,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity {
     //TODO: Correct ALL Serializers
     public static final EntitySerializer<EntityButterflyLeviathan> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.BOOLEAN);
@@ -232,8 +233,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
 
     @Override
-    public String determineVariant() {
-        return getRandom().nextDouble() < 0.02 ? "special" : "base" + getRandom().nextInt(2);
+    public int determineVariant() {
+        return getRandom().nextDouble() < 0.02 ? -1 : 0 + getRandom().nextInt(1);
     }
 
     // ====================================
@@ -642,7 +643,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     @Override
     public void doSpecialEffects() {
-        if (getVariant().equals("special") && tickCount % 25 == 0) {
+        if (getVariant() == -1 && tickCount % 25 == 0) {
             double x = getX() + (Mafs.nextDouble(getRandom()) * getBbWidth() + 1);
             double y = getY() + (getRandom().nextDouble() * getBbHeight() + 1);
             double z = getZ() + (Mafs.nextDouble(getRandom()) * getBbWidth() + 1);
@@ -686,12 +687,12 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 //        goalSelector.addGoal(3, new DragonBreedGoal(this));
 
         goalSelector.addGoal(4, new BFLAttackGoal(this));
-        //goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,8));
-        //goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
+        goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,8));
+        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
         goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 64,48));
 
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
-        //goalSelector.addGoal(9, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(9, new RandomLookAroundGoal(this));
 
         //targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
         //targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));

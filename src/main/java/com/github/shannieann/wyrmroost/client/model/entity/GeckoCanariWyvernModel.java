@@ -27,7 +27,7 @@ public class GeckoCanariWyvernModel<T extends EntityCanariWyvern> extends Animat
             return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "canari_wyvern/lady.png");
         }
         String gender = dragon.getGender();
-        String  variant = dragon.getVariant();
+        int  variant = dragon.getVariant();
         return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "canari_wyvern/body_" + gender + variant + ".png");
     }
 

@@ -208,7 +208,7 @@ public class EntityRoostStalker extends WRDragonEntity
     @Override
     public void doSpecialEffects()
     {
-        if (getVariant().equals("special") && tickCount % 25 == 0)
+        if (getVariant() == -1 && tickCount % 25 == 0)
         {
             double x = getX() + (Mafs.nextDouble(getRandom()) * 0.7d);
             double y = getY() + (getRandom().nextDouble() * 0.5d);
@@ -257,9 +257,9 @@ public class EntityRoostStalker extends WRDragonEntity
     }
 
     @Override
-    public String determineVariant()
+    public int determineVariant()
     {
-        return getRandom().nextDouble() < 0.005? "special" : "base";
+        return getRandom().nextDouble() < 0.005? -1 : 0;
     }
 
 

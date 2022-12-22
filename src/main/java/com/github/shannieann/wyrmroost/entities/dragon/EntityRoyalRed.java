@@ -164,28 +164,18 @@ public class EntityRoyalRed extends WRDragonEntity {
 
 
     // ====================================
-    //      A.5) Entity Data: SLEEP
-    // ====================================
-
-    @Override
-    public boolean shouldSleep() {
-        return !isKnockedOut() && super.shouldSleep();
-    }
-
-
-    // ====================================
     //      A.6) Entity Data: VARIANT
     // ====================================
 
     @Override
-    public String determineVariant() {
+    public int determineVariant() {
         LocalDate currentDate = LocalDate.now();
         if (currentDate.getMonth().equals(Month.APRIL) && currentDate.getDayOfMonth() == 1)
-            return "april";
+            return -2;
         if (!this.isNoAi()) {
-            return getRandom().nextDouble() < 0.03 ? "special" : "base0";
+            return getRandom().nextDouble() < 0.03 ? -1 : 0;
         } else {
-            return "base0";
+            return 0;
         }
     }
 

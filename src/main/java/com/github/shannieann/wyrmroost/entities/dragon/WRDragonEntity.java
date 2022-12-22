@@ -127,6 +127,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float adjustExtremityPitch;
     public float adjustmentExtremityPitch;
     public float groundMaxYaw;
+
     public Vec3 debugTarget;
     public int WAKE_UP_ANIMATION_TIME;
     public int WAKE_UP_WATER_ANIMATION_TIME;
@@ -148,7 +149,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public static final EntitySerializer<WRDragonEntity> SERIALIZER = EntitySerializer.builder(b -> b
             .track(EntitySerializer.POS.optional(), "HomePos", t -> Optional.ofNullable(t.getHomePos()), (d, v) -> d.setHomePos(v.orElse(null)))
-            .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
             .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
             .track(EntitySerializer.INT, "BreedCount", WRDragonEntity::getBreedCount, WRDragonEntity::setBreedCount));
 
@@ -167,7 +168,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<String> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
     public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<String> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     //TODO: What is this?
     private static final UUID SCALE_MOD_UUID = UUID.fromString("81a0addd-edad-47f1-9aa7-4d76774e055a");
     private static final int AGE_UPDATE_INTERVAL = 200;
@@ -342,7 +343,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(DRAGON_X_ROTATION, 0f);
         entityData.define(GENDER, "male");
         entityData.define(SLEEPING, false);
-        entityData.define(VARIANT, "base0");
+        entityData.define(VARIANT, 0);
         entityData.define(ARMOR, ItemStack.EMPTY);
         super.defineSynchedData();
     }
@@ -713,46 +714,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(SLEEPING, sleep);
     }
 
-    public boolean shouldSleep() {
-        //ToDo: Aquatics only sleep underwater
-        if (speciesCanSwim() && !isUnderWater()) {
-            return false;
-        }
-        if (!speciesCanSwim() && !isOnGround()) {
-            return false;
-        }
-        //Sleep only if dragon did not recently sleep / woke up
-        if (sleepCooldown > 0) {
-            return false;
-        }
-        //Sleep only at night
-        if (level.getDayTime() < 14000 && level.getDayTime() > 23500) {
-            return false;
-        }
-        //Sleep only if not doing any other activities...
-        //ToDo: check no sleep in the middle of goals
-        if (!isIdling())  {
-            return false;
-        }
-        //If tamed, sleep only if at home and at reasonable health...
-        //Or if set to sit down and all previous conditions are met...
-        if (isTame())
-        {
-            if (isAtHome()) {
-                if (defendsHome()) {
-                    return getHealth() < getMaxHealth() * 0.25;
-                }
-            }
-            else if (!isInSittingPose()) {
-                return false;
-            }
-        }
-
-        //return getRandom().nextDouble() < 0.0065;
-        return true;
-    }
-
-
     public boolean shouldWakeUp() {
         //ToDo: Wake up if entity nearby
         if (level.getDayTime() > 14000 && level.getDayTime() < 23500) {
@@ -768,19 +729,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      A.6) Entity Data: VARIANT
     // ====================================
 
-    public String determineVariant()
+    public int determineVariant()
     {
-        return "base0";
+        return 0;
     }
 
-    public String getVariant()
+    public int getVariant()
     {
-        String returnValue = hasEntityDataAccessor(VARIANT) ? entityData.get(VARIANT) : "base0";
-        return returnValue.isEmpty() ? "base0" : returnValue;
+        return hasEntityDataAccessor(VARIANT) ? entityData.get(VARIANT) : 0;
 
     }
 
-    public void setVariant(String variant)
+    public void setVariant(int variant)
     {
         entityData.set(VARIANT, variant);
     }
@@ -854,11 +814,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             if (age < 0) setAge(++age);
             else if (age > 0) setAge(--age);
         }
-
-        //ToDo: TEST COOLDOWN!
-        //ToDo: Sleep Counter?
-        //ToDo: Override AI when sleeping
-        //ToDo: Kill all other animations if sleeping, not just default cases
 
         if (sleepCooldown > 0) {
             sleepCooldown = Math.max(sleepCooldown-1,0);

@@ -199,7 +199,7 @@ public class EntitySilverGlider extends WRDragonEntity
     @Override
     public void doSpecialEffects()
     {
-        if (getVariant() == "special" && tickCount % 5 == 0)
+        if (getVariant() == -1 && tickCount % 5 == 0)
         {
             double x = getX() + getRandom().nextGaussian();
             double y = getY() + getRandom().nextDouble();
@@ -217,12 +217,12 @@ public class EntitySilverGlider extends WRDragonEntity
     }
 
     @Override
-    public String  determineVariant()
+    public int  determineVariant()
     {
         if (getRandom().nextDouble() < 0.002) {
-            return "special";
+            return -1;
         }
-        return ("base"+getRandom().nextInt(3));
+        return getRandom().nextInt(3);
     }
 
     @Nullable

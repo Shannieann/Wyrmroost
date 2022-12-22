@@ -21,7 +21,7 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
     @Override
     public ResourceLocation getTextureLocation(EntityRoostStalker object) {
         switch (object.getVariant()){
-            case "special" -> { return TEXTURE_RESOURCE_SPECIAL;}
+            case -1 -> { return TEXTURE_RESOURCE_SPECIAL;}
             default -> {return  TEXTURE_RESOURCE;}
         }
     }
@@ -45,7 +45,7 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
         protected ResourceLocation getEntityTexture(T entityIn) {
             if (entityIn.isSleeping()) return BLANK_EYES;
             switch (entityIn.getVariant()){
-                case "special" -> {return EYES_TEXTURE_SPECIAL;}
+                case -1 -> {return EYES_TEXTURE_SPECIAL;}
                 default -> {return EYES_TEXTURE;}
             }
         }
