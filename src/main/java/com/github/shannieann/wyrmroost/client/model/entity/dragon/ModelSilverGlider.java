@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.client.model.entity;
+package com.github.shannieann.wyrmroost.client.model.entity.dragon;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.entities.dragon.EntitySilverGlider;
@@ -11,7 +11,7 @@ import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
 import static com.github.shannieann.wyrmroost.util.ModUtils.TEXTURE_FOLDER;
 
-public class GeckoSilverGliderModel<T extends EntitySilverGlider> extends AnimatedGeoModel<T> {
+public class ModelSilverGlider<T extends EntitySilverGlider> extends AnimatedGeoModel<T> {
 
     private static final ResourceLocation modelResource = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/canari_wyvern.geo.json");
     private static final ResourceLocation animationResource = new ResourceLocation(Wyrmroost.MOD_ID, "animations/canari_wyvern.animation.json");

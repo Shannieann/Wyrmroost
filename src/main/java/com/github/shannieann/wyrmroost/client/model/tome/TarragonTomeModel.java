@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.client.model;
+package com.github.shannieann.wyrmroost.client.model.tome;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;

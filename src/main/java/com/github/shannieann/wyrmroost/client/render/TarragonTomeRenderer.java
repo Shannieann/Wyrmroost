@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.client.render;
 
-import com.github.shannieann.wyrmroost.client.model.TarragonTomeModel;
+import com.github.shannieann.wyrmroost.client.model.tome.TarragonTomeModel;
 import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
 import software.bernie.geckolib3.renderers.geo.GeoItemRenderer;
 
