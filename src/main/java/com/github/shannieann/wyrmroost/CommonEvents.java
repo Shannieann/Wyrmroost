@@ -157,7 +157,7 @@ public class CommonEvents {
     }
 
     public static void onEntityMountEvent (EntityMountEvent event) {
-        if (event.getEntityMounting() instanceof WRDragonEntity entity) {
+        if (event.getEntityMounting() instanceof WRDragonEntity) {
             if (event.isMounting() && event.getEntityBeingMounted() instanceof Minecart || event.getEntityBeingMounted() instanceof Boat) {
                 event.setCanceled(true);
             }

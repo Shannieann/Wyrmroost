@@ -10,9 +10,7 @@ import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGro
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundPathNavigator;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.FlyerMoveController;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.FlyerPathNavigator;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSitGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming.WRSwimmingLookControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming.WRSwimmingMoveControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming.WRSwimmingNavigator;
@@ -61,8 +59,6 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
-import net.minecraft.world.entity.ai.control.LookControl;
-import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.animal.Animal;
@@ -295,6 +291,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                             if (isDiving()){
                                 //ToDo: Account for more flying cases
                                 event.getController().setAnimation(new AnimationBuilder().addAnimation("dive", ILoopType.EDefaultLoopTypes.LOOP));
+                            } else if (isGliding()){
+                                event.getController().setAnimation(new AnimationBuilder().addAnimation("glide", ILoopType.EDefaultLoopTypes.LOOP));
                             }
                             else event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
                         }
@@ -790,13 +788,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0); // Shouldn't be rotated on ground
         if (getDragonXRotation() != 0 && getDeltaMovement().length() <= 0.25){ // Every tick, slowly orient the dragon back to normal if its barely moving so it isn't just awkwardly pointing down or up
-            if (getDragonXRotation() > 180) { // This is done like this because rotation numbers are weird.
-                // Normally, if a dragon is at say 350 degrees, it would rotate all the way back around to 0 rather than going
-                // to 360 and having it set to 0
-                setDragonXRotation(Mth.approach(getDragonXRotation(), 360, 1));
-            } else {
-                setDragonXRotation(Mth.approach(getDragonXRotation(), 0, 1));
-            }
+            setDragonXRotation(Mth.approachDegrees(getDragonXRotation(), 0.0f, 1.0f));
         }
         NavigationType properNavigator = getProperNavigator();
         if (properNavigator != this.getNavigationType()) {
@@ -1180,7 +1172,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
     private float sinceLastUpdate = 1.0f;
-    private float diveAcc = 0.0f;
+    private float bonusAcc = 0.0f;
     // Test dragonriding method
     @Override
     public void travel(Vec3 vec3d){
@@ -1230,16 +1222,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                         Vec3 moveVec = new Vec3(xxa, lookVec.y, zza);
 
                         // Acceleration for diving speed boost
-                        diveAcc = Mth.approach(diveAcc, getDivingAcceleration(), (diveAcc < getDivingAcceleration())? 0.03f : 0.025f);
+                        boolean shouldChangeAccFast = bonusAcc < getFlyingAcceleration() || isFlyingUpward(); // If is plumetting downward or flying upward
+                        bonusAcc = Mth.approach(bonusAcc, getFlyingAcceleration(), isFlyingUpward()? 0.06f : (bonusAcc < getFlyingAcceleration())? 0.03f : 0.025f);
                         // Speed needs to be multiplied to make the values not seemingly unreasonably large in attributes
-                        this.setSpeed((speed) * (25.0f/3.0f) + diveAcc);
+                        this.setSpeed((speed) * (25.0f/3.0f) + bonusAcc);
 
                         if (ClientEvents.getClient().options.keyUp.isDown()) {
                             // update for "sliding" speed
                             sinceLastUpdate = 1.0f;
                             super.travel(moveVec);
                         } else { // If not moving, still update the slide before going to a stop. Sudden stopping looks kinda weird
-                            sinceLastUpdate = Mth.clamp(sinceLastUpdate - 0.02f, 0.0f, 1.0f);
+                            sinceLastUpdate = Mth.clamp(sinceLastUpdate - 0.03f, 0.0f, 1.0f);
                             super.travel(moveVec.scale(sinceLastUpdate));
                         }
                     }
@@ -1247,8 +1240,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     {
                         //speed *= 0.225f;
                         // normal movement
-                        if (ClientEvents.getClient().options.keyJump.isDown()) jumpFromGround();
-                        if (dragonCanFly() && getAltitude() > getFlightThreshold()) setNavigator(NavigationType.FLYING);
+                        if (ClientEvents.getClient().options.keyJump.isDown() && getBlockStateOn().getMaterial().isSolid()) jumpFromGround();
+                        if (dragonCanFly() && getAltitude() > getFlightThreshold() + 1) setNavigator(NavigationType.FLYING);
                         else {
                             this.setSpeed(speed);
                             super.travel(new Vec3(groundX, vec3d.y, groundZ));
@@ -1418,13 +1411,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public boolean isDiving(){
         return getDragonXRotation() > 270.0f && getDragonXRotation() < 320.0f;
     }
+    public boolean isFlyingUpward() {return getDragonXRotation() > 25.0f && getDragonXRotation() < 65.0f;}
+    public boolean isGliding() { return getDragonXRotation() >= 320.0f && getDragonXRotation() < 340.0f;}
     // For getting y acceleration
-    public float getDivingAcceleration(){
-        if (!isDiving()){
-            return 0.0f;
-        } else {
+    public float getFlyingAcceleration(){
+        if (isDiving()){
             return (0.4f - ((getDragonXRotation() * 0.4f)-270)/50) + 0.1f; // Fully diving is 0.5, barely diving is 0.1
+        } else if (isFlyingUpward()){
+            float x = getDragonXRotation() - 45;
+            System.out.println(-(-0.0005f * (x * x) + 0.3f));
+            return -(-0.0005f * (x * x) + 0.3f); // Fully up is -0.3, barely up is -0.1
         }
+        return 0.0f;
     }
 
     public boolean isUsingFlyingNavigator()
@@ -1435,8 +1433,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public double getAltitude() {
         BlockPos.MutableBlockPos pos = blockPosition().mutable();
 
-        // cap to the level void (y = 0)
-        while (pos.getY() > 0 && !level.getBlockState(pos.move(Direction.DOWN)).getMaterial().isSolid());
+        // cap to the level void (y = -64)
+        while (pos.getY() > -64 && !level.getBlockState(pos.move(Direction.DOWN)).getMaterial().isSolid());
         return getY() - pos.getY();
     }
 

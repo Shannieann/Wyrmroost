@@ -152,8 +152,7 @@ public class ClientEvents
 
 
 
-    // todo for some reason getting the position of the dragon causes jittering? My guess is positions aren't 100% synced from client to server, so this is the best solution i could think of
-    // other than creating a data accessor in WRDragonEntity that holds the actual position... which may be worth doing for accuracy? Also not that resource-intensive. idk
+
     private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event)
     {
         Minecraft mc = getClient();
@@ -208,7 +207,7 @@ public class ClientEvents
             f = f * 0.1F;
             f1 = f1 * 0.1F;
             f2 = f2 * 0.1F;
-            Vec3 vector3d = position.add((double) f, (double) f1, (double) f2);
+            Vec3 vector3d = position.add(f, f1, f2);
             Vec3 vector3d1 = new Vec3(position.x - (double) view.x() * startingDistance + (double) f + (double) f2, position.y - (double) view.y() * startingDistance + (double) f1, position.z - (double) view.z() * startingDistance + (double) f2);
             HitResult raytraceresult = vehicle.level.clip(new ClipContext(vector3d, vector3d1, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, vehicle));
             if (raytraceresult.getType() != HitResult.Type.MISS) {
