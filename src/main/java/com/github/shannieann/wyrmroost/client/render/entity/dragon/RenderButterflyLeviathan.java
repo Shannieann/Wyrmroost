@@ -1,6 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon;
 
 import com.github.shannieann.wyrmroost.client.model.entity.dragon.ModelButterflyLeviathan;
+import com.github.shannieann.wyrmroost.client.model.entity.dragon.ModelRoostStalker;
 import com.github.shannieann.wyrmroost.entities.dragon.EntityButterflyLeviathan;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -15,9 +16,8 @@ import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 public class RenderButterflyLeviathan extends WRDragonRender<EntityButterflyLeviathan> {
     public RenderButterflyLeviathan(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelButterflyLeviathan(), "");
+        this.addLayer(new ModelButterflyLeviathan.ButterflyLeviathanActivatedLayer<>(this));
         //TODO: Shadow?
-
-
     }
 
     @Override

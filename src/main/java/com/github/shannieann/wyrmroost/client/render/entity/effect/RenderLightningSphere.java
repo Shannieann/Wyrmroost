@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render.entity.effect;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.client.model.entity.effect.ModelLightningSphere;
+import com.github.shannieann.wyrmroost.client.model.effect.ModelLightningSphere;
 import com.github.shannieann.wyrmroost.entities.effect.EffectLightningSphere;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

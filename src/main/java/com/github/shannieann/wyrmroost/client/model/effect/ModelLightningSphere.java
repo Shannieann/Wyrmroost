@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.client.model.entity.effect;
+package com.github.shannieann.wyrmroost.client.model.effect;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.entities.effect.EffectLightningSphere;

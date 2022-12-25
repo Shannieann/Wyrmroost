@@ -75,7 +75,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //Fix serializer
 
 //TODO: GOALS:
-//ATTACK: Reimplement whole logic...
 //Test all regular goals before tamed goals
 //TAMED GOALS
 
@@ -89,9 +88,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //Ride logic + rewrite key-binds
 
 //TODO: ASSETS:
-//Texture: Lightning on/off
-//Texture Variants: base0, base1, special
-//No sexual dimorphism, remove logic
 //Child textures
 //ANIMATIONS: Sitting
 //ANIMATIONS: STANDING
@@ -114,6 +110,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Integer> LIGHTNING_COOLDOWN = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.INT);
+
     public static final int CONDUIT_SLOT = 0;
     public final float entityDeltaPitchLimit = 1.0F;
     public final float entityYawAdjustment = 0.30F;
@@ -164,6 +162,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     protected void defineSynchedData() {
         super.defineSynchedData();
         entityData.define(HAS_CONDUIT, false);
+        entityData.define(LIGHTNING_COOLDOWN, 0);
+
     }
 
     public static AttributeSupplier.Builder getAttributeSupplier() {
@@ -218,6 +218,15 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 .add(calculateViewVector(xRot, yHeadRot).scale(4.15));
     }
 
+    public int getLightningAttackCooldown() {
+        return entityData.get(LIGHTNING_COOLDOWN);
+    }
+
+    public void setLightningAttackCooldown(int cooldown) {
+        entityData.set(LIGHTNING_COOLDOWN,cooldown);
+    }
+
+
     // ====================================
     //      A.4) Entity Data: HOME
     // ====================================
@@ -234,7 +243,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     @Override
     public int determineVariant() {
-        return getRandom().nextDouble() < 0.02 ? -1 : 0 + getRandom().nextInt(1);
+        return getRandom().nextDouble() < 0.02 ? -1 : 0 + getRandom().nextInt(2);
     }
 
     // ====================================
@@ -276,6 +285,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         beachedTimer.add((beached) ? 0.1f : -0.05f);
         swimTimer.add(isUnderWater() ? -0.1f : 0.1f);
         sitTimer.add(isInSittingPose() ? 0.1f : -0.1f);
+        setLightningAttackCooldown(Math.max(getLightningAttackCooldown()-1,0));
+
 
 
         //TODO: TAMED LIGHTNING COOLDOWN
@@ -424,6 +435,18 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 return true;
             }
         //}
+        return false;
+    }
+
+    public boolean canPerformLightningAttack() {
+        if (getLightningAttackCooldown() <= 0 && isJuvenile()) {
+            if (isInWaterRainOrBubble()) {
+                return true;
+            }
+            if (level.getBlockStates(getBoundingBox().inflate(5)).anyMatch(test -> test.is(Blocks.LIGHTNING_ROD))) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -701,7 +724,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, aquaticRandomTargetPredicate));
     }
 
-    private class BFLAttackGoal extends AnimatedGoal {
+    public class BFLAttackGoal extends AnimatedGoal {
         private int navRecalculationTicks;
         private double pathedTargetX;
         private double pathedTargetY;
@@ -711,7 +734,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         boolean animationPlaying;
 
-        int lightningAttackCooldown;
         int checkForLightningCounter;
 
         boolean lightningLineQueued;
@@ -909,8 +931,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 //checkForLightningCounter = Math.max(checkForLightningCounter- 1, 0);
 
                 //Decide which attack to use: LightningAttack or MeleeAttack.
-                // We are not checking for lightningAttacks each tick, only every 40 ticks
-                lightningAttackCooldown = Math.max(lightningAttackCooldown-1,0);
 
                 if (canPerformLightningAttack()) {
                     performLightningAttack();
@@ -920,18 +940,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 }
             }
 
-        }
-
-        public boolean canPerformLightningAttack() {
-            if (lightningAttackCooldown <= 0) {
-                if (isInWaterRainOrBubble()) {
-                    return true;
-                }
-                if (level.getBlockStates(getBoundingBox().inflate(5)).anyMatch(test -> test.is(Blocks.LIGHTNING_ROD))) {
-                    return true;
-                }
-            }
-            return false;
         }
 
         private void performLightningAttack(){
@@ -956,7 +964,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     animationPlaying =true;
                     super.start(LIGHTNING_ANIMATION, 2, LIGHTNING_ANIMATION_TIME);
                 }
-                lightningAttackCooldown = 400;
+                setLightningAttackCooldown(400);
             }
 
         }
