@@ -136,7 +136,7 @@ public class EntityRoyalRed extends WRDragonEntity {
                 .add(FOLLOW_RANGE, 60)
                 .add(ATTACK_KNOCKBACK, 4)
                 .add(ATTACK_DAMAGE, 12)
-                .add(FLYING_SPEED, 0.121)
+                .add(FLYING_SPEED, 0.1)
                 .add(WREntityTypes.Attributes.PROJECTILE_DAMAGE.get(), 4);
     }
 
@@ -170,11 +170,11 @@ public class EntityRoyalRed extends WRDragonEntity {
     @Override
     public int determineVariant() {
         LocalDate currentDate = LocalDate.now();
-        if (currentDate.getMonth().equals(Month.APRIL) && currentDate.getDayOfMonth() == 1)
+        if (currentDate.getMonth().equals(Month.APRIL) && currentDate.getDayOfMonth() == 1) // April fools RR
             return -2;
-        if (!this.isNoAi()) {
+        if (!this.isNoAi()) { // For normal generation: Chance for melanistic variants
             return getRandom().nextDouble() < 0.03 ? -1 : 0;
-        } else {
+        } else {  // TODO why tho?
             return 0;
         }
     }
