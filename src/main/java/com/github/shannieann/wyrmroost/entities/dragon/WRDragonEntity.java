@@ -1222,7 +1222,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                         Vec3 moveVec = new Vec3(xxa, lookVec.y, zza);
 
                         // Acceleration for diving speed boost
-                        boolean shouldChangeAccFast = bonusAcc < getFlyingAcceleration() || isFlyingUpward(); // If is plumetting downward or flying upward
                         bonusAcc = Mth.approach(bonusAcc, getFlyingAcceleration(), isFlyingUpward()? 0.06f : (bonusAcc < getFlyingAcceleration())? 0.03f : 0.025f);
                         // Speed needs to be multiplied to make the values not seemingly unreasonably large in attributes
                         this.setSpeed((speed) * (25.0f/3.0f) + bonusAcc);
@@ -1240,7 +1239,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     {
                         //speed *= 0.225f;
                         // normal movement
-                        if (ClientEvents.getClient().options.keyJump.isDown() && getBlockStateOn().getMaterial().isSolid()) jumpFromGround();
+                        if (ClientEvents.getClient().options.keyJump.isDown() && getBlockStateOn().getMaterial().isSolid() && speciesCanFly()) jumpFromGround(); // Jump when on the ground, for taking off.
                         if (dragonCanFly() && getAltitude() > getFlightThreshold() + 1) setNavigator(NavigationType.FLYING);
                         else {
                             this.setSpeed(speed);
@@ -1411,16 +1410,24 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public boolean isDiving(){
         return getDragonXRotation() > 270.0f && getDragonXRotation() < 320.0f;
     }
-    public boolean isFlyingUpward() {return getDragonXRotation() > 25.0f && getDragonXRotation() < 65.0f;}
+    public boolean isFlyingUpward() {return getDragonXRotation() > 25.0f && getDragonXRotation() < 90.0f;}
     public boolean isGliding() { return getDragonXRotation() >= 320.0f && getDragonXRotation() < 340.0f;}
     // For getting y acceleration
     public float getFlyingAcceleration(){
-        if (isDiving()){
+        if (isDiving()){ // If we're diving, the dragon should speed up.
             return (0.4f - ((getDragonXRotation() * 0.4f)-270)/50) + 0.1f; // Fully diving is 0.5, barely diving is 0.1
-        } else if (isFlyingUpward()){
-            float x = getDragonXRotation() - 45;
-            System.out.println(-(-0.0005f * (x * x) + 0.3f));
-            return -(-0.0005f * (x * x) + 0.3f); // Fully up is -0.3, barely up is -0.1
+        } else if (isFlyingUpward()){ // If we're flying upward, the dragon should go a bit slower.
+            float x = getDragonXRotation();
+            /*
+            The equation for this is y = 0.0028499(x-25)(x-90)
+            Technically, this is approximate (it is y -0.30001 at its vertex)
+            Basically, directly upward makes acceleration go down,
+            and going to either side slowly increases the acceleration until it's normal.
+
+            TODO honestly we might have to redo this in the future to deal with percentages instead...
+            */
+            System.out.println(0.0028499* (x-25) * (x-90));
+            return ((0.0028499f* (x-25) * (x-90)) - 0.1f)/10; // Fully up is -0.4, barely up is -0.1
         }
         return 0.0f;
     }
