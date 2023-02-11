@@ -1,6 +1,10 @@
 ---
 name: Issue
 about: Make sure your issue hasnt already been reported!
+title: ''
+labels: ''
+assignees: ''
+
 ---
 
 <!-- Thank you for reporting! -->
