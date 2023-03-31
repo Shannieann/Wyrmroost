@@ -18,9 +18,11 @@ public class WRSleepGoal extends AnimatedGoal{
 
     @Override
     public boolean canUse() {
+        //If it can swim, only sleep underwater
         if (entity.speciesCanSwim() && (!entity.isUnderWater() && !entity.isOnGround())) {
             return false;
         }
+        //If it cannot swim, only sleep on ground
         if (!entity.speciesCanSwim() && !entity.isOnGround()) {
             return false;
         }
@@ -53,8 +55,7 @@ public class WRSleepGoal extends AnimatedGoal{
     }
 
 
-    public boolean isIdling()
-    {
+    public boolean isIdling() {
         return entity.getNavigation().isDone() && entity.getTarget() == null && !entity.isVehicle() && (entity.speciesCanSwim() || !entity.isInWaterOrBubble()) && !entity.isUsingFlyingNavigator();
     }
 
@@ -80,6 +81,7 @@ public class WRSleepGoal extends AnimatedGoal{
             }
             //ToDo: Flying look Control
 
+            //Heal while sleeping
             if (entity.getHealth() < entity.getMaxHealth() && entity.getRandom().nextDouble() < 0.005) {
                 entity.heal(1);
             }
@@ -90,6 +92,7 @@ public class WRSleepGoal extends AnimatedGoal{
                 super.start(underwaterSleeping? "sleep_water" : "sleep",1,20);
             }
         } else {
+            //If it should wake up, wake up once the animation cycle is over
             super.tick();
             if (!super.canContinueToUse()) {
                 super.stop();
@@ -100,9 +103,11 @@ public class WRSleepGoal extends AnimatedGoal{
 
 
     public boolean shouldWakeUp(){
+        //If daytime, wake up
         if (entity.level.getDayTime() < 14000 || entity.level.getDayTime() > 23500) {
             return entity.getRandom().nextDouble() < 0.0065;
         }
+        //If it's a water sleeping entity, and it somehow gets out of water, wake up
         if (underwaterSleeping && !entity.isUnderWater()) {
             return true;
         }
@@ -118,6 +123,7 @@ public class WRSleepGoal extends AnimatedGoal{
     public void stop(){
         entity.setSleeping(false);
         wakeUp = false;
+        underwaterSleeping = false;
         entity.sleepCooldown = 350;
     }
 }
