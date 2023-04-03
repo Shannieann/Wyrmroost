@@ -9,8 +9,6 @@ public class WRSleepGoal extends AnimatedGoal{
 
     private final WRDragonEntity entity;
     private boolean underwaterSleeping;
-    private boolean wakeUp;
-
     public WRSleepGoal(WRDragonEntity entity) {
         super(entity);
         this.entity = entity;
@@ -70,60 +68,47 @@ public class WRSleepGoal extends AnimatedGoal{
     }
 
     @Override
-    public void tick(){
-        if (!wakeUp) {
-            LookControl lookControl = entity.getLookControl();
-            if (lookControl instanceof WRGroundLookControl) {
-                ((WRGroundLookControl)lookControl).stopLooking();
-            }
-            if (lookControl instanceof WRSwimmingLookControl) {
-                ((WRSwimmingLookControl)lookControl).stopLooking();
-            }
-            //ToDo: Flying look Control
-
-            //Heal while sleeping
-            if (entity.getHealth() < entity.getMaxHealth() && entity.getRandom().nextDouble() < 0.005) {
-                entity.heal(1);
-            }
-
-            if (shouldWakeUp()) {
-                wakeUp = true;
-            } else {
-                super.start(underwaterSleeping? "sleep_water" : "sleep",1,20);
-            }
-        } else {
-            //If it should wake up, wake up once the animation cycle is over
-            super.tick();
-            if (!super.canContinueToUse()) {
-                super.stop();
-                stop();
-            }
+    public void tick() {
+        LookControl lookControl = entity.getLookControl();
+        if (lookControl instanceof WRGroundLookControl) {
+            ((WRGroundLookControl) lookControl).stopLooking();
         }
+        if (lookControl instanceof WRSwimmingLookControl) {
+            ((WRSwimmingLookControl) lookControl).stopLooking();
+        }
+        //ToDo: Flying look Control
+        // Heal while sleeping
+        if (entity.getHealth() < entity.getMaxHealth() && entity.getRandom().nextDouble() < 0.005) {
+            entity.heal(1);
+        }
+        super.start(underwaterSleeping ? "sleep_water" : "sleep", 1, 20);
     }
 
 
-    public boolean shouldWakeUp(){
+
+    @Override
+    public boolean canContinueToUse(){
         //If daytime, wake up
         if (entity.level.getDayTime() < 14000 || entity.level.getDayTime() > 23500) {
-            return entity.getRandom().nextDouble() < 0.0065;
+            return false;
         }
         //If it's a water sleeping entity, and it somehow gets out of water, wake up
         if (underwaterSleeping && !entity.isUnderWater()) {
-            return true;
+            return false;
         }
         //Allows us to check for other methods, elsewhere, that might have set the DataParameter to false
         //For instance, the hurt method...
         if (!entity.isSleeping()){
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     @Override
     public void stop(){
         entity.setSleeping(false);
-        wakeUp = false;
         underwaterSleeping = false;
         entity.sleepCooldown = 350;
+        super.stop();
     }
 }
