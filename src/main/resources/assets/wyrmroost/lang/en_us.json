@@ -155,6 +155,8 @@
   "death.attack.fireBreath1": "Charizard used Flamethrower on %s, It's super effective!",
 
   "narrator.button.pin": "Pin Button",
-  "tarragonTome.title": "Tarragon Tome",
-  "key.wyrmroost.category": "Wyrmroost"
+  "tarragonTome.wyrmroost.title": "Tarragon Tome",
+  "key.wyrmroost.category": "Wyrmroost",
+
+  "gui.wyrmroost.inventory_title": "Dragon Inventory"
 }
