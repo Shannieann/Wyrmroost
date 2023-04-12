@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.client.screen.widgets;
+/*package com.github.shannieann.wyrmroost.client.screen.widgets;
 
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
@@ -49,4 +49,4 @@ public class PinButton extends AbstractButton
     @Override
     public void updateNarration(NarrationElementOutput p_169152_) {
     }
-}
+}*/
