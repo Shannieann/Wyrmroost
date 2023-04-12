@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost.client.screen;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
+import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
@@ -12,13 +13,16 @@ import net.minecraft.world.entity.player.Inventory;
 
 
 public class NewTarragonTomeScreen extends AbstractContainerScreen<NewTarragonTomeContainer> {
-    private static final ResourceLocation TEXTURE = Wyrmroost.id("textures/gui/container/dragon_container.png");
+    private static final ResourceLocation TEXTURE = Wyrmroost.id("textures/gui/container/dragon_inventory.png");
+    private static final ResourceLocation DEPICTION_TEXTURE = Wyrmroost.id("textures/gui/container/dragon_depictions.png");
     public NewTarragonTomeScreen(NewTarragonTomeContainer container, Inventory playerInv, Component title) {
         super(container, playerInv, title);
         this.leftPos = 0;
         this.topPos = 0;
-        this.imageWidth = 256;
-        this.imageHeight = 256;
+        this.titleLabelX = 27;
+        this.titleLabelY = 8;
+        this.imageWidth = 176;
+        this.imageHeight = 165;
     }
 
     @Override
@@ -28,6 +32,18 @@ public class NewTarragonTomeScreen extends AbstractContainerScreen<NewTarragonTo
         RenderSystem.setShaderTexture(0, TEXTURE);
 
         blit(pPoseStack, this.leftPos, this.topPos, 0, 0, this.imageWidth, this.imageHeight);
+
+        RenderSystem.setShaderTexture(0, DEPICTION_TEXTURE);
+
+        RenderSystem.setS
+        blit(pPoseStack, 155, 55, 0, 0, 126, 54);
+    }
+
+    @Override
+    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
+        renderBackground(pPoseStack);
+        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+        this.renderTooltip(pPoseStack, pMouseX, pMouseY);
     }
 
     // FOR BUTTONS LATER
@@ -40,18 +56,10 @@ public class NewTarragonTomeScreen extends AbstractContainerScreen<NewTarragonTo
         }));
     }*/
 
+
+
     @Override
-    public void render(PoseStack pPoseStack, int pMouseX, int pMouseY, float pPartialTick) {
-        super.render(pPoseStack, pMouseX, pMouseY, pPartialTick);
+    protected void renderLabels(PoseStack pPoseStack, int pMouseX, int pMouseY) {
+        this.font.draw(pPoseStack, this.title, this.titleLabelX, this.titleLabelY, 0x404040);
     }
-
-
-    /*@Override
-    /protected void renderLabels(PoseStack pPoseStack, int pMouseX, int pMouseY) {
-        super.renderLabels(pPoseStack, pMouseX, pMouseY);
-    }*/
-    // Might include dragon's name at the top, we'll see though
-
-
-
 }
