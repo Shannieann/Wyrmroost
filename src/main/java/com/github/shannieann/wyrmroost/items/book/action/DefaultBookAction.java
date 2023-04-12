@@ -10,6 +10,7 @@ import com.github.shannieann.wyrmroost.util.Mafs;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -33,7 +34,7 @@ public class DefaultBookAction implements BookAction
         boolean client = player.getLevel().isClientSide();
         if (dragon != null && !player.getLevel().isClientSide())
         {
-            MenuProvider container = new SimpleMenuProvider(NewTarragonTomeContainer.getServerContainer(dragon, player.blockPosition()), TextComponent.EMPTY);
+            MenuProvider container = new SimpleMenuProvider(NewTarragonTomeContainer.getServerContainer(dragon, player.blockPosition()), new TranslatableComponent("gui.wyrmroost.inventory_title"));
             NetworkHooks.openGui((ServerPlayer) player, container, player.blockPosition());
 
         }

@@ -40,6 +40,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -76,6 +77,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -1162,9 +1164,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     private float bonusAcc = 0.0f;
 
 
-    // ====================================
-    //      C.1) Riding
-    // ====================================
 
     // Test dragonriding method
     @Override
@@ -2002,6 +2001,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     //      E) Client
     // ====================================
+
+    /**
+     * This gets the location of the dragon's image for the tarragon tome.
+     * @returns the pixel location that the depiction starts at.
+     */
+    //public abstract Vec2 getTomeImageLocation();
 
     public void doSpecialEffects()
     {
