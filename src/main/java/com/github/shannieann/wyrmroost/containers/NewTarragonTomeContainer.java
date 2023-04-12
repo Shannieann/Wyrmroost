@@ -35,17 +35,24 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
         this.containerAccess = ContainerLevelAccess.create(playerInv.player.level, pos);
         //this.data = data;
 
-        final int slotSizePlus2 = 40, startX = 43, startY = 205, hotbarY = 341;
-        for(int column = 0; column < 9; column++){
-            for (int row = 0; row < 3; row++){
+        final int slotSizePlus2 = 18, startX = 8, startY = 83, hotbarY = 141;
+
+
+
+        // TODO Add chest inventory
+
+
+        for (int row = 0; row < 3; row++){
+            for(int column = 0; column < 9; column++){
                 addSlot(new Slot(playerInv, 9 + row * 9 + column, startX + column * slotSizePlus2,
                         startY + row * slotSizePlus2));
             }
 
+        }
+        for(int column = 0; column < 9; column++) {
             addSlot(new Slot(playerInv, column, startX + column * slotSizePlus2, hotbarY));
         }
 
-        // TODO chest inventory slots
 
 
     }
@@ -62,8 +69,24 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
 
     @Override
     public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
-        return this.slots.get(pIndex).getItem(); // Don't allow quick moving for now
+        var retStack = ItemStack.EMPTY;
+        final Slot slot = this.getSlot(pIndex);
+        if(slot.hasItem()){
+            final ItemStack item = slot.getItem();
+            retStack = item.copy();
+            if(pIndex < 27) {
+                if (!moveItemStackTo(item, 27, this.slots.size(), false)) {
+                    return ItemStack.EMPTY;
+                }
+            }else if (!moveItemStackTo(item, 0, 27, false))
+                return ItemStack.EMPTY;
 
+            if (item.isEmpty()) slot.set(ItemStack.EMPTY);
+            else slot.setChanged();
+        }
+
+        return retStack;
     }
+
 
 }
