@@ -79,8 +79,8 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TAMED GOALS
 
 //TODO: ANIMATIONS
-//Test new animation method, write animation logic
 //Test water leap and anim transition time
+//Sleep
 
 //TODO: TAMING
 //All goals when tamed
@@ -121,8 +121,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public boolean beached = true;
 
-    //TODO: ADJUST TIMES - animation and actual strike
-    //TODO: Adjust number of variants
+    //TODO: ADJUST TIMES - animation and actual strike for melee attacks
+    //TODO: Adjust number of attack variants
     protected static int ATTACK_ANIMATION_VARIANTS = 1;
 
     public static final String LIGHTNING_ANIMATION = "lightning";
@@ -290,7 +290,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
 
         //TODO: TAMED LIGHTNING COOLDOWN
-        //if (lightningCooldown > 0) --lightningCooldown;
+
         // =====================
         //       Beached Logic
         // =====================
@@ -577,7 +577,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     @Override
     public void recievePassengerKeybind(int key, int mods, boolean pressed) {
         //TODO: TYPO
-        //TODO: Lightning strikes when tamed, set of different methods
+        //TODO: Lightning strikes when tamed, set of different methods, when compared to regular, wild lightning strike
 
         if (pressed /*&& noAnimations()*/) {
             if (key == KeybindHandler.MOUNT_KEY) /*setAnimation(BITE_ANIMATION)*/ ;
@@ -713,7 +713,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,8));
         goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
         goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 64,48));
-
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
         goalSelector.addGoal(9, new RandomLookAroundGoal(this));
 
@@ -984,6 +983,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         public void performMeleeAttack() {
             //Randomly define an attack variant...
+            //TODO: Currently a single attack variant, must adjust to TWO
             attackVariant = 1+getRandom().nextInt(ATTACK_ANIMATION_VARIANTS);
             //Queue a melee attack, ensuring it happens once we reach the proper time...
             meleeAttackQueued = true;
@@ -992,6 +992,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             //Start the animation with the selected variant...
             boolean swimming = isUsingSwimmingNavigator();
             String navVariant = swimming? "water" : "land";
+            //Get the entity to face its target properly
             float desiredAngleYaw = (float)(Mth.atan2(target.position().z-position().z, target.position().x - position().x) * (double)(180F / (float)Math.PI)) - 90.0F;
             setYRot(desiredAngleYaw);
             yHeadRot = desiredAngleYaw;
@@ -1013,4 +1014,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     }
 }
 
-
+//TODO: ORDER
+    //1.- Attack Animation Variants + strike time
+    //2.- Sleep, and sleep logic
+    //3.- Tamed logic

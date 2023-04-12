@@ -706,22 +706,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public void setSleeping(boolean sleep) {
         //If it is already sleeping or already awake, return...
-        if (isSleeping() == sleep) {
+        /*if (isSleeping() == sleep) {
             return;
         }
+        */
         //Adjust the data parameter
         entityData.set(SLEEPING, sleep);
-    }
-
-    public boolean shouldWakeUp() {
-        //ToDo: Wake up if entity nearby
-        if (level.getDayTime() > 14000 && level.getDayTime() < 23500) {
-            return false;
-        }
-        if (speciesCanSwim() && !isUnderWater()) {
-            return false;
-        }
-        return level.isDay() && getRandom().nextDouble() < 0.0065;
     }
 
     // ====================================
@@ -813,7 +803,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             if (age < 0) setAge(++age);
             else if (age > 0) setAge(--age);
         }
-
+        //Update sleep timers
         if (sleepCooldown > 0) {
             sleepCooldown = Math.max(sleepCooldown-1,0);
         }
@@ -937,8 +927,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
         }
     }
-
-
 
     public void clearAI()
     {
