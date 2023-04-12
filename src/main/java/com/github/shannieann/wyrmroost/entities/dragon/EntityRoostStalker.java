@@ -1,7 +1,5 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
-import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
-import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRunWhenLosingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DefendHomeGoal;
@@ -36,7 +34,9 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.Rabbit;
 import net.minecraft.world.entity.animal.Turtle;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -229,14 +229,14 @@ public class EntityRoostStalker extends WRDragonEntity
         return slot == EquipmentSlot.MAINHAND? getItem() : super.getItemBySlot(slot);
     }
 
-    @Override
+    /*@Override
     public void applyStaffInfo(BookContainer container)
     {
         super.applyStaffInfo(container);
 
         container.slot(BookContainer.accessorySlot(getInventory(), ITEM_SLOT, 0, 0, -15, DragonControlScreen.SADDLE_UV))
                 .addAction(BookActions.TARGET);
-    }
+    }*/
 
     @Override
     public boolean isInvulnerableTo(DamageSource source)
@@ -355,6 +355,12 @@ public class EntityRoostStalker extends WRDragonEntity
     public DragonInventory createInv()
     {
         return new DragonInventory(this, 1);
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
+        return null;
     }
 
     //TODO: Safe to delete this?

@@ -2,9 +2,7 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.client.screen.widgets.CollapsibleWidget;
-import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.containers.util.DynamicSlot;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.*;
@@ -38,7 +36,9 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -293,7 +293,7 @@ public class EntityOverworldDrake extends WRDragonEntity
         return getAgeScale(0.275f);
     }
 
-    @Override
+    /*@Override
     public void applyStaffInfo(BookContainer container)
     {
         super.applyStaffInfo(container);
@@ -308,7 +308,7 @@ public class EntityOverworldDrake extends WRDragonEntity
                 .slot(BookContainer.accessorySlot(i, SADDLE_SLOT, 0, -15, -7, DragonControlScreen.SADDLE_UV).only(Items.SADDLE))
                 .addAction(BookActions.TARGET)
                 .addCollapsible(chestWidget);
-    }
+    }*/
 
     @Override
     public void setTarget(@Nullable LivingEntity target)
@@ -477,5 +477,11 @@ public class EntityOverworldDrake extends WRDragonEntity
     @Override
     public boolean speciesCanFly() {
         return false;
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
+        return null;
     }
 }

@@ -2,8 +2,6 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
-import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSleepGoal;
@@ -45,7 +43,9 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -601,13 +601,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     //      D) Taming
     // ====================================
 
-    @Override
+    /*@Override
     public void applyStaffInfo(BookContainer container) {
         super.applyStaffInfo(container);
 
         container.slot(BookContainer.accessorySlot(getInventory(), CONDUIT_SLOT, 0, -65, -75, DragonControlScreen.CONDUIT_UV).only(Items.CONDUIT).limit(1))
                 .addAction(BookActions.TARGET);
-    }
+    }*/
 
 
     @Override
@@ -722,6 +722,12 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         targetSelector.addGoal(3, new HurtByTargetGoal(this));
         //targetSelector.addGoal(4, new DefendHomeGoal(this));
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, aquaticRandomTargetPredicate));
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
+        return null;
     }
 
     public class BFLAttackGoal extends AnimatedGoal {

@@ -3,7 +3,6 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
-import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.WRBodyControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundMoveControl;
@@ -1173,97 +1172,121 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     private float sinceLastUpdate = 1.0f;
     private float bonusAcc = 0.0f;
+
+
+    // ====================================
+    //      C.1) Riding
+    // ====================================
+
     // Test dragonriding method
     @Override
     public void travel(Vec3 vec3d){
-        if (this.isAlive()) {
-            if (this.isVehicle() && this.canBeControlledByRider()) {
-                LivingEntity livingentity = (LivingEntity)this.getControllingPassenger();
-                this.setYRot(livingentity.getYRot());
-                this.yRotO = this.getYRot();
-                this.setXRot(livingentity.getXRot() * 0.5F);
-                this.setRot(this.getYRot(), this.getXRot());
-                this.yBodyRot = this.getYRot();
-                this.yHeadRot = this.yBodyRot;
-                float groundX = livingentity.xxa * 0.5F;
-                float groundZ = livingentity.zza;
-                if (groundZ <= 0.0F) {
-                    groundZ *= 0.25F;
-                }
-
-                // TODO add water control
-                this.flyingSpeed = this.getSpeed() * 0.1F;
-                if (this.isControlledByLocalInstance()) {
-                    // handle flying movement
-                    float speed = getTravelSpeed();
-                    if (isUsingFlyingNavigator())
-                    {
-                        // Convert to ground nav if applicable
-                        if (getAltitude() <= getFlightThreshold()) {
-                            setNavigator(NavigationType.GROUND);
-                        }
-
-
-                        //Set rotation based on input
-                        if (getDeltaMovement().length() >= 0.25) { // Don't allow them to rotate unless they're moving a lot!
-                            float rotationChange;
-                            if (ClientEvents.keybindFlight)
-                                // TODO maybe make these rotation values different for every dragon?
-                                // Bigger dragons would definitely be slower at rotating than smaller, more agile ones
-                                rotationChange = ClientEvents.getClient().options.keyJump.isDown() ? 2.0f : WRKeybind.FLIGHT_DESCENT.isDown() ? -3.0f : 0;
-                            else rotationChange = 0;
-                            // Convert to real degrees (ex. 361 = 1)
-                            float newRotation = getDragonXRotation() + rotationChange;
-                            // Set dragon's body rotation (rendering handled in dragon entity renderer superclass)
-                            setDragonXRotation(newRotation);
-                        }
-                        // Set direction to travel
-                        Vec3 lookVec = Vec3.directionFromRotation(-getDragonXRotation(), livingentity.getYRot());
-                        Vec3 moveVec = new Vec3(xxa, lookVec.y, zza);
-
-                        // Acceleration for diving speed boost
-                        bonusAcc = Mth.approach(bonusAcc, getFlyingAcceleration(), isFlyingUpward()? 0.06f : (bonusAcc < getFlyingAcceleration())? 0.03f : 0.025f);
-                        // Speed needs to be multiplied to make the values not seemingly unreasonably large in attributes
-                        this.setSpeed((speed) * (25.0f/3.0f) + bonusAcc);
-
-                        if (ClientEvents.getClient().options.keyUp.isDown()) {
-                            // update for "sliding" speed
-                            sinceLastUpdate = 1.0f;
-                            super.travel(moveVec);
-                        } else { // If not moving, still update the slide before going to a stop. Sudden stopping looks kinda weird
-                            sinceLastUpdate = Mth.clamp(sinceLastUpdate - 0.03f, 0.0f, 1.0f);
-                            super.travel(moveVec.scale(sinceLastUpdate));
-                        }
-                    }
-                    else
-                    {
-                        //speed *= 0.225f;
-                        // normal movement
-                        if (ClientEvents.getClient().options.keyJump.isDown() && getBlockStateOn().getMaterial().isSolid() && speciesCanFly()) jumpFromGround(); // Jump when on the ground, for taking off.
-                        if (dragonCanFly() && getAltitude() > getFlightThreshold() + 1) setNavigator(NavigationType.FLYING);
-                        else {
-                            this.setSpeed(speed);
-                            super.travel(new Vec3(groundX, vec3d.y, groundZ));
-                        }
-                    }
-                } else if (livingentity instanceof Player) {
-                    this.setDeltaMovement(Vec3.ZERO);
-                }
-
-                this.calculateEntityAnimation(this, isUsingFlyingNavigator());
-                this.tryCheckInsideBlocks();
-            } else {
-                this.flyingSpeed = getTravelSpeed();
-                super.travel(vec3d);
+        if (!this.isAlive()) return;
+        if (this.isVehicle() && this.canBeControlledByRider()) {
+            LivingEntity livingentity = (LivingEntity)this.getControllingPassenger();
+            this.setYRot(livingentity.getYRot());
+            this.yRotO = this.getYRot();
+            this.setXRot(livingentity.getXRot() * 0.5F);
+            this.setRot(this.getYRot(), this.getXRot());
+            this.yBodyRot = this.getYRot();
+            this.yHeadRot = this.yBodyRot;
+            float groundX = livingentity.xxa * 0.5F;
+            float groundZ = livingentity.zza;
+            if (groundZ < 0.0F) { // Huh? Ig I'll keep it here because it works
+                groundZ *= 0.25F; // Ohhh its like if you're going backward you're slower I guess.
             }
+
+            // TODO add water control
+            this.flyingSpeed = this.getSpeed() * 0.1F;
+            if (this.isControlledByLocalInstance()) {
+
+                float speed = getTravelSpeed();
+                if (isUsingFlyingNavigator())
+                {
+                    handleFreeFlyingMovement(speed,livingentity);
+                }
+                else if (isUsingSwimmingNavigator())
+                {
+                    handleWaterMovement(speed);
+                }
+                else
+                {
+                    handleGroundMovement(speed, groundX, groundZ, vec3d);
+                }
+            } else if (livingentity instanceof Player) {
+                this.setDeltaMovement(Vec3.ZERO);
+            }
+
+            this.calculateEntityAnimation(this, isUsingFlyingNavigator());
+            this.tryCheckInsideBlocks();
+        } else {
+            this.flyingSpeed = getTravelSpeed();
+            super.travel(vec3d);
         }
     }
+
+        // Separated these methods to make it look cleaner. Also allows for subclasses to possibly override them if need be.
+    public void handleFreeFlyingMovement(float speed, LivingEntity livingentity) {
+        // Convert to ground nav if applicable
+        if (getAltitude() <= getFlightThreshold()) {
+            setNavigator(NavigationType.GROUND);
+        }
+
+
+            //Set rotation based on input
+        if (getDeltaMovement().length() >= 0.25) { // Don't allow them to rotate unless they're moving a lot!
+            float rotationChange;
+            if (ClientEvents.keybindFlight)
+                    // TODO maybe make these rotation values different for every dragon?
+                    // Bigger dragons would definitely be slower at rotating than smaller, more agile ones
+                rotationChange = ClientEvents.getClient().options.keyJump.isDown() ? 2.0f : WRKeybind.FLIGHT_DESCENT.isDown() ? -3.0f : 0;
+            else rotationChange = 0;
+                // Convert to real degrees (ex. 361 = 1)
+            float newRotation = getDragonXRotation() + rotationChange;
+                // Set dragon's body rotation (rendering handled in dragon entity renderer superclass)
+            setDragonXRotation(newRotation);
+        }
+            // Set direction to travel
+        Vec3 lookVec = Vec3.directionFromRotation(-getDragonXRotation(), livingentity.getYRot());
+        Vec3 moveVec = new Vec3(xxa, lookVec.y, zza);
+
+            // Acceleration for diving speed boost
+        bonusAcc = Mth.approach(bonusAcc, getFlyingAcceleration(), isFlyingUpward()? 0.06f : (bonusAcc < getFlyingAcceleration())? 0.03f : 0.025f);
+            // Speed needs to be multiplied to make the values not seemingly unreasonably large in attributes
+        this.setSpeed((speed) * (25.0f/3.0f) + bonusAcc);
+
+        if (ClientEvents.getClient().options.keyUp.isDown()) {
+                // update for "sliding" speed
+            sinceLastUpdate = 1.0f;
+            super.travel(moveVec);
+        } else { // If not moving, still update the slide before going to a stop. Sudden stopping looks kinda weird
+            sinceLastUpdate = Mth.clamp(sinceLastUpdate - 0.03f, 0.0f, 1.0f);
+            super.travel(moveVec.scale(sinceLastUpdate));
+        }
+    }
+
     public void setDragonXRotation(float rotation){
         getEntityData().set(DRAGON_X_ROTATION, (float) (rotation + Math.ceil(-rotation / 360) * 360)); //  Basically normalizes the rotation to a value between 0 and 360
     }
     public float getDragonXRotation(){
         return getEntityData().get(DRAGON_X_ROTATION);
     }
+
+    public void handleGroundMovement(float speed, float groundX, float groundZ, Vec3 vec3d) {
+        // normal movement
+        if (ClientEvents.getClient().options.keyJump.isDown() && getBlockStateOn().getMaterial().isSolid() && speciesCanFly()) jumpFromGround(); // Jump when on the ground, for taking off.
+        if (dragonCanFly() && getAltitude() > getFlightThreshold() + 1) setNavigator(NavigationType.FLYING);
+        else {
+            this.setSpeed(speed);
+            super.travel(new Vec3(groundX, vec3d.y, groundZ));
+        }
+    }
+
+    // Will be used for BFL, etc.
+    public void handleWaterMovement(float speed){
+        return;
+    }
+
     // TODO dragon flapping wings sound
     // I feel like this is super messy rn, but I just wanted to get this working. TODO clean this up
     /*@Override
@@ -1323,6 +1346,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
     }*/
+
+    // ====================================
     @Override
     public boolean isNoGravity() {
         return isUsingFlyingNavigator();
@@ -1689,7 +1714,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return entity.isAlliedTo(getTeam());
     }
 
-    public void applyStaffInfo(BookContainer container)
+    /*public void applyStaffInfo(BookContainer container)
     {
         container.addAction(BookActions.HOME, BookActions.SIT)
                 .addTooltip(getName())
@@ -1705,7 +1730,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             container.addTooltip(new TranslatableComponent("entity.wyrmroost.dragons.gender." + gender)
                     .withStyle(isMale? ChatFormatting.DARK_AQUA : ChatFormatting.RED));
         }
-    }
+    }*/
 
     @Override
     public boolean isPickable()
@@ -1845,12 +1870,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return null;
     }
 
-    @Override
+    /*@Override
     public AbstractContainerMenu createMenu(int id, Inventory playersInv, Player player)
     {
         //System.out.println(new BookContainer(id, playersInv, this));
         return new BookContainer(id, playersInv, this);
-    }
+    }*/
 
     // ====================================
     //      D.2) Taming: Breeding and Food

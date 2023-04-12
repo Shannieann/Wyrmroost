@@ -1,6 +1,5 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
-import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
@@ -21,7 +20,9 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -147,12 +148,12 @@ public class EntityCanariWyvern extends WRDragonEntity
         return source == DamageSource.MAGIC || super.isInvulnerableTo(source);
     }
 
-    @Override
+    /*@Override
     public void applyStaffInfo(BookContainer container)
     {
         super.applyStaffInfo(container);
         container.addAction(BookActions.TARGET);
-    }
+    }*/
 
     @Override
     public boolean defendsHome()
@@ -225,6 +226,12 @@ public class EntityCanariWyvern extends WRDragonEntity
                 .add(MOVEMENT_SPEED, 0.2)
                 .add(FLYING_SPEED, 0.1)
                 .add(ATTACK_DAMAGE, 3);
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
+        return null;
     }
 
     /*@org.jetbrains.annotations.Nullable

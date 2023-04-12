@@ -2,8 +2,6 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
-import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
@@ -36,7 +34,9 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
@@ -447,13 +447,13 @@ public class EntityRoyalRed extends WRDragonEntity {
     //      D) Taming
     // ====================================
 
-    @Override
+    /*@Override
     public void applyStaffInfo(BookContainer container) {
         super.applyStaffInfo(container);
 
         container.slot(BookContainer.accessorySlot(getInventory(), ARMOR_SLOT, 0, -15, -15, DragonControlScreen.ARMOR_UV).only(DragonArmorItem.class))
                 .addAction(BookActions.TARGET);
-    }
+    }*/
 
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack) {
@@ -579,6 +579,12 @@ public class EntityRoyalRed extends WRDragonEntity {
         //TODO: Attack multiple LivingEntities, perhaps not select targets but rather exlude?
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false,
                 e -> e.getType() == EntityType.PLAYER || e instanceof Animal || e instanceof AbstractVillager));
+    }
+
+    @org.jetbrains.annotations.Nullable
+    @Override
+    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
+        return null;
     }
 
 
