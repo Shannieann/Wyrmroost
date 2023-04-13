@@ -6,6 +6,10 @@ import com.github.shannieann.wyrmroost.registry.WRIO;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.MenuProvider;
+import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Inventory;
@@ -14,6 +18,7 @@ import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
+import net.minecraftforge.network.NetworkHooks;
 
 import java.util.Collection;
 
@@ -22,19 +27,20 @@ import java.util.Collection;
 
 public class NewTarragonTomeContainer extends AbstractContainerMenu {
     private final ContainerLevelAccess containerAccess;
+    public final WRDragonEntity dragon;
     //public final ContainerData data;
 
     // Client Constructor
-    public NewTarragonTomeContainer(int id, Inventory playerInv) {
-        this(id, playerInv, new ItemStackHandler(27), BlockPos.ZERO);
+    public NewTarragonTomeContainer(int id, Inventory playerInv, WRDragonEntity dragon) {
+        this(id, playerInv, new ItemStackHandler(27), BlockPos.ZERO, dragon);
     }
 
     // Server Constructor
-    public NewTarragonTomeContainer(int id, Inventory playerInv, IItemHandler slots, BlockPos pos) {
+    public NewTarragonTomeContainer(int id, Inventory playerInv, IItemHandler slots, BlockPos pos, WRDragonEntity dragon) {
         super(WRIO.TARRAGON_TOME.get(), id);
         this.containerAccess = ContainerLevelAccess.create(playerInv.player.level, pos);
         //this.data = data;
-
+        this.dragon = dragon;
         final int slotSizePlus2 = 18, startX = 8, startY = 83, hotbarY = 141;
 
 
@@ -63,9 +69,9 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
         return true;
     }
 
-    public static MenuConstructor getServerContainer(WRDragonEntity dragon, BlockPos pos) {
-        return (id, playerInv, player) -> new NewTarragonTomeContainer(id, playerInv, dragon.getInventory(), pos);
-    }
+    //public static MenuConstructor getServerContainer(WRDragonEntity dragon, BlockPos pos) {
+     //   return (id, playerInv, player) -> new NewTarragonTomeContainer(id, playerInv, dragon.getInventory(), pos, dragon);
+    //}
 
     @Override
     public ItemStack quickMoveStack(Player pPlayer, int pIndex) {
@@ -86,6 +92,62 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
         }
 
         return retStack;
+    }
+
+    public static NewTarragonTomeContainer factory(int id, Inventory playerInv, FriendlyByteBuf buf)
+    {
+        return new NewTarragonTomeContainer(id, playerInv, fromBytes(buf));
+    }
+    public static void open(ServerPlayer player, WRDragonEntity dragon)
+    {
+        NetworkHooks.openGui(player, dragon, b -> toBytes(dragon, b));
+    }
+
+    private static void toBytes(WRDragonEntity entity, FriendlyByteBuf buffer)
+    {
+
+        buffer.writeVarInt(entity.getId());
+
+        Collection<MobEffectInstance> effects = entity.getActiveEffects();
+        buffer.writeVarInt(effects.size());
+
+        for (MobEffectInstance instance : effects)
+        {
+            buffer.writeByte(MobEffect.getId(instance.getEffect()) & 255);
+            buffer.writeVarInt(Math.min(instance.getDuration(), 32767));
+            buffer.writeByte(instance.getAmplifier() & 255);
+
+            byte flags = 0;
+            if (instance.isAmbient()) flags |= 1;
+            if (instance.isVisible()) flags |= 2;
+            if (instance.showIcon()) flags |= 4;
+
+            buffer.writeByte(flags);
+        }
+    }
+
+    @SuppressWarnings("ConstantConditions")
+    private static WRDragonEntity fromBytes(FriendlyByteBuf buf)
+    {
+        WRDragonEntity dragon = (WRDragonEntity) ClientEvents.getLevel().getEntity(buf.readVarInt());
+        dragon.getActiveEffectsMap().clear();
+
+        int series = buf.readVarInt();
+        for (int i = 0; i < series; i++)
+        {
+            byte flags;
+
+            MobEffectInstance instance = new MobEffectInstance(MobEffect.byId(buf.readByte() & 0xFF),
+                    buf.readVarInt(),
+                    buf.readByte(),
+                    ((flags = buf.readByte()) & 1) == 1,
+                    (flags & 2) == 2,
+                    (flags & 4) == 4);
+            instance.setNoCounter(instance.getDuration() == 32767);
+            dragon.forceAddEffect(instance, dragon);
+        }
+
+        return dragon;
     }
 
 

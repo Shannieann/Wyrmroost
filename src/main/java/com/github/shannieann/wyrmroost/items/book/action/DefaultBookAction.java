@@ -2,14 +2,12 @@ package com.github.shannieann.wyrmroost.items.book.action;
 
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
-import com.github.shannieann.wyrmroost.client.screen.TarragonTomeScreen;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
@@ -32,10 +30,10 @@ public class DefaultBookAction implements BookAction
     public InteractionResult rightClick(@Nullable WRDragonEntity dragon, Player player, ItemStack stack)
     {
         boolean client = player.getLevel().isClientSide();
-        if (dragon != null && !player.getLevel().isClientSide())
+        if (dragon != null && !client)
         {
-            MenuProvider container = new SimpleMenuProvider(NewTarragonTomeContainer.getServerContainer(dragon, player.blockPosition()), new TranslatableComponent("gui.wyrmroost.inventory_title"));
-            NetworkHooks.openGui((ServerPlayer) player, container, player.blockPosition());
+            NewTarragonTomeContainer.open((ServerPlayer) player, dragon);
+
 
         }
         else if ((dragon = clip(player)) != null)

@@ -2,27 +2,33 @@ package com.github.shannieann.wyrmroost.client.screen;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
-import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
+import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.phys.Vec2;
 
 
 public class NewTarragonTomeScreen extends AbstractContainerScreen<NewTarragonTomeContainer> {
+    private final WRDragonEntity dragon;
+    private final int xPixelsBetweenDepictions = 130, yPixelsBetweenDepictions = 56;
     private static final ResourceLocation TEXTURE = Wyrmroost.id("textures/gui/container/dragon_inventory.png");
     private static final ResourceLocation DEPICTION_TEXTURE = Wyrmroost.id("textures/gui/container/dragon_depictions.png");
-    public NewTarragonTomeScreen(NewTarragonTomeContainer container, Inventory playerInv, Component title) {
-        super(container, playerInv, title);
+    public NewTarragonTomeScreen(NewTarragonTomeContainer container, Inventory playerInv, Component unused) {
+
+        super(container, playerInv, new TranslatableComponent("gui.wyrmroost.inventory_title"));
         this.leftPos = 0;
         this.topPos = 0;
-        this.titleLabelX = 27;
-        this.titleLabelY = 8;
+        this.titleLabelX = 40;
+        this.titleLabelY = 6;
         this.imageWidth = 176;
         this.imageHeight = 165;
+        dragon = container.dragon;
     }
 
     @Override
@@ -35,8 +41,8 @@ public class NewTarragonTomeScreen extends AbstractContainerScreen<NewTarragonTo
 
         RenderSystem.setShaderTexture(0, DEPICTION_TEXTURE);
 
-        RenderSystem.setS
-        blit(pPoseStack, 155, 55, 0, 0, 126, 54);
+        Vec2 pos = dragon.getTomeDepictionOffset();
+        blit(pPoseStack, this.leftPos + 25, this.topPos + 17, pos.x * xPixelsBetweenDepictions, pos.y * yPixelsBetweenDepictions, 126, 54, 256, 512);
     }
 
     @Override
