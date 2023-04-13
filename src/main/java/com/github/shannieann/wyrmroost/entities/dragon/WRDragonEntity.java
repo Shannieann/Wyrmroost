@@ -3,6 +3,7 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
+import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.WRBodyControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundMoveControl;
@@ -1857,12 +1858,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return null;
     }
 
-    /*@Override
+    @Override
     public AbstractContainerMenu createMenu(int id, Inventory playersInv, Player player)
     {
         //System.out.println(new BookContainer(id, playersInv, this));
-        return new BookContainer(id, playersInv, this);
-    }*/
+        return new NewTarragonTomeContainer(id, playersInv, this);
+    }
 
     // ====================================
     //      D.2) Taming: Breeding and Food
@@ -2004,9 +2005,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     /**
      * This gets the location of the dragon's image for the tarragon tome.
-     * @returns the pixel location that the depiction starts at.
+     * X is the amount down, Y is the amount right. (Starts at 0)
+     * For example, for a melanistic Royal Red, it would be Vec2(5,1)
+     * @returns the location of the depiction in dragon_depictions.png
      */
-    //public abstract Vec2 getTomeImageLocation();
+    public abstract Vec2 getTomeDepictionOffset();
 
     public void doSpecialEffects()
     {

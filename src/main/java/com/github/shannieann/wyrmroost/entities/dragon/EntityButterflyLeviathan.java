@@ -57,6 +57,7 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.ForgeMod;
@@ -631,6 +632,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         return super.eat(level, stack);
     }
 
+
     // ====================================
     //      D.1) Taming: Inventory
     // ====================================
@@ -651,6 +653,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         return new DragonInventory(this, 1);
     }
 
+    @Override
+    public Vec2 getTomeDepictionOffset() {
+        return switch (getVariant()) {
+            case -1 -> new Vec2(1,4);
+            default -> new Vec2(0,4);
+        };
+    }
     // ====================================
     //      D.2) Taming: Breeding and Food
     // ====================================
@@ -723,11 +732,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, aquaticRandomTargetPredicate));
     }
 
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return null;
-    }
 
     public class BFLAttackGoal extends AnimatedGoal {
         private int navRecalculationTicks;

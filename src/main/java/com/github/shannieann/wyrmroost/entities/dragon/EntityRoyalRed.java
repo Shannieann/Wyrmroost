@@ -40,6 +40,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.model.generators.ModelBuilder;
@@ -495,6 +496,14 @@ public class EntityRoyalRed extends WRDragonEntity {
         return new DragonInventory(this, 1);
     }
 
+    @Override
+    public Vec2 getTomeDepictionOffset() {
+        return switch (getVariant()) {
+            case -1 -> new Vec2(1, 5);
+            default -> new Vec2(0, 5);
+        };
+    }
+
     // ====================================
     //      D.2) Taming: Breeding and Food
     // ====================================
@@ -504,6 +513,7 @@ public class EntityRoyalRed extends WRDragonEntity {
     public boolean isFood(ItemStack stack) {
         return stack.getItem().isEdible() && stack.getItem().getFoodProperties().isMeat();
     }
+
 
     // ====================================
     //      E) Client
@@ -581,11 +591,6 @@ public class EntityRoyalRed extends WRDragonEntity {
                 e -> e.getType() == EntityType.PLAYER || e instanceof Animal || e instanceof AbstractVillager));
     }
 
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return null;
-    }
 
 
     // ====================================

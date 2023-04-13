@@ -33,12 +33,14 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib3.core.manager.AnimationData;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Random;
+import java.util.Vector;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
@@ -288,6 +290,14 @@ public class EntitySilverGlider extends WRDragonEntity
         return stack.is(ItemTags.FISHES);
     }
 
+    @Override
+    public Vec2 getTomeDepictionOffset() {
+        return switch (getVariant()) {
+            case -1 -> new Vec2(1, 1);
+            default -> new Vec2(0, 1);
+        };
+    }
+
     public static boolean getSpawnPlacement(EntityType<EntitySilverGlider> fEntityType, ServerLevelAccessor level, MobSpawnType spawnReason, BlockPos blockPos, Random random)
     {
         if (spawnReason == MobSpawnType.SPAWNER) return true;
@@ -309,11 +319,6 @@ public class EntitySilverGlider extends WRDragonEntity
                 .add(FLYING_SPEED, 0.12);
     }
 
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return null;
-    }
 
     /*@Nullable
     @Override

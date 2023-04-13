@@ -33,6 +33,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 
 import javax.annotation.Nullable;
@@ -54,6 +55,11 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
     @org.jetbrains.annotations.Nullable
     @Override
     public AgeableMob getBreedOffspring(ServerLevel pLevel, AgeableMob pOtherParent) {
+        return null;
+    }
+
+    @Override
+    public Vec2 getTomeDepictionOffset() {
         return null;
     }
 
@@ -290,11 +296,6 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
         entityData.set(BURROWED, burrow);
     }
 
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return null;
-    }
 
     /*
        @Override

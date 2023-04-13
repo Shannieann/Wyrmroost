@@ -46,6 +46,7 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
@@ -191,7 +192,6 @@ public class EntityRoostStalker extends WRDragonEntity
             }
             //Give Item (or exchange)
             //TODO: How do we take items away from Rooststalker without giving them anything in exchange?
-            // You would give them an empty stack ig (ItemStack.EMPTY)
             if ((!stack.isEmpty() && !isFood(stack)) || !stack.isEmpty())
             {
                 //TODO: Check setStackInSlot method's comments. We are not performing the checks for sidedness.
@@ -352,15 +352,17 @@ public class EntityRoostStalker extends WRDragonEntity
     }
 
     @Override
+    public Vec2 getTomeDepictionOffset() {
+        return switch (getVariant()){
+            case -1 -> new Vec2(1, 0);
+            default -> new Vec2(0,0);
+        };
+    }
+
+    @Override
     public DragonInventory createInv()
     {
         return new DragonInventory(this, 1);
-    }
-
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return null;
     }
 
     //TODO: Safe to delete this?

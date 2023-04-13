@@ -26,6 +26,7 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
@@ -212,6 +213,11 @@ public class EntityCanariWyvern extends WRDragonEntity
         return stack.getItem() == Items.SWEET_BERRIES;
     }
 
+    @Override
+    public Vec2 getTomeDepictionOffset() {
+        return new Vec2(0,8);
+    }
+
 
     public boolean isPissed()
     {
@@ -228,11 +234,6 @@ public class EntityCanariWyvern extends WRDragonEntity
                 .add(ATTACK_DAMAGE, 3);
     }
 
-    @org.jetbrains.annotations.Nullable
-    @Override
-    public AbstractContainerMenu createMenu(int pContainerId, Inventory pPlayerInventory, Player pPlayer) {
-        return null;
-    }
 
     /*@org.jetbrains.annotations.Nullable
     @Override
