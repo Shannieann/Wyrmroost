@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
+import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRunWhenLosingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DefendHomeGoal;
@@ -37,6 +38,7 @@ import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -120,7 +122,7 @@ public class EntityRoostStalker extends WRDragonEntity
         goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
         goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
         goalSelector.addGoal(12, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.3f, 0.75f, 40f, 1.5f, 1.5f));
+        goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.5f, 0.75f, 40f, 1.5f, 1.5f));
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));
@@ -317,6 +319,7 @@ public class EntityRoostStalker extends WRDragonEntity
         return false;
     }
 
+
     @Nullable
     @Override
     protected SoundEvent getAmbientSound()
@@ -357,6 +360,11 @@ public class EntityRoostStalker extends WRDragonEntity
             case -1 -> new Vec2(1, 0);
             default -> new Vec2(0,0);
         };
+    }
+
+    @Override
+    public void applyTomeInfo(NewTarragonTomeContainer container) {
+        container.addExtraSlot((item) -> true); // Anything can be put into this slot
     }
 
     @Override

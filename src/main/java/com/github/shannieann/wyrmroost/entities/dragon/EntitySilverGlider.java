@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
+import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DragonBreedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRAvoidEntityGoal;
@@ -255,6 +256,7 @@ public class EntitySilverGlider extends WRDragonEntity
     {
         return new Vec3(0, 1.81, 0.5d);
     }
+
 
     @Override
     public boolean shouldUseFlyingNavigator()

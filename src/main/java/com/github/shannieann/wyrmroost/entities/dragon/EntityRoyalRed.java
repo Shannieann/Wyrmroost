@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
+import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
@@ -502,6 +503,11 @@ public class EntityRoyalRed extends WRDragonEntity {
             case -1 -> new Vec2(1, 5);
             default -> new Vec2(0, 5);
         };
+    }
+
+    @Override
+    public void applyTomeInfo(NewTarragonTomeContainer container) {
+        container.addArmorSlot();
     }
 
     // ====================================

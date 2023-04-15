@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
+import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSleepGoal;
@@ -660,6 +661,12 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             default -> new Vec2(0,4);
         };
     }
+
+    @Override
+    public void applyTomeInfo(NewTarragonTomeContainer container) {
+        container.addExtraSlot((item) -> item.is(Items.CONDUIT));
+    }
+
     // ====================================
     //      D.2) Taming: Breeding and Food
     // ====================================

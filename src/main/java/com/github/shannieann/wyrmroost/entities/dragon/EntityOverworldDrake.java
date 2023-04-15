@@ -3,6 +3,7 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.widgets.CollapsibleWidget;
+import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.containers.util.DynamicSlot;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.*;
@@ -102,7 +103,7 @@ public class EntityOverworldDrake extends WRDragonEntity
     @Override
     public DragonInventory createInv()
     {
-        return new DragonInventory(this, 18);
+        return new DragonInventory(this, 24);
     }
 
     @Override
@@ -292,6 +293,11 @@ public class EntityOverworldDrake extends WRDragonEntity
     public float getScale()
     {
         return getAgeScale(0.275f);
+    }
+
+    @Override
+    public void applyTomeInfo(NewTarragonTomeContainer container) {
+        container.addSaddleSlot().addArmorSlot().addChestSlot();
     }
 
     /*@Override

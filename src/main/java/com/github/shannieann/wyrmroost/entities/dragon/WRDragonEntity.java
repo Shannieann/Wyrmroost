@@ -1702,8 +1702,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return entity.isAlliedTo(getTeam());
     }
 
-    /*public void applyStaffInfo(BookContainer container)
-    {
+    // Wondering if I should make this abstract
+    public void applyTomeInfo(NewTarragonTomeContainer container){
+
+    }
+
+    /*{
         container.addAction(BookActions.HOME, BookActions.SIT)
                 .addTooltip(getName())
                 .addTooltip(new TextComponent(Character.toString('\u2764'))
@@ -1864,6 +1868,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //System.out.println(new BookContainer(id, playersInv, this));
         return new NewTarragonTomeContainer(id, playersInv, this);
     }
+
 
     // ====================================
     //      D.2) Taming: Breeding and Food
