@@ -71,33 +71,43 @@ public class WRSleepGoal extends AnimatedGoal{
     @Override
     public void tick(){
         if (!wakeUp) {
+            System.out.println("LINE 1");
             LookControl lookControl = entity.getLookControl();
+            System.out.println("LINE 2");
             if (lookControl instanceof WRGroundLookControl) {
+                System.out.println("LINE 3");
                 ((WRGroundLookControl)lookControl).stopLooking();
             }
+            System.out.println("LINE 4");
             if (lookControl instanceof WRSwimmingLookControl) {
+                System.out.println("LINE 5");
                 ((WRSwimmingLookControl)lookControl).stopLooking();
             }
             //ToDo: Flying look Control
-
+            System.out.println("LINE 6");
             if (entity.getHealth() < entity.getMaxHealth() && entity.getRandom().nextDouble() < 0.005) {
+                System.out.println("LINE 7");
                 entity.heal(1);
             }
 
             if (shouldWakeUp()) {
+                System.out.println("LINE 8");
                 wakeUp = true;
             } else {
+                System.out.println("LINE 9");
                 super.start(underwaterSleeping? "sleep_water" : "sleep",1,20);
             }
         } else {
-            super.tick();
+            System.out.println("LINE 10");
             if (!super.canContinueToUse()) {
+                System.out.println("LINE 11");
                 super.stop();
                 stop();
             }
+            System.out.println("LINE 12");
         }
+        super.tick();
     }
-
 
     public boolean shouldWakeUp(){
         if (entity.level.getDayTime() < 14000 || entity.level.getDayTime() > 23500) {
