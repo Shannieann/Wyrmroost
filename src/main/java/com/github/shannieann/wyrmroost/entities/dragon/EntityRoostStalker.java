@@ -1,7 +1,6 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
-import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
-import com.github.shannieann.wyrmroost.containers.BookContainer;
+import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRunWhenLosingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DefendHomeGoal;
@@ -36,7 +35,10 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.Rabbit;
 import net.minecraft.world.entity.animal.Turtle;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -46,6 +48,7 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
@@ -119,7 +122,7 @@ public class EntityRoostStalker extends WRDragonEntity
         goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
         goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
         goalSelector.addGoal(12, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.3f, 0.75f, 40f, 1.5f, 1.5f));
+        goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.5f, 0.75f, 40f, 1.5f, 1.5f));
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));
@@ -191,7 +194,6 @@ public class EntityRoostStalker extends WRDragonEntity
             }
             //Give Item (or exchange)
             //TODO: How do we take items away from Rooststalker without giving them anything in exchange?
-            // You would give them an empty stack ig (ItemStack.EMPTY)
             if ((!stack.isEmpty() && !isFood(stack)) || !stack.isEmpty())
             {
                 //TODO: Check setStackInSlot method's comments. We are not performing the checks for sidedness.
@@ -229,14 +231,14 @@ public class EntityRoostStalker extends WRDragonEntity
         return slot == EquipmentSlot.MAINHAND? getItem() : super.getItemBySlot(slot);
     }
 
-    @Override
+    /*@Override
     public void applyStaffInfo(BookContainer container)
     {
         super.applyStaffInfo(container);
 
         container.slot(BookContainer.accessorySlot(getInventory(), ITEM_SLOT, 0, 0, -15, DragonControlScreen.SADDLE_UV))
                 .addAction(BookActions.TARGET);
-    }
+    }*/
 
     @Override
     public boolean isInvulnerableTo(DamageSource source)
@@ -317,6 +319,7 @@ public class EntityRoostStalker extends WRDragonEntity
         return false;
     }
 
+
     @Nullable
     @Override
     protected SoundEvent getAmbientSound()
@@ -349,6 +352,19 @@ public class EntityRoostStalker extends WRDragonEntity
     public boolean isFood(ItemStack stack)
     {
         return stack.getItem().isEdible() && stack.getItem().getFoodProperties().isMeat();
+    }
+
+    @Override
+    public Vec2 getTomeDepictionOffset() {
+        return switch (getVariant()){
+            case -1 -> new Vec2(1, 0);
+            default -> new Vec2(0,0);
+        };
+    }
+
+    @Override
+    public void applyTomeInfo(NewTarragonTomeContainer container) {
+        container.addExtraSlot((item) -> true); // Anything can be put into this slot
     }
 
     @Override

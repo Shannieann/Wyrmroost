@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entities.dragon;
 
+import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DragonBreedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRAvoidEntityGoal;
@@ -23,7 +24,9 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.TemptGoal;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
@@ -31,12 +34,14 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import software.bernie.geckolib3.core.manager.AnimationData;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Random;
+import java.util.Vector;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
@@ -252,6 +257,7 @@ public class EntitySilverGlider extends WRDragonEntity
         return new Vec3(0, 1.81, 0.5d);
     }
 
+
     @Override
     public boolean shouldUseFlyingNavigator()
     {
@@ -286,6 +292,14 @@ public class EntitySilverGlider extends WRDragonEntity
         return stack.is(ItemTags.FISHES);
     }
 
+    @Override
+    public Vec2 getTomeDepictionOffset() {
+        return switch (getVariant()) {
+            case -1 -> new Vec2(1, 1);
+            default -> new Vec2(0, 1);
+        };
+    }
+
     public static boolean getSpawnPlacement(EntityType<EntitySilverGlider> fEntityType, ServerLevelAccessor level, MobSpawnType spawnReason, BlockPos blockPos, Random random)
     {
         if (spawnReason == MobSpawnType.SPAWNER) return true;
@@ -306,6 +320,7 @@ public class EntitySilverGlider extends WRDragonEntity
                 .add(MOVEMENT_SPEED, 0.23)
                 .add(FLYING_SPEED, 0.12);
     }
+
 
     /*@Nullable
     @Override

@@ -4,6 +4,7 @@ import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.client.render.entity.DragonEggRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.*;
+import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.CanariWyvernRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.OWDrakeRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.SilverGliderRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.effect.RenderLightningSphere;
@@ -122,7 +123,7 @@ public class ClientEvents
         event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RenderRoostStalker::new);
 
         //event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RoostStalkerRenderer2::new);
-        //event.registerEntityRenderer(WREntityTypes.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
         event.registerEntityRenderer(WREntityTypes.SILVER_GLIDER.get(), SilverGliderRenderer::new);
         event.registerEntityRenderer(WREntityTypes.OVERWORLD_DRAKE.get(), OWDrakeRenderer::new);
 
@@ -169,10 +170,8 @@ public class ClientEvents
             float yRot = dragon.cameraRotVector.y();
             float zRot = dragon.cameraRotVector.z();
             Vector3d bonePos = dragon.cameraBonePos.get(uuid);
-            Vec3 dragonPos = dragon.position();
             if (bonePos != null) {
                 Vec3 vecBonePos = new Vec3(bonePos.x, bonePos.y-5.7F, bonePos.z);
-                Vec3 vecBonePosMoving = new Vec3(bonePos.x, bonePos.y, bonePos.z); // todo remove this negative y offset and replace it with a better solution to move the camera. Maybe the above solution?
                 // Set camera position
 
                 //Sniffity: Previous method was forcing the camera position to update to the Dragon's position.

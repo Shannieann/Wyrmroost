@@ -2,8 +2,7 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
-import com.github.shannieann.wyrmroost.containers.BookContainer;
+import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
@@ -36,10 +35,13 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.npc.AbstractVillager;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.model.generators.ModelBuilder;
@@ -136,7 +138,7 @@ public class EntityRoyalRed extends WRDragonEntity {
                 .add(FOLLOW_RANGE, 60)
                 .add(ATTACK_KNOCKBACK, 4)
                 .add(ATTACK_DAMAGE, 12)
-                .add(FLYING_SPEED, 0.121)
+                .add(FLYING_SPEED, 0.1)
                 .add(WREntityTypes.Attributes.PROJECTILE_DAMAGE.get(), 4);
     }
 
@@ -170,11 +172,11 @@ public class EntityRoyalRed extends WRDragonEntity {
     @Override
     public int determineVariant() {
         LocalDate currentDate = LocalDate.now();
-        if (currentDate.getMonth().equals(Month.APRIL) && currentDate.getDayOfMonth() == 1)
+        if (currentDate.getMonth().equals(Month.APRIL) && currentDate.getDayOfMonth() == 1) // April fools RR
             return -2;
-        if (!this.isNoAi()) {
+        if (!this.isNoAi()) { // For normal generation: Chance for melanistic variants
             return getRandom().nextDouble() < 0.03 ? -1 : 0;
-        } else {
+        } else {  // TODO why tho?
             return 0;
         }
     }
@@ -447,13 +449,13 @@ public class EntityRoyalRed extends WRDragonEntity {
     //      D) Taming
     // ====================================
 
-    @Override
+    /*@Override
     public void applyStaffInfo(BookContainer container) {
         super.applyStaffInfo(container);
 
         container.slot(BookContainer.accessorySlot(getInventory(), ARMOR_SLOT, 0, -15, -15, DragonControlScreen.ARMOR_UV).only(DragonArmorItem.class))
                 .addAction(BookActions.TARGET);
-    }
+    }*/
 
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack) {
@@ -495,6 +497,19 @@ public class EntityRoyalRed extends WRDragonEntity {
         return new DragonInventory(this, 1);
     }
 
+    @Override
+    public Vec2 getTomeDepictionOffset() {
+        return switch (getVariant()) {
+            case -1 -> new Vec2(1, 5);
+            default -> new Vec2(0, 5);
+        };
+    }
+
+    @Override
+    public void applyTomeInfo(NewTarragonTomeContainer container) {
+        container.addArmorSlot();
+    }
+
     // ====================================
     //      D.2) Taming: Breeding and Food
     // ====================================
@@ -504,6 +519,7 @@ public class EntityRoyalRed extends WRDragonEntity {
     public boolean isFood(ItemStack stack) {
         return stack.getItem().isEdible() && stack.getItem().getFoodProperties().isMeat();
     }
+
 
     // ====================================
     //      E) Client
@@ -580,6 +596,7 @@ public class EntityRoyalRed extends WRDragonEntity {
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false,
                 e -> e.getType() == EntityType.PLAYER || e instanceof Animal || e instanceof AbstractVillager));
     }
+
 
 
     // ====================================

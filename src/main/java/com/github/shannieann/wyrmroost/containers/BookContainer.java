@@ -1,7 +1,6 @@
 package com.github.shannieann.wyrmroost.containers;
 
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.client.screen.widgets.CollapsibleWidget;
 import com.github.shannieann.wyrmroost.containers.util.DynamicSlot;
 import com.github.shannieann.wyrmroost.containers.util.Slot3D;
@@ -31,7 +30,7 @@ import java.util.List;
 
 import static com.github.shannieann.wyrmroost.client.ClientEvents.getClient;
 
-public class BookContainer extends AbstractContainerMenu
+/*public class BookContainer extends AbstractContainerMenu
 {
     public final WRDragonEntity dragon;
     public final Inventory playerInv;
@@ -160,4 +159,4 @@ public class BookContainer extends AbstractContainerMenu
         return dragon;
     }
 
-}
+}*/

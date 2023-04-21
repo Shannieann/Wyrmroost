@@ -16,6 +16,7 @@ import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.network.PlayMessages;
@@ -97,17 +98,16 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
 
      */
 
-    /*
+
     public static final RegistryObject<EntityType<EntityCanariWyvern>> CANARI_WYVERN = creature("canari_wyvern", EntityCanariWyvern::new)
             .size(0.65f, 0.85f)
             .attributes(EntityCanariWyvern::getAttributeSupplier)
             .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, WRDragonEntity::canFlyerSpawn)
             .spawnEgg(0x1D1F28, 0x492E0E)
             .dragonEgg(new DragonEggProperties(0.175f, 0.275f, 6000).setConditions(c -> c.level.getBlockState(c.blockPosition().below()).getBlock() == Blocks.JUNGLE_LEAVES))
-            .renderModel(() -> CanariWyvernModel::new)
             .build();
 
-     */
+
 
 
 
