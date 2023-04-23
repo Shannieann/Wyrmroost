@@ -95,7 +95,7 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
 
 
             // Translate the item based on whether its a tool/block
-            if (item.getItem() instanceof TieredItem) // offsets for tools, looks way fucking better
+            if (item.getItem() instanceof TieredItem)
             {
                 matrixStackIn.translate(-0.25f, 0, 0);
                 matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(-45));
