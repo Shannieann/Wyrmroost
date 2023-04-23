@@ -6,7 +6,6 @@ import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.DragonArmorItem;
 import com.github.shannieann.wyrmroost.registry.WRIO;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.NonNullList;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffect;
@@ -23,7 +22,6 @@ import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.function.Predicate;
 
 // ngl I had no idea how to do containers or screens so I had to watch a tutorial
@@ -143,7 +141,6 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
         if (settingToChest){
             // Move the slots to where they should be.
             movePlayerInvSlots(true);
-            // Then we add the dragon chest slots. There are 21 in total.
 
         } else {
             // Move the slots back to non-chested inventory
