@@ -9,6 +9,7 @@ public class RenderRoostStalker extends WRDragonRender<EntityRoostStalker> {
         public RenderRoostStalker(EntityRendererProvider.Context renderManager) {
             super(renderManager, new ModelRoostStalker(), "");
             this.addLayer(new ModelRoostStalker.RoostStalkerEyesLayer<>(this));
+            this.addLayer(new ModelRoostStalker.RoostStalkerMouthItemLayer<>(this));
             //TODO: Shadow?
             this.shadowRadius = 0.0F;
         }
