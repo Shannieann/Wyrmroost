@@ -67,7 +67,7 @@ public class RiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
     }
 
 
-    public <E extends Entity> void renderEntity(E entityIn, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int packedLight) {
+    private <E extends Entity> void renderEntity(E entityIn, float partialTicks, PoseStack matrixStack, MultiBufferSource bufferIn, int packedLight) {
         EntityRenderer<? super E> render;
         EntityRenderDispatcher manager = Minecraft.getInstance().getEntityRenderDispatcher();
 

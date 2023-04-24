@@ -68,6 +68,7 @@ public class TarragonTomeItem extends Item implements IAnimatable
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)
     {
+
         ItemStack stack = player.getItemInHand(hand);
         if (player.isShiftKeyDown())
         {
@@ -75,7 +76,8 @@ public class TarragonTomeItem extends Item implements IAnimatable
             ModUtils.playLocalSound(level, player.blockPosition(), SoundEvents.PAINTING_BREAK, 0.75f, 1f);
             return new InteractionResultHolder<>(InteractionResult.sidedSuccess(level.isClientSide), stack);
         }
-        return new InteractionResultHolder<>(getAction(stack).rightClick(getBoundDragon(level, stack), player, stack), stack);
+        getAction(stack).rightClick(getBoundDragon(level, stack), player, stack);
+        return new InteractionResultHolder<>(InteractionResult.PASS, stack);
     }
 
     @Override

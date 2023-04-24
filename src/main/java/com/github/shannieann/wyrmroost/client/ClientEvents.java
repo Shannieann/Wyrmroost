@@ -140,7 +140,7 @@ public class ClientEvents
 
     private static void cancelIfRidingDragon(RenderLivingEvent event){
         Entity entity = event.getEntity().getVehicle();
-        if (entity instanceof WRDragonEntity dragon) {
+        if (entity instanceof WRDragonEntity) {
             if (dragonRiders.contains(event.getEntity().getUUID())) event.setCanceled(true); // Don't render the real player if they're riding a dragon
             CameraType camera = getClient().options.getCameraType();
             if (getClient().player == event.getEntity() && camera == CameraType.FIRST_PERSON) event.setCanceled(true); // Don't render the "fake" player if the player is in 1st person

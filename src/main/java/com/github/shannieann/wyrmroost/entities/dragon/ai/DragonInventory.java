@@ -11,6 +11,8 @@ import net.minecraftforge.items.ItemStackHandler;
  */
 public class DragonInventory extends ItemStackHandler
 {
+
+
     public final WRDragonEntity dragon;
 
     public DragonInventory(WRDragonEntity dragon, int size)
@@ -31,6 +33,7 @@ public class DragonInventory extends ItemStackHandler
         for (int i = 0; i < stacks.size(); i++) dragon.onInvContentsChanged(i, stacks.get(i), true);
     }
 
+
     public boolean isEmpty()
     {
         if (stacks.isEmpty()) return true;
@@ -38,6 +41,9 @@ public class DragonInventory extends ItemStackHandler
         stacks.clear(); // shouldn't even have empty stacks?
         return true;
     }
+
+
+
 
     public boolean isEmptyAfter(int slot)
     {
@@ -55,4 +61,5 @@ public class DragonInventory extends ItemStackHandler
     {
         return stacks;
     }
+
 }

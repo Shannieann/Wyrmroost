@@ -12,7 +12,7 @@ That is indeed the case, All Rights Reserved, as for code and assets are concern
 
 ### Notice
 By Contributing to this project (whether it be code, assets, language entries etc.) you are hereby granting us rights to what you contribute.
-If there is a problem with that, either get in contact with me (WolfShotz) or just dont contribute.
+If there is a problem with that, either get in contact with me (Shannieann) or just dont contribute.
 
 With that said, you are hereby accepting to the following:
 

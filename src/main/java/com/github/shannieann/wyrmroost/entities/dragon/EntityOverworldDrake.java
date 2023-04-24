@@ -2,9 +2,8 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.client.screen.widgets.CollapsibleWidget;
-import com.github.shannieann.wyrmroost.containers.BookContainer;
+import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.containers.util.DynamicSlot;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.*;
@@ -38,7 +37,9 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -48,6 +49,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.Tags;
 import software.bernie.geckolib3.core.manager.AnimationData;
@@ -101,7 +103,7 @@ public class EntityOverworldDrake extends WRDragonEntity
     @Override
     public DragonInventory createInv()
     {
-        return new DragonInventory(this, 18);
+        return new DragonInventory(this, 24);
     }
 
     @Override
@@ -294,6 +296,11 @@ public class EntityOverworldDrake extends WRDragonEntity
     }
 
     @Override
+    public void applyTomeInfo(NewTarragonTomeContainer container) {
+        container.addSaddleSlot().addArmorSlot().addChestSlot();
+    }
+
+    /*@Override
     public void applyStaffInfo(BookContainer container)
     {
         super.applyStaffInfo(container);
@@ -308,7 +315,7 @@ public class EntityOverworldDrake extends WRDragonEntity
                 .slot(BookContainer.accessorySlot(i, SADDLE_SLOT, 0, -15, -7, DragonControlScreen.SADDLE_UV).only(Items.SADDLE))
                 .addAction(BookActions.TARGET)
                 .addCollapsible(chestWidget);
-    }
+    }*/
 
     @Override
     public void setTarget(@Nullable LivingEntity target)
@@ -416,6 +423,14 @@ public class EntityOverworldDrake extends WRDragonEntity
         return stack.is(Tags.Items.CROPS_WHEAT);
     }
 
+    @Override
+    public Vec2 getTomeDepictionOffset() {
+        return switch (getVariant()) {
+            case -1 -> new Vec2(1,3);
+            default -> new Vec2(0,3);
+        };
+    }
+
     /*
     @Override
     public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
@@ -463,12 +478,6 @@ public class EntityOverworldDrake extends WRDragonEntity
                 .add(ATTACK_DAMAGE, 8);
     }
 
-    //@org.jetbrains.annotations.Nullable
-    //@Override
-    //public AbstractContainerMenu createMenu(int p_39954_, Inventory p_39955_, Player p_39956_) {
-        //return null;
-    //}
-
     @Override
     public void registerControllers(AnimationData data) {
 
@@ -478,4 +487,5 @@ public class EntityOverworldDrake extends WRDragonEntity
     public boolean speciesCanFly() {
         return false;
     }
+
 }

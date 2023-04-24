@@ -2,8 +2,7 @@ package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
-import com.github.shannieann.wyrmroost.containers.BookContainer;
+import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSleepGoal;
@@ -42,7 +41,9 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -53,6 +54,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.ForgeMod;
@@ -597,13 +599,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     //      D) Taming
     // ====================================
 
-    @Override
+    /*@Override
     public void applyStaffInfo(BookContainer container) {
         super.applyStaffInfo(container);
 
         container.slot(BookContainer.accessorySlot(getInventory(), CONDUIT_SLOT, 0, -65, -75, DragonControlScreen.CONDUIT_UV).only(Items.CONDUIT).limit(1))
                 .addAction(BookActions.TARGET);
-    }
+    }*/
 
 
     @Override
@@ -627,6 +629,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         return super.eat(level, stack);
     }
 
+
     // ====================================
     //      D.1) Taming: Inventory
     // ====================================
@@ -645,6 +648,19 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     @Override
     public DragonInventory createInv() {
         return new DragonInventory(this, 1);
+    }
+
+    @Override
+    public Vec2 getTomeDepictionOffset() {
+        return switch (getVariant()) {
+            case -1 -> new Vec2(1,4);
+            default -> new Vec2(0,4);
+        };
+    }
+
+    @Override
+    public void applyTomeInfo(NewTarragonTomeContainer container) {
+        container.addExtraSlot((item) -> item.is(Items.CONDUIT));
     }
 
     // ====================================
@@ -718,6 +734,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         //targetSelector.addGoal(4, new DefendHomeGoal(this));
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, aquaticRandomTargetPredicate));
     }
+
 
     public class BFLAttackGoal extends AnimatedGoal {
         private int navRecalculationTicks;

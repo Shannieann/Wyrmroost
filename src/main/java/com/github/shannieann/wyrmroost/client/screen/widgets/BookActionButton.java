@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.client.screen.widgets;
+/*package com.github.shannieann.wyrmroost.client.screen.widgets;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
@@ -87,4 +87,4 @@ public class BookActionButton extends AbstractButton
     public void updateNarration(NarrationElementOutput p_169152_) {
 
     }
-}
+}*/
