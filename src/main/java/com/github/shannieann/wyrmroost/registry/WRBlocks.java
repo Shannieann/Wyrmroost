@@ -20,10 +20,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.GrassColor;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.OreBlock;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.material.MaterialColor;
 import net.minecraftforge.registries.DeferredRegister;
@@ -59,6 +61,13 @@ public class WRBlocks {
     public static final RegistryObject<Block> RED_GEODE_BLOCK = register("red_geode_block", () -> new Block(mineable(Material.METAL, 5f, SoundType.METAL)));
     public static final RegistryObject<Block> PURPLE_GEODE_ORE = register("purple_geode_ore", () -> new OreBlock(mineable(Material.METAL, 5f, SoundType.GILDED_BLACKSTONE), UniformInt.of(8, 11)));
     public static final RegistryObject<Block> PURPLE_GEODE_BLOCK = register("purple_geode_block", () -> new Block(mineable(Material.METAL, 7f, SoundType.METAL)));
+
+    public static final RegistryObject<Block> LIGHT_WATER = register("light_water",
+            () -> new LiquidBlock(() -> Fluids.WATER, BlockBehaviour.Properties.of(Material.WATER)
+                    .noCollission()
+                    .noDrops()
+                    .lightLevel((n) -> 15)));
+
     /*
      biomes
     public static final RegistryObject<Block> KARPO_BUSH = register("karpo_bush", () -> new BushBlock(replaceablePlant()), extend().cutoutRenderer().flammability(60, 100).tint(WRBlocks::grassTint));
