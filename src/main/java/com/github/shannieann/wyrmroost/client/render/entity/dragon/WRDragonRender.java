@@ -17,6 +17,10 @@ public abstract class WRDragonRender<T extends WRDragonEntity> extends GeoEntity
     protected final String mainBoneName;
     protected float defaultXRot = 0.0f;
     private boolean rotIsSet = false;
+
+    public WRDragonRender(EntityRendererProvider.Context renderManager, AnimatedGeoModel<T> modelProvider){
+        this(renderManager,modelProvider, "");
+    }
     /**
     * @param mainBoneName isn't necessary yet for anything that doesn't use setDragonXRotation
      */

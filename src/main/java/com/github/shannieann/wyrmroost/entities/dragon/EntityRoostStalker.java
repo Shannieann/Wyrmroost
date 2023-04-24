@@ -122,7 +122,7 @@ public class EntityRoostStalker extends WRDragonEntity
         goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
         goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
         goalSelector.addGoal(12, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.5f, 0.75f, 40f, 1.5f, 1.5f));
+        goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.5f, 1.0f, 16.0f, 1.5f, 1.5f));
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));
@@ -194,6 +194,8 @@ public class EntityRoostStalker extends WRDragonEntity
             }
             //Give Item (or exchange)
             //TODO: How do we take items away from Rooststalker without giving them anything in exchange?
+
+            // With the new tome system, you can take away items in the tome - InvasiveKoala
             if ((!stack.isEmpty() && !isFood(stack)) || !stack.isEmpty())
             {
                 //TODO: Check setStackInSlot method's comments. We are not performing the checks for sidedness.
@@ -351,7 +353,7 @@ public class EntityRoostStalker extends WRDragonEntity
     @SuppressWarnings("ConstantConditions")
     public boolean isFood(ItemStack stack)
     {
-        return stack.getItem().isEdible() && stack.getItem().getFoodProperties().isMeat();
+        return stack.getItem().isEdible() && stack.getFoodProperties(this).isMeat();
     }
 
     @Override
@@ -484,9 +486,9 @@ public class EntityRoostStalker extends WRDragonEntity
         /**
          * Used to handle the chest opening animation when being used by the scavenger
          */
-        private void interactChest(Container intentory, boolean open)
+        private void interactChest(Container inventory, boolean open)
         {
-            if (!(intentory instanceof ChestBlockEntity chest)) return; // not a chest, ignore it
+            if (!(inventory instanceof ChestBlockEntity chest)) return; // not a chest, ignore it
 
             chest.openersCounter.openCount = open? 1 : 0;
             chest.getLevel().blockEvent(chest.getBlockPos(), chest.getBlockState().getBlock(), 1, chest.openersCounter.getOpenerCount());
