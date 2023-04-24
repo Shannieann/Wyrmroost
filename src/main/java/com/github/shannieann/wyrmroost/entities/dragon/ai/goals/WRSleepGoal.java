@@ -1,8 +1,8 @@
 package com.github.shannieann.wyrmroost.entities.dragon.ai.goals;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming.WRSwimmingLookControl;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundLookControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swim.WRSwimmingLookControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.ground.WRGroundLookControl;
 import net.minecraft.world.entity.ai.control.LookControl;
 
 public class WRSleepGoal extends AnimatedGoal{

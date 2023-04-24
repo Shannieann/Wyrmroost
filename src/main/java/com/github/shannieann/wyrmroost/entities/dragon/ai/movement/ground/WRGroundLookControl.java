@@ -1,12 +1,7 @@
-package com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking;
+package com.github.shannieann.wyrmroost.entities.dragon.ai.movement.ground;
 
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.util.Mafs;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.control.LookControl;
-import net.minecraft.world.phys.Vec3;
-
-import java.util.Optional;
 
 public class WRGroundLookControl extends LookControl
 {

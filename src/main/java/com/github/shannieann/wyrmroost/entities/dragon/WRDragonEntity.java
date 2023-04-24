@@ -5,15 +5,14 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.WRBodyControl;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundLookControl;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundMoveControl;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.walking.WRGroundPathNavigator;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.FlyerMoveController;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.flying.FlyerPathNavigator;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.ground.WRGroundLookControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.ground.WRGroundMoveControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.fly.FlyerMoveController;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.fly.FlyerPathNavigator;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming.WRSwimmingLookControl;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming.WRSwimmingMoveControl;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swimming.WRSwimmingNavigator;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swim.WRSwimmingLookControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swim.WRSwimmingMoveControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swim.WRSwimmingNavigator;
 import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggProperties;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.DragonArmorItem;
@@ -1063,11 +1062,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      C) Navigation and Control
     // ====================================
 
-    @Override
-    protected PathNavigation createNavigation(Level levelIn)
-    {
-        return new WRGroundPathNavigator(this);
-    }
 
     public void setNavigator(NavigationType navigator) {
         if (navigator == getNavigationType()) return;
@@ -1075,7 +1069,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             case GROUND -> {
                 this.moveControl = new WRGroundMoveControl(this, groundMaxYaw);
                 this.lookControl = new WRGroundLookControl(this);
-                this.navigation = new WRGroundPathNavigator(this);
+                this.navigation = new GroundPathNavigation(this, this.level);
             }
             case FLYING -> {
                 this.moveControl = new FlyerMoveController(this);
@@ -1141,7 +1135,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         else if (navigation instanceof FlyerPathNavigator){
             return NavigationType.FLYING;
         }
-        else if (navigation instanceof WRGroundPathNavigator){
+        else if (navigation instanceof GroundPathNavigation){
             return NavigationType.GROUND;
         }
         return NavigationType.GROUND;
@@ -1356,7 +1350,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
     public boolean isUsingLandNavigator() {
-        return getNavigation() instanceof WRGroundPathNavigator;
+        return getNavigation() instanceof GroundPathNavigation;
     }
 
     // ====================================
