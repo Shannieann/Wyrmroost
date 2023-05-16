@@ -95,7 +95,7 @@ public class EntityRoostStalker extends WRDragonEntity
     public static AttributeSupplier.Builder getAttributeSupplier()
     {
         return (Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 8.0D)
+                .add(Attributes.MAX_HEALTH, 16.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.285D)
                 .add(Attributes.ATTACK_DAMAGE, 2.0D));
     }
@@ -122,7 +122,7 @@ public class EntityRoostStalker extends WRDragonEntity
         goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
         goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
         goalSelector.addGoal(12, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.5f, 1.0f, 16.0f, 1.5f, 1.5f));
+        goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.2f, 1.0f, 16.0f, 1.5f, 1.5f));
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));
@@ -156,7 +156,7 @@ public class EntityRoostStalker extends WRDragonEntity
         {
             eat(stack);
             //TODO: Why are we changing the max health upon taming?
-            if (tame(getRandom().nextDouble() < 0.25, player)) getAttribute(MAX_HEALTH).setBaseValue(20d);
+            if (tame(getRandom().nextDouble() < 0.25, player)) getAttribute(MAX_HEALTH).setBaseValue(20);
             return success;
         }
 
@@ -200,8 +200,8 @@ public class EntityRoostStalker extends WRDragonEntity
             {
                 //TODO: Check setStackInSlot method's comments. We are not performing the checks for sidedness.
                 //TODO: Perhaps perform these checks before the mob interact is ever called?
+                player.setItemInHand(hand, getItem());
                 setStackInSlot(ITEM_SLOT, stack);
-                player.setItemInHand(hand, stack);
                 return success;
             }
         }
@@ -260,10 +260,36 @@ public class EntityRoostStalker extends WRDragonEntity
         return getType().getDimensions().scale(getScale());
     }
 
+
+    /**
+    A few things to note for Rooststalker here:
+    - We can't separate the pattern and the color because the pattern changes depending on the color.
+    - The digit in the tens place decides color
+        - 0 is the default red-brown color
+        - 1 is green
+        - 2 is black
+        - 3 is blue
+        - 4 is albino (rare version)
+    - The digit in the ones place decides the pattern
+        - 0 is patternless
+        - 1 is spider/ribcage
+        - 2 is socks
+        - 3 is diamond
+        - 4 is striped
+        - 5 is reverse-striped (rare)
+     - Koala
+     */
     @Override
     public int determineVariant()
     {
-        return getRandom().nextDouble() < 0.005? -1 : 0;
+        // Rare chance for albino. Otherwise, a random choice of the other 4 colors.
+        // Since it is the digit in the tens place, we multiply by 10.
+        int color = (getRandom().nextDouble() < 0.005)? 40 : getRandom().nextInt(0, 4) * 10;
+        // Random pattern
+        int pattern = getRandom().nextInt(0,6);
+
+
+        return color + pattern;
     }
 
 
