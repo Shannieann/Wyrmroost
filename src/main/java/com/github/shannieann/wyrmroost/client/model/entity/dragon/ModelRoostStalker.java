@@ -4,6 +4,7 @@ import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.layer.DragonEyesLayer;
 import com.github.shannieann.wyrmroost.entities.dragon.EntityRoostStalker;
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
@@ -26,8 +27,6 @@ import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
 public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
     private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/roost_stalker/roost_stalker.geo.json");
-    private static final ResourceLocation TEXTURE_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/roost_stalker.png");
-    private static final ResourceLocation TEXTURE_RESOURCE_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/roost_stalker_sp.png");
     private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/roost_stalker/roost_stalker.json");
 
 
@@ -38,10 +37,8 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
 
     @Override
     public ResourceLocation getTextureLocation(EntityRoostStalker object) {
-        switch (object.getVariant()){
-            case -1 -> { return TEXTURE_RESOURCE_SPECIAL;}
-            default -> {return  TEXTURE_RESOURCE;}
-        }
+        System.out.println(object.getVariant());
+        return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/rooststalker_" + object.getVariant() + ".png");
     }
 
     @Override
@@ -110,9 +107,11 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
 
             // Translate the item's render location to the bone's location
             // (Don't ask me why its multiplied by 1/16, I was wondering why it rendered so far away and looked at Alex's ice and fire code so thanks Alex)
-            matrixStackIn.translate(bone.getModelPosition().x * 00.0625F, bone.getModelPosition().y * 00.0625F, bone.getModelPosition().z * 00.0625F);
+            Vector3d pos = bone.getModelPosition();
+            pos.scale(00.0625F);
+            matrixStackIn.translate(pos.x, pos.y, pos.z);
             // And rotate correctly
-            matrixStackIn.mulPoseMatrix(bone.getModelRotationMat());
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-90));
             // And scale it
             matrixStackIn.scale(1.5f, 1.5f, 1.5f);
 
