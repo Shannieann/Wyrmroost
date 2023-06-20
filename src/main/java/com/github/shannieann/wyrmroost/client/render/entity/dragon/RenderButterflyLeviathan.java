@@ -15,7 +15,7 @@ import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
 public class RenderButterflyLeviathan extends WRDragonRender<EntityButterflyLeviathan> {
     public RenderButterflyLeviathan(EntityRendererProvider.Context renderManager) {
-        super(renderManager, new ModelButterflyLeviathan(), "");
+        super(renderManager, new ModelButterflyLeviathan());
         this.addLayer(new ModelButterflyLeviathan.ButterflyLeviathanActivatedLayer<>(this));
         //TODO: Shadow?
     }

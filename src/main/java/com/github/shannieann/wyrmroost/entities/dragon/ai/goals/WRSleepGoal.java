@@ -46,9 +46,7 @@ public class WRSleepGoal extends AnimatedGoal{
                     return entity.getHealth() < entity.getMaxHealth() * 0.25;
                 }
             }
-            else if (!entity.isInSittingPose()) {
-                return false;
-            }
+            else return entity.isInSittingPose();
         }
         return true;
     }
