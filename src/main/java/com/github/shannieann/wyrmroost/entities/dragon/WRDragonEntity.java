@@ -1626,10 +1626,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      * which tl;dr does not update any AI including Goal Selectors, Pathfinding, Moving, etc.
      * Do not perform any AI actions while: Not Sleeping; not being controlled, etc.
      */
+    //Do not perform AI actions while entity is being ridden
+    // Do *NOT* check for Sleeping, as this is now a Goal and entity's AI must still work while asleep
     @Override
     public boolean isImmobile()
     {
-        return super.isImmobile() || isSleeping() || isRiding();
+        return super.isImmobile() || isRiding();
     }
 
 
