@@ -1,0 +1,11 @@
+Notes on Path Navigators and Node Evaluators
+
+There is an evident issue with large entities navigating
+This is particularly due to how expensive calculations get on a large AABB
+Calling getters for BlockState and FluidState constantly eat up TPS
+
+There might be an option here to optimize the NUMBER of checks being performed
+The proposal would be to utilize methods applied by ObserverLib, which has been ported to 1.18.2
+Instead of performing structure checks, we would perform checks for possible blockage on navigation
+
+Pending testing
