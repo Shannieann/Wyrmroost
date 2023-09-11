@@ -772,7 +772,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void tick() {
         super.tick();
 
-        if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0); // Shouldn't be rotated on ground
+        if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0); // Shouldn't be rotated on ground or water
         if (getDragonXRotation() != 0 && getDeltaMovement().length() <= 0.25){ // Every tick, slowly orient the dragon back to normal if its barely moving so it isn't just awkwardly pointing down or up
             setDragonXRotation(Mth.approachDegrees(getDragonXRotation(), 0.0f, 1.0f));
         }
@@ -1155,18 +1155,19 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
 
-    // Test dragonriding method
+
     @Override
     public void travel(Vec3 vec3d){
+        System.out.println("hello");
         if (!this.isAlive()) return;
         if (this.isVehicle() && this.canBeControlledByRider()) {
             LivingEntity livingentity = (LivingEntity)this.getControllingPassenger();
-            this.setYRot(livingentity.getYRot());
             this.yRotO = this.getYRot();
             this.setXRot(livingentity.getXRot() * 0.5F);
             this.setRot(this.getYRot(), this.getXRot());
-            this.yBodyRot = this.getYRot();
             this.yHeadRot = this.yBodyRot;
+            this.setYRot(livingentity.getYRot());
+            this.yBodyRot = this.getYRot();
             float groundX = livingentity.xxa * 0.5F;
             float groundZ = livingentity.zza;
             if (groundZ < 0.0F) { // Huh? Ig I'll keep it here because it works
@@ -1180,15 +1181,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 float speed = getTravelSpeed();
                 if (isUsingFlyingNavigator())
                 {
-                    handleFreeFlyingMovement(speed,livingentity);
+                    handleFreeFlyingMovement(speed, livingentity); // Free Flying (Diving, 180s, etc.)
+
+                    //else handleCombatFlyingMovement(speed, livingentity); // Combat flying (More controlled flight)
                 }
                 else if (isUsingSwimmingNavigator())
                 {
-                    handleWaterMovement(speed);
+                    handleWaterMovement(speed, livingentity);
                 }
                 else
                 {
-                    handleGroundMovement(speed, groundX, groundZ, vec3d);
+                    handleGroundMovement(speed, groundX, groundZ, vec3d, livingentity);
                 }
             } else if (livingentity instanceof Player) {
                 this.setDeltaMovement(Vec3.ZERO);
@@ -1203,7 +1206,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
         // Separated these methods to make it look cleaner. Also allows for subclasses to possibly override them if need be.
-    public void handleFreeFlyingMovement(float speed, LivingEntity livingentity) {
+    protected void handleFreeFlyingMovement(float speed, LivingEntity livingentity) {
         // Convert to ground nav if applicable
         if (getAltitude() <= getFlightThreshold()) {
             setNavigator(NavigationType.GROUND);
@@ -1228,7 +1231,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         Vec3 moveVec = new Vec3(xxa, lookVec.y, zza);
 
             // Acceleration for diving speed boost
-        bonusAcc = Mth.approach(bonusAcc, getFlyingAcceleration(), isFlyingUpward()? 0.06f : (bonusAcc < getFlyingAcceleration())? 0.03f : 0.025f);
+        // TODO Figure out a better method for diving. As is, its way too much and goes at weird angles
+        // (Also this just looks ugly)
+        bonusAcc = 0; //Mth.approach(bonusAcc, getFlyingAcceleration(), isFlyingUpward()? 0.06f : (bonusAcc < getFlyingAcceleration())? 0.03f : 0.025f);
             // Speed needs to be multiplied to make the values not seemingly unreasonably large in attributes
         this.setSpeed((speed) * (25.0f/3.0f) + bonusAcc);
 
@@ -1249,7 +1254,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return getEntityData().get(DRAGON_X_ROTATION);
     }
 
-    public void handleGroundMovement(float speed, float groundX, float groundZ, Vec3 vec3d) {
+
+
+    protected void handleGroundMovement(float speed, float groundX, float groundZ, Vec3 vec3d, LivingEntity livingentity) {
         // normal movement
         if (ClientEvents.getClient().options.keyJump.isDown() && getBlockStateOn().getMaterial().isSolid() && speciesCanFly()) jumpFromGround(); // Jump when on the ground, for taking off.
         if (dragonCanFly() && getAltitude() > getFlightThreshold() + 1) setNavigator(NavigationType.FLYING);
@@ -1260,8 +1267,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     // Will be used for BFL, etc.
-    public void handleWaterMovement(float speed){
-        return;
+    protected void handleWaterMovement(float speed, LivingEntity livingentity){
     }
 
     // TODO dragon flapping wings sound
@@ -1516,9 +1522,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         setDeltaMovement(Vec3.ZERO);
         clearAI();
 
-        if (entity instanceof Player)
+        if (entity instanceof Player player)
         {
-            Player player = (Player) entity;
 
             int index = player.getPassengers().indexOf(this);
             if ((player.isShiftKeyDown() && !player.getAbilities().flying) || isInWater() || index > 2)
