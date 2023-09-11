@@ -18,7 +18,6 @@ public class RenderRoyalRed extends WRDragonRender<EntityRoyalRed> {
         this.addLayer(new RiderLayer<>(this));
         //TODO: Shadow?
     }
-    //TODO: Scale upwards based on age
 
     @Override
     public RenderType getRenderType(EntityRoyalRed animatable, float partialTick, PoseStack poseStack, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight, ResourceLocation texture) {
