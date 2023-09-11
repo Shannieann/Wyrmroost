@@ -34,18 +34,18 @@ public class WRRunWhenLosingGoal extends AvoidEntityGoal<LivingEntity> {
     @Override
     public boolean canUse() {
         if (this.dragon.getHealth()/this.dragon.getMaxHealth() > healthPercent) return false;
-        if (dragon.getRandom().nextFloat() > chanceToRun) return false;
-
+        //if (dragon.getRandom().nextFloat() > chanceToRun) return false;
+        // TODO make chances work
+        // Looking back, this logic doesn't really make sense.
+        // Like, they could just stop running if the chance is low (especially for royal reds)
 
         LivingEntity defaultAvoidEntity = this.dragon.level.getNearestEntity(this.dragon.level.getEntitiesOfClass(this.avoidClass, this.dragon.getBoundingBox().inflate(this.maxDist, 3.0D, this.maxDist), (p_148078_) -> {
             return true;
         }), this.runAwayTargeting, this.dragon, this.dragon.getX(), this.dragon.getY(), this.dragon.getZ());
 
         this.toAvoid = dragon.getLastHurtByMob() != null? dragon.getLastHurtByMob() : defaultAvoidEntity;
-
-        if (this.toAvoid == null) return false;
+        if (this.toAvoid == null){return false;}
         if (this.dragon.isTame() && this.toAvoid.getUUID() == this.dragon.getOwnerUUID()) return false; // in short, if its tamed and the owner is the one hitting it, don't run
-
             Vec3 vec3 = DefaultRandomPos.getPosAway(this.dragon, 16, 7, this.toAvoid.position());
             if (vec3 == null) {
                 return false;
@@ -53,7 +53,6 @@ public class WRRunWhenLosingGoal extends AvoidEntityGoal<LivingEntity> {
                 return false;
             } else {
                 this.path = dragon.getNavigation().createPath(vec3.x, vec3.y, vec3.z, 0);
-                System.out.println(this.path != null);
                 return this.path != null;
             }
         }
