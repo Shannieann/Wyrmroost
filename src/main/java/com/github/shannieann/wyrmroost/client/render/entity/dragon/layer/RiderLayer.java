@@ -56,6 +56,7 @@ public class RiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
     }
 
     // TODO there's a known bug where the second passenger is flying above randomly... is it due to rider placement in the model or something here?
+    // TODO ALSO the body randomly starting swaying back and forth and now im confused.
     protected void translateToBody(PoseStack stack, GeoModel model, int passengerIndex, T dragon, Entity passenger) {
         if (model.getBone("rider" + passengerIndex).isEmpty()) {
             throw new ReportedException(CrashReport.forThrowable(new Throwable(), "Dragon should have a bone named 'rider" + passengerIndex + "' to have a rider layer!"));

@@ -66,6 +66,7 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
         }
 
     }
+    // TODO: Not sure if other dragons will have items in their mouth. Maybe take this out of this class if so?
     public static class RoostStalkerMouthItemLayer< T extends EntityRoostStalker> extends GeoLayerRenderer<T>{
 
         public RoostStalkerMouthItemLayer(IGeoRenderer<T> entityRendererIn) {

@@ -166,7 +166,8 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             }
             //Once we approach the target position, launch us out of the water
             if (waterTargetPosition.y-entity.position().y < 6) {
-                entity.getDeltaMovement().add(0,1.0,0);
+                entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0d, 1.5d, 1.0d)); // Just multiply y
+                // TODO is this right? Or just use scale?
             }
             super.start(breachStartAnimation, 1, 10);
             step2Ticks++;
