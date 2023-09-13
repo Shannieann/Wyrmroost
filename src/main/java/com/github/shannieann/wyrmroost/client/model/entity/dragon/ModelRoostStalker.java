@@ -12,8 +12,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -109,12 +107,11 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
             // Translate the item's render location to the bone's location
             // (Don't ask me why its multiplied by 1/16, I was wondering why it rendered so far away and looked at Alex's ice and fire code so thanks Alex)
             Vector3d pos = bone.getModelPosition();
-            pos.scale(00.0625F);
-            matrixStackIn.translate(pos.x, pos.y, pos.z);
+            matrixStackIn.translate(pos.x * 00.0625F, pos.y * 00.0625F, pos.z * 00.0625F);
             // And rotate correctly
-            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-90));
+            //matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-90));
             // And scale it
-            matrixStackIn.scale(1.5f, 1.5f, 1.5f);
+            //matrixStackIn.scale(1.5f, 1.5f, 1.5f);
 
             // Finally, render the item
 
