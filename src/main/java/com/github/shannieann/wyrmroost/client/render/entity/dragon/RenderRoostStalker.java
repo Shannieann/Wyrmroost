@@ -15,7 +15,7 @@ public class RenderRoostStalker extends WRDragonRender<EntityRoostStalker> {
             super(renderManager, new ModelRoostStalker());
             // TODO readd glowing eyes. Will need to create textures separating the eyes for this.
             // TODO Me and sniffity discussed separating patterns and colors before the hiatus.
-            // However, this wouldn't really work since each pattern has different colors based on the color...
+            // However, this wouldn't really work since each pattern has different colors based on the skin color...
             // So... maybe we make a black pattern texture and select the colors in code?
             // Idk it'll be a tough issue
             // Cause otherwise we need a separate texture for each pattern and color combo, which would probably be way too many.
@@ -25,7 +25,7 @@ public class RenderRoostStalker extends WRDragonRender<EntityRoostStalker> {
             this.shadowRadius = 0.0F;
         }
 
-    /*@Override
+    @Override
     public void renderLate(EntityRoostStalker animatable, PoseStack poseStack, float partialTick, MultiBufferSource bufferSource,
                            VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue,
                            float alpha) {
@@ -33,7 +33,7 @@ public class RenderRoostStalker extends WRDragonRender<EntityRoostStalker> {
         super.renderLate(animatable, poseStack, partialTick, bufferSource,
                 buffer, packedLight, packedOverlay, red, green, blue,
         alpha);
-    }*/
+    }
 }
 
 
