@@ -94,29 +94,37 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
             // Translate the item based on whether its a tool/block
             if (item.getItem() instanceof TieredItem)
             {
-                matrixStackIn.translate(-0.25f, 0, 0);
+                matrixStackIn.translate(-0.3f, 0, -0.08);
                 matrixStackIn.mulPose(Vector3f.YP.rotationDegrees(-45));
             }
             else if (item.getItem() instanceof BlockItem)
             {
-                matrixStackIn.translate(0, 0, -0.3f);
-                matrixStackIn.scale(0.8f, 0.8f, 0.8f);
+                matrixStackIn.translate(0, 0, 0.05f);
+                //matrixStackIn.scale(0.8f, 0.8f, 0.8f);
                 //matrixStackIn.mulPose(Vector3f.XP.rotation(jaw.xRot + 1.57f));
             }
 
             // Translate the item's render location to the bone's location
             // (Don't ask me why its multiplied by 1/16, I was wondering why it rendered so far away and looked at Alex's ice and fire code so thanks Alex)
-            Vector3d pos = bone.getModelPosition();
+            // scale it
+            matrixStackIn.scale(1.5f, 1.5f, 1.5f);
+            /*
+            Small note here:
+            Not actually sure if this line moves the item at all?
+            This might entirely rely on the manual translations
+            Have to double-check.
+             */
+            Vector3d pos = bone.getLocalPosition();
+            // Rotate according to model rotations
+            matrixStackIn.mulPoseMatrix(bone.getModelRotationMat());
             matrixStackIn.translate(pos.x * 00.0625F, pos.y * 00.0625F, pos.z * 00.0625F);
-            // And rotate correctly
-            //matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-90));
-            // And scale it
-            //matrixStackIn.scale(1.5f, 1.5f, 1.5f);
+            // Manual fixing
+            matrixStackIn.translate(0, 0.25, -0.6);
+            // And rotate correctly (so the rooststalker is holding it sideways)
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-90));
 
             // Finally, render the item
-
             renderer.renderItem(roostStalker, item, ItemTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, packedLightIn);
-
         }
     }
 
