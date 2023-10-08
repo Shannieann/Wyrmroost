@@ -1158,7 +1158,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     public void travel(Vec3 vec3d){
-        System.out.println("hello");
         if (!this.isAlive()) return;
         if (this.isVehicle() && this.canBeControlledByRider()) {
             LivingEntity livingentity = (LivingEntity)this.getControllingPassenger();
@@ -1168,10 +1167,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             this.yHeadRot = this.yBodyRot;
             this.setYRot(livingentity.getYRot());
             this.yBodyRot = this.getYRot();
-            float groundX = livingentity.xxa * 0.5F;
-            float groundZ = livingentity.zza;
-            if (groundZ < 0.0F) { // Huh? Ig I'll keep it here because it works
-                groundZ *= 0.25F; // Ohhh its like if you're going backward you're slower I guess.
+            float xMov = livingentity.xxa * 0.5F;
+            float zMov = livingentity.zza;
+            if (zMov < 0.0F) { // Huh? Ig I'll keep it here because it works
+                zMov *= 0.25F; // Ohhh its like if you're going backward you're slower I guess.
             }
 
             // TODO add water control
@@ -1181,17 +1180,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 float speed = getTravelSpeed();
                 if (isUsingFlyingNavigator())
                 {
-                    handleFreeFlyingMovement(speed, livingentity); // Free Flying (Diving, 180s, etc.)
+                    handleFreeFlyingRiding(speed, livingentity); // Free Flying (Diving, 180s, etc.)
 
                     //else handleCombatFlyingMovement(speed, livingentity); // Combat flying (More controlled flight)
                 }
                 else if (isUsingSwimmingNavigator())
                 {
-                    handleWaterMovement(speed, livingentity);
+                    System.out.println("hello!!");
+                    handleWaterRiding(speed, vec3d, livingentity);
                 }
                 else
                 {
-                    handleGroundMovement(speed, groundX, groundZ, vec3d, livingentity);
+                    handleGroundRiding(speed, xMov, zMov, vec3d, livingentity);
                 }
             } else if (livingentity instanceof Player) {
                 this.setDeltaMovement(Vec3.ZERO);
@@ -1206,7 +1206,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
         // Separated these methods to make it look cleaner. Also allows for subclasses to possibly override them if need be.
-    protected void handleFreeFlyingMovement(float speed, LivingEntity livingentity) {
+    protected void handleFreeFlyingRiding(float speed, LivingEntity livingentity) {
         // Convert to ground nav if applicable
         if (getAltitude() <= getFlightThreshold()) {
             setNavigator(NavigationType.GROUND);
@@ -1256,7 +1256,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
 
-    protected void handleGroundMovement(float speed, float groundX, float groundZ, Vec3 vec3d, LivingEntity livingentity) {
+    protected void handleGroundRiding(float speed, float groundX, float groundZ, Vec3 vec3d, LivingEntity livingentity) {
         // normal movement
         if (ClientEvents.getClient().options.keyJump.isDown() && getBlockStateOn().getMaterial().isSolid() && speciesCanFly()) jumpFromGround(); // Jump when on the ground, for taking off.
         if (dragonCanFly() && getAltitude() > getFlightThreshold() + 1) setNavigator(NavigationType.FLYING);
@@ -1267,7 +1267,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     // Will be used for BFL, etc.
-    protected void handleWaterMovement(float speed, LivingEntity livingentity){
+    protected void handleWaterRiding(float speed, Vec3 vec3d,  LivingEntity livingentity){
+        double moveY = vec3d.y;
+
+        yHeadRot = livingentity.yHeadRot;
+
+        double lookY = livingentity.getLookAngle().y;
+        if (livingentity.zza != 0 && (isUnderWater() || lookY < 0)) moveY = lookY;
+
+        setSpeed(speed);
+        vec3d = new Vec3(livingentity.xxa, moveY, livingentity.zza);
+        super.travel(vec3d);
     }
 
     // TODO dragon flapping wings sound
@@ -1420,25 +1430,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
     public boolean isFlyingUpward() {return getDragonXRotation() > 25.0f && getDragonXRotation() < 90.0f;}
     public boolean isGliding() { return getDragonXRotation() >= 320.0f && getDragonXRotation() < 340.0f;}
-    // For getting y acceleration
-    public float getFlyingAcceleration(){
-        if (isDiving()){ // If we're diving, the dragon should speed up.
-            return (0.4f - ((getDragonXRotation() * 0.4f)-270)/50) + 0.1f; // Fully diving is 0.5, barely diving is 0.1
-        } else if (isFlyingUpward()){ // If we're flying upward, the dragon should go a bit slower.
-            float x = getDragonXRotation();
-            /*
-            The equation for this is y = 0.0028499(x-25)(x-90)
-            Technically, this is approximate (it is y -0.30001 at its vertex)
-            Basically, directly upward makes acceleration go down,
-            and going to either side slowly increases the acceleration until it's normal.
-
-            TODO honestly we might have to redo this in the future to deal with percentages instead...
-            */
-            System.out.println(0.0028499* (x-25) * (x-90));
-            return ((0.0028499f* (x-25) * (x-90)) - 0.1f)/10; // Fully up is -0.4, barely up is -0.1
-        }
-        return 0.0f;
-    }
 
     public boolean isUsingFlyingNavigator()
     {

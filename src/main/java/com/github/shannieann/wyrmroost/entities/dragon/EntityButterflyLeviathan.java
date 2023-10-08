@@ -457,23 +457,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     @Override
     public void travel(Vec3 vec3d) {
         if (isInWater()) {
+            // TODO this isn't functional yet
             if (canBeControlledByRider()) {
-                float speed = getTravelSpeed();
                 LivingEntity entity = (LivingEntity) getControllingPassenger();
-                double moveY = vec3d.y;
-                double moveX = vec3d.x;
-                double moveZ = entity.zza;
 
-                yHeadRot = entity.yHeadRot;
                 if (!isJumpingOutOfWater()) xRot = entity.xRot * 0.5f;
-                double lookY = entity.getLookAngle().y;
-                if (entity.zza != 0 && (isUnderWater() || lookY < 0)) moveY = lookY;
-
-                setSpeed(speed);
-                vec3d = new Vec3(moveX, moveY, moveZ);
-                super.travel(vec3d);
+                handleWaterRiding(getTravelSpeed(), vec3d, entity);
             }
-
             // add motion if were coming out of water fast; jump out of water like a dolphin
             if (getDeltaMovement().y > 0.25 && level.getBlockState(new BlockPos(getEyePosition(1)).above()).getFluidState().isEmpty())
                 setDeltaMovement(getDeltaMovement().multiply(1.2, 1.5f, 1.2d));
