@@ -76,8 +76,10 @@ public class TarragonTomeItem extends Item implements IAnimatable
             ModUtils.playLocalSound(level, player.blockPosition(), SoundEvents.PAINTING_BREAK, 0.75f, 1f);
             return new InteractionResultHolder<>(InteractionResult.sidedSuccess(level.isClientSide), stack);
         }
+        // TODO what's the point of making right click return an interaction result if its never used?
+
         getAction(stack).rightClick(getBoundDragon(level, stack), player, stack);
-        return new InteractionResultHolder<>(InteractionResult.PASS, stack);
+        return new InteractionResultHolder<>(InteractionResult.CONSUME, stack);
     }
 
     @Override

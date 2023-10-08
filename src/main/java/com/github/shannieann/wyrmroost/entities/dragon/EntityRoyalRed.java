@@ -18,6 +18,7 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -45,6 +46,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.client.model.generators.ModelBuilder;
+import net.minecraftforge.common.Tags;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nullable;
@@ -517,7 +519,7 @@ public class EntityRoyalRed extends WRDragonEntity {
     @Override
     @SuppressWarnings("ConstantConditions")
     public boolean isFood(ItemStack stack) {
-        return stack.getItem().isEdible() && stack.getItem().getFoodProperties().isMeat();
+        return stack.getItem().isEdible() && stack.getItem().getFoodProperties(stack, this).isMeat();
     }
 
 
