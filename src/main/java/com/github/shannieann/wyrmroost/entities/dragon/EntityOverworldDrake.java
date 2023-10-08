@@ -57,13 +57,16 @@ import software.bernie.geckolib3.core.manager.AnimationData;
 import javax.annotation.Nullable;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
+/* Just gonna use sniffity's method of organizing cuz its good - koala
+// TODO:
+
+
+*/
 
 public class EntityOverworldDrake extends WRDragonEntity
 {
     private static final EntitySerializer<EntityOverworldDrake> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
-            //.track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
-            //.track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping));
 
     // inventory slot constants
     public static final int SADDLE_SLOT = 0;
@@ -74,6 +77,7 @@ public class EntityOverworldDrake extends WRDragonEntity
     private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(EntityOverworldDrake.class, EntityDataSerializers.BOOLEAN);
 
     // Dragon Entity Animations
+    // NOT USED ANYMORE -- Keeping for reference but will prolly delete later
     //public static final Animation GRAZE_ANIMATION = LogicalAnimation.create(35, EntityOverworldDrake::grazeAnimation, () -> OverworldDrakeModel::grazeAnimation);
     //public static final Animation HORN_ATTACK_ANIMATION = LogicalAnimation.create(15, EntityOverworldDrake::hornAttackAnimation, () -> OverworldDrakeModel::hornAttackAnimation);
     //public static final Animation ROAR_ANIMATION = LogicalAnimation.create(86, EntityOverworldDrake::hornAttackAnimation, () -> OverworldDrakeModel::roarAnimation);
@@ -86,6 +90,10 @@ public class EntityOverworldDrake extends WRDragonEntity
     {
         super(drake, level);
     }
+
+    // ====================================
+    //      A) Entity Data
+    // ====================================
 
     @Override
     public EntitySerializer<EntityOverworldDrake> getSerializer()
@@ -100,12 +108,310 @@ public class EntityOverworldDrake extends WRDragonEntity
         entityData.define(SADDLED, false);
     }
 
+    public static AttributeSupplier.Builder getAttributeSupplier()
+    {
+        return Mob.createMobAttributes()
+                .add(MAX_HEALTH, 70)
+                .add(MOVEMENT_SPEED, 0.2125)
+                .add(KNOCKBACK_RESISTANCE, 0.75)
+                .add(FOLLOW_RANGE, 20)
+                .add(ATTACK_KNOCKBACK, 2.85)
+                .add(ATTACK_DAMAGE, 8);
+    }
+    // ====================================
+    //      A.4) Entity Data: HOME
+    // ====================================
+
+    @Override
+    public boolean defendsHome() {
+        return true;
+    }
+
+    // ====================================
+    //      A.6) Entity Data: VARIANT
+    // ====================================
+
+    @Override
+    public int determineVariant()
+    {
+        if (getRandom().nextDouble() < 0.008) return -1;
+
+        if (Biome.getBiomeCategory(level.getBiome(blockPosition())) == Biome.BiomeCategory.SAVANNA) return 1;
+        return 0;
+    }
+
+    // ====================================
+    //      A.7) Entity Data: Miscellaneous
+    // ====================================
+    @Override
+    public EntityDimensions getDimensions(Pose pose)
+    {
+        EntityDimensions size = getType().getDimensions().scale(getScale());
+        if (isInSittingPose() || isSleeping()) size = size.scale(1, 0.75f);
+        return size;
+    }
+    @Override
+    public float getScale()
+    {
+        return getAgeScale(0.275f);
+    }
+
+    // ====================================
+    //      B) Tick and AI
+    // ====================================
+    @Override
+    public void aiStep()
+    {
+        super.aiStep();
+        // =====================
+        //       Update Timers
+        // =====================
+
+        sitTimer.add((isInSittingPose() || isSleeping())? 0.1f : -0.1f);
+        sleepTimer.add(isSleeping()? 0.04f : -0.06f);
+
+        // =====================
+        //       Throwing Passenger Off Logic
+        // =====================
+        if (thrownPassenger != null)
+        {
+            thrownPassenger.setDeltaMovement(Mafs.nextDouble(getRandom()), 0.1 + getRandom().nextDouble(), Mafs.nextDouble(getRandom()));
+            ((ServerChunkCache) level.getChunkSource()).broadcastAndSend(thrownPassenger, new ClientboundSetEntityMotionPacket(thrownPassenger)); // notify client
+            thrownPassenger = null;
+        }
+
+        if (!level.isClientSide && getTarget() == null && !isInSittingPose() && !isSleeping() && level.getBlockState(blockPosition().below()).getBlock() == Blocks.GRASS_BLOCK && getRandom().nextDouble() < (isBaby() || getHealth() < getMaxHealth()? 0.005 : 0.001));
+        //AnimationPacket.send(this, GRAZE_ANIMATION); TODO READD
+    }
+    // ====================================
+    //      B.1) Tick and AI: Attack and Hurt
+    // ====================================
+    @Override
+    public void setTarget(@Nullable LivingEntity target)
+    {
+        LivingEntity prev = getTarget();
+
+        super.setTarget(target);
+
+        boolean flag = getTarget() != null;
+        setSprinting(flag);
+
+        /*if (flag && prev != target && target.getType() == EntityType.PLAYER && !isTame() && noAnimations())
+            AnimationPacket.send(this, EntityOverworldDrake.ROAR_ANIMATION);*/ // TODO ADD
+    }
+    // ====================================
+    //      C) Navigation and Control
+    // ====================================
+
+    @Override
+    public float getTravelSpeed()
+    {
+        float speed = (float) getAttributeValue(MOVEMENT_SPEED);
+        if (canBeControlledByRider()) speed += 0.45f;
+        return speed;
+    }
+    @Override
+    public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
+    {
+        if (backView)
+            event.getCamera().move(ClientEvents.getViewCollision(-0.5, this), 0.75, 0);
+        else
+            event.getCamera().move(ClientEvents.getViewCollision(-3, this), 0.3, 0);
+    }
+
+    @Override
+    public boolean speciesCanWalk() {
+        return true;
+    }
+
+
+    // ====================================
+    //      C.1) Navigation and Control: Flying
+    // ====================================
+
+    @Override
+    public boolean speciesCanFly() {
+        return false;
+    }
+
+    // ====================================
+    //      C.2) Navigation and Control: Swimming
+    // ====================================
+
+
+    @Override
+    public boolean speciesCanSwim() {
+        return true;
+    }
+
+    @Override
+    public boolean speciesCanBeRidden() {
+        return true;
+    }
+
+    // ====================================
+    //      C.3) Navigation and Control: Riding
+    // ====================================
+    @Override
+    protected boolean canAddPassenger(Entity entity)
+    {
+        return isSaddled() && isJuvenile() && (isOwnedBy((LivingEntity) entity) || (!isTame() && boardingCooldown <= 0));
+    }
+    @Override
+    public void positionRider(Entity entity)
+    {
+        super.positionRider(entity);
+
+        if (entity instanceof LivingEntity)
+        {
+            LivingEntity passenger = ((LivingEntity) entity);
+            if (isTame()) setSprinting(passenger.isSprinting());
+            else if (!level.isClientSide && passenger instanceof Player)
+            {
+                double rng = getRandom().nextDouble();
+
+                if (rng < 0.01) tame(true, (Player) passenger);
+                else if (rng <= 0.1)
+                {
+                    setTarget(passenger);
+                    boardingCooldown = 60;
+                    ejectPassengers();
+                    thrownPassenger = passenger; // needs to be queued for next tick otherwise some voodoo shit breaks the throwing off logic >.>
+                }
+            }
+        }
+    }
+
+    // ====================================
+    //      D) Taming
+    // ====================================
+    @Override
+    public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
+    {
+        if (stack.getItem() == Items.SADDLE && !isSaddled() && isJuvenile())
+        {
+            if (!level.isClientSide)
+            {
+                getInventory().insertItem(SADDLE_SLOT, stack.copy(), false);
+                stack.shrink(1);
+            }
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+
+        if (!isTame() && isHatchling() && isFood(stack))
+        {
+            tame(getRandom().nextInt(10) == 0, player);
+            stack.shrink(1);
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+
+        return super.playerInteraction(player, hand, stack);
+    }
+
+    // ====================================
+    //      D.1) Taming: Inventory
+    // ====================================
     @Override
     public DragonInventory createInv()
     {
         return new DragonInventory(this, 24);
     }
 
+    @Override
+    public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad)
+    {
+        boolean playSound = !stack.isEmpty() && !onLoad;
+        switch (slot)
+        {
+            case SADDLE_SLOT:
+                entityData.set(SADDLED, !stack.isEmpty());
+                if (playSound) playSound(SoundEvents.HORSE_SADDLE, 1f, 1f);
+                break;
+            case ARMOR_SLOT:
+                setArmor(stack);
+                if (playSound) playSound(SoundEvents.ARMOR_EQUIP_DIAMOND, 1f, 1f);
+                break;
+            case CHEST_SLOT:
+                if (playSound) playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1f, 1f);
+                break;
+        }
+    }
+    @Override
+    public Vec2 getTomeDepictionOffset() {
+        return switch (getVariant()) {
+            case -1 -> new Vec2(1,3);
+            default -> new Vec2(0,3);
+        };
+    }
+    @Override
+    public void applyTomeInfo(NewTarragonTomeContainer container) {
+        container.addSaddleSlot().addArmorSlot().addChestSlot();
+    }
+    public boolean hasChest()
+    {
+        return !getStackInSlot(CHEST_SLOT).isEmpty();
+    }
+
+    public boolean isSaddled()
+    {
+        return entityData.get(SADDLED);
+    }
+    @Override
+    public void dropStorage()
+    {
+        DragonInventory inv = getInventory();
+        for (int i = CHEST_SLOT + 1; i < inv.getSlots(); i++)
+            spawnAtLocation(inv.extractItem(i, 65, false), getBbHeight() / 2f);
+    }
+    // ====================================
+    //      D.2) Taming: Breeding and Food
+    // ====================================
+
+    @Override
+    public boolean isFood(ItemStack stack)
+    {
+        return stack.is(Tags.Items.CROPS_WHEAT);
+    }
+    @Override
+    public void ate()
+    {
+        if (isBaby()) ageUp(60);
+        if (getHealth() < getMaxHealth()) heal(4f);
+    }
+    // ====================================
+    //      E.1) Client: Sounds
+    // ====================================
+    @Override
+    protected void playStepSound(BlockPos pos, BlockState blockIn)
+    {
+        playSound(SoundEvents.COW_STEP, 0.3f, 1f);
+        super.playStepSound(pos, blockIn);
+    }
+
+
+    @Nullable
+    @Override
+    protected SoundEvent getAmbientSound()
+    {
+        return WRSounds.ENTITY_OWDRAKE_IDLE.get();
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    {
+        return WRSounds.ENTITY_OWDRAKE_HURT.get();
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getDeathSound()
+    {
+        return WRSounds.ENTITY_OWDRAKE_DEATH.get();
+    }
+    // ====================================
+    //      F) Goals
+    // ====================================
     @Override
     protected void registerGoals()
     {
@@ -126,25 +432,60 @@ public class EntityOverworldDrake extends WRDragonEntity
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Player.class, true, EntitySelector.ENTITY_STILL_ALIVE::test));
     }
 
-    @Override
-    public void aiStep()
+
+
+
+
+
+    /*@Override
+    public void recievePassengerKeybind(int key, int mods, boolean pressed)
     {
-        super.aiStep();
-
-        sitTimer.add((isInSittingPose() || isSleeping())? 0.1f : -0.1f);
-        sleepTimer.add(isSleeping()? 0.04f : -0.06f);
-
-        if (thrownPassenger != null)
+        if (key == KeybindHandler.MOUNT_KEY && pressed && noAnimations())
         {
-            thrownPassenger.setDeltaMovement(Mafs.nextDouble(getRandom()), 0.1 + getRandom().nextDouble(), Mafs.nextDouble(getRandom()));
-            ((ServerChunkCache) level.getChunkSource()).broadcastAndSend(thrownPassenger, new ClientboundSetEntityMotionPacket(thrownPassenger)); // notify client
-            thrownPassenger = null;
+            if ((mods & GLFW.GLFW_MOD_CONTROL) != 0) setAnimation(ROAR_ANIMATION);
+            else setAnimation(HORN_ATTACK_ANIMATION);
         }
+    }*/ // TODO READD
 
-        if (!level.isClientSide && getTarget() == null && !isInSittingPose() && !isSleeping() && level.getBlockState(blockPosition().below()).getBlock() == Blocks.GRASS_BLOCK && getRandom().nextDouble() < (isBaby() || getHealth() < getMaxHealth()? 0.005 : 0.001));
-            //AnimationPacket.send(this, GRAZE_ANIMATION); TODO READD
-    }
 
+
+
+    /*@Override
+    public void applyStaffInfo(BookContainer container)
+    {
+        super.applyStaffInfo(container);
+
+        DragonInventory i = getInventory();
+        CollapsibleWidget chestWidget = BookContainer.collapsibleWidget( 0, 174, 121, 75, CollapsibleWidget.TOP)
+                .condition(this::hasChest);
+        ModUtils.createContainerSlots(i, 3, 17, 12, 5, 3, DynamicSlot::new, chestWidget::addSlot);
+
+        container.slot(BookContainer.accessorySlot(i, ARMOR_SLOT, 15, -11, 22, DragonControlScreen.ARMOR_UV).only(DragonArmorItem.class))
+                .slot(BookContainer.accessorySlot(i, CHEST_SLOT, -15, -11, 22, DragonControlScreen.CHEST_UV).only(ChestBlock.class).limit(1).canTake(p -> i.isEmptyAfter(CHEST_SLOT)))
+                .slot(BookContainer.accessorySlot(i, SADDLE_SLOT, 0, -15, -7, DragonControlScreen.SADDLE_UV).only(Items.SADDLE))
+                .addAction(BookActions.TARGET)
+                .addCollapsible(chestWidget);
+    }*/
+
+
+    /*@Override
+    public boolean isImmobile()
+    {
+        return  || super.isImmobile(); TODO READD
+    }*/
+
+
+
+
+
+
+
+
+
+    // ===============================
+    // OLD UNUSED ANIM STUFF -- JUST KEEPING IN CASE WE NEED FOR REFERENCE LATER
+    // ===============================
+        /*
     public void roarAnimation(int time)
     {
         if (time == 0) playSound(WRSounds.ENTITY_OWDRAKE_ROAR.get(), 3f, 1f, true);
@@ -197,295 +538,6 @@ public class EntityOverworldDrake extends WRDragonEntity
             }
         }
     }
-
-    @Override
-    public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
-    {
-        if (stack.getItem() == Items.SADDLE && !isSaddled() && isJuvenile())
-        {
-            if (!level.isClientSide)
-            {
-                getInventory().insertItem(SADDLE_SLOT, stack.copy(), false);
-                stack.shrink(1);
-            }
-            return InteractionResult.sidedSuccess(level.isClientSide);
-        }
-
-        if (!isTame() && isHatchling() && isFood(stack))
-        {
-            tame(getRandom().nextInt(10) == 0, player);
-            stack.shrink(1);
-            return InteractionResult.sidedSuccess(level.isClientSide);
-        }
-
-        return super.playerInteraction(player, hand, stack);
-    }
-
-    @Override
-    public void positionRider(Entity entity)
-    {
-        super.positionRider(entity);
-
-        if (entity instanceof LivingEntity)
-        {
-            LivingEntity passenger = ((LivingEntity) entity);
-            if (isTame()) setSprinting(passenger.isSprinting());
-            else if (!level.isClientSide && passenger instanceof Player)
-            {
-                double rng = getRandom().nextDouble();
-
-                if (rng < 0.01) tame(true, (Player) passenger);
-                else if (rng <= 0.1)
-                {
-                    setTarget(passenger);
-                    boardingCooldown = 60;
-                    ejectPassengers();
-                    thrownPassenger = passenger; // needs to be queued for next tick otherwise some voodoo shit breaks the throwing off logic >.>
-                }
-            }
-        }
-    }
-
-    @Override
-    public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad)
-    {
-        boolean playSound = !stack.isEmpty() && !onLoad;
-        switch (slot)
-        {
-            case SADDLE_SLOT:
-                entityData.set(SADDLED, !stack.isEmpty());
-                if (playSound) playSound(SoundEvents.HORSE_SADDLE, 1f, 1f);
-                break;
-            case ARMOR_SLOT:
-                setArmor(stack);
-                if (playSound) playSound(SoundEvents.ARMOR_EQUIP_DIAMOND, 1f, 1f);
-                break;
-            case CHEST_SLOT:
-                if (playSound) playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1f, 1f);
-                break;
-        }
-    }
-
-    /*@Override
-    public void recievePassengerKeybind(int key, int mods, boolean pressed)
-    {
-        if (key == KeybindHandler.MOUNT_KEY && pressed && noAnimations())
-        {
-            if ((mods & GLFW.GLFW_MOD_CONTROL) != 0) setAnimation(ROAR_ANIMATION);
-            else setAnimation(HORN_ATTACK_ANIMATION);
-        }
-    }*/ // TODO READD
-
-    @Override
-    public EntityDimensions getDimensions(Pose pose)
-    {
-        EntityDimensions size = getType().getDimensions().scale(getScale());
-        if (isInSittingPose() || isSleeping()) size = size.scale(1, 0.75f);
-        return size;
-    }
-
-    @Override
-    public boolean speciesCanWalk() {
-        return true;
-    }
-
-    @Override
-    public float getScale()
-    {
-        return getAgeScale(0.275f);
-    }
-
-    @Override
-    public void applyTomeInfo(NewTarragonTomeContainer container) {
-        container.addSaddleSlot().addArmorSlot().addChestSlot();
-    }
-
-    /*@Override
-    public void applyStaffInfo(BookContainer container)
-    {
-        super.applyStaffInfo(container);
-
-        DragonInventory i = getInventory();
-        CollapsibleWidget chestWidget = BookContainer.collapsibleWidget( 0, 174, 121, 75, CollapsibleWidget.TOP)
-                .condition(this::hasChest);
-        ModUtils.createContainerSlots(i, 3, 17, 12, 5, 3, DynamicSlot::new, chestWidget::addSlot);
-
-        container.slot(BookContainer.accessorySlot(i, ARMOR_SLOT, 15, -11, 22, DragonControlScreen.ARMOR_UV).only(DragonArmorItem.class))
-                .slot(BookContainer.accessorySlot(i, CHEST_SLOT, -15, -11, 22, DragonControlScreen.CHEST_UV).only(ChestBlock.class).limit(1).canTake(p -> i.isEmptyAfter(CHEST_SLOT)))
-                .slot(BookContainer.accessorySlot(i, SADDLE_SLOT, 0, -15, -7, DragonControlScreen.SADDLE_UV).only(Items.SADDLE))
-                .addAction(BookActions.TARGET)
-                .addCollapsible(chestWidget);
-    }*/
-
-    @Override
-    public void setTarget(@Nullable LivingEntity target)
-    {
-        LivingEntity prev = getTarget();
-
-        super.setTarget(target);
-
-        boolean flag = getTarget() != null;
-        setSprinting(flag);
-
-        /*if (flag && prev != target && target.getType() == EntityType.PLAYER && !isTame() && noAnimations())
-            AnimationPacket.send(this, EntityOverworldDrake.ROAR_ANIMATION);*/ // TODO ADD
-    }
-
-    /*@Override
-    public boolean isImmobile()
-    {
-        return  || super.isImmobile(); TODO READD
-    }*/
-
-    @Override
-    public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
-    {
-        if (backView)
-            event.getCamera().move(ClientEvents.getViewCollision(-0.5, this), 0.75, 0);
-        else
-            event.getCamera().move(ClientEvents.getViewCollision(-3, this), 0.3, 0);
-    }
-
-    @Override
-    public void ate()
-    {
-        if (isBaby()) ageUp(60);
-        if (getHealth() < getMaxHealth()) heal(4f);
-    }
-
-    @Override
-    protected boolean canAddPassenger(Entity entity)
-    {
-        return isSaddled() && isJuvenile() && (isOwnedBy((LivingEntity) entity) || (!isTame() && boardingCooldown <= 0));
-    }
-
-    @Override
-    public float getTravelSpeed()
-    {
-        float speed = (float) getAttributeValue(MOVEMENT_SPEED);
-        if (canBeControlledByRider()) speed += 0.45f;
-        return speed;
-    }
-
-    @Override
-    protected void playStepSound(BlockPos pos, BlockState blockIn)
-    {
-        playSound(SoundEvents.COW_STEP, 0.3f, 1f);
-        super.playStepSound(pos, blockIn);
-    }
-
-    @Override
-    public boolean defendsHome()
-    {
-        return true;
-    }
-
-    @Nullable
-    @Override
-    protected SoundEvent getAmbientSound()
-    {
-        return WRSounds.ENTITY_OWDRAKE_IDLE.get();
-    }
-
-    @Nullable
-    @Override
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-    {
-        return WRSounds.ENTITY_OWDRAKE_HURT.get();
-    }
-
-    @Nullable
-    @Override
-    protected SoundEvent getDeathSound()
-    {
-        return WRSounds.ENTITY_OWDRAKE_DEATH.get();
-    }
-
-    @Override
-    public boolean dragonCanFly()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean speciesCanSwim() {
-        return false;
-    }
-
-    @Override
-    public boolean speciesCanBeRidden() {
-        return true;
-    }
-
-    @Override
-    public boolean isFood(ItemStack stack)
-    {
-        return stack.is(Tags.Items.CROPS_WHEAT);
-    }
-
-    @Override
-    public Vec2 getTomeDepictionOffset() {
-        return switch (getVariant()) {
-            case -1 -> new Vec2(1,3);
-            default -> new Vec2(0,3);
-        };
-    }
-
-    /*
-    @Override
-    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        return null;
-    }
-
-     */
-
-    public boolean hasChest()
-    {
-        return !getStackInSlot(CHEST_SLOT).isEmpty();
-    }
-
-    public boolean isSaddled()
-    {
-        return entityData.get(SADDLED);
-    }
-
-    @Override
-    public void dropStorage()
-    {
-        DragonInventory inv = getInventory();
-        for (int i = CHEST_SLOT + 1; i < inv.getSlots(); i++)
-            spawnAtLocation(inv.extractItem(i, 65, false), getBbHeight() / 2f);
-    }
-
-    @Override
-    public int determineVariant()
-    {
-        if (getRandom().nextDouble() < 0.008) return -1;
-
-        if (Biome.getBiomeCategory(level.getBiome(blockPosition())) == Biome.BiomeCategory.SAVANNA) return 1;
-        return 0;
-    }
-
-
-    public static AttributeSupplier.Builder getAttributeSupplier()
-    {
-        return Mob.createMobAttributes()
-                .add(MAX_HEALTH, 70)
-                .add(MOVEMENT_SPEED, 0.2125)
-                .add(KNOCKBACK_RESISTANCE, 0.75)
-                .add(FOLLOW_RANGE, 20)
-                .add(ATTACK_KNOCKBACK, 2.85)
-                .add(ATTACK_DAMAGE, 8);
-    }
-
-    @Override
-    public void registerControllers(AnimationData data) {
-
-    }
-
-    @Override
-    public boolean speciesCanFly() {
-        return false;
-    }
+*/
 
 }
