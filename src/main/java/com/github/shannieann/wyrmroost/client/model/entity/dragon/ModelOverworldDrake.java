@@ -10,8 +10,8 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class ModelOverworldDrake<T extends EntityOverworldDrake> extends AnimatedGeoModel<T> {
 
-	private static final ResourceLocation modelResource = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/overworld_drake.geo.json");
-	private static final ResourceLocation textureResource = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/overworld_drake/drake_body.png");
+	private static final ResourceLocation modelResource = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/overworld_drake/overworld_drake.geo.json");
+	private static final ResourceLocation animationResource = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/overworld_drake/overworld_drake.animation.json");
 
 	@Override
 	public ResourceLocation getModelLocation(T object) {
@@ -20,14 +20,16 @@ public class ModelOverworldDrake<T extends EntityOverworldDrake> extends Animate
 
 	@Override
 	public ResourceLocation getTextureLocation(EntityOverworldDrake object) {
-		switch (object.getVariant()){
-			default: return textureResource;
-		}
+
+		int variant = object.getVariant();
+		String gender = (object.isBaby())? "child" : object.getGender();
+		System.out.println("textures/entity/dragon/overworld_drake/" + gender + "_" + variant + ".png");
+		return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/overworld_drake/" + gender + "_" + variant + ".png");
 	}
 
 
 	@Override
 	public ResourceLocation getAnimationFileLocation(T animatable) {
-		return null;
+		return animationResource;
 	}
 }

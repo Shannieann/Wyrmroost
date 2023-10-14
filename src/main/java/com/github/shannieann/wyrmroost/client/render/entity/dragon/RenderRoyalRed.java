@@ -19,6 +19,8 @@ public class RenderRoyalRed extends WRDragonRender<EntityRoyalRed> {
         //TODO: Shadow?
     }
 
+    // TODO may be a better idea to instead just texture the inside of the nail.
+    // NoCull might lag the game more?
     @Override
     public RenderType getRenderType(EntityRoyalRed animatable, float partialTick, PoseStack poseStack, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight, ResourceLocation texture) {
         return RenderType.entityCutoutNoCull(texture);
