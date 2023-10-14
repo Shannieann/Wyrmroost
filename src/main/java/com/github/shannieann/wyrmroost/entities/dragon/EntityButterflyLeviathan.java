@@ -457,7 +457,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     @Override
     public void travel(Vec3 vec3d) {
         if (isInWater()) {
-            // TODO this isn't functional yet
+            // TODO this isn't completely functional yet
             if (canBeControlledByRider()) {
                 LivingEntity entity = (LivingEntity) getControllingPassenger();
 
