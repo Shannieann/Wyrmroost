@@ -5,10 +5,8 @@ import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
-
 import java.util.EnumSet;
 
 public class WRWaterLeapGoal extends AnimatedGoal {
@@ -149,6 +147,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                 entity.getNavigation().stop();
                 step2Done = true;
             }
+
             //We have already been moving slowly to target, now we accelerate and start the actual breaching..
             if (step2Ticks >5 && !speedFlag) {
                 speedFlag = true;
@@ -165,23 +164,10 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                 double yMovement = entity.getDeltaMovement().y;
                 System.out.println("My Y movement is:" + entity.getDeltaMovement().y);
                 if (yMovement < 1.2) {
-                    entity.setDeltaMovement(entity.getDeltaMovement().x,1.4,entity.getDeltaMovement().z);
+                    entity.setDeltaMovement(entity.getDeltaMovement().x,1.2,entity.getDeltaMovement().z);
                 }
                 boostflag = true;
             }
-
-            //If the navigation is stopped, but not stuck, calculate a new path, with speed depending on whether we have had time to align with target or not
-            //TODO: Do we need this?
-            /*
-            if (!entity.getNavigation().isStuck() && entity.getNavigation().isDone()) {
-                if (speedFlag) {
-                    entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget*2.2);
-                } else {
-                    entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget);
-                }
-            }
-          */
-
             super.start(breachStartAnimation, 1, 10);
             step2Ticks++;
         }
