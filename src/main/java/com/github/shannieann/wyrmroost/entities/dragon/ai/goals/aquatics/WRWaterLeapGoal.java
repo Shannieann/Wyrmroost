@@ -165,7 +165,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                 double yMovement = entity.getDeltaMovement().y;
                 System.out.println("My Y movement is:" + entity.getDeltaMovement().y);
                 if (yMovement < 1.2) {
-                    entity.setDeltaMovement(entity.getDeltaMovement().x,1.4,entity.getDeltaMovement().z));
+                    entity.setDeltaMovement(entity.getDeltaMovement().x,1.4,entity.getDeltaMovement().z);
                 }
                 boostflag = true;
             }
