@@ -302,18 +302,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
         //Basic Locomotion: Default cases
-        //If the entity is swimming and it is not doing anything else that warrants an animation, it will just swim in place.
+        //If the entity is swimming, and it is not doing anything else that warrants an animation, it will just swim in place.
         if (!this.getSleeping() && !this.isInSittingPose()) {
             if (this.isUsingSwimmingNavigator()) {
                 event.getController().setAnimation(new AnimationBuilder().  addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
             }
-            //If the entity is flying and it is not doing anything else that warrants an animation, it will just fly in place.
+            //If the entity is flying, and it is not doing anything else that warrants an animation, it will just fly in place.
             if (this.isUsingFlyingNavigator()) {
                 event.getController().setAnimation(new AnimationBuilder().  addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
             }
-            //If the entity is on ground and it is not doing anything else that warrants an animation, it will just stand ("naturally") in place
+            //If the entity is on ground, and it is not doing anything else that warrants an animation, it will just stand ("naturally") in place
             if (this.isUsingLandNavigator()) {
                 event.getController().setAnimation(new AnimationBuilder().  addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
@@ -461,8 +461,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
 
-    public void setBreachAttackCooldown(float breachCooldown) {
-        entityData.set(BREACH_ATTACK_COOLDOWN, breachCooldown);
+    public void setBreachAttackCooldown(float breachAttackCooldown) {
+        entityData.set(BREACH_ATTACK_COOLDOWN, breachAttackCooldown);
 
     }
 
