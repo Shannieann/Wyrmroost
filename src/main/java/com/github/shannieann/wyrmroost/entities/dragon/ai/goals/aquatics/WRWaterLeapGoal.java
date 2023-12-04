@@ -126,12 +126,12 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         //Step 3: Return to the water...
         //Step 4: Goal ending, hold for a couple of ticks to finish last animation..
 
-        //Step 1:
+        //Step 1: Reach startPosition, below the target position...
         if (!step1Done) {
             //Check to see if we have reached the first position...
            if (entity.distanceToSqr(initialPosition.x, initialPosition.y, initialPosition.z) < distanceCheck) {
                 step1Done = true;
-               //Move to target at regular speed for 10 ticks first, this ensures we align with target before accelerating...
+               //Move to target at regular speed for 5 ticks first, this ensures we align with target before accelerating...
                entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget);
                //If the navigation is stopped, but not stuck, calculate a new path...
             } else if (!entity.getNavigation().isStuck() && entity.getNavigation().isDone()) {
@@ -139,7 +139,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
            }
         }
 
-        //Step 2:
+        //Step 2: Reach water target position and overshoot,flying out...
         if (step1Done && !step2Done) {
             //As soon as it leaves the water...
             if (!entity.isInWater()) {
@@ -149,13 +149,22 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                 entity.getNavigation().stop();
                 step2Done = true;
             }
-            if (step2Ticks >10 && !speedFlag) {
-                //We have had time to align with target, now we accelerate and start the actual breaching..
+            //We have already been moving slowly to target, now we accelerate and start the actual breaching..
+            if (step2Ticks >5 && !speedFlag) {
                 speedFlag = true;
+                //We unlock Yaw
                 entity.setBreaching(true);
                 super.start(breachStartAnimation, 1, 10);
                 entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget*2);
             }
+
+            //Once we approach the target position, launch us out of the water
+            if (waterTargetPosition.y-entity.position().y < 6) {
+                entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0d, 1.5d, 1.0d));
+                // Just multiply y
+                // TODO is this right? Or just use scale?
+            }
+
             //If the navigation is stopped, but not stuck, calculate a new path, with speed depending on whether we have had time to align with target or not
             if (!entity.getNavigation().isStuck() && entity.getNavigation().isDone()) {
                 if (speedFlag) {
@@ -164,14 +173,9 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                     entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget);
                 }
             }
-            //Once we approach the target position, launch us out of the water
-            if (waterTargetPosition.y-entity.position().y < 6) {
-                entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0d, 1.5d, 1.0d)); // Just multiply y
-                // TODO is this right? Or just use scale?
-            }
+            
             super.start(breachStartAnimation, 1, 10);
             step2Ticks++;
-
         }
 
         //Step 3:
