@@ -40,10 +40,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         this.distanceCheck = distanceCheck;
         this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
-
-    //TODO: Lock Yaw or Look when falling down
-    //TODO: Breach animations are not consistent
-
+    
     @Override
     public boolean canUse() {
         if (entity.isInSittingPose()) {
@@ -159,7 +156,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                 //We freeze basic locomotion
                 entity.setBreaching(true);
                 super.start(breachStartAnimation, 1, 10);
-                entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget*2);
+                entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget*2.2);
             }
 
             //Once we approach the target position, launch us out of the water
@@ -168,9 +165,10 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             }
 
             //If the navigation is stopped, but not stuck, calculate a new path, with speed depending on whether we have had time to align with target or not
+            //TODO: Do we need this?
             if (!entity.getNavigation().isStuck() && entity.getNavigation().isDone()) {
                 if (speedFlag) {
-                    entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget*2);
+                    entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget*2.2);
                 } else {
                     entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget);
                 }
@@ -199,9 +197,8 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             //Once it has reached the water again, hold the goal for a few extra ticks to ensure animations plays fully
             super.start(breachEndAnimation, 3, 15);
             finalTicks++;
-            if (finalTicks > 12 && !animationFlag) {
+            if (finalTicks > 15 && !animationFlag) {
                 animationFlag = true;
-                //TODO: Confirm breach end plays properly
                 entity.setBreaching(false);
             }
         }
