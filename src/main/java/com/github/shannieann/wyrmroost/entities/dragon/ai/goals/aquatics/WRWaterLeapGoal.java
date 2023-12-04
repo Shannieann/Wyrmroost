@@ -155,6 +155,8 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             if (step2Ticks >5 && !speedFlag) {
                 speedFlag = true;
                 //We unlock Yaw
+                entity.setYawUnlocked(true);
+                //We freeze basic locomotion
                 entity.setBreaching(true);
                 super.start(breachStartAnimation, 1, 10);
                 entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget*2);
@@ -184,11 +186,10 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         //Step 3:
         if (step2Done && !step3Done) {
             if (this.entity.isUnderWater()) {
-                entity.setBreaching(false);
                 //As soon as it returns to the water...
                 step3Done = true;
                 //Lock Yaw once again
-                entity.setBreaching(false);
+                entity.setYawUnlocked(false);
                 //Give it a new position to move towards, avoids it getting stuck
                 entity.getNavigation().moveTo(initialPosition.x, initialPosition.y, initialPosition.z, speedTowardsTarget);
             } else {
@@ -199,10 +200,10 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         //Step 4:
         if (step3Done) {
             //Once it has reached the water again, hold the goal for a few extra ticks to ensure animations plays fully
+            super.start(breachEndAnimation, 3, 15);
             finalTicks++;
-            if (finalTicks > 5 && !animationFlag) {
+            if (finalTicks > 15 && !animationFlag) {
                 animationFlag = true;
-                super.start(breachEndAnimation, 3, 15);
             }
         }
     }
@@ -220,6 +221,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         finalTicks = 0;
         animationFlag = false;
         entity.setBreaching(false);
+        entity.setYawUnlocked(false);
         entity.getNavigation().stop();
         super.stop();
     }
