@@ -74,7 +74,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //Fix serializer
 
 //TODO: GOALS:
-// Further testing on Sleeping Goal
 // Breach Goal - Test False breaching
 // Test all regular goals before tamed goals
 
