@@ -164,10 +164,10 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             if (!boostflag && waterTargetPosition.y-entity.position().y < 6) {
                 double yMovement = entity.getDeltaMovement().y;
                 System.out.println("My Y movement is:" + entity.getDeltaMovement().y);
-                double yDifference = 3.0 - yMovement;
+                double yDifference = 2.3 - yMovement;
                 if (yDifference > 1.0) {
                     System.out.println("My Y boost is:" + yDifference);
-                    entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0d,1.2,1.0d));
+                    entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0d,yDifference,1.0d));
                 }
                 boostflag = true;
             }
