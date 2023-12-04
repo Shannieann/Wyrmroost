@@ -158,6 +158,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<Integer> AGE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> YAW_UNLOCK = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.YAW_UNLOCK);
+
     public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
@@ -337,6 +339,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(HOME_POS, BlockPos.ZERO);
         entityData.define(AGE, 0);
         entityData.define(BREACHING, false);
+        entityData.define(YAW_UNLOCK, false);
         entityData.define(DRAGON_X_ROTATION, 0f);
         entityData.define(GENDER, "male");
         entityData.define(SLEEPING, false);
@@ -454,6 +457,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public boolean getBreaching() {
         return entityData.get(BREACHING);
+
+    }
+
+    public void setYawUnlocked(boolean unlock) {
+        entityData.set(YAW_UNLOCK, unlock);
+    }
+
+    public boolean getYawUnlocked() {
+        return entityData.get(YAW_UNLOCK);
 
     }
 
