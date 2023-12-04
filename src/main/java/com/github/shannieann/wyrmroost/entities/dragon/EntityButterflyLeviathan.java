@@ -75,30 +75,31 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //TODO: GOALS:
 // Breach Goal - Test False breaching
+// Attack Goal - testing, bounding box for melee attack
 // Test all regular goals before tamed goals
 
 
-//TAMED GOALS
 
-//TODO: ANIMATIONS
-//Test water leap and anim transition time
-//Sleep
+//TODO: ANIMATIONS:
+// Test water leap and anim transition time
+// Sleep
 
 //TODO: TAMING
-//All goals when tamed
-//Eggs, breeding, taming
-//Ride logic + rewrite key-binds
+// All goals when tamed
+// Eggs, breeding, taming
+// Ride logic + rewrite key-binds
 
 //TODO: ASSETS:
-//Child textures
-//ANIMATIONS: Sitting
-//ANIMATIONS: STANDING
-//ANIMATIONS: Sleeping
-//ANIMATIONS: Awakening
-//Animations: Idle (if on ground)
+// Child textures
+// ANIMATIONS: Sitting
+// ANIMATIONS: STANDING
+// ANIMATIONS: Sleeping
+// ANIMATIONS: Awakening
+// Animations: Idle (if on ground)
 
 //TODO: TEST AND SHOWCASE
-//Water movement
+// Water movement
+// Water breaching
 
 //TODO: FINAL
 //Config spawn
