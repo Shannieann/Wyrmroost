@@ -43,7 +43,6 @@ public class WRWaterLeapGoal extends AnimatedGoal {
 
 
     //TODO: Lock Yaw or Look when falling down
-    //TODO: Basic locomotion is being locked after a succesful breach
     //TODO: Breach animations are not consistent
 
     @Override
