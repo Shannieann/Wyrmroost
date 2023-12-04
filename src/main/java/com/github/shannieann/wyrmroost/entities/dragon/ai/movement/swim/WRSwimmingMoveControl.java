@@ -35,7 +35,7 @@ public class WRSwimmingMoveControl extends MoveControl {
                 //Set max turn value: Sharp turns if controlled by rider of if aggressive
                 float maxTurnYaw;
                 if (this.entity.getBreaching()){
-                    maxTurnYaw = 30;
+                    maxTurnYaw = 90;
                 }
                 else if ((this.entity.getTarget() != null) || this.entity.canBeControlledByRider()) {
                     maxTurnYaw = 15;
