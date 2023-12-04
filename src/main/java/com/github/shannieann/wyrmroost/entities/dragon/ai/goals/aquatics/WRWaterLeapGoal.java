@@ -28,6 +28,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     private boolean stopFlag;
     private boolean speedFlag;
     private int finalTicks;
+    private boolean boostflag;
     private boolean animationFlag;
     private int step2Ticks;
 
@@ -160,9 +161,15 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             }
 
             //Once we approach the target position, launch us out of the water
-            if (waterTargetPosition.y-entity.position().y < 6) {
+            if (!boostflag && waterTargetPosition.y-entity.position().y < 6) {
+                double yMovement = entity.getDeltaMovement().y;
                 System.out.println("My Y movement is:" + entity.getDeltaMovement().y);
-                entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0d, 1.2d, 1.0d));
+                double yDifference = 3.0 - yMovement;
+                if (yDifference > 1.0) {
+                    System.out.println("My Y boost is:" + yDifference);
+                    entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0d,1.2,1.0d));
+                }
+                boostflag = true;
             }
 
             //If the navigation is stopped, but not stuck, calculate a new path, with speed depending on whether we have had time to align with target or not
@@ -214,6 +221,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         step3Done = false;
         stopFlag = false;
         speedFlag = false;
+        boostflag = false;
         step2Ticks = 0;
         waterTargetPosition = null;
         initialPosition = null;
