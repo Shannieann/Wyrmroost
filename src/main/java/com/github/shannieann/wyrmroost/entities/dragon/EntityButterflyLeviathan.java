@@ -10,6 +10,7 @@ import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.ground.WRGrou
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRWaterLeapGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swim.WRSwimmingLookControl;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.book.action.BookActions;
 import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
@@ -310,6 +311,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         // =====================
         //       Rotation Logic
         // =====================
+
         /*
         if (isJumpingOutOfWater()) {
             Vec3 motion = getDeltaMovement();

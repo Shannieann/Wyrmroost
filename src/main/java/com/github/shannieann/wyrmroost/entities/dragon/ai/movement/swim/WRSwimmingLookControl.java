@@ -39,19 +39,16 @@ public class WRSwimmingLookControl extends LookControl {
             this.mob.yBodyRot = Math.min(this.mob.yHeadRot,this.mob.yBodyRot - 4.0F);
             this.mob.yBodyRot += 4.0F;
         }
-
     }
 
     @Override
-    public void setLookAt(double x, double y, double z, float speed, float maxAngle)
-    {
+    public void setLookAt(double x, double y, double z, float speed, float maxAngle) {
         if (!stopLooking) {
             super.setLookAt(x, y, z, speed, maxAngle);
         }
     }
 
-    public void stopLooking()
-    {
+    public void stopLooking() {
         //Method called to ensure we no longer look at targets, if something must lock rotation
         this.stopLooking = true;
     }

@@ -225,7 +225,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //We begin by getting the animation that should be played.
         //This string may have been set as part of an AnimatedGoal that requires a one-shot ability animation to play..
         String animation = this.getAnimation();
-        //If we do have an one-shot ability animation, we will play that.
+        //If we do have a one-shot ability animation, we will play that.
         //"base" is the null value for getAnimation
         if (!animation.equals("base")) {
             //If we do have an ability animation, we get the type (Loop, Play once, Hold on last frame)
@@ -271,6 +271,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //By using regular bones for these abilities as opposed to invisible ones, we both animations to overlay...
         //We select between slow or fast movement based on whether the entity is aggressive or not
         NavigationType navigationType = this.getNavigationType();
+        if (this.isSleeping()){
+            return PlayState.STOP;
+        }
+
         if (this.getDeltaMovement().length() !=0 && this.isAggressive()) {
             switch (navigationType) {
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
@@ -925,10 +929,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
     }
 
-    public void clearAI()
-    {
+    public void clearAI() {
         jumping = false;
         navigation.stop();
+        if (lookControl instanceof WRGroundLookControl) {
+            ((WRGroundLookControl) lookControl).stopLooking();
+        }
+        if (lookControl instanceof WRSwimmingLookControl) {
+            ((WRSwimmingLookControl) lookControl).stopLooking();
+        }
         setTarget(null);
         setSpeed(0);
         setYya(0);

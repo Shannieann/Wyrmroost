@@ -39,8 +39,8 @@ public class WRSleepGoal extends AnimatedGoal{
         }
         //If tamed, sleep only if at home and at reasonable health...
         //Or if set to sit down and all previous conditions are met...
-        if (entity.isTame())
-        {
+        //TODO: Verify sleep when tamed conditions
+        if (entity.isTame()) {
             if (entity.isAtHome()) {
                 if (entity.defendsHome()) {
                     return entity.getHealth() < entity.getMaxHealth() * 0.25;
@@ -53,7 +53,10 @@ public class WRSleepGoal extends AnimatedGoal{
 
 
     public boolean isIdling() {
-        return entity.getNavigation().isDone() && entity.getTarget() == null && !entity.isVehicle() && (entity.speciesCanSwim() || !entity.isInWaterOrBubble()) && !entity.isUsingFlyingNavigator();
+        return entity.getNavigation().isDone()
+                && entity.getTarget() == null
+                && !entity.isVehicle() && (entity.speciesCanSwim() || !entity.isInWaterOrBubble())
+                && !entity.isUsingFlyingNavigator();
     }
 
     @Override
