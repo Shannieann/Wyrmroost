@@ -24,7 +24,7 @@ public class WRSwimmingMoveControl extends MoveControl {
             double entityToTargetY = this.wantedY - this.entity.getY();
             double entityToTargetZ = this.wantedZ - this.entity.getZ();
             double distanceToTargetSqr = entityToTargetX * entityToTargetX + entityToTargetY * entityToTargetY + entityToTargetZ * entityToTargetZ;
-            //If we have reached the target, set speed to 0..
+            //If we have reached the target, set speed to 0.
             if (distanceToTargetSqr < (double)2.5000003E-7F) {
                 this.entity.setZza(0.0F);
             } else {
@@ -35,7 +35,7 @@ public class WRSwimmingMoveControl extends MoveControl {
                 //Set max turn value: Sharp turns if controlled by rider of if aggressive
                 float maxTurnYaw;
                 if (this.entity.getBreaching()){
-                    maxTurnYaw = 15;
+                    maxTurnYaw = 30;
                 }
                 else if ((this.entity.getTarget() != null) || this.entity.canBeControlledByRider()) {
                     maxTurnYaw = 15;
