@@ -54,7 +54,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         if (!entity.isUsingSwimmingNavigator()) {
             return false;
         }
-        if (entity.getRandom().nextDouble() < 0.001) {
+        if (entity.getRandom().nextDouble() < 1) {
         //Get a random position...
             Vec3 randomPosition = (BehaviorUtils.getRandomSwimmablePos(this.entity, 32, 0));
             if (randomPosition != null) {
@@ -101,7 +101,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         if (step2Ticks > 60) {
             return false;
         }
-        //If it has finished all the steps and its had time to perform the return animation, stop the Goal.
+        //If it has finished all the steps, and it has had time to perform the return animation, stop the Goal.
         if (finalTicks > 25) {
             return false;
         }
@@ -131,7 +131,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             //Check to see if we have reached the first position...
            if (entity.distanceToSqr(initialPosition.x, initialPosition.y, initialPosition.z) < distanceCheck) {
                 step1Done = true;
-               //Move to target at reguwlar speed for 10 ticks first, this ensures we align with target before accelerating...
+               //Move to target at regular speed for 10 ticks first, this ensures we align with target before accelerating...
                entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget);
                //If the navigation is stopped, but not stuck, calculate a new path...
             } else if (!entity.getNavigation().isStuck() && entity.getNavigation().isDone()) {
