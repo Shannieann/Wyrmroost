@@ -41,7 +41,6 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
 
-
     //TODO: Lock Yaw or Look when falling down
     //TODO: Breach animations are not consistent
 
@@ -56,6 +55,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         if (!entity.isUsingSwimmingNavigator()) {
             return false;
         }
+        //TODO: Remove debug
         if (entity.getRandom().nextDouble() < 1) {
         //Get a random position...
             Vec3 randomPosition = (BehaviorUtils.getRandomSwimmablePos(this.entity, 32, 0));
@@ -162,9 +162,10 @@ public class WRWaterLeapGoal extends AnimatedGoal {
 
             //Once we approach the target position, launch us out of the water
             if (waterTargetPosition.y-entity.position().y < 6) {
-                entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0d, 1.5d, 1.0d));
-                // Just multiply y
-                // TODO is this right? Or just use scale?
+                // Alternative: Just multiply y
+                //entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0d, 1.5d, 1.0d));
+                // Alternative: Scale
+                entity.setDeltaMovement(entity.getDeltaMovement().scale(1.20D));
             }
 
             //If the navigation is stopped, but not stuck, calculate a new path, with speed depending on whether we have had time to align with target or not
