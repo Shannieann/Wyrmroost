@@ -164,10 +164,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
 
             //Once we approach the target position, launch us out of the water
             if (waterTargetPosition.y-entity.position().y < 6) {
-                // Alternative: Just multiply y
-                //entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0d, 1.5d, 1.0d));
-                // Alternative: Scale
-                entity.setDeltaMovement(entity.getDeltaMovement().scale(1.20D));
+                entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0d, 1.2d, 1.0d));
             }
 
             //If the navigation is stopped, but not stuck, calculate a new path, with speed depending on whether we have had time to align with target or not
@@ -202,8 +199,10 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             //Once it has reached the water again, hold the goal for a few extra ticks to ensure animations plays fully
             super.start(breachEndAnimation, 3, 15);
             finalTicks++;
-            if (finalTicks > 15 && !animationFlag) {
+            if (finalTicks > 12 && !animationFlag) {
                 animationFlag = true;
+                //TODO: Confirm breach end plays properly
+                entity.setBreaching(false);
             }
         }
     }
