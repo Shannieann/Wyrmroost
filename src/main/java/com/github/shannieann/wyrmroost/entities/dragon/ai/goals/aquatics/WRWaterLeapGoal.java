@@ -41,7 +41,10 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
 
-    //TODO: ANIMATION WHEN LEAPING, ENSURE NO OVERLAY WITH OTHER STUFF - Somehow do not play basic locomotion or just navigator ground
+
+    //TODO: Lock Yaw or Look when falling down
+    //TODO: Basic locomotion is being locked after a succesful breach
+    //TODO: Breach animations are not consistent
 
     @Override
     public boolean canUse() {
@@ -173,7 +176,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                     entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget);
                 }
             }
-            
+
             super.start(breachStartAnimation, 1, 10);
             step2Ticks++;
         }
@@ -181,9 +184,12 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         //Step 3:
         if (step2Done && !step3Done) {
             if (this.entity.isUnderWater()) {
+                entity.setBreaching(false);
                 //As soon as it returns to the water...
-                //Give it a new position to move towards, avoids it getting stuck
                 step3Done = true;
+                //Lock Yaw once again
+                entity.setBreaching(false);
+                //Give it a new position to move towards, avoids it getting stuck
                 entity.getNavigation().moveTo(initialPosition.x, initialPosition.y, initialPosition.z, speedTowardsTarget);
             } else {
                 //If it has not yet reached the water, keep flying...
