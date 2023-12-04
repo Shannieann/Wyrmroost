@@ -69,12 +69,11 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
 
 //TODO: CLASS:
-//Tidy up
-//This class: See which methods are needed, which are not
-//Fix serializer
+// Tidy up
+// This class: See which methods are needed, which are not
+// Fix serializer
 
 //TODO: GOALS:
-// Breach Goal - Test False breaching
 // Attack Goal - testing, bounding box for melee attack
 // Test all regular goals before tamed goals
 
@@ -102,9 +101,9 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Water breaching
 
 //TODO: FINAL
-//Config spawn
-//Config attributes
-//Tidy up EntityTypeRegistry
+// Config spawn
+// Config attributes
+// Tidy up EntityTypeRegistry
 
 public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity {
     //TODO: Correct ALL Serializers
