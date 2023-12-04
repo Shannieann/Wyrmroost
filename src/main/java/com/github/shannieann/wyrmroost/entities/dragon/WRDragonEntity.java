@@ -146,7 +146,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntitySerializer<WRDragonEntity> SERIALIZER = EntitySerializer.builder(b -> b
             .track(EntitySerializer.POS.optional(), "HomePos", t -> Optional.ofNullable(t.getHomePos()), (d, v) -> d.setHomePos(v.orElse(null)))
             .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
-            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
+            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::getSleeping, WRDragonEntity::setSleeping)
             .track(EntitySerializer.INT, "BreedCount", WRDragonEntity::getBreedCount, WRDragonEntity::setBreedCount));
 
     public static final byte HEAL_PARTICLES_EVENT_ID = 8;
@@ -271,7 +271,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //By using regular bones for these abilities as opposed to invisible ones, we both animations to overlay...
         //We select between slow or fast movement based on whether the entity is aggressive or not
         NavigationType navigationType = this.getNavigationType();
-        if (this.isSleeping()){
+        if (this.getSleeping() || this.getBreaching()){
             return PlayState.STOP;
         }
 
@@ -303,7 +303,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         //Basic Locomotion: Default cases
         //If the entity is swimming and it is not doing anything else that warrants an animation, it will just swim in place.
-        if (!this.isSleeping() && !this.isInSittingPose()) {
+        if (!this.getSleeping() && !this.isInSittingPose()) {
             if (this.isUsingSwimmingNavigator()) {
                 event.getController().setAnimation(new AnimationBuilder().  addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
@@ -453,8 +453,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public void setBreaching(boolean breaching) {
         entityData.set(BREACHING, breaching);
-
-
     }
 
     public boolean getBreaching() {
@@ -701,13 +699,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      A.5) Entity Data: SLEEP
     // ====================================
 
-    public boolean isSleeping() {
+    public boolean getSleeping() {
         return hasEntityDataAccessor(SLEEPING) && entityData.get(SLEEPING);
     }
 
     public void setSleeping(boolean sleep) {
         //If it is already sleeping or already awake, return...
-        /*if (isSleeping() == sleep) {
+        /*if (getSleeping() == sleep) {
             return;
         }
         */
@@ -744,7 +742,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public EntityDimensions getDimensions(Pose pose)
     {
         EntityDimensions size = getType().getDimensions().scale(getScale());
-        if (isInSittingPose() || isSleeping()) size = size.scale(1, 0.5f);
+        if (isInSittingPose() || getSleeping()) size = size.scale(1, 0.5f);
         return size;
     }
 
@@ -810,7 +808,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
         /*
-        if (isSleeping()) {
+        if (getSleeping()) {
             LookControl lookControl = getLookControl();
             if (lookControl instanceof WRGroundLookControl) {
                 ((WRGroundLookControl)lookControl).stopLooking();
@@ -2067,7 +2065,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void playAmbientSound()
     {
-        if (!isSleeping()) super.playAmbientSound();
+        if (!getSleeping()) super.playAmbientSound();
     }
 
 

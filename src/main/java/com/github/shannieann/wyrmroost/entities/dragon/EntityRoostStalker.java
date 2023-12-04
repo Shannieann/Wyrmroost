@@ -60,7 +60,7 @@ public class EntityRoostStalker extends WRDragonEntity
     public static final int ITEM_SLOT = 0;
     //TODO: What are we using this serializer for?
     //public static final EntitySerializer<EntityRoostStalker> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-    //        .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
+    //        .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::getSleeping, WRDragonEntity::setSleeping)
     //        .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
     private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(EntityRoostStalker.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Boolean> SCAVENGING = SynchedEntityData.defineId(EntityRoostStalker.class, EntityDataSerializers.BOOLEAN);
@@ -136,7 +136,7 @@ public class EntityRoostStalker extends WRDragonEntity
         super.aiStep();
 
         //TODO: Could this logic be extracted to the super class?
-        sleepTimer.add(isSleeping()? 0.08f : -0.15f);
+        sleepTimer.add(getSleeping()? 0.08f : -0.15f);
 
         if (!level.isClientSide)
         {

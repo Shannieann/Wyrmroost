@@ -56,7 +56,7 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
 
         @Override
         protected ResourceLocation getEntityTexture(T entityIn) {
-            if (entityIn.isSleeping()) return BLANK_EYES;
+            if (entityIn.getSleeping()) return BLANK_EYES;
             switch (entityIn.getVariant()){
                 case -1 -> {return EYES_TEXTURE_SPECIAL;}
                 default -> {return EYES_TEXTURE;}

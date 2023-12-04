@@ -52,7 +52,7 @@ public class DragonFruitDrakeEntity extends WRDragonEntity implements IForgeShea
     private static final EntitySerializer<DragonFruitDrakeEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.BOOL, "Gender", WRDragonEntity::isMale, WRDragonEntity::setGender)
             .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
-            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
+            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::getSleeping, WRDragonEntity::setSleeping)
             .track(EntitySerializer.INT, "ShearTimer", DragonFruitDrakeEntity::getShearedCooldown, DragonFruitDrakeEntity::setShearedCooldown));
 
     private static final int CROP_GROWTH_RADIUS = 5;
@@ -161,8 +161,8 @@ public class DragonFruitDrakeEntity extends WRDragonEntity implements IForgeShea
     {
         super.aiStep();
 
-        sitTimer.add((isInSittingPose() || isSleeping())? 0.1f : -0.1f);
-        sleepTimer.add(isSleeping()? 0.05f : -0.1f);
+        sitTimer.add((isInSittingPose() || getSleeping())? 0.1f : -0.1f);
+        sleepTimer.add(getSleeping()? 0.05f : -0.1f);
 
         if (!level.isClientSide)
         {
@@ -194,7 +194,7 @@ public class DragonFruitDrakeEntity extends WRDragonEntity implements IForgeShea
                 }
             }
 
-            if (isAdult() && level.isDay() && !isSleeping() && isIdling() && getRandom().nextDouble() < 0.002)
+            if (isAdult() && level.isDay() && !getSleeping() && isIdling() && getRandom().nextDouble() < 0.002)
             {
                 napTime = 1200;
                 setSleeping(true);
@@ -244,7 +244,7 @@ public class DragonFruitDrakeEntity extends WRDragonEntity implements IForgeShea
     public EntityDimensions getDimensions(Pose pose)
     {
         EntityDimensions size = getType().getDimensions().scale(getScale());
-        if (isInSittingPose() || isSleeping()) size = size.scale(1, 0.7f);
+        if (isInSittingPose() || getSleeping()) size = size.scale(1, 0.7f);
         return size;
     }
 

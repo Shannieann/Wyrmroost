@@ -114,8 +114,8 @@ public class EntitySilverGlider extends WRDragonEntity
 
         if (isGliding && !isRiding()) isGliding = false;
 
-        sitTimer.add((isInSittingPose() || isSleeping())? 0.2f : -0.2f);
-        sleepTimer.add(isSleeping()? 0.05f : -0.1f);
+        sitTimer.add((isInSittingPose() || getSleeping())? 0.2f : -0.2f);
+        sleepTimer.add(getSleeping()? 0.05f : -0.1f);
         flightTimer.add(isUsingFlyingNavigator() || isDiving()? 0.1f : -0.1f);
     }
 
@@ -217,7 +217,7 @@ public class EntitySilverGlider extends WRDragonEntity
     public EntityDimensions getDimensions(Pose pose)
     {
         EntityDimensions size = getType().getDimensions().scale(getScale());
-        if (isInSittingPose() || isSleeping()) size = size.scale(1, 0.87f);
+        if (isInSittingPose() || getSleeping()) size = size.scale(1, 0.87f);
         return size;
     }
 

@@ -37,7 +37,7 @@ import static net.minecraft.entity.ai.attributes.Attributes.*;
 public class AlpineEntity extends WRDragonEntity
 {
     public static final EntitySerializer<AlpineEntity> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::isSleeping, WRDragonEntity::setSleeping)
+            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::getSleeping, WRDragonEntity::setSleeping)
             .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
 
     public static final Animation ROAR_ANIMATION = LogicalAnimation.create(84, AlpineEntity::roarAnimation, () -> AlpineModel::roarAnimation);
@@ -94,11 +94,11 @@ public class AlpineEntity extends WRDragonEntity
     {
         super.aiStep();
 
-        sitTimer.add(isInSittingPose() || isSleeping()? 0.1f : -0.1f);
-        sleepTimer.add(isSleeping()? 0.1f : -0.1f);
+        sitTimer.add(isInSittingPose() || getSleeping()? 0.1f : -0.1f);
+        sleepTimer.add(getSleeping()? 0.1f : -0.1f);
         flightTimer.add(isUsingFlyingNavigator()? 0.1f : -0.05f);
 
-        if (!level.isClientSide && noAnimations() && !isSleeping() && isJuvenile() && getRandom().nextDouble() < 0.0005)
+        if (!level.isClientSide && noAnimations() && !getSleeping() && isJuvenile() && getRandom().nextDouble() < 0.0005)
             AnimationPacket.send(this, ROAR_ANIMATION);
     }
 
@@ -110,7 +110,7 @@ public class AlpineEntity extends WRDragonEntity
             for (LivingEntity entity : getEntitiesNearby(20, e -> e.getType() == WREntityTypes.ALPINE.get()))
             {
                 AlpineEntity alpine = ((AlpineEntity) entity);
-                if (alpine.noAnimations() && alpine.isIdling() && !alpine.isSleeping())
+                if (alpine.noAnimations() && alpine.isIdling() && !alpine.getSleeping())
                     alpine.setAnimation(ROAR_ANIMATION);
             }
         }
@@ -160,7 +160,7 @@ public class AlpineEntity extends WRDragonEntity
     public EntityDimensions getDimensions(Pose pose)
     {
         EntityDimensions size = getType().getDimensions().scale(getScale());
-        return size.scale(1, isInSittingPose() || isSleeping()? 0.7f : 1);
+        return size.scale(1, isInSittingPose() || getSleeping()? 0.7f : 1);
     }
 
     @Override

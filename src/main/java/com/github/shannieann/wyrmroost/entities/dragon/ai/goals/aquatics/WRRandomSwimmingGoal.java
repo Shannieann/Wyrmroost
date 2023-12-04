@@ -37,7 +37,7 @@ public class WRRandomSwimmingGoal extends Goal {
         if (!this.entity.isUsingSwimmingNavigator()) {
             return false;
         }
-        if (this.entity.isSleeping()) {
+        if (this.entity.getSleeping()) {
             return false;
         }
         else {

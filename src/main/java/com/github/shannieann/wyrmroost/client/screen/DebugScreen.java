@@ -45,7 +45,7 @@ public class DebugScreen extends Screen
         String gender = dragon.getGender();
 
         drawCenteredString(ms, font, dragon.getDisplayName().getString(), (width / 2), 15, 0xffffff);
-        drawCenteredString(ms, font, "isSleeping: " + dragon.isSleeping(), (width / 2) + 50, 50, 0xffffff);
+        drawCenteredString(ms, font, "getSleeping: " + dragon.getSleeping(), (width / 2) + 50, 50, 0xffffff);
         drawCenteredString(ms, font, "isTamed: " + dragon.isTame(), (width / 2) - 50, 50, 0xffffff);
         drawCenteredString(ms, font, "isSitting: " + dragon.isInSittingPose(), (width / 2) - 50, 75, 0xffffff);
         drawCenteredString(ms, font, "isFlying: " + dragon.isUsingFlyingNavigator(), (width / 2) + 50, 75, 0xffffff);

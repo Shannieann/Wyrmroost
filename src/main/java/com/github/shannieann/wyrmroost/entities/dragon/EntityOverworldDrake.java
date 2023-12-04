@@ -147,7 +147,7 @@ public class EntityOverworldDrake extends WRDragonEntity
     public EntityDimensions getDimensions(Pose pose)
     {
         EntityDimensions size = getType().getDimensions().scale(getScale());
-        if (isInSittingPose() || isSleeping()) size = size.scale(1, 0.75f);
+        if (isInSittingPose() || getSleeping()) size = size.scale(1, 0.75f);
         return size;
     }
     @Override
@@ -167,8 +167,8 @@ public class EntityOverworldDrake extends WRDragonEntity
         //       Update Timers
         // =====================
 
-        sitTimer.add((isInSittingPose() || isSleeping())? 0.1f : -0.1f);
-        sleepTimer.add(isSleeping()? 0.04f : -0.06f);
+        sitTimer.add((isInSittingPose() || getSleeping())? 0.1f : -0.1f);
+        sleepTimer.add(getSleeping()? 0.04f : -0.06f);
 
         // =====================
         //       Throwing Passenger Off Logic
@@ -180,7 +180,7 @@ public class EntityOverworldDrake extends WRDragonEntity
             thrownPassenger = null;
         }
 
-        if (!level.isClientSide && getTarget() == null && !isInSittingPose() && !isSleeping() && level.getBlockState(blockPosition().below()).getBlock() == Blocks.GRASS_BLOCK && getRandom().nextDouble() < (isBaby() || getHealth() < getMaxHealth()? 0.005 : 0.001));
+        if (!level.isClientSide && getTarget() == null && !isInSittingPose() && !getSleeping() && level.getBlockState(blockPosition().below()).getBlock() == Blocks.GRASS_BLOCK && getRandom().nextDouble() < (isBaby() || getHealth() < getMaxHealth()? 0.005 : 0.001));
         //AnimationPacket.send(this, GRAZE_ANIMATION); TODO READD
     }
     // ====================================

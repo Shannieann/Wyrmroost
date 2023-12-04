@@ -102,7 +102,7 @@ public class WRSleepGoal extends AnimatedGoal{
         }
         //Allows us to check for other methods, elsewhere, that might have set the DataParameter to false
         //For instance, the hurt method...
-        if (!entity.isSleeping()){
+        if (!entity.getSleeping()){
             return false;
         }
         return true;

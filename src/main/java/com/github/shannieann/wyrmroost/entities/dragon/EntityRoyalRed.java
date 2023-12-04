@@ -191,7 +191,7 @@ public class EntityRoyalRed extends WRDragonEntity {
     @Override
     public EntityDimensions getDimensions(Pose pose) {
         EntityDimensions size = getType().getDimensions().scale(getScale());
-        if (isInSittingPose() || isSleeping()) size = size.scale(1, 0.5f);
+        if (isInSittingPose() || getSleeping()) size = size.scale(1, 0.5f);
         return size;
     }
 
@@ -239,7 +239,7 @@ public class EntityRoyalRed extends WRDragonEntity {
         // =====================
         flightTimer.add(isUsingFlyingNavigator() ? 0.1f : -0.085f);
         sitTimer.add(isInSittingPose() ? 0.075f : -0.1f);
-        sleepTimer.add(isSleeping() ? 0.035f : -0.05f);
+        sleepTimer.add(getSleeping() ? 0.035f : -0.05f);
         breathTimer.add(getBreathingFire() ? 0.15f : -0.2f);
         knockOutTimer.add(isKnockedOut() ? 0.05f : -0.1f);
 
@@ -269,7 +269,7 @@ public class EntityRoyalRed extends WRDragonEntity {
                     || this.getAnimation().equals("walk_fast")
                     || this.getAnimation().equals("swim")
                     || this.getAnimation().equals("swim_fast")
-                    && !this.isKnockedOut() && !this.isSleeping() && !this.getBreathingFire() && getRandom().nextDouble() < 0.0004) {
+                    && !this.isKnockedOut() && !this.getSleeping() && !this.getBreathingFire() && getRandom().nextDouble() < 0.0004) {
                 setAnimation(ROAR_ANIMATION);
                 setAnimationType(ROAR_ANIMATION_TYPE);
                 setAnimationTime(ROAR_ANIMATION_TIME);
