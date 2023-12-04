@@ -40,7 +40,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         this.distanceCheck = distanceCheck;
         this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
-    
+
     @Override
     public boolean canUse() {
         if (entity.isInSittingPose()) {
@@ -161,11 +161,13 @@ public class WRWaterLeapGoal extends AnimatedGoal {
 
             //Once we approach the target position, launch us out of the water
             if (waterTargetPosition.y-entity.position().y < 6) {
+                System.out.println("My Y movement is:" + entity.getDeltaMovement().y);
                 entity.setDeltaMovement(entity.getDeltaMovement().multiply(1.0d, 1.2d, 1.0d));
             }
 
             //If the navigation is stopped, but not stuck, calculate a new path, with speed depending on whether we have had time to align with target or not
             //TODO: Do we need this?
+            /*
             if (!entity.getNavigation().isStuck() && entity.getNavigation().isDone()) {
                 if (speedFlag) {
                     entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget*2.2);
@@ -173,12 +175,13 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                     entity.getNavigation().moveTo(waterTargetPosition.x, waterTargetPosition.y, waterTargetPosition.z, speedTowardsTarget);
                 }
             }
+          */
 
             super.start(breachStartAnimation, 1, 10);
             step2Ticks++;
         }
 
-        //Step 3:
+        //Step 3: Return to the water...
         if (step2Done && !step3Done) {
             if (this.entity.isUnderWater()) {
                 //As soon as it returns to the water...
@@ -192,7 +195,7 @@ public class WRWaterLeapGoal extends AnimatedGoal {
                 super.start(breachFlyAnimation, 1, 5);
             }
         }
-        //Step 4:
+        //Step 4: Goal ending, hold for a couple of ticks to finish last animation...
         if (step3Done) {
             //Once it has reached the water again, hold the goal for a few extra ticks to ensure animations plays fully
             super.start(breachEndAnimation, 3, 15);
