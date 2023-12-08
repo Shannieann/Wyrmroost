@@ -161,7 +161,6 @@ public class WRWaterLeapGoal extends AnimatedGoal {
             //Once we approach the target position, launch us out of the water
             if (!boostflag && waterTargetPosition.y-entity.position().y < 6) {
                 double yMovement = entity.getDeltaMovement().y;
-                System.out.println("My Y movement is:" + entity.getDeltaMovement().y);
                 if (yMovement < 1.2) {
                     entity.setDeltaMovement(entity.getDeltaMovement().x,1.2,entity.getDeltaMovement().z);
                 }
