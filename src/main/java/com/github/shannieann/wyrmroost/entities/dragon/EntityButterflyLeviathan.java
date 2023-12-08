@@ -762,6 +762,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         }
 
         //Goal is usable if entity is not being ridden and it has a target
+        //TODO: Tamed and defend?
         @Override
         public boolean canUse() {
             target = getTarget();
@@ -772,11 +773,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         public void start() {
             getLookControl().setLookAt(target);
             setAggressive(true);
+            //TODO: Required here, or can be omitted?
             this.navRecalculationTicks = 0;
         }
 
         @Override
         public boolean canContinueToUse() {
+            //TODO: Stop using goal if target is lost
             target = getTarget();
             if (target == null) {
                 return false;
@@ -803,11 +806,22 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         @Override
         public void tick() {
+            //As part of this goal, we can queue two behaviors:
+            // A melee attack
+            // A lightning attack
+            // We queue behaviors so the actions happen in line with the animations
+            // Hence, we queue a melee attack, and start performing the melee attack animation...
+            // We only actually perform the melee attack once it makes sense to do so in terms of the animation...
+
+
             target = getTarget();
+            //Goal Animation Logic
+            //If an animation is already playing, play until completion...
             if (animationPlaying) {
                 if (super.canContinueToUse()) {
                     super.tick();
                 } else {
+                    //If animation is completed, stop animation logic...
                     super.stop();
                     animationPlaying = false;
                     lightningLineQueued = false;
@@ -817,13 +831,15 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     meleeAttackQueued = false;
                     return;
                 }
+
+                //If a melee attack is queued...
                 if (meleeAttackQueued) {
+                    //If the elapsed animation time matches the time when the attack should be performed...
                     if (elapsedTime == attackQueueTime) {
-                        //Rotate the entity to face the target...
+                        //Perform the corresponding melee attack...
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67), 40);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(4.0f)).inflate(0.67), 40);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(6.0f)).inflate(0.67), 40);
-
                         meleeAttackQueued = false;
                     }
                 }
@@ -874,6 +890,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     }
 
                 }
+
                 if (regularLightningAttackQueued) {
                     //Animation Logic: If regularLightning is queued and we have reached the appropriate time, call the AttackLogic...
                     if (elapsedTime == LIGHTNING_ANIMATION_QUEUE) {
@@ -887,34 +904,36 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 }
 
             }
-            //Do not navigate or attempt other attacks if performing either lightning attack
+
+            // Attempt to navigate or attack if not already performing a lightning attack...
             if (!lightningLineQueued && !regularLightningAttackQueued) {
                 target = getTarget();
                 if (target != null) {
                     //getLookControl().setLookAt(target);
                     double distanceToTargetSqr = distanceToSqr(target);
-                    //Recalculate navigation if we can see target, if we have not recently recalculated and if target has moved..
+                    //Recalculate navigation only if we can see target, if we have not recently recalculated and if target has moved...
                     if ((getSensing().hasLineOfSight(target))
                             && this.navRecalculationTicks <= 0
                             && distanceToTargetSqr >= 64
                             && (this.pathedTargetX == 0.0D && this.pathedTargetY == 0.0D && this.pathedTargetZ == 0.0D
                             || target.distanceToSqr(this.pathedTargetX, this.pathedTargetY, this.pathedTargetZ) >= 1.0D
                             || getRandom().nextFloat() < 0.05F)) {
-                        //Store target's current position + adjust recalculation timer
+                        // We are recalculating navigation...
+                        // Hence, we store target's current position
                         this.pathedTargetX = target.getX();
                         this.pathedTargetY = target.getY();
                         this.pathedTargetZ = target.getZ();
-                        this.navRecalculationTicks = 4 + getRandom().nextInt(7);
 
-                        //We will perform faster recalculations if we are close to the target..
+                        //And we adjust the recalculation timer...
+                        this.navRecalculationTicks = 4 + getRandom().nextInt(7);
+                        //We will perform faster recalculations if we are close to the target...
                         if (distanceToTargetSqr > 1024.0D) {
                             this.navRecalculationTicks += 10;
                         } else if (distanceToTargetSqr > 256.0D) {
                             this.navRecalculationTicks += 5;
                         }
 
-                        //Get our final path point, ensure it is still close to the target...
-                        //We only recalculate the path if our final path point (and hence our path) will not get us to within a reasonable distance of target...
+                        //We only recalculate the path if our current final path point (and hence our current path) will not get us to within a reasonable distance of target...
                         Node finalPathPoint;
                         if (getNavigation().getPath() == null || ((finalPathPoint = getNavigation().getPath().getEndNode()) == null) || target.distanceToSqr(finalPathPoint.x, finalPathPoint.y, finalPathPoint.z) > 25) {
                             if (!getNavigation().moveTo(target, 1.5)) {
@@ -922,10 +941,12 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                             }
                         }
                     }
+
                     //Adjust tick counter...
                     this.navRecalculationTicks = this.adjustedTickDelay(this.navRecalculationTicks);
                 }
-                //Reduce by 1 if not already at 0
+
+                //Update timer: Reduce by 1 if not already at 0
                 this.navRecalculationTicks = Math.max(this.navRecalculationTicks - 1, 0);
 
                 //Reduce by 1 if not already at 0
@@ -934,10 +955,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
                 //Decide which attack to use: LightningAttack or MeleeAttack.
 
+                /*
                 if (canPerformLightningAttack()) {
                     performLightningAttack();
                 }
-                else if (canPerformMeleeAttack()) {
+
+                 */
+                 if (canPerformMeleeAttack()) {
                     performMeleeAttack();
                 }
             }
@@ -972,6 +996,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         }
 
         private boolean canPerformMeleeAttack() {
+            //Perform a melee attack if we are sufficiently close to the target, and no animation is currently playing...
+            //If an animation is playing, the entity is "locked" in terms of actions, it does not make sense to perform another attack...
             if (target != null && distanceToSqr(target) <= 64 && !animationPlaying) {
                 return true;
             }
