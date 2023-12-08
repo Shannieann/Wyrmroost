@@ -72,13 +72,11 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //TODO: GOALS:
 // Attack Goal - testing, bounding box for melee attack
-// Test all regular goals before tamed goals
-
-
+// Return to Water Goal
 
 //TODO: ANIMATIONS:
-// Test water leap and anim transition time
-// Sleep
+// Retest Water Leap animations
+// Retest Water Sleep animations
 
 //TODO: TAMING
 // All goals when tamed
@@ -86,16 +84,13 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Ride logic + rewrite key-binds
 
 //TODO: ASSETS:
-// Child textures
-// ANIMATIONS: Sitting
-// ANIMATIONS: STANDING
-// ANIMATIONS: Sleeping
-// ANIMATIONS: Awakening
-// Animations: Idle (if on ground)
+// Textures: Eyes
+// Assets: Child?
+
 
 //TODO: TEST AND SHOWCASE
-// Water movement
-// Water breaching
+// Water movement + breaching
+// Attacks
 
 //TODO: FINAL
 // Config spawn
@@ -118,9 +113,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public final LerpedFloat swimTimer = LerpedFloat.unit();
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public boolean beached = true;
-
-    //TODO: ADJUST TIMES - animation and actual strike for melee attacks
-    //TODO: Adjust number of attack variants
     public static final String LIGHTNING_ANIMATION = "lightning";
     public static final int LIGHTNING_ANIMATION_TIME = 100;
     public static final int LIGHTNING_ANIMATION_QUEUE = 20;
@@ -171,7 +163,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 .add(ATTACK_DAMAGE, 14)
                 .add(FOLLOW_RANGE, 50);
     }
-    //TODO: Correct ALL Serializers
+    //TODO: Correct ALL Serializers: https://docs.minecraftforge.net/en/latest/networking/entities/
     public static final EntitySerializer<EntityButterflyLeviathan> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
@@ -764,7 +756,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         }
 
         //Goal is usable if entity is not being ridden and it has a target
-        //TODO: Tamed and defend?
+        //TODO: What happens when tamed / defend?
         @Override
         public boolean canUse() {
             target = getTarget();
@@ -811,8 +803,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             // We queue behaviors so the actions happen in line with the animations
             // Hence, we queue a melee attack, and start performing the melee attack animation...
             // We only actually perform the melee attack once it makes sense to do so in terms of the animation...
-            //TODO: Tidy comments
-
             target = getTarget();
             //Goal Animation Logic
             //If an animation is already playing, play until completion...
@@ -834,8 +824,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
                 //If a melee attack is queued...
                 if (meleeAttackQueued) {
-                    //TODO: Tidy comments
-
                     // Note: the time for the attack to be performed depends on the attack variant being used
                     // The attack variant defines the animation variant which defines the time when it makes sense to perform the attack...
                     if (elapsedTime == attackQueueTime) {
@@ -1011,7 +999,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         public void queueMeleeAttack() {
             //Randomly define an attack variant...
-            //TODO: Currently a single attack variant, must adjust to TWO
             attackVariant = 1+getRandom().nextInt(ATTACK_ANIMATION_VARIANTS);
             //Queue a melee attack, ensuring it happens once we reach the proper time...
             meleeAttackQueued = true;
