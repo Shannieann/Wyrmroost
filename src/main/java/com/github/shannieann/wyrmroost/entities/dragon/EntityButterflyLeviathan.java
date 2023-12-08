@@ -16,6 +16,7 @@ import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import com.github.shannieann.wyrmroost.util.ModUtils;
+import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -812,7 +813,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             // We queue behaviors so the actions happen in line with the animations
             // Hence, we queue a melee attack, and start performing the melee attack animation...
             // We only actually perform the melee attack once it makes sense to do so in terms of the animation...
-
+            //TODO: Tidy comments
 
             target = getTarget();
             //Goal Animation Logic
@@ -822,6 +823,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     super.tick();
                 } else {
                     //If animation is completed, stop animation logic...
+                    //And clear all queues...
                     super.stop();
                     animationPlaying = false;
                     lightningLineQueued = false;
@@ -835,10 +837,15 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 //If a melee attack is queued...
                 if (meleeAttackQueued) {
                     //If the elapsed animation time matches the time when the attack should be performed...
+                    // (Note: the time for the attack to be performed depends on the attack variant being used(
+                    // The attack variant defines the animation variant which defines the time when it makes sense to perform the attack...
                     if (elapsedTime == attackQueueTime) {
                         //Perform the corresponding melee attack...
+                        DebugRenderer.renderFilledBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67),255,0,0,100);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67), 40);
+                        DebugRenderer.renderFilledBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67),0,255,0,100);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(4.0f)).inflate(0.67), 40);
+                        DebugRenderer.renderFilledBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67),0,0,255,100);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(6.0f)).inflate(0.67), 40);
                         meleeAttackQueued = false;
                     }
@@ -955,6 +962,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
                 //Decide which attack to use: LightningAttack or MeleeAttack.
 
+                //TODO: Debug, temporarily disabled
                 /*
                 if (canPerformLightningAttack()) {
                     performLightningAttack();
@@ -968,6 +976,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         }
 
+        //TODO: Debug, temporarily disabled
         private void performLightningAttack(){
             //ToDo: Age
             LivingEntity target = getTarget();
@@ -1004,6 +1013,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             return false;
         }
 
+        //TODO: Name, queue melee attack makes more sense
         public void performMeleeAttack() {
             //Randomly define an attack variant...
             //TODO: Currently a single attack variant, must adjust to TWO
@@ -1020,6 +1030,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             setYRot(desiredAngleYaw);
             yHeadRot = desiredAngleYaw;
             yBodyRot = desiredAngleYaw;
+            //set the attackQueueTime depending on which animation variant is being used
             switch (attackVariant) {
                 case 1 ->
                         {
