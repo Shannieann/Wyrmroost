@@ -10,9 +10,7 @@ import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.ground.WRGrou
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRWaterLeapGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swim.WRSwimmingLookControl;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
-import com.github.shannieann.wyrmroost.items.book.action.BookActions;
 import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
@@ -42,9 +40,7 @@ import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -106,10 +102,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Tidy up EntityTypeRegistry
 
 public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity {
-    //TODO: Correct ALL Serializers
-    public static final EntitySerializer<EntityButterflyLeviathan> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
-            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> LIGHTNING_COOLDOWN = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.INT);
@@ -177,12 +169,15 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 .add(ATTACK_DAMAGE, 14)
                 .add(FOLLOW_RANGE, 50);
     }
+    //TODO: Correct ALL Serializers
+    public static final EntitySerializer<EntityButterflyLeviathan> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
+            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
     @Override
     public EntitySerializer<EntityButterflyLeviathan> getSerializer() {
         return SERIALIZER;
     }
-
 
     @Override
     public boolean checkSpawnRules(LevelAccessor pLevel, MobSpawnType pReason) {
@@ -208,7 +203,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public MobType getMobType() {
         return MobType.WATER;
     }
-
 
     public boolean hasConduit() {
         return entityData.get(HAS_CONDUIT);
@@ -288,7 +282,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         swimTimer.add(isUnderWater() ? -0.1f : 0.1f);
         sitTimer.add(isInSittingPose() ? 0.1f : -0.1f);
         setLightningAttackCooldown(Math.max(getLightningAttackCooldown()-1,0));
-
 
 
         //TODO: TAMED LIGHTNING COOLDOWN
@@ -768,6 +761,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
 
+        //Goal is usable if entity is not being ridden and it has a target
         @Override
         public boolean canUse() {
             target = getTarget();
