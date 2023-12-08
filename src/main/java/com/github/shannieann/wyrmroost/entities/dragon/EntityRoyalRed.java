@@ -62,6 +62,7 @@ public class EntityRoyalRed extends WRDragonEntity {
     //TODO: Sleeping logic
     //TODO: Dynamic animations
     static {
+        //TODO: Which are needed?
         IDLE_ANIMATION_VARIANTS = 1;
         //TODO: Correct number
         ATTACK_ANIMATION_VARIANTS = 2;
