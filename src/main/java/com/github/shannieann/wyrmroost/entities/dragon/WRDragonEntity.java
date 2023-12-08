@@ -27,7 +27,6 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import net.minecraft.advancements.CriteriaTriggers;
-import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -306,7 +305,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //If the entity is swimming, and it is not doing anything else that warrants an animation, it will just swim in place.
         if (!this.getSleeping() && !this.isInSittingPose()) {
             if (this.isUsingSwimmingNavigator()) {
-                event.getController().setAnimation(new AnimationBuilder().  addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
+                event.getController().setAnimation(new AnimationBuilder().  addAnimation("base_swim", ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
             }
             //If the entity is flying, and it is not doing anything else that warrants an animation, it will just fly in place.
@@ -953,7 +952,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void attackInBox(AABB box, int disabledShieldTime)
     {
         List<LivingEntity> attackables = level.getEntitiesOfClass(LivingEntity.class, box, entity -> entity != this && !hasPassenger(entity) && wantsToAttack(entity, getOwner()));
-        DebugRenderer.renderFilledBox(box, 100,100,100, Integer.MAX_VALUE);
         for (LivingEntity attacking : attackables) {
             doHurtTarget(attacking);
             if (disabledShieldTime > 0 && attacking instanceof Player)
