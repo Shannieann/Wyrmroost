@@ -62,7 +62,6 @@ minecraft {
                 }
             }
         }
-
         server {
             workingDirectory project.file('run')
 
