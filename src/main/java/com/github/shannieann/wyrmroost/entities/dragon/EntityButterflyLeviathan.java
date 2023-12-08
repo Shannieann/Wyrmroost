@@ -836,16 +836,17 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
                 //If a melee attack is queued...
                 if (meleeAttackQueued) {
-                    //If the elapsed animation time matches the time when the attack should be performed...
-                    // (Note: the time for the attack to be performed depends on the attack variant being used(
+                    //TODO: Tidy comments
+
+                    // Note: the time for the attack to be performed depends on the attack variant being used
                     // The attack variant defines the animation variant which defines the time when it makes sense to perform the attack...
                     if (elapsedTime == attackQueueTime) {
                         //Perform the corresponding melee attack...
-                        DebugRenderer.renderFilledBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67),255,0,0,100);
+                        DebugRenderer.renderFilledBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67),255,0,0,0.5f);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67), 40);
-                        DebugRenderer.renderFilledBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67),0,255,0,100);
+                        DebugRenderer.renderFilledBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67),0,255,0,0.5f);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(4.0f)).inflate(0.67), 40);
-                        DebugRenderer.renderFilledBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67),0,0,255,100);
+                        DebugRenderer.renderFilledBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67),0,0,255,0.5f);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(6.0f)).inflate(0.67), 40);
                         meleeAttackQueued = false;
                     }
@@ -854,7 +855,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     //Animation Logic: If lightingLine is queued and we have reached the appropriate time, call the GoalLogic...
                     //Keep calling so long as we exceed the approriate time as this must be performed over multiple ticks
                     if (elapsedTime > LIGHTNING_ANIMATION_QUEUE) {
-                        //If we have not yet setup the appropriate directions for the lightningLine, do that..
+                        //If we have not yet setup the appropriate directions for the lightningLine, do that...
                         if (!lightningLineSetup) {
                             toTarget = target.position().subtract(position()).normalize();
                             toTarget1 = toTarget.yRot(0.523599F);
