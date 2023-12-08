@@ -16,7 +16,6 @@ import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import com.github.shannieann.wyrmroost.util.ModUtils;
-import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -51,6 +50,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -104,6 +104,9 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity {
 
+    static {
+        IDLE_ANIMATION_VARIANTS = 1;
+    }
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> LIGHTNING_COOLDOWN = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.INT);
 
@@ -118,23 +121,20 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     //TODO: ADJUST TIMES - animation and actual strike for melee attacks
     //TODO: Adjust number of attack variants
-    protected static int ATTACK_ANIMATION_VARIANTS = 1;
-
     public static final String LIGHTNING_ANIMATION = "lightning";
     public static final int LIGHTNING_ANIMATION_TIME = 100;
     public static final int LIGHTNING_ANIMATION_QUEUE = 20;
 
     public static final String ATTACK_ANIMATION = "attack_";
     public static final int LAND_ATTACK_ANIMATION_TIME_1 = 10;
-    public static final int SWIM_ATTACK_ANIMATION_TIME_1 = 10;
-    public static final int LAND_ATTACK_ANIMATION_TIME_2 = 0;
-    public static final int SWIM_ATTACK_ANIMATION_TIME_2 = 0;
+    public static final int WATER_ATTACK_ANIMATION_TIME_1 = 10;
+    public static final int LAND_ATTACK_ANIMATION_TIME_2 = 10;
+    public static final int WATER_ATTACK_ANIMATION_TIME_2 = 10;
 
-    public static final int LAND_ATTACK_QUEUE_TIME_1 = 4;
-    public static final int SWIM_ATTACK_QUEUE_TIME_1 = 7;
-    public static final int LAND_ATTACK_QUEUE_TIME_2 = 0;
-    public static final int SWIM_ATTACK_QUEUE_TIME_2 = 0;
-
+    public static final int LAND_ATTACK_QUEUE_TIME_1 = 7;
+    public static final int WATER_ATTACK_QUEUE_TIME_1 = 7;
+    public static final int LAND_ATTACK_QUEUE_TIME_2 = 7;
+    public static final int WATER_ATTACK_QUEUE_TIME_2 = 7;
 
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
         super(entityType, level);
@@ -148,6 +148,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         this.groundMaxYaw = 10;
         this.setNavigator(NavigationType.SWIMMING);
     }
+
 
     // ====================================
     //      A) Entity Data
@@ -774,13 +775,10 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         public void start() {
             getLookControl().setLookAt(target);
             setAggressive(true);
-            //TODO: Required here, or can be omitted?
-            this.navRecalculationTicks = 0;
         }
 
         @Override
         public boolean canContinueToUse() {
-            //TODO: Stop using goal if target is lost
             target = getTarget();
             if (target == null) {
                 return false;
@@ -968,7 +966,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
                  */
                  if (canPerformMeleeAttack()) {
-                    performMeleeAttack();
+                     queueMeleeAttack();
                 }
             }
 
@@ -1011,8 +1009,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             return false;
         }
 
-        //TODO: Name, queue melee attack makes more sense
-        public void performMeleeAttack() {
+        public void queueMeleeAttack() {
             //Randomly define an attack variant...
             //TODO: Currently a single attack variant, must adjust to TWO
             attackVariant = 1+getRandom().nextInt(ATTACK_ANIMATION_VARIANTS);
@@ -1032,21 +1029,16 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             switch (attackVariant) {
                 case 1 ->
                         {
-                    int time = swimming? SWIM_ATTACK_ANIMATION_TIME_1 : LAND_ATTACK_ANIMATION_TIME_1;
-                    attackQueueTime = swimming? SWIM_ATTACK_QUEUE_TIME_1 : LAND_ATTACK_QUEUE_TIME_1;
+                    int time = swimming? WATER_ATTACK_ANIMATION_TIME_1 : LAND_ATTACK_ANIMATION_TIME_1;
+                    attackQueueTime = swimming? WATER_ATTACK_QUEUE_TIME_1 : LAND_ATTACK_QUEUE_TIME_1;
                     super.start(ATTACK_ANIMATION+navVariant+attackVariant,2,time);
                         }
                 case 2 -> {
-                    int time = swimming? SWIM_ATTACK_ANIMATION_TIME_2 : LAND_ATTACK_ANIMATION_TIME_2;
-                    attackQueueTime = swimming? SWIM_ATTACK_QUEUE_TIME_2 : LAND_ATTACK_QUEUE_TIME_2;
+                    int time = swimming? WATER_ATTACK_ANIMATION_TIME_2 : LAND_ATTACK_ANIMATION_TIME_2;
+                    attackQueueTime = swimming? WATER_ATTACK_QUEUE_TIME_2 : LAND_ATTACK_QUEUE_TIME_2;
                     super.start(ATTACK_ANIMATION+navVariant+attackVariant,2,time);
                 }
             }
         }
     }
 }
-
-//TODO: ORDER
-    //1.- Attack Animation Variants + strike time
-    //2.- Sleep, and sleep logic
-    //3.- Tamed logic
