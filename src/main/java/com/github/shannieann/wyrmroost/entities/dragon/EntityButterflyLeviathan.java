@@ -842,11 +842,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     // The attack variant defines the animation variant which defines the time when it makes sense to perform the attack...
                     if (elapsedTime == attackQueueTime) {
                         //Perform the corresponding melee attack...
-                        DebugRenderer.renderFilledBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67),255,0,0,0.5f);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67), 40);
-                        DebugRenderer.renderFilledBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67),0,255,0,0.5f);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(4.0f)).inflate(0.67), 40);
-                        DebugRenderer.renderFilledBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67),0,0,255,0.5f);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(6.0f)).inflate(0.67), 40);
                         meleeAttackQueued = false;
                     }

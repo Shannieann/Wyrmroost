@@ -27,6 +27,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.renderer.debug.DebugRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -952,9 +953,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void attackInBox(AABB box, int disabledShieldTime)
     {
         List<LivingEntity> attackables = level.getEntitiesOfClass(LivingEntity.class, box, entity -> entity != this && !hasPassenger(entity) && wantsToAttack(entity, getOwner()));
-        //if (WRConfig.DEBUG_MODE.get() && level.isClientSide) DebugRendering.box(box, 0x99ff0000, Integer.MAX_VALUE);
-        for (LivingEntity attacking : attackables)
-        {
+        DebugRenderer.renderFilledBox(box, 100,100,100, Integer.MAX_VALUE);
+        for (LivingEntity attacking : attackables) {
             doHurtTarget(attacking);
             if (disabledShieldTime > 0 && attacking instanceof Player)
             {
