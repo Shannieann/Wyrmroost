@@ -64,6 +64,7 @@ import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
+// 23.12.08: Continue on LightningAttack...
 
 //TODO: CLASS:
 // Tidy up
