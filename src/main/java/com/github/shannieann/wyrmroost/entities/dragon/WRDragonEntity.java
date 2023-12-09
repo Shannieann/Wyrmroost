@@ -1913,13 +1913,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         Vec3 mouth = getApproximateMouthPos();
         //ClientSide: Spawn Particles + sound
         if (level.isClientSide) {
-            double width = getBbWidth();
-            for (int i = 0; i < Math.max(width * width * 2, 12); ++i) {
-                Vec3 vec3d1 = new Vec3(((double) getRandom().nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, ((double) getRandom().nextFloat() - 0.5D) * 0.1D);
-                vec3d1 = vec3d1.zRot(-getXRot() * (Mafs.PI / 180f));
-                vec3d1 = vec3d1.yRot(-getYRot() * (Mafs.PI / 180f));
-                level.addParticle(new ItemParticleOption(ParticleTypes.ITEM, stack), mouth.x + Mafs.nextDouble(getRandom()) * (width * 0.2), mouth.y, mouth.z + Mafs.nextDouble(getRandom()) * (width * 0.2), vec3d1.x, vec3d1.y, vec3d1.z);
-            }
             ModUtils.playLocalSound(level, new BlockPos(mouth), getEatingSound(stack), 1f, 1f);
         }
         else {
