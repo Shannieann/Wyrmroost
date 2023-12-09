@@ -143,7 +143,7 @@ public class EntityRoostStalker extends WRDragonEntity
         {
             ItemStack item = getStackInSlot(ITEM_SLOT);
             if (isFood(item) && getHealth() < getMaxHealth() && getRandom().nextDouble() <= 0.0075)
-                eat(item);
+                eat(this.level, item);
         }
     }
 

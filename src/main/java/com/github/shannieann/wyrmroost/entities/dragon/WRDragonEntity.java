@@ -1776,7 +1776,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
                 if (flag)
                 {
-                    eat(stack);
+                    eat(this.level, stack);
                     return SUCCESS;
                 }
             }
@@ -1785,7 +1785,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             {
                 if (!level.isClientSide && !isInLove())
                 {
-                    eat(stack);
+                    eat(this.level, stack);
                     setInLove(player);
                     return InteractionResult.SUCCESS;
                 }
@@ -1902,10 +1902,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return isFood(stack);
     }
 
-    public void eat(ItemStack stack) {
-        eat(level, stack);
-    }
-
     @Override
     public abstract boolean isFood(ItemStack stack);
 
@@ -1915,12 +1911,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @SuppressWarnings("ConstantConditions")
     public ItemStack eat(Level level, ItemStack stack) {
         Vec3 mouth = getApproximateMouthPos();
-
-        if (level.isClientSide)
-        {
+        //ClientSide: Spawn Particles + sound
+        if (level.isClientSide) {
             double width = getBbWidth();
-            for (int i = 0; i < Math.max(width * width * 2, 12); ++i)
-            {
+            for (int i = 0; i < Math.max(width * width * 2, 12); ++i) {
                 Vec3 vec3d1 = new Vec3(((double) getRandom().nextFloat() - 0.5D) * 0.1D, Math.random() * 0.1D + 0.1D, ((double) getRandom().nextFloat() - 0.5D) * 0.1D);
                 vec3d1 = vec3d1.zRot(-getXRot() * (Mafs.PI / 180f));
                 vec3d1 = vec3d1.yRot(-getYRot() * (Mafs.PI / 180f));
@@ -1928,23 +1922,28 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             ModUtils.playLocalSound(level, new BlockPos(mouth), getEatingSound(stack), 1f, 1f);
         }
-        else
-        {
-            final float max = getMaxHealth();
-            if (getHealth() < max) heal(Math.max((int) max / 5, 4)); // Base healing on max health, minimum 2 hearts.
+        else {
+            //ServerSide: Heal
+            final float maxHealth = getMaxHealth();
+            if (getHealth() < maxHealth) {
+                heal(Math.max((int) maxHealth / 5, 4)); // Base healing on max health, minimum 2 hearts.
+            }
 
             Item item = stack.getItem();
-            if (item.isEdible())
-            {
+            //Apply possible item effects
+            if (item.isEdible()) {
                 for (Pair<MobEffectInstance, Float> pair : item.getFoodProperties().getEffects())
-                    if (!level.isClientSide && pair.getFirst() != null && getRandom().nextFloat() < pair.getSecond())
+                    if (!level.isClientSide && pair.getFirst() != null && getRandom().nextFloat() < pair.getSecond()) {
                         addEffect(new MobEffectInstance(pair.getFirst()));
+                    }
             }
-            if (item.hasContainerItem(stack))
+
+            if (item.hasContainerItem(stack))  {
                 spawnAtLocation(item.getContainerItem(stack), (float) (mouth.y - getY()));
+
+            }
             stack.shrink(1);
         }
-
         return stack;
     }
 
