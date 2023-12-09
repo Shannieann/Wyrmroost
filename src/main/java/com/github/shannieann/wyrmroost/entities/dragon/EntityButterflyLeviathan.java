@@ -430,6 +430,9 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     }
 
     public boolean canPerformLightningAttack() {
+        // Assuming both cooldown availability and juvenile plus growth stage...
+        // Lightning attacks can be performed if either in water, rain or bubble...
+        //Or if there's a lightning rod relatively close to the BFL
         if (getLightningAttackCooldown() <= 0 && isJuvenile()) {
             if (isInWaterRainOrBubble()) {
                 return true;
@@ -725,32 +728,25 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         private double pathedTargetX;
         private double pathedTargetY;
         private double pathedTargetZ;
-
         LivingEntity target;
-
         boolean animationPlaying;
-
         int checkForLightningCounter;
-
-        boolean lightningLineQueued;
+        boolean lightningForkQueued;
         boolean lightningLineSetup;
         int lightningLineCounter;
-
         Vec3 toTarget;
         Vec3 toTarget1;
         Vec3 toTarget2;
         Vec3 strikePos;
         Vec3 strikePos1;
         Vec3 strikePos2;
-
-        boolean regularLightningAttackQueued;
-
+        boolean lightningStrikeQueued;
         boolean meleeAttackQueued;
         int attackVariant;
         float inflateValue;
         int disableShieldTime;
         int attackQueueTime;
-
+        //ToDo: Age
         public BFLAttackGoal(EntityButterflyLeviathan entity) {
             super(entity);
             setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
@@ -785,10 +781,10 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             setAggressive(false);
             getNavigation().stop();
             animationPlaying = false;
-            lightningLineQueued = false;
+            lightningForkQueued = false;
             lightningLineSetup = false;
             lightningLineCounter = 0;
-            regularLightningAttackQueued = false;
+            lightningStrikeQueued = false;
             meleeAttackQueued = false;
             navRecalculationTicks = 0;
             pathedTargetX = 0;
@@ -815,10 +811,10 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     //And clear all queues...
                     super.stop();
                     animationPlaying = false;
-                    lightningLineQueued = false;
+                    lightningForkQueued = false;
                     lightningLineSetup = false;
                     lightningLineCounter = 0;
-                    regularLightningAttackQueued = false;
+                    lightningStrikeQueued = false;
                     meleeAttackQueued = false;
                     return;
                 }
@@ -835,7 +831,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                         meleeAttackQueued = false;
                     }
                 }
-                if (lightningLineQueued) {
+                if (lightningForkQueued) {
                     //Animation Logic: If lightingLine is queued and we have reached the appropriate time, call the GoalLogic...
                     //Keep calling so long as we exceed the approriate time as this must be performed over multiple ticks
                     if (elapsedTime > LIGHTNING_ANIMATION_QUEUE) {
@@ -875,7 +871,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                         } else {
                             //Once we reach the limit, reset the lightningLine variables
                             //TODO: Ensure animation duration does not end before lightningLine logic ends - I.E: Ensure animation logic does not clip AttackLogic for lightningLine
-                            lightningLineQueued = false;
+                            lightningForkQueued = false;
                             lightningLineSetup = false;
                             lightningLineCounter = 0;
                         }
@@ -883,14 +879,14 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
                 }
 
-                if (regularLightningAttackQueued) {
-                    //Animation Logic: If regularLightning is queued and we have reached the appropriate time, call the AttackLogic...
+                if (lightningStrikeQueued) {
+                    //Animation Logic: If regularLightning is queued, and we have reached the appropriate time, call the AttackLogic...
                     if (elapsedTime == LIGHTNING_ANIMATION_QUEUE) {
                         LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT,level);
                         lightningBolt.setDamage(10F);
                         lightningBolt.setPos(target.position());
                         level.addFreshEntity(lightningBolt);
-                        regularLightningAttackQueued = false;
+                        lightningStrikeQueued = false;
                     }
 
                 }
@@ -898,7 +894,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             }
 
             // Attempt to navigate or attack if not already performing a lightning attack...
-            if (!lightningLineQueued && !regularLightningAttackQueued) {
+            if (!lightningForkQueued && !lightningStrikeQueued) {
                 target = getTarget();
                 if (target != null) {
                     //getLookControl().setLookAt(target);
@@ -947,43 +943,44 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
                 //Decide which attack to use: LightningAttack or MeleeAttack.
 
-                //TODO: Debug, temporarily disabled
-                /*
                 if (canPerformLightningAttack()) {
-                    performLightningAttack();
+                    queueLightningAttack();
                 }
 
-                 */
-                 if (canPerformMeleeAttack()) {
+                if (canPerformMeleeAttack()) {
                      queueMeleeAttack();
                 }
             }
 
         }
 
-        //TODO: Debug, temporarily disabled
-        private void performLightningAttack(){
-            //ToDo: Age
+        private void queueLightningAttack(){
             LivingEntity target = getTarget();
+            //There are two kinds of LightningAttacks:...
+            // A: A Lightning Fork attack, used if on ground
+            // B: A Lightning strike attack, used if on water...
+
             if (target !=null && !animationPlaying) {
-                //If on ground, queue a lightning line...
+                //If on ground, queue a lightning fork...
+                //If on water, queue a lightning strike
                 if (isUsingLandNavigator()) {
-                    //Attack Logic: Queue up ability to play when animation reaches the appropriate point
-                    lightningLineQueued = true;
-                    //Attack Logic: Stop moving in preparation for Lightning Strike
+                    //Queue up ability to play when animation reaches the appropriate point
+                    lightningForkQueued = true;
+                    //Stop moving in preparation for Lightning Fork
                     getNavigation().stop();
-                    //Animation Logic: Set the animationPlaying flag correctly, start playing the animation via the super class
+                    //Set the animationPlaying flag correctly, start playing the animation via the super class
                     animationPlaying =true;
                     super.start(LIGHTNING_ANIMATION, 2, LIGHTNING_ANIMATION_TIME);
                 } else {
-                    //Attack Logic: Queue up ability to play when animation reaches the appropriate point
-                    regularLightningAttackQueued = true;
-                    //Attack Logic: Stop moving in preparation for lightning strike
+                    //Queue up ability to play when animation reaches the appropriate point
+                    lightningStrikeQueued = true;
+                    //Stop moving in preparation for Lightning Strike
                     getNavigation().stop();
-                    //Animation Logic: Set the animationPlaying flag correctly, start playing the animation via the super class
+                    //Set the animationPlaying flag correctly, start playing the animation via the super class
                     animationPlaying =true;
                     super.start(LIGHTNING_ANIMATION, 2, LIGHTNING_ANIMATION_TIME);
                 }
+                // Lightning Attack is now queued, set the cooldown...
                 setLightningAttackCooldown(400);
             }
 
