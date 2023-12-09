@@ -63,7 +63,6 @@ import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
-// 23.12.08: Continue on LightningAttack...
 
 //TODO: CLASS:
 // Tidy up
@@ -71,7 +70,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Fix serializer
 
 //TODO: GOALS:
-// Attack Goal - testing, bounding box for melee attack
 // Return to Water Goal
 
 //TODO: ANIMATIONS:
@@ -165,7 +163,12 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 .add(ATTACK_DAMAGE, 14)
                 .add(FOLLOW_RANGE, 50);
     }
-    //TODO: Correct ALL Serializers: https://docs.minecraftforge.net/en/latest/networking/entities/
+    //TODO:
+    // Correct ALL Serializers: https://docs.minecraftforge.net/en/latest/networking/entities/
+    // Do we actually need Serializers?
+    /*
+
+
     public static final EntitySerializer<EntityButterflyLeviathan> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
@@ -174,6 +177,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public EntitySerializer<EntityButterflyLeviathan> getSerializer() {
         return SERIALIZER;
     }
+    */
 
     @Override
     public boolean checkSpawnRules(LevelAccessor pLevel, MobSpawnType pReason) {

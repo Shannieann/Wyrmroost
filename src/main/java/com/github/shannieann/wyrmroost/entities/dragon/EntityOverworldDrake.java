@@ -65,9 +65,12 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class EntityOverworldDrake extends WRDragonEntity
 {
+    /*
     private static final EntitySerializer<EntityOverworldDrake> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
+
+     */
     // inventory slot constants
     public static final int SADDLE_SLOT = 0;
     public static final int ARMOR_SLOT = 1;
@@ -95,12 +98,15 @@ public class EntityOverworldDrake extends WRDragonEntity
     //      A) Entity Data
     // ====================================
 
+    /*
     @Override
     public EntitySerializer<EntityOverworldDrake> getSerializer()
     {
         return SERIALIZER;
     }
 
+
+     */
     @Override
     protected void defineSynchedData()
     {

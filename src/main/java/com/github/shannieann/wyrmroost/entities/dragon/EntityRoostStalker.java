@@ -86,11 +86,12 @@ public class EntityRoostStalker extends WRDragonEntity
         entityData.define(SCAVENGING, false);
     }
 
+    /*
     @Override
     public EntitySerializer<? extends WRDragonEntity> getSerializer() {
         return super.getSerializer();
     }
-
+     */
 
     public static AttributeSupplier.Builder getAttributeSupplier()
     {

@@ -73,10 +73,13 @@ public class EntityRoyalRed extends WRDragonEntity {
     public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
 
+    /*
     private static final EntitySerializer<EntityRoyalRed> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
             .track(EntitySerializer.INT, "KnockOutTime", EntityRoyalRed::getKnockOutTime, EntityRoyalRed::setKnockoutTime));
 
+
+     */
     public static final int ARMOR_SLOT = 0;
     private static final int MAX_KNOCKOUT_TIME = 3600; // 3 minutes
 
@@ -145,10 +148,13 @@ public class EntityRoyalRed extends WRDragonEntity {
                 .add(WREntityTypes.Attributes.PROJECTILE_DAMAGE.get(), 4);
     }
 
+    /*
     @Override
     public EntitySerializer<EntityRoyalRed> getSerializer() {
         return SERIALIZER;
     }
+
+     */
 
     public void setBreathingFire(boolean breathingFire) {
         if (!level.isClientSide) entityData.set(BREATHING_FIRE, breathingFire);

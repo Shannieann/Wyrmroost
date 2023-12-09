@@ -49,9 +49,12 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 public class EntitySilverGlider extends WRDragonEntity
 {
     //TODO: BOIDS
+    /*
     private static final EntitySerializer<EntitySilverGlider> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
+
+     */
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public final LerpedFloat flightTimer = LerpedFloat.unit();
 
@@ -63,11 +66,14 @@ public class EntitySilverGlider extends WRDragonEntity
         super(dragon, level);
     }
 
+    /*
     @Override
     public EntitySerializer<EntitySilverGlider> getSerializer()
     {
         return SERIALIZER;
     }
+
+     */
 
     @Override
     public boolean speciesCanFly() {

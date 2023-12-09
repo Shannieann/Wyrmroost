@@ -143,11 +143,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
+    /*
     public static final EntitySerializer<WRDragonEntity> SERIALIZER = EntitySerializer.builder(b -> b
             .track(EntitySerializer.POS.optional(), "HomePos", t -> Optional.ofNullable(t.getHomePos()), (d, v) -> d.setHomePos(v.orElse(null)))
             .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
             .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::getSleeping, WRDragonEntity::setSleeping)
             .track(EntitySerializer.INT, "BreedCount", WRDragonEntity::getBreedCount, WRDragonEntity::setBreedCount));
+
+
+     */
 
     public static final byte HEAL_PARTICLES_EVENT_ID = 8;
 
@@ -353,8 +357,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void addAdditionalSaveData(CompoundTag nbt)
     {
         super.addAdditionalSaveData(nbt);
+        /*
         if (inventory.isPresent()) nbt.put("Inv", inventory.orElse(null).serializeNBT());
         ((EntitySerializer<WRDragonEntity>) getSerializer()).serialize(this, nbt);
+        */
     }
 
     @Override
@@ -362,8 +368,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void readAdditionalSaveData(CompoundTag nbt)
     {
         super.readAdditionalSaveData(nbt);
+        /*
         if (inventory.isPresent()) inventory.orElse(null).deserializeNBT(nbt.getCompound("Inv"));
         ((EntitySerializer<WRDragonEntity>) getSerializer()).deserialize(this, nbt);
+         */
     }
 
     @Override
@@ -417,9 +425,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
 
+    /*
     public EntitySerializer<? extends WRDragonEntity> getSerializer(){
         return SERIALIZER;
     }
+   */
+
 
 
     public String getAnimation()

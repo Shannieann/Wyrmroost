@@ -37,9 +37,12 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class EntityCanariWyvern extends WRDragonEntity
 {
+    /*
     private static final EntitySerializer<EntityCanariWyvern> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
+
+     */
 
     public Player pissedOffTarget;
 
@@ -74,11 +77,14 @@ public class EntityCanariWyvern extends WRDragonEntity
         return true;
     }
 
+    /*
     @Override
     public EntitySerializer<EntityCanariWyvern> getSerializer()
     {
         return SERIALIZER;
     }
+
+     */
 
     @Override
     public boolean speciesCanFly() {
