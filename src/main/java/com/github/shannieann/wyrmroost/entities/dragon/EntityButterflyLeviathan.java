@@ -674,7 +674,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         }
     }
 
-
     // ====================================
     //      E.1) Client: Sounds
     // ====================================
@@ -731,7 +730,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         private double pathedTargetZ;
         LivingEntity target;
         boolean animationPlaying;
-        int checkForLightningCounter;
         boolean lightningForkQueued;
         boolean lightningForkSetup;
         int lightningLineCounter;
@@ -747,7 +745,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         float inflateValue;
         int disableShieldTime;
         int attackQueueTime;
-        //ToDo: Age
         public BFLAttackGoal(EntityButterflyLeviathan entity) {
             super(entity);
             setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
@@ -755,6 +752,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         //Goal is usable if entity is not being ridden and it has a target
         //TODO: What happens when tamed / defend?
+        //ToDo: Age
         @Override
         public boolean canUse() {
             target = getTarget();
@@ -947,13 +945,9 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 if (canPerformLightningAttack()) {
                     queueLightningAttack();
                 }
-                //TODO: Temporarily disabled for debug
-                /*
                 else if (canPerformMeleeAttack()) {
                      queueMeleeAttack();
                 }
-
-                 */
             }
 
         }
@@ -985,8 +979,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     super.start(LIGHTNING_STRIKE_ANIMATION, 2, LIGHTNING_STRIKE_ANIMATION_TIME);
                 }
                 // Lightning Attack is now queued, set the cooldown...
-                //TODO: Temporarily lowered for debug, should be 400
-                setLightningAttackCooldown(200);
+                setLightningAttackCooldown(400);
             }
 
         }
