@@ -315,7 +315,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             //If the entity is on ground, and it is not doing anything else that warrants an animation, it will just stand ("naturally") in place
             if (this.isUsingLandNavigator()) {
-                event.getController().setAnimation(new AnimationBuilder().  addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
+                event.getController().setAnimation(new AnimationBuilder().  addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
             }
         }
