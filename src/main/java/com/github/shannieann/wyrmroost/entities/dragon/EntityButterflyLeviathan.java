@@ -603,13 +603,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         else if (!isTame() && ((this.isOnGround() && !this.isUnderWater() && getLightningAttackCooldown() > 50) || player.isCreative()) && isFood(stack) && getEatingCooldown() <= 0) {
             eat(this.level, stack);
             setEatingCooldown(40);
-            if (!level.isClientSide) {
-               attemptTame(0.2f, player);
-               return InteractionResult.sidedSuccess(level.isClientSide);
-           }
+            attemptTame(0.2f, player);
+            return InteractionResult.sidedSuccess(level.isClientSide);
         }
         //Else, attempt other player interaction results
-        return super.playerInteraction(player, hand, stack);
+        return InteractionResult.PASS;
+        //ToDo: PlayerInteraction configure
+        // return super.playerInteraction(player, hand, stack);
     }
 
     // ====================================
