@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entities.dragon.ai;
 
 import com.github.shannieann.wyrmroost.entities.dragon.EntityRoyalRed;
-import com.github.shannieann.wyrmroost.entities.effect.EffectLightningSphere;
+import com.github.shannieann.wyrmroost.entities.effect.EffectLightningNova;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.EntityType;
@@ -56,7 +56,7 @@ public class DebuggingTool {
   }
 
   public void summonLightningSphere(Player player) {
-      EffectLightningSphere lightningSphere = new EffectLightningSphere(WREntityTypes.LIGHTNING_SPHERE.get(),player.level,20);
+      EffectLightningNova lightningSphere = new EffectLightningNova(WREntityTypes.LIGHTNING_NOVA.get(),player.level,20);
       lightningSphere.setPos(player.position().add(10,0,0));
       player.level.addFreshEntity(lightningSphere);
   }

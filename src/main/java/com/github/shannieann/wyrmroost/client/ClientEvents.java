@@ -7,7 +7,7 @@ import com.github.shannieann.wyrmroost.client.render.entity.dragon.*;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.CanariWyvernRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.OWDrakeRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.SilverGliderRenderer;
-import com.github.shannieann.wyrmroost.client.render.entity.effect.RenderLightningSphere;
+import com.github.shannieann.wyrmroost.client.render.entity.effect.RenderLightningNova;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.GeodeTippedArrowRenderer;
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
@@ -132,7 +132,7 @@ public class ClientEvents
         event.registerEntityRenderer(WREntityTypes.GEODE_TIPPED_ARROW.get(), GeodeTippedArrowRenderer::new);
         event.registerEntityRenderer(WREntityTypes.DRAGON_EGG.get(), DragonEggRenderer::new);
         event.registerEntityRenderer(WREntityTypes.FIRE_BREATH.get(), BreathWeaponRenderer::new);
-        event.registerEntityRenderer(WREntityTypes.LIGHTNING_SPHERE.get(), RenderLightningSphere::new);
+        event.registerEntityRenderer(WREntityTypes.LIGHTNING_NOVA.get(), RenderLightningNova::new);
     }
     // =====================
     //      Forge Bus

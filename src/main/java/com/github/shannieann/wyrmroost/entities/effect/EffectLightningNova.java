@@ -12,7 +12,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -28,18 +27,18 @@ import software.bernie.geckolib3.util.GeckoLibUtil;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EffectLightningSphere extends Entity implements IEntityAdditionalSpawnData, IAnimatable {
+public class EffectLightningNova extends Entity implements IEntityAdditionalSpawnData, IAnimatable {
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
     public float duration;
     public float existenceTicks;
     List<Entity> struckEntities = new ArrayList<Entity>();
 
 
-    public EffectLightningSphere(EntityType<?> type, Level level) {
+    public EffectLightningNova(EntityType<?> type, Level level) {
         this(type, level, 100);
     }
 
-    public EffectLightningSphere(EntityType<?> type, Level level, float duration) {
+    public EffectLightningNova(EntityType<?> type, Level level, float duration) {
         super(type, level);
         this.duration = duration;
         this.noCulling = true;

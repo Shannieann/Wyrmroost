@@ -1,8 +1,8 @@
 package com.github.shannieann.wyrmroost.client.render.entity.effect;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.client.model.effect.ModelLightningSphere;
-import com.github.shannieann.wyrmroost.entities.effect.EffectLightningSphere;
+import com.github.shannieann.wyrmroost.client.model.effect.ModelLightningNova;
+import com.github.shannieann.wyrmroost.entities.effect.EffectLightningNova;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -13,15 +13,15 @@ import software.bernie.geckolib3.renderers.geo.GeoProjectilesRenderer;
 
 import javax.annotation.Nullable;
 
-public class RenderLightningSphere extends GeoProjectilesRenderer<EffectLightningSphere> {
-    public RenderLightningSphere(EntityRendererProvider.Context renderManager) {
-        super(renderManager, new ModelLightningSphere());
+public class RenderLightningNova extends GeoProjectilesRenderer<EffectLightningNova> {
+    public RenderLightningNova(EntityRendererProvider.Context renderManager) {
+        super(renderManager, new ModelLightningNova());
         //TODO: Shadow?
         this.shadowRadius = 0.0F;
     }
 
     @Override
-    public void renderEarly(EffectLightningSphere animatable, PoseStack stackIn, float ticks,
+    public void renderEarly(EffectLightningNova animatable, PoseStack stackIn, float ticks,
                             MultiBufferSource renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn,
                             float red, float green, float blue, float partialTicks) {
         float scalingFactor = 25.0F;
@@ -45,9 +45,9 @@ public class RenderLightningSphere extends GeoProjectilesRenderer<EffectLightnin
     };
 
     @Override
-    public RenderType getRenderType(EffectLightningSphere animatable, float partialTick, PoseStack poseStack,
-                                     @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight,
-                                     ResourceLocation texture) {
+    public RenderType getRenderType(EffectLightningNova animatable, float partialTick, PoseStack poseStack,
+                                    @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight,
+                                    ResourceLocation texture) {
         int index = animatable.tickCount % TEXTURE_RESOURCE.length;
         return RenderType.entityTranslucent(TEXTURE_RESOURCE[index]);
     }
