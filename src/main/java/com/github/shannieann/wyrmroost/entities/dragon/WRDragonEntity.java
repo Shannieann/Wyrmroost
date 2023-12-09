@@ -377,6 +377,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @javax.annotation.Nullable SpawnGroupData data, @javax.annotation.Nullable CompoundTag dataTag)
     {
+        //ToDo: Improve finalize spawn, account for default gender condiitons, do not use strings
         String gender;
         if (getRandom().nextBoolean()){
             gender = "male";
@@ -1675,20 +1676,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
 
-    public boolean tame(boolean tame, @Nullable Player tamer)
-    {
-        if (getOwner() == tamer) return true;
-        if (level.isClientSide) return false;
-        if (tame && tamer != null && !ForgeEventFactory.onAnimalTame(this, tamer))
-        {
+    public boolean attemptTame(float tameSucceedChance, @Nullable Player tamer) {
+        if (level.isClientSide) {
+            return false;
+        }
+        //Checks if we hit the probability threshold and if the event was NOT canceled
+        if (getRandom().nextDouble() < tameSucceedChance && !ForgeEventFactory.onAnimalTame(this, tamer)) {
             tame(tamer);
             setHealth(getMaxHealth());
             clearAI();
             level.broadcastEntityEvent(this, (byte) 7); // heart particles
             return true;
         }
-        else level.broadcastEntityEvent(this, (byte) 6); // black particles
-
         return false;
     }
 
@@ -1741,8 +1740,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // essentially, if the provided boolean is true, it will return SUCCESS, else CONSUME.
     // so since the level is client, it will be SUCCESS on client and CONSUME on server.
     // That way, the server never sends the arm swing packet.
-    public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
-    {
+    public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack) {
         final InteractionResult SUCCESS = InteractionResult.sidedSuccess(level.isClientSide);
 
         if (isOwnedBy(player) && player.isShiftKeyDown() && !isUsingFlyingNavigator())
@@ -1890,18 +1888,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return isFood(stack);
     }
 
-    public void eat(ItemStack stack)
-    {
+    public void eat(ItemStack stack) {
         eat(level, stack);
     }
 
     @Override
     public abstract boolean isFood(ItemStack stack);
 
+    //ToDo: Work on eat logic
     @Override
     @SuppressWarnings("ConstantConditions")
-    public ItemStack eat(Level level, ItemStack stack)
-    {
+    public ItemStack eat(Level level, ItemStack stack) {
         Vec3 mouth = getApproximateMouthPos();
 
         if (level.isClientSide)

@@ -110,7 +110,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public final LerpedFloat beachedTimer = LerpedFloat.unit();
     public final LerpedFloat swimTimer = LerpedFloat.unit();
     public final LerpedFloat sitTimer = LerpedFloat.unit();
-    public boolean beached = true;
     public static final String LIGHTNING_STRIKE_ANIMATION = "lightning_strike";
     public static final int LIGHTNING_STRIKE_ANIMATION_TIME = 40;
     public static final int LIGHTNING_STRIKE_ANIMATION_QUEUE = 15;
@@ -253,7 +252,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     @Override
     protected float getStandingEyeHeight(Pose poseIn, EntityDimensions size) {
-        return size.height * (beached ? 1f : 0.6f);
+        return size.height * 0.6f;
     }
 
     @Override
@@ -278,27 +277,12 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         // =====================
         //       Update Timers
         // =====================
-        beachedTimer.add((beached) ? 0.1f : -0.05f);
         swimTimer.add(isUnderWater() ? -0.1f : 0.1f);
         sitTimer.add(isInSittingPose() ? 0.1f : -0.1f);
         setLightningAttackCooldown(Math.max(getLightningAttackCooldown()-1,0));
 
 
         //TODO: TAMED LIGHTNING COOLDOWN
-
-        // =====================
-        //       Beached Logic
-        // =====================
-        boolean prevBeached = beached;
-
-        if (!beached && onGround && !wasTouchingWater) {
-            beached = true;
-        } else if (beached && wasTouchingWater) {
-            beached = false;
-        }
-        if (prevBeached != beached) {
-            refreshDimensions();
-        }
 
         // =====================
         //       Rotation Logic
@@ -582,7 +566,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     }
 
     public boolean isJumpingOutOfWater() {
-        return !isInWater() && !beached;
+        return !isInWater();
     }
 
 
@@ -599,19 +583,25 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 .addAction(BookActions.TARGET);
     }*/
 
+    //ToDo: Hatchling?
+    //((beached && lightningCooldown > 60 && level.isRainingAt(blockPosition())) || player.isCreative() || isHatchling()) && isFood(stack)) {
 
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack) {
-       /* if (((beached && lightningCooldown > 60 && level.isRainingAt(blockPosition())) || player.isCreative() || isHatchling()) && isFood(stack)) {
+        //If owner is feeding, just proceed to eat regularly...
+        if (isOwnedBy(player) && isFood(stack)) {
             eat(stack);
-            if (!level.isClientSide) tame(getRandom().nextDouble() < 0.2, player);
-            return InteractionResult.sidedSuccess(level.isClientSide);
         }
-
-        */
+        //If not fed by owner and not tamed, attempt tame...
+        //For BFLs, only attempt tame is on ground, while on lightning cooldown (deactivated) and with correct food..
+        else if (!isTame() && ((this.isOnGround() && !this.isUnderWater() && getLightningAttackCooldown() > 50) || player.isCreative()) && isFood(stack)) {
+           eat(stack);
+           if (!level.isClientSide) {
+               attemptTame(0.2f, player);
+               return InteractionResult.sidedSuccess(level.isClientSide);
+           }
+        }
         return super.playerInteraction(player, hand, stack);
-
-
     }
 
 

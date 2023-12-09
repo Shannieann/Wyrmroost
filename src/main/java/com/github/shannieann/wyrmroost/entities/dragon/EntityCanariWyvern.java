@@ -99,6 +99,7 @@ public class EntityCanariWyvern extends WRDragonEntity
 
 
 
+    /*
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
     {
@@ -123,6 +124,7 @@ public class EntityCanariWyvern extends WRDragonEntity
 
         return InteractionResult.PASS;
     }
+    */
 
 
     @Override

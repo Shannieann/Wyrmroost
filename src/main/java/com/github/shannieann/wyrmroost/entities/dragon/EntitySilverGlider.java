@@ -167,6 +167,7 @@ public class EntitySilverGlider extends WRDragonEntity
         return true;
     }
 
+    /*
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
     {
@@ -194,6 +195,8 @@ public class EntitySilverGlider extends WRDragonEntity
 
         return InteractionResult.PASS;
     }
+
+     */
 
     public boolean shouldGlide(Player player)
     {
