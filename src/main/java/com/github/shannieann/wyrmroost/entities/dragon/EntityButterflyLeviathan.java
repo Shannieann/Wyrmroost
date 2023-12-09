@@ -75,8 +75,10 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: ANIMATIONS:
 // Retest Water Leap animations
 // Retest Water Sleep animations
+// Retest water lightning strike animation
 
 //TODO: TAMING
+// Taming logic
 // All goals when tamed
 // Eggs, breeding, taming
 // Ride logic + rewrite key-binds
@@ -591,18 +593,19 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         //If owner is feeding, just proceed to eat regularly...
         if (isOwnedBy(player) && isFood(stack)) {
             eat(stack);
+            setEatingCooldown(500);
         }
 
         //If not fed by owner and not tamed, attempt tame...
         //For BFLs, only attempt tame is on ground, while on lightning cooldown (deactivated) and with correct food..
         else if (!isTame() && ((this.isOnGround() && !this.isUnderWater() && getLightningAttackCooldown() > 50) || player.isCreative()) && isFood(stack)) {
            eat(stack);
-           if (!level.isClientSide) {
+            setEatingCooldown(40);
+            if (!level.isClientSide) {
                attemptTame(0.2f, player);
                return InteractionResult.sidedSuccess(level.isClientSide);
            }
         }
-
         //Else, attempt other player interaction results
         return super.playerInteraction(player, hand, stack);
     }
@@ -718,6 +721,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         targetSelector.addGoal(3, new HurtByTargetGoal(this));
         //targetSelector.addGoal(4, new DefendHomeGoal(this));
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, aquaticRandomTargetPredicate));
+        //Todo: Exclude other BFLs?
     }
 
 

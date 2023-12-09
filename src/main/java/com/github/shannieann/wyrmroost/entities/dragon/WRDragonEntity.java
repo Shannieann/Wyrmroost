@@ -169,6 +169,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
     public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> EATING_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
+
     //TODO: What is this?
     private static final UUID SCALE_MOD_UUID = UUID.fromString("81a0addd-edad-47f1-9aa7-4d76774e055a");
     private static final int AGE_UPDATE_INTERVAL = 200;
@@ -349,6 +351,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(SLEEPING, false);
         entityData.define(VARIANT, 0);
         entityData.define(ARMOR, ItemStack.EMPTY);
+        entityData.define(EATING_COOLDOWN, 0);
         super.defineSynchedData();
     }
 
@@ -776,6 +779,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return new ItemStack(SpawnEggItem.byId(getType()));
     }
 
+    public int getEatingCooldown() {
+        return entityData.get(EATING_COOLDOWN);
+
+    }
+
+    public void setEatingCooldown(int cooldown) {
+        entityData.set(EATING_COOLDOWN, cooldown);
+    }
+
 
     // ====================================
     //      B) Tick and AI
@@ -783,6 +795,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void tick() {
         super.tick();
+        setEatingCooldown(Math.max(getEatingCooldown()-1,0));
 
         if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0); // Shouldn't be rotated on ground or water
         if (getDragonXRotation() != 0 && getDeltaMovement().length() <= 0.25){ // Every tick, slowly orient the dragon back to normal if its barely moving so it isn't just awkwardly pointing down or up
@@ -817,6 +830,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             sleepCooldown = Math.max(sleepCooldown-1,0);
         }
 
+        //ToDo: Update Sleep Goal Logic!!
         /*
         if (getSleeping()) {
             LookControl lookControl = getLookControl();
