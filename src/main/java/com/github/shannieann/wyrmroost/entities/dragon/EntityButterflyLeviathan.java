@@ -733,7 +733,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         boolean animationPlaying;
         int checkForLightningCounter;
         boolean lightningForkQueued;
-        boolean lightningLineSetup;
+        boolean lightningForkSetup;
         int lightningLineCounter;
         Vec3 toTarget;
         Vec3 toTarget1;
@@ -770,7 +770,9 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         @Override
         public boolean canContinueToUse() {
             target = getTarget();
-            if (target == null) {
+            //Stop using if target is lost
+            //Unless we have set up a lightning fork, in which case we must finish the fork first...
+            if (!lightningForkSetup && target == null) {
                 return false;
             }
             return true;
@@ -784,7 +786,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             getNavigation().stop();
             animationPlaying = false;
             lightningForkQueued = false;
-            lightningLineSetup = false;
+            lightningForkSetup = false;
             lightningLineCounter = 0;
             lightningStrikeQueued = false;
             meleeAttackQueued = false;
@@ -814,7 +816,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     super.stop();
                     animationPlaying = false;
                     lightningForkQueued = false;
-                    lightningLineSetup = false;
+                    lightningForkSetup = false;
                     lightningLineCounter = 0;
                     lightningStrikeQueued = false;
                     meleeAttackQueued = false;
@@ -838,17 +840,17 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     //Keep calling so long as we exceed the appropriate time as this must be performed over multiple ticks
                     if (elapsedTime > LIGHTNING_FORK_ANIMATION_QUEUE) {
                         //If we have not yet set up the appropriate directions for the lightningLine, do that...
-                        if (!lightningLineSetup) {
+                        if (!lightningForkSetup) {
                             toTarget = target.position().subtract(position()).normalize();
                             toTarget1 = toTarget.yRot(0.523599F);
                             toTarget2 = toTarget.yRot(-0.523599F);
                             strikePos = position();
                             strikePos1 = position();
                             strikePos2 = position();
-                            lightningLineSetup = true;
+                            lightningForkSetup = true;
                         }
                         //Else, just continue summoning the lightning fork...
-                        if (lightningLineCounter < 25) {
+                        else if (lightningLineCounter < 25) {
                             //Instantiate 3 lightning bolts
                             LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT,level);
                             LightningBolt lightningBolt1 = new LightningBolt(EntityType.LIGHTNING_BOLT,level);
@@ -873,7 +875,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                         } else {
                             //Once we reach the limit, reset the lightningLine variables
                             lightningForkQueued = false;
-                            lightningLineSetup = false;
+                            lightningForkSetup = false;
                             lightningLineCounter = 0;
                         }
                     }
