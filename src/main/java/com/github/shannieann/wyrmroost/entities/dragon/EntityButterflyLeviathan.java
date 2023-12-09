@@ -592,6 +592,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         if (isOwnedBy(player) && isFood(stack)) {
             eat(stack);
         }
+
         //If not fed by owner and not tamed, attempt tame...
         //For BFLs, only attempt tame is on ground, while on lightning cooldown (deactivated) and with correct food..
         else if (!isTame() && ((this.isOnGround() && !this.isUnderWater() && getLightningAttackCooldown() > 50) || player.isCreative()) && isFood(stack)) {
@@ -601,12 +602,15 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                return InteractionResult.sidedSuccess(level.isClientSide);
            }
         }
+
+        //Else, attempt other player interaction results
         return super.playerInteraction(player, hand, stack);
     }
 
 
     @Override
     public ItemStack eat(Level level, ItemStack stack) {
+        //ToDo: Reset Lightning Cooldown when eating?
         //lightningCooldown = 0;
         return super.eat(level, stack);
     }

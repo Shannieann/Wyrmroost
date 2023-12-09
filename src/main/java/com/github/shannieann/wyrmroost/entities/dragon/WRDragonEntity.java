@@ -1896,6 +1896,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public abstract boolean isFood(ItemStack stack);
 
     //ToDo: Work on eat logic
+    // ToDo: Eat cooldown?
     @Override
     @SuppressWarnings("ConstantConditions")
     public ItemStack eat(Level level, ItemStack stack) {

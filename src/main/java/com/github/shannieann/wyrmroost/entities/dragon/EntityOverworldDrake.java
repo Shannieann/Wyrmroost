@@ -276,14 +276,19 @@ public class EntityOverworldDrake extends WRDragonEntity
             {
                 double rng = getRandom().nextDouble();
 
+                /*
                 if (rng < 0.01) tame(true, (Player) passenger);
                 else if (rng <= 0.1)
+
+
                 {
                     setTarget(passenger);
                     boardingCooldown = 60;
                     ejectPassengers();
                     thrownPassenger = passenger; // needs to be queued for next tick otherwise some voodoo shit breaks the throwing off logic >.>
                 }
+
+                 */
             }
         }
     }
@@ -306,7 +311,7 @@ public class EntityOverworldDrake extends WRDragonEntity
 
         if (!isTame() && isHatchling() && isFood(stack))
         {
-            tame(getRandom().nextInt(10) == 0, player);
+         //   tame(getRandom().nextInt(10) == 0, player);
             stack.shrink(1);
             return InteractionResult.sidedSuccess(level.isClientSide);
         }

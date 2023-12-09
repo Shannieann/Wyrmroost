@@ -466,6 +466,7 @@ public class EntityRoyalRed extends WRDragonEntity {
                 .addAction(BookActions.TARGET);
     }*/
 
+    /*
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack) {
         if (!isTame() && isFood(stack)) {
@@ -492,6 +493,8 @@ public class EntityRoyalRed extends WRDragonEntity {
 
         return super.playerInteraction(player, hand, stack);
     }
+
+     */
     // ====================================
     //      D.1) Taming: Inventory
     // ====================================
