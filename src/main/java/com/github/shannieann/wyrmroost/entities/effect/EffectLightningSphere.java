@@ -49,14 +49,21 @@ public class EffectLightningSphere extends Entity implements IEntityAdditionalSp
     public void tick() {
         //If the LightningBall has exceeded its duration, discard it
         this.existenceTicks = tickCount;
+        //ToDo: Disabled discard for debugging
+        /*
         if ((!level.isClientSide && (tickCount > duration))) {
             //Remove the projectile...
             this.discard();
             return;
         }
 
+         */
+
         super.tick();
 
+        //ToDo: Disabled inflate for debugging
+
+        /*
         //Check for collisions with other entities:
             // Define a bounding box that will get inflated every tick....
         //this.setBoundingBox(this.getBoundingBox().inflate(0.05*tickCount));
@@ -67,6 +74,8 @@ public class EffectLightningSphere extends Entity implements IEntityAdditionalSp
         //Proceed to register an impact...
             impact(entities);
         }
+
+         */
     }
 
     public boolean canImpactEntity(Entity entity) {
