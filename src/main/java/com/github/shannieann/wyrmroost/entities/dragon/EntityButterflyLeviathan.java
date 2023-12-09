@@ -114,11 +114,11 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public boolean beached = true;
     public static final String LIGHTNING_STRIKE_ANIMATION = "lightning_strike";
-    public static final int LIGHTNING_STRIKE_ANIMATION_TIME = 80;
-    public static final int LIGHTNING_STRIKE_ANIMATION_QUEUE = 30;
+    public static final int LIGHTNING_STRIKE_ANIMATION_TIME = 40;
+    public static final int LIGHTNING_STRIKE_ANIMATION_QUEUE = 15;
     public static final String LIGHTNING_FORK_ANIMATION = "lightning_fork";
-    public static final int LIGHTNING_FORK_ANIMATION_TIME = 80;
-    public static final int LIGHTNING_FORK_ANIMATION_QUEUE = 26;
+    public static final int LIGHTNING_FORK_ANIMATION_TIME = 40;
+    public static final int LIGHTNING_FORK_ANIMATION_QUEUE = 13;
     public static final String ATTACK_ANIMATION = "attack_";
     public static final int LAND_ATTACK_ANIMATION_TIME_1 = 10;
     public static final int WATER_ATTACK_ANIMATION_TIME_1 = 10;
@@ -846,25 +846,25 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                             strikePos2 = position();
                             lightningLineSetup = true;
                         }
-                        //Else, just summon the lightning line...
+                        //Else, just continue summoning the lightning fork...
                         if (lightningLineCounter < 25) {
-                            //Goal Logic: Instantiate 3 lightning bolts
+                            //Instantiate 3 lightning bolts
                             LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT,level);
                             LightningBolt lightningBolt1 = new LightningBolt(EntityType.LIGHTNING_BOLT,level);
                             LightningBolt lightningBolt2 = new LightningBolt(EntityType.LIGHTNING_BOLT,level);
-                            //Goal Logic: Set all of their damages to double the normal lightning bolt damage
+                            //Set all of their damages to double the normal lightning bolt damage
                             lightningBolt.setDamage(10F);
                             lightningBolt1.setDamage(10F);
                             lightningBolt2.setDamage(10F);
-                            //Goal Logic: Calculate all of their strike positions
+                            //Calculate all of their strike positions
                             strikePos = strikePos.add(toTarget.scale(2));
                             strikePos1 = strikePos1.add(toTarget1.scale(2));
                             strikePos2 = strikePos2.add(toTarget2.scale(2));
-                            //Goal Logic: Set up all the actual lightning bolt's positions
+                            //Set up all the actual lightning bolt's positions
                             lightningBolt.setPos(strikePos);
                             lightningBolt1.setPos(strikePos1);
                             lightningBolt2.setPos(strikePos2);
-                            //Goal Logic: Add the lightning bolts to the world
+                            //Add the lightning bolts to the world
                             level.addFreshEntity(lightningBolt);
                             level.addFreshEntity(lightningBolt1);
                             level.addFreshEntity(lightningBolt2);
