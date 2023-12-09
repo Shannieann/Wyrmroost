@@ -22,8 +22,8 @@ public class DebuggingTool {
 
         //ArrayList<Vec3> listOfVectors=listOfVectors();
         //summonEntities(listOfVectors,player);
-        //summonLightningSphere(player);
-        forceRoyalRedTarget(player);
+        summonLightningSphere(player);
+        //forceRoyalRedTarget(player);
   }
 
   public ArrayList<Vec3> listOfVectors() {
