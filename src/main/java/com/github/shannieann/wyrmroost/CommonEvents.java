@@ -126,11 +126,14 @@ public class CommonEvents {
             if (!(entity instanceof WRDragonEntity)) return;
             WRDragonEntity dragon = (WRDragonEntity) entity;
 
+            /*
             if (player.isShiftKeyDown()) dragon.tame(true, player);
             else
             {
                 if (dragon.level.isClientSide) DebugScreen.open(dragon); AnimateScreen.open(dragon);
             }
+            
+             */
         }
     }
 
