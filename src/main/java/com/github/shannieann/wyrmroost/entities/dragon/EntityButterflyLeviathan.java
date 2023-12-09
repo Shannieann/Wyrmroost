@@ -63,11 +63,12 @@ import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
+// 23.12.09: Continue work on taming, this time focusing on player interact besides eat
 
 //TODO: CLASS:
 // Tidy up
 // This class: See which methods are needed, which are not
-// Fix serializer
+// Fix serializer - perhaps remove entirely?
 
 //TODO: GOALS:
 // Return to Water Goal
