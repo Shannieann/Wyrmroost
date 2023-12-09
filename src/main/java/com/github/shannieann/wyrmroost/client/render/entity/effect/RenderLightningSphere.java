@@ -27,15 +27,28 @@ public class RenderLightningSphere extends GeoProjectilesRenderer<EffectLightnin
         float scalingFactor = 25.0F;
         super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn,
                 red, green, blue, partialTicks);
-        stackIn.scale(0.125F*(animatable.tickCount*scalingFactor), 0.125F*(animatable.tickCount*scalingFactor), 0.125F*(animatable.tickCount*scalingFactor));
-
+        //ToDo: Temporarily disabled scaled
+        //stackIn.scale(0.125F*(animatable.tickCount*scalingFactor), 0.125F*(animatable.tickCount*scalingFactor), 0.125F*(animatable.tickCount*scalingFactor));
     }
+
+    private static final ResourceLocation[] TEXTURE_RESOURCE = new ResourceLocation[] {
+            new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_1.png"),
+            new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_2.png"),
+            new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_3.png"),
+            new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_4.png"),
+            new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_5.png"),
+            new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_6.png"),
+            new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_7.png"),
+            new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_8.png"),
+            new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_9.png"),
+            new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_10.png")
+    };
 
     @Override
     public RenderType getRenderType(EffectLightningSphere animatable, float partialTick, PoseStack poseStack,
                                      @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight,
                                      ResourceLocation texture) {
-        return RenderType.entityTranslucent(new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/effect/lightning_sphere/lightning_sphere.png"));
+        int index = animatable.tickCount % TEXTURE_RESOURCE.length;
+        return RenderType.entityTranslucent(TEXTURE_RESOURCE[index]);
     }
 }
-
