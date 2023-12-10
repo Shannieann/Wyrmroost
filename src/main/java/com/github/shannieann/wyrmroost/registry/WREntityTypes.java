@@ -163,7 +163,7 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
             .build();
 
     public static final RegistryObject<EntityType<EffectLightningNova>> LIGHTNING_NOVA =
-            WREntityTypes.<EffectLightningNova>ofGroup("LIGHTNING_NOVA", EffectLightningNova::new, MobCategory.MISC)
+            WREntityTypes.<EffectLightningNova>ofGroup("lightning_nova", EffectLightningNova::new, MobCategory.MISC)
             .size(1.0f, 1.0f)
             .noSave()
             .noSummon()

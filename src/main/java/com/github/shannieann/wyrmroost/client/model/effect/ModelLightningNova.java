@@ -7,7 +7,7 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class ModelLightningNova extends AnimatedGeoModel<EffectLightningNova>
 {
-    private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/effect/LIGHTNING_NOVA/LIGHTNING_NOVA.geo.json");
+    private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/effect/lightning_nova/lightning_nova.geo.json");
     private static final ResourceLocation[] TEXTURE_RESOURCE = new ResourceLocation[] {
             new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_1.png"),
             new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_2.png"),
@@ -20,7 +20,7 @@ public class ModelLightningNova extends AnimatedGeoModel<EffectLightningNova>
             new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_9.png"),
             new ResourceLocation(Wyrmroost.MOD_ID,"textures/entity/effect/lightning_nova/lightning_nova_10.png")
     };
-    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/effect/LIGHTNING_NOVA/LIGHTNING_NOVA.json");
+    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/effect/lightning_nova/lightning_nova.json");
 
     @Override
     public ResourceLocation getModelLocation(EffectLightningNova object) {

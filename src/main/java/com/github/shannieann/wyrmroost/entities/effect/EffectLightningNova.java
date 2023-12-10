@@ -166,8 +166,8 @@ public class EffectLightningNova extends Entity implements IEntityAdditionalSpaw
     }
 
     public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("rotate", ILoopType.EDefaultLoopTypes.LOOP));
-        return PlayState.CONTINUE;
+        //event.getController().setAnimation(new AnimationBuilder().addAnimation("rotate", ILoopType.EDefaultLoopTypes.LOOP));
+        return PlayState.STOP;
     }
 
     @Override
