@@ -5,6 +5,7 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSitGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSleepGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.ground.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
@@ -599,8 +600,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
         }
+
+        if (isOwnedBy(player) && isShiftKeyDown()) {
+
+        }
+
         //If not fed by owner and not tamed, attempt tame...
-        //For BFLs, only attempt tame is on ground, while on lightning cooldown (deactivated) and with correct food..
+        //For BFLs, only give a tame chance if is on ground, while on lightning cooldown (deactivated) and with correct food...
         else if (!isTame() && ((this.isOnGround() && !this.isUnderWater() && getLightningAttackCooldown() > 50) || player.isCreative()) && isFood(stack) && getEatingCooldown() <= 0) {
             eat(this.level, stack);
             setEatingCooldown(40);
@@ -609,6 +615,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         }
         //Else, attempt other player interaction results
         return InteractionResult.PASS;
+
+
         //ToDo: PlayerInteraction configure
         // return super.playerInteraction(player, hand, stack);
     }
@@ -698,7 +706,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     @Override
     protected void registerGoals() {
         goalSelector.addGoal(0, new WRSleepGoal(this));
-//        goalSelector.addGoal(0, new WRSitGoal(this));
+        goalSelector.addGoal(0, new WRSitGoal(this));
 //        goalSelector.addGoal(1, new MoveToHomeGoal(this));
 //        goalSelector.addGoal(2, new WRFollowOwnerGoal(this));
 //        goalSelector.addGoal(3, new DragonBreedGoal(this));
