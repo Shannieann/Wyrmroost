@@ -13,5 +13,4 @@ import net.minecraftforge.registries.RegistryObject;
 public class WRParticleTypes {
     public static final DeferredRegister<ParticleType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, Wyrmroost.MOD_ID);
 
-    public static final RegistryObject<SimpleParticleType> TEST_PARTICLE = register("test", false);
 }
