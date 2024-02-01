@@ -12,6 +12,11 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class WRTextureSheetParticle extends TextureSheetParticle {
+
+    //ToDo:
+    // Class should work for all general cases!
+    // At the moment, this works as a single quad (l78), how does this then become a particle sheet?
+    // WRParticleOptions are a must
     public WRTextureSheetParticle(ClientLevel level, double xPos, double yPos, double zPos, double xMotion, double yMotion, double zMotion) {
         super(level, xPos, yPos, zPos, 0.0D, 0.0D, 0.0D);
         this.xd = xMotion;
