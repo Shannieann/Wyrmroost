@@ -64,12 +64,8 @@ import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
-// 23.12.09: Continue work on taming, this time focusing on player interact besides eat
-
-//TODO: CLASS:
-// Tidy up
-// This class: See which methods are needed, which are not
-// Fix serializer - perhaps remove entirely?
+// 2023.02.01: Tests on WRSitGoal pending
+// SittING animation?
 
 //TODO: GOALS:
 // Return to Water Goal
@@ -79,6 +75,11 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Retest Water Sleep animations
 // Retest water lightning strike animation
 
+//TODO: CLASS:
+// Tidy up
+// This class: See which methods are needed, which are not
+// Fix serializer - perhaps remove entirely?
+
 //TODO: TAMING
 // Taming logic
 // All goals when tamed
@@ -86,9 +87,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Ride logic + rewrite key-binds
 
 //TODO: ASSETS:
-// Textures: Eyes
 // Assets: Child?
-
 
 //TODO: TEST AND SHOWCASE
 // Water movement + breaching
