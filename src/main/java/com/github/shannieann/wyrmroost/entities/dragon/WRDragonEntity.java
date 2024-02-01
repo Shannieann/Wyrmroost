@@ -728,14 +728,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
 
     public boolean getSitting() {
-        return hasEntityDataAccessor(SLEEPING) && entityData.get(SLEEPING);
+        return hasEntityDataAccessor(SITTING) && entityData.get(SITTING);
     }
 
     public void setSitting(boolean sit) {
-        entityData.set(SLEEPING, sit);
+        entityData.set(SITTING, sit);
         this.setOrderedToSit(sit);
     }
-    
+
     // ====================================
     //      A.7) Entity Data: VARIANT
     // ====================================
