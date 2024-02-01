@@ -4,39 +4,24 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.client.particle.*;
+import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 public class WRTextureSheetParticle extends TextureSheetParticle {
-    public float redCol;
-    public float greenCol;
-    public float blueCol;
-
-    public float prevRedCol;
-    public float prevGreenCol;
-    public float prevBlueCol;
-
-    public WRTextureSheetParticle(ClientLevel level, double xPos, double yPos, double zPos, double xMotion, double yMotion, double zMotion, float red, float green, float blue, int particleLifetime) {
-        super(level,xPos,yPos,zPos, 0.0D, 0.0D, 0.0D);
+    public WRTextureSheetParticle(ClientLevel level, double xPos, double yPos, double zPos, double xMotion, double yMotion, double zMotion) {
+        super(level, xPos, yPos, zPos, 0.0D, 0.0D, 0.0D);
         this.xd = xMotion;
         this.yd = yMotion;
         this.zd = zMotion;
-        this.redCol = red;
-        this.greenCol = green;
-        this.blueCol = blue;
-        this.lifetime = particleLifetime;
-
 
         //Setup previous values
         this.xo = this.x;
         this.yo = this.y;
         this.zo = this.z;
-        this.prevRedCol = this.redCol;
-        this.prevGreenCol = this.greenCol;
-        this.prevBlueCol = this.blueCol;
     }
 
 
@@ -49,10 +34,6 @@ public class WRTextureSheetParticle extends TextureSheetParticle {
     @Override
     public void tick() {
         //Update particle values
-        prevRedCol = redCol;
-        prevGreenCol = greenCol;
-        prevBlueCol = blueCol;
-
         this.xo = this.x;
         this.yo = this.y;
         this.zo = this.z;
@@ -64,13 +45,13 @@ public class WRTextureSheetParticle extends TextureSheetParticle {
     }
 
     @Override
-    public void render(VertexConsumer buffer, Camera renderInfo, float partialTicks){
+    public void render(VertexConsumer buffer, Camera renderInfo, float partialTicks) {
         Vec3 cameraPos = renderInfo.getPosition();
 
         //Position based on partialTicks
-        float xLerp = (float)(Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
-        float yLerp = (float)(Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
-        float zLerp = (float)(Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
+        float xLerp = (float) (Mth.lerp(partialTicks, this.xo, this.x) - cameraPos.x());
+        float yLerp = (float) (Mth.lerp(partialTicks, this.yo, this.y) - cameraPos.y());
+        float zLerp = (float) (Mth.lerp(partialTicks, this.zo, this.z) - cameraPos.z());
 
         //Instantiate vertexVectorArray for later positioning vertices
         Vector3f[] vertexVectorArray = new Vector3f[]{
@@ -80,7 +61,7 @@ public class WRTextureSheetParticle extends TextureSheetParticle {
                 new Vector3f(1.0F, -1.0F, 0.0F)};
 
         //Correctly position vertices
-        for(int i = 0; i < 4; ++i) {
+        for (int i = 0; i < 4; ++i) {
             Vector3f vector3f = vertexVectorArray[i];
             vector3f.add(xLerp, yLerp, zLerp);
             float U0 = this.getU0();
@@ -171,4 +152,24 @@ public class WRTextureSheetParticle extends TextureSheetParticle {
         return level;
     }
 
+    public static class WRParticleFactory implements ParticleProvider<ParticleOptions> {
+        private final SpriteSet spriteSet;
+
+
+        public WRParticleFactory(SpriteSet sprite) {
+            this.spriteSet = sprite;
+        }
+
+        @Nullable
+        @Override
+        public Particle createParticle(ParticleOptions pType, ClientLevel level, double xPos, double yPos, double zPos, double xSpeed, double ySpeed, double zSpeed) {
+            WRTextureSheetParticle particle = new WRTextureSheetParticle(level, xPos, yPos, zPos, xSpeed, ySpeed, zSpeed);
+            particle.pickSprite(spriteSet);
+            return particle;
+        }
+    }
+
+    public static void spawnParticle(Level world, ParticleOptions options, double x, double y, double z, double motionX, double motionY, double motionZ, boolean faceCamera, double yaw, double pitch, double roll, double faceCameraAngle, double scale, double r, double g, double b, double a, double drag, double duration, boolean emissive, boolean canCollide) {
+        world.addParticle(options, x, y, z, motionX, motionY, motionZ);
+    }
 }
