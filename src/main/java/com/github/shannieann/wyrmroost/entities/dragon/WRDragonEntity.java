@@ -168,6 +168,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<String> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
     public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> SITTING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+
     public static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> EATING_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
@@ -277,7 +279,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //By using regular bones for these abilities as opposed to invisible ones, we both animations to overlay...
         //We select between slow or fast movement based on whether the entity is aggressive or not
         NavigationType navigationType = this.getNavigationType();
-        if (this.getSleeping() || this.getBreaching()){
+        if (this.getSleeping() || this.getSitting() || this.getBreaching()){
             return PlayState.STOP;
         }
 
@@ -309,7 +311,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         //Basic Locomotion: Default cases
         //If the entity is swimming, and it is not doing anything else that warrants an animation, it will just swim in place.
-        if (!this.getSleeping() && !this.isInSittingPose()) {
+        if (!this.getSleeping()) {
             if (this.isUsingSwimmingNavigator()) {
                 event.getController().setAnimation(new AnimationBuilder().  addAnimation("base_swim", ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
@@ -349,6 +351,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(DRAGON_X_ROTATION, 0f);
         entityData.define(GENDER, "male");
         entityData.define(SLEEPING, false);
+        entityData.define(SITTING, false);
         entityData.define(VARIANT, 0);
         entityData.define(ARMOR, ItemStack.EMPTY);
         entityData.define(EATING_COOLDOWN, 0);
@@ -717,17 +720,24 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     public void setSleeping(boolean sleep) {
-        //If it is already sleeping or already awake, return...
-        /*if (getSleeping() == sleep) {
-            return;
-        }
-        */
-        //Adjust the data parameter
         entityData.set(SLEEPING, sleep);
     }
 
     // ====================================
-    //      A.6) Entity Data: VARIANT
+    //      A.6) Entity Data: SIT
+    // ====================================
+
+    public boolean getSitting() {
+        return hasEntityDataAccessor(SLEEPING) && entityData.get(SLEEPING);
+    }
+
+    public void setSitting(boolean sit) {
+        entityData.set(SLEEPING, sit);
+        this.setOrderedToSit(sit);
+    }
+    
+    // ====================================
+    //      A.7) Entity Data: VARIANT
     // ====================================
 
     public int determineVariant()
@@ -748,9 +758,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
     // ====================================
-    //      A.7) Entity Data: Miscellaneous
+    //      A.8) Entity Data: Miscellaneous
     // ====================================
 
+    //ToDo: What is this for?
     @Override
     public EntityDimensions getDimensions(Pose pose)
     {
@@ -1004,7 +1015,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
         setSleeping(false);
-        setOrderedToSit(false);
+        setSitting(false);
         return super.hurt(source, amount);
     }
 
