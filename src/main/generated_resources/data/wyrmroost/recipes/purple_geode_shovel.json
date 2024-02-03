@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "X",
+    "|",
+    "|"
+  ],
+  "key": {
+    "X": {
+      "item": "wyrmroost:purple_geode"
+    },
+    "|": {
+      "tag": "forge:rods/wooden"
+    }
+  },
+  "result": {
+    "item": "wyrmroost:purple_geode_shovel"
+  }
+}
