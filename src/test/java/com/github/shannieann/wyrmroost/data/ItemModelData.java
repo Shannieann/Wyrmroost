@@ -4,6 +4,7 @@ import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import net.minecraft.client.renderer.block.model.BlockModel;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -47,12 +48,12 @@ class ItemModelData extends ItemModelProvider
                 .parent(ister)
                 .guiLight(BlockModel.GuiLight.FRONT)
                 .transforms()
-                .transform(ModelBuilder.Perspective.GUI).rotation(160, 8, 30).translation(21, 6, 0).scale(1.5f).end()
-                .transform(ModelBuilder.Perspective.FIRSTPERSON_RIGHT).rotation(180, 10, 4).translation(13, 10, -10).scale(1).end()
-                .transform(ModelBuilder.Perspective.FIRSTPERSON_LEFT).rotation(180, 10, 4).translation(-2, 11, -12).scale(1).end()
-                .transform(ModelBuilder.Perspective.THIRDPERSON_RIGHT).rotation(253, 65, 0).translation(8, 2, 10).scale(0.75f).end()
-                .transform(ModelBuilder.Perspective.THIRDPERSON_LEFT).rotation(253, 65, 0).translation(3, 13, 7).scale(0.75f).end()
-                .transform(ModelBuilder.Perspective.GROUND).rotation(180, 0, 0).translation(4, 8, -5).scale(0.55f).end();
+                .transform(ItemTransforms.TransformType.GUI).rotation(160, 8, 30).translation(21, 6, 0).scale(1.5f).end()
+                .transform(ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND).rotation(180, 10, 4).translation(13, 10, -10).scale(1).end()
+                .transform(ItemTransforms.TransformType.FIRST_PERSON_RIGHT_HAND).rotation(180, 10, 4).translation(-2, 11, -12).scale(1).end()
+                .transform(ItemTransforms.TransformType.THIRD_PERSON_RIGHT_HAND).rotation(253, 65, 0).translation(8, 2, 10).scale(0.75f).end()
+                .transform(ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND).rotation(253, 65, 0).translation(3, 13, 7).scale(0.75f).end()
+                .transform(ItemTransforms.TransformType.GROUND).rotation(180, 0, 0).translation(4, 8, -5).scale(0.55f).end();
 
         //getBuilderFor(WRItems.TARRAGON_TOME.get()).parent(ister).guiLight(BlockModel.GuiLight.FRONT);
         //item(WRBlocks.HOARFROST.get(), modLoc("block/hoarfrost_spines"));

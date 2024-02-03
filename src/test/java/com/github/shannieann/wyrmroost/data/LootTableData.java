@@ -208,10 +208,9 @@ class LootTableData extends LootTableProvider
 
 
 
-            /*add(WREntityTypes.CANARI_WYVERN.get(), LootTable.lootTable()
+            add(WREntityTypes.CANARI_WYVERN.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_COMMON_MEAT.get(), 0, 2, 1, 2)))
                     .withPool(singleRollPool().add(item(Items.FEATHER, 1, 4).apply(looting(2, 6)))));
-*/
 
 
             add(WREntityTypes.SILVER_GLIDER.get(), LootTable.lootTable()
