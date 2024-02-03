@@ -187,7 +187,9 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
         }
         return super.mobInteract(player, hand);
     }
+    public void tameLogic (Player tamer, ItemStack stack) {
 
+    };
     //Attracted to sand
     /*
 

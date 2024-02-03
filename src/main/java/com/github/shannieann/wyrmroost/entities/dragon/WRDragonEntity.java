@@ -1702,8 +1702,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return false;
     }
 
+    //tameLogic is specific to each creature, it contains the conditions for taming
+    public abstract void tameLogic (Player tamer, ItemStack stack);
 
-    public boolean attemptTame(float tameSucceedChance, @Nullable Player tamer) {
+    //attemptTame is ran when the taming conditions are met
+    public boolean attemptTame(float tameSucceedChance, @Nullable Player tamer, ItemStack stack) {
         if (level.isClientSide) {
             return false;
         }
@@ -1757,20 +1760,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return super.isPickable() && !isRiding();
     }
 
-    // Ok so some basic notes here:
-    // if the action result is a SUCCESS, the player swings its arm.
-    // however, itll send that arm swing twice if we aren't careful.
-    // essentially, returning SUCCESS on server will send a swing arm packet to notify the client to animate the arm swing
-    // client tho, it will just animate it.
-    // so if we aren't careful, both will happen. So its important to do the following for common execution:
-    // InteractionResult.sidedSuccess(level.isClientSide);
-    // essentially, if the provided boolean is true, it will return SUCCESS, else CONSUME.
-    // so since the level is client, it will be SUCCESS on client and CONSUME on server.
-    // That way, the server never sends the arm swing packet.
-    public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack) {
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        ItemStack stack = player.getItemInHand(hand);
+        if (!isTame()){
+            tameLogic(player,stack);
+        }
 
-
-        //If owner is feeding, just proceed to eat regularly...
         if (isOwnedBy(player) && isFood(stack)) {
             if (getEatingCooldown() <= 0) {
                 eat(this.level, stack);
@@ -1778,30 +1774,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
         }
-        //If owner interacts while holding shift, setSitting...
-        if (isOwnedBy(player) && isShiftKeyDown()) {
-            this.setSitting(true);
+
+        if (isOwnedBy(player) && player.isShiftKeyDown()) {
+            setSitting(!getSitting());
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
-      /*
-        if (canAddPassenger(player) && !player.isShiftKeyDown())
-        {
-            if (!level.isClientSide) player.startRiding(this);
-            return SUCCESS;
-        }
-
-       */
         return InteractionResult.PASS;
-    }
-
-    @Override
-    public InteractionResult mobInteract(Player player, InteractionHand hand)
-    {
-        ItemStack stack = player.getItemInHand(hand);
-        InteractionResult result = stack.interactLivingEntity(player, this, hand);
-        if (!result.consumesAction()) result = playerInteraction(player, hand, stack);
-        if (result.consumesAction()) setSleeping(false);
-        return result;
     }
 
     @Override

@@ -69,7 +69,9 @@ public class EntityRoyalRed extends WRDragonEntity {
         SITTING_ANIMATION_TIME = 60;
         SLEEPING_ANIMATION_TIME = 60;
     }
+    public void tameLogic (Player tamer, ItemStack stack) {
 
+    };
     public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
 

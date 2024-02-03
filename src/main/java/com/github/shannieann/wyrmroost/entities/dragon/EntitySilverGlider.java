@@ -371,4 +371,9 @@ public class EntitySilverGlider extends WRDragonEntity
             getLookControl().setLookAt(pos.getX(), pos.getY() + 2, pos.getZ());
         }
     }
+
+    public void tameLogic (Player tamer, ItemStack stack) {
+
+    };
+
 }

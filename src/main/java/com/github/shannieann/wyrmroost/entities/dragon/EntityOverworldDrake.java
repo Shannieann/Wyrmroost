@@ -296,6 +296,7 @@ public class EntityOverworldDrake extends WRDragonEntity
     // ====================================
     //      D) Taming
     // ====================================
+    /*
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
     {
@@ -319,6 +320,8 @@ public class EntityOverworldDrake extends WRDragonEntity
         return super.playerInteraction(player, hand, stack);
     }
 
+     */
+
     // ====================================
     //      D.1) Taming: Inventory
     // ====================================
@@ -327,7 +330,9 @@ public class EntityOverworldDrake extends WRDragonEntity
     {
         return new DragonInventory(this, 24);
     }
+    public void tameLogic (Player tamer, ItemStack stack) {
 
+    };
     @Override
     public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad)
     {

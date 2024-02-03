@@ -57,6 +57,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.extensions.IForgeEntity;
+import net.minecraftforge.event.ForgeEventFactory;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -589,22 +590,20 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     //ToDo: Hatchling?
     //((beached && lightningCooldown > 60 && level.isRainingAt(blockPosition())) || player.isCreative() || isHatchling()) && isFood(stack)) {
 
-    @Override
-    public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack) {
-        //If not fed by owner and not tamed, attempt tame...
-        //For BFLs, only give a tame chance if is on ground, while on lightning cooldown (deactivated) and with correct food...
-        if (!isTame() && ((this.isOnGround() && !this.isUnderWater() && getLightningAttackCooldown() > 50) || player.isCreative()) && isFood(stack) && getEatingCooldown() <= 0) {
+    public void tameLogic(Player tamer, ItemStack stack) {
+        if (level.isClientSide) {
+            return;
+        }
+
+        if (((this.isOnGround() && !this.isUnderWater() && getLightningAttackCooldown() > 50) || tamer.isCreative()) && isFood(stack) && getEatingCooldown() <= 0) {
             eat(this.level, stack);
             setEatingCooldown(40);
-            if (player.isCreative()) {
-                attemptTame(0.2f, player);
+            if (tamer.isCreative()) {
+                super.attemptTame(1.0f, tamer, stack);
             } else {
-                attemptTame(1.0f, player);
+                super.attemptTame(0.2f, tamer, stack);
             }
-            return InteractionResult.sidedSuccess(level.isClientSide);
         }
-        //Else, attempt other player interaction results
-        return super.playerInteraction(player,hand,stack);
     }
 
     // ====================================

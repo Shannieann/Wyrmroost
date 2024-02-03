@@ -57,6 +57,9 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 
 public class EntityRoostStalker extends WRDragonEntity
 {
+    public void tameLogic (Player tamer, ItemStack stack) {
+    };
+
     public static final int ITEM_SLOT = 0;
     //TODO: What are we using this serializer for?
     //public static final EntitySerializer<EntityRoostStalker> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b

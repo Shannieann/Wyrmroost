@@ -43,7 +43,9 @@ public class EntityCanariWyvern extends WRDragonEntity
 
 
      */
+    public void tameLogic (Player tamer, ItemStack stack) {
 
+    };
     public Player pissedOffTarget;
 
     public EntityCanariWyvern(EntityType<? extends WRDragonEntity> dragon, Level level)
