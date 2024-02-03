@@ -69,6 +69,8 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Tests on WRSitGoal.
 // SittING animation?
 // Age!
+// Gender, Integer
+// Push around and swim? Disable when sitting? 
 
 //TODO: GOALS:
 // Return to Water Goal
