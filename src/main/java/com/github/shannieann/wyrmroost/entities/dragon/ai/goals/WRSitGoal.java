@@ -20,16 +20,11 @@ public class WRSitGoal extends AnimatedGoal {
         if (!entity.isOnGround() && !entity.isUsingFlyingNavigator()) {
             return false;
         }
-        LivingEntity owner = entity.getOwner();
-        if (owner == null) {
-            return true;
-        }
-        return (entity.distanceToSqr(owner) > 144d || owner.getLastHurtByMob() == null);
+        return true;
     }
 
     @Override
     public void start(){
-        entity.setSitting(true);
         entity.clearAI();
         entity.setXRot(0);
     }
@@ -44,23 +39,18 @@ public class WRSitGoal extends AnimatedGoal {
             ((WRSwimmingLookControl) lookControl).stopLooking();
         }
         //ToDo: Flying look Control
-
         super.start("sit", 1, 20);
         super.tick();
     }
 
     @Override
     public boolean canContinueToUse(){
-        //If daytime, wake up
-        if (!entity.isOrderedToSit()) {
-            return false;
-        }
-
         //Allows us to check for other methods, elsewhere, that might have set the DataParameter to false
         //For instance, the hurt method...
         if (!entity.getSitting()){
             return false;
         }
+
         return true;
     }
 
