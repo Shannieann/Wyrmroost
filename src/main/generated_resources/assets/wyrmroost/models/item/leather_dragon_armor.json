@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "wyrmroost:item/leather_dragon_armor"
+  }
+}
