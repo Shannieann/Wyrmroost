@@ -1,6 +1,7 @@
 package com.github.shannieann.wyrmroost.data;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
+import com.github.shannieann.wyrmroost.registry.WRBlocks;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
@@ -30,6 +31,7 @@ class BlockModelData extends BlockStateProvider
 
     void manualOverrides()
     {
+
         /*vine(MOSS_VINE.get());
         layered(EMBERS.get(), blockTexture(EMBER_BLOCK.get()));
         layered(ASH.get(), blockTexture(ASH_BLOCK.get()));
@@ -44,6 +46,7 @@ class BlockModelData extends BlockStateProvider
         corinWood(TEAL_CORIN_WOOD);
         corinWood(RED_CORIN_WOOD);
         corinWood(DYING_CORIN_WOOD);*/
+        simpleBlock(WRBlocks.LIGHT_WATER.get(), models().getExistingFile(mcLoc("block/water")));
     }
 
     @Override
