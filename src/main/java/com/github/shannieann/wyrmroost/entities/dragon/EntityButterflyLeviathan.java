@@ -65,8 +65,10 @@ import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
-// 2023.02.01: Tests on WRSitGoal pending
+// 2023.02.03:
+// Tests on WRSitGoal.
 // SittING animation?
+// Age!
 
 //TODO: GOALS:
 // Return to Water Goal
