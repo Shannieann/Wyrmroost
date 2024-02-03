@@ -267,6 +267,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
         //BoneType: regular Bones
+
         /*
         //Basic Locomotion: Death
         if ((this.dead || this.getHealth() < 0.01 || this.isDeadOrDying())) {
@@ -274,6 +275,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return PlayState.CONTINUE;
         }
        */
+
         //Basic Locomotion: Movement
         //These moving animations play whenever the entity is moving
         //By using regular bones for these abilities as opposed to invisible ones, we both animations to overlay...
@@ -1766,50 +1768,29 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // so since the level is client, it will be SUCCESS on client and CONSUME on server.
     // That way, the server never sends the arm swing packet.
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack) {
-        final InteractionResult SUCCESS = InteractionResult.sidedSuccess(level.isClientSide);
 
-        if (isOwnedBy(player) && player.isShiftKeyDown() && !isUsingFlyingNavigator())
-        {
-            setOrderedToSit(!isOrderedToSit());
-            return SUCCESS;
-        }
 
-        if (isTame())
-        {
-            if (isFood(stack))
-            {
-                boolean flag = getHealth() < getMaxHealth();
-                if (isBaby())
-                {
-                    ageUp((int) ((-getAge() / 20) * 0.015F), true);
-                    flag = true;
-                }
-
-                if (flag)
-                {
-                    eat(this.level, stack);
-                    return SUCCESS;
-                }
-            }
-
-            if (isBreedingItem(stack) && getAge() == 0)
-            {
-                if (!level.isClientSide && !isInLove())
-                {
-                    eat(this.level, stack);
-                    setInLove(player);
-                    return InteractionResult.SUCCESS;
-                }
-                return InteractionResult.CONSUME;
+        //If owner is feeding, just proceed to eat regularly...
+        if (isOwnedBy(player) && isFood(stack)) {
+            if (getEatingCooldown() <= 0) {
+                eat(this.level, stack);
+                setEatingCooldown(500);
+                return InteractionResult.sidedSuccess(level.isClientSide);
             }
         }
-
+        //If owner interacts while holding shift, setSitting...
+        if (isOwnedBy(player) && isShiftKeyDown()) {
+            this.setSitting(true);
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+      /*
         if (canAddPassenger(player) && !player.isShiftKeyDown())
         {
             if (!level.isClientSide) player.startRiding(this);
             return SUCCESS;
         }
 
+       */
         return InteractionResult.PASS;
     }
 

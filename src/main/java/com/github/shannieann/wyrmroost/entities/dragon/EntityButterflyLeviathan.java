@@ -591,33 +591,20 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack) {
-        //If owner is feeding, just proceed to eat regularly...
-        if (isOwnedBy(player) && isFood(stack)) {
-            if (getEatingCooldown() <= 0) {
-                eat(this.level, stack);
-                setEatingCooldown(500);
-                return InteractionResult.sidedSuccess(level.isClientSide);
-            }
-        }
-
-        if (isOwnedBy(player) && isShiftKeyDown()) {
-
-        }
-
         //If not fed by owner and not tamed, attempt tame...
         //For BFLs, only give a tame chance if is on ground, while on lightning cooldown (deactivated) and with correct food...
-        else if (!isTame() && ((this.isOnGround() && !this.isUnderWater() && getLightningAttackCooldown() > 50) || player.isCreative()) && isFood(stack) && getEatingCooldown() <= 0) {
+        if (!isTame() && ((this.isOnGround() && !this.isUnderWater() && getLightningAttackCooldown() > 50) || player.isCreative()) && isFood(stack) && getEatingCooldown() <= 0) {
             eat(this.level, stack);
             setEatingCooldown(40);
-            attemptTame(0.2f, player);
+            if (player.isCreative()) {
+                attemptTame(0.2f, player);
+            } else {
+                attemptTame(1.0f, player);
+            }
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
         //Else, attempt other player interaction results
-        return InteractionResult.PASS;
-
-
-        //ToDo: PlayerInteraction configure
-        // return super.playerInteraction(player, hand, stack);
+        return super.playerInteraction(player,hand,stack);
     }
 
     // ====================================
