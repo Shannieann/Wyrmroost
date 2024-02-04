@@ -18,7 +18,8 @@ public class WRRandomSwimmingGoal extends Goal {
     protected int radius;
     protected int verticalDistance;
 
-    public WRRandomSwimmingGoal(WRDragonEntity entity, double speedIn, int radius, int verticalDistance) {
+    public WRRandomSwimmingGoal(WRDragonEntity entity, double speedIn, int radius, int verticalDistance)
+    {
         this.entity = entity;
         this.speed = speedIn;
         this.setFlags(EnumSet.of(Goal.Flag.MOVE));
@@ -27,24 +28,25 @@ public class WRRandomSwimmingGoal extends Goal {
     }
 
     @Override
-    public boolean canUse() {
-        if (this.entity.isVehicle()) {
+    public boolean canUse()
+    {
+        if (this.entity.isVehicle())
             return false;
-        }
-        if (this.entity.getTarget() != null){
+
+        if (this.entity.getTarget() != null)
             return false;
-        }
-        if (!this.entity.isUsingSwimmingNavigator()) {
+
+        if (!this.entity.isUsingSwimmingNavigator())
             return false;
-        }
-        if (this.entity.getSleeping()) {
+
+        if (this.entity.getSleeping())
             return false;
-        }
+
         else {
             Vec3 targetPosition = this.getPosition();
-            if (targetPosition == null) {
+            if (targetPosition == null)
                 return false;
-            } else {
+             else {
                 this.x = targetPosition.x;
                 this.y = targetPosition.y;
                 this.z = targetPosition.z;
@@ -54,7 +56,8 @@ public class WRRandomSwimmingGoal extends Goal {
     }
 
     @Nullable
-    protected Vec3 getPosition() {
+    protected Vec3 getPosition()
+    {
         Vec3 targetVec =  BehaviorUtils.getRandomSwimmablePos(this.entity, radius, verticalDistance);
         if (targetVec != null) {
             Vec3 entityPos = this.entity.position();
@@ -69,7 +72,8 @@ public class WRRandomSwimmingGoal extends Goal {
     }
 
     @Override
-    public boolean canContinueToUse() {
+    public boolean canContinueToUse()
+    {
         //If it's close enough to assume it has reached the Goal
         if (this.entity.distanceToSqr(this.x,this.y,this.z) < 100) {
             return false;
@@ -86,13 +90,14 @@ public class WRRandomSwimmingGoal extends Goal {
         return !this.entity.getNavigation().isDone();
     }
     @Override
-    public void start() {
+    public void start()
+    {
         this.entity.getNavigation().moveTo(this.x, this.y, this.z, this.speed);
     }
 
     @Override
-    public void stop() {
+    public void stop()
+    {
         this.entity.getNavigation().stop();
     }
-
 }
