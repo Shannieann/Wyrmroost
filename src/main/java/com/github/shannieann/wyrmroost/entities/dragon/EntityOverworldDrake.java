@@ -256,7 +256,7 @@ public class EntityOverworldDrake extends WRDragonEntity
 
     @Override
     public boolean speciesCanSwim() {
-        return true;
+        return false;
     }
 
     @Override
