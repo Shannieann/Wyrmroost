@@ -47,6 +47,15 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
     private int burrowTicks = 30;
     private static final EntityDataAccessor<Boolean> BURROWED = SynchedEntityData.defineId(EntityLesserDesertwyrm.class, EntityDataSerializers.BOOLEAN);
 
+    @Override
+    public int attackAnimationVariants(){
+        return 0;
+    }
+
+    @Override
+    public int idleAnimationVariants(){
+        return 0;
+    }
     public EntityLesserDesertwyrm(EntityType<? extends EntityLesserDesertwyrm> type, Level worldIn)
     {
         super(type, worldIn);

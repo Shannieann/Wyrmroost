@@ -43,6 +43,16 @@ public class EntityCanariWyvern extends WRDragonEntity
 
 
      */
+
+    @Override
+    public int attackAnimationVariants(){
+        return 1;
+    }
+
+    @Override
+    public int idleAnimationVariants(){
+        return 1;
+    }
     public void tameLogic (Player tamer, ItemStack stack) {
 
     };

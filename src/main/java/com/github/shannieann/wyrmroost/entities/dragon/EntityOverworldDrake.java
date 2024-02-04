@@ -85,10 +85,15 @@ public class EntityOverworldDrake extends WRDragonEntity
     public static final int ARMOR_SLOT = 1;
     public static final int CHEST_SLOT = 2;
 
-    static {
-        IDLE_ANIMATION_VARIANTS = 3;
+    @Override
+    public int attackAnimationVariants(){
+        return 2;
     }
 
+    @Override
+    public int idleAnimationVariants(){
+        return 3;
+    }
     // Dragon Entity Data
     private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(EntityOverworldDrake.class, EntityDataSerializers.BOOLEAN);
 

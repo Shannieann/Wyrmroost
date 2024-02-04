@@ -104,10 +104,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Tidy up EntityTypeRegistry
 
 public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity {
-
-    static {
-        IDLE_ANIMATION_VARIANTS = 1;
-    }
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> LIGHTNING_COOLDOWN = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.INT);
 
@@ -169,6 +165,16 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, 14)
                 .add(FOLLOW_RANGE, 50);
+    }
+
+    @Override
+    public int attackAnimationVariants(){
+        return 2;
+    }
+
+    @Override
+    public int idleAnimationVariants(){
+        return 1;
     }
     //TODO:
     // Correct ALL Serializers: https://docs.minecraftforge.net/en/latest/networking/entities/
@@ -988,6 +994,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         public void queueMeleeAttack() {
             //Randomly define an attack variant...
+            //ToDo: Confirm with new variant logic
             attackVariant = 1+getRandom().nextInt(ATTACK_ANIMATION_VARIANTS);
             //Queue a melee attack, ensuring it happens once we reach the proper time...
             meleeAttackQueued = true;

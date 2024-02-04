@@ -59,6 +59,15 @@ public class EntityRoostStalker extends WRDragonEntity
 {
     public void tameLogic (Player tamer, ItemStack stack) {
     };
+    @Override
+    public int attackAnimationVariants(){
+        return 0;
+    }
+
+    @Override
+    public int idleAnimationVariants(){
+        return 0;
+    }
 
     public static final int ITEM_SLOT = 0;
     //TODO: What are we using this serializer for?

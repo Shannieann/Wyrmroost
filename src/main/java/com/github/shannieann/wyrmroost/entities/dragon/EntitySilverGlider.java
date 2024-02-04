@@ -74,7 +74,14 @@ public class EntitySilverGlider extends WRDragonEntity
     }
 
      */
+    public int attackAnimationVariants(){
+        return 0;
+    }
 
+    @Override
+    public int idleAnimationVariants(){
+        return 0;
+    }
     @Override
     public boolean speciesCanFly() {
         return true;
