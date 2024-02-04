@@ -83,6 +83,12 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
     // =============================
     // Slot Stuff
     // =============================
+    /*
+    TODO I did this in a weird way where there can be only one of each slot...
+    So it isn't even really a builder structure.
+    Possibly change in the future if need be, but I don't think we will need a dragon
+    to have more than 1 saddle or chest, so it should be fine.
+     */
 
     // The addSlot part can't be put into another method b/c mayPlace needs access to where the new Slot is created.
     // These are used in the WRDragonEntity method applyTomeInfo() to add any slots the dragon may need.
