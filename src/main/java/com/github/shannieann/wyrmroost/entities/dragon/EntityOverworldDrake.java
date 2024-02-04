@@ -7,6 +7,8 @@ import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.containers.util.DynamicSlot;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.*;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.ground.WRGroundLookControl;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swim.WRSwimmingLookControl;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.DragonArmorItem;
 import com.github.shannieann.wyrmroost.items.book.action.BookActions;
@@ -30,6 +32,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
@@ -52,9 +56,12 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.Tags;
+import software.bernie.geckolib3.core.builder.Animation;
 import software.bernie.geckolib3.core.manager.AnimationData;
 
 import javax.annotation.Nullable;
+
+import java.util.EnumSet;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 /* Just gonna use sniffity's method of organizing cuz its good - koala
@@ -186,7 +193,7 @@ public class EntityOverworldDrake extends WRDragonEntity
             thrownPassenger = null;
         }
 
-        if (!level.isClientSide && getTarget() == null && !isInSittingPose() && !getSleeping() && level.getBlockState(blockPosition().below()).getBlock() == Blocks.GRASS_BLOCK && getRandom().nextDouble() < (isBaby() || getHealth() < getMaxHealth()? 0.005 : 0.001));
+        //if (!level.isClientSide && getTarget() == null && !isInSittingPose() && !getSleeping() && level.getBlockState(blockPosition().below()).getBlock() == Blocks.GRASS_BLOCK && getRandom().nextDouble() < (isBaby() || getHealth() < getMaxHealth()? 0.005 : 0.001));
         //AnimationPacket.send(this, GRAZE_ANIMATION); TODO READD
     }
     // ====================================
@@ -433,13 +440,15 @@ public class EntityOverworldDrake extends WRDragonEntity
     {
         super.registerGoals();
 
+        goalSelector.addGoal(0, new WRSleepGoal(this));
         goalSelector.addGoal(4, new MoveToHomeGoal(this));
         goalSelector.addGoal(5, new ControlledAttackGoal(this, 1.425, true /*AnimationPacket.send(this, HORN_ATTACK_ANIMATION)*/));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new DragonBreedGoal(this));
-        goalSelector.addGoal(8, new WaterAvoidingRandomStrollGoal(this, 1));
-        goalSelector.addGoal(9, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
-        goalSelector.addGoal(10, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(8, new OWDGrazeGoal(this));
+        goalSelector.addGoal(9, new WaterAvoidingRandomStrollGoal(this, 1));
+        goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
+        goalSelector.addGoal(11, new RandomLookAroundGoal(this));
 
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
@@ -448,7 +457,66 @@ public class EntityOverworldDrake extends WRDragonEntity
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Player.class, true, EntitySelector.ENTITY_STILL_ALIVE::test));
     }
 
+    // ====================================
+    //      F.n) Goals: OWDGrazeGoal
+    // ====================================
+    class OWDGrazeGoal extends AnimatedGoal{
 
+        private BlockPos grazeBlockPosition;
+        public OWDGrazeGoal(EntityOverworldDrake entity) {
+            super(entity);
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK, Goal.Flag.JUMP));
+        }
+
+
+        @Override
+        public boolean canUse() {
+            grazeBlockPosition = new BlockPos(Mafs.getYawVec(yBodyRot, 0, getBbWidth() / 2 + 1).add(position())).below();
+            if (!level.getBlockState(grazeBlockPosition).is(Blocks.GRASS_BLOCK)){
+                return false;
+            }
+
+            // Ok this was wolf's original if statement for graze goal...
+            return (!level.isClientSide && getTarget() == null
+                    && !isInSittingPose()
+                    && !getSleeping()
+                    && getRandom().nextDouble() < (isBaby() || getHealth() < getMaxHealth()? 0.005 : 0.001));
+        }
+
+        @Override
+        public void start() {
+            entity.clearAI();
+            entity.setXRot(0);
+            entity.getNavigation().stop();
+        }
+
+        @Override
+        public void tick() {
+            LookControl lookControl = entity.getLookControl();
+            if (lookControl instanceof WRGroundLookControl) {
+                ((WRGroundLookControl) lookControl).stopLooking();
+            }
+            if (lookControl instanceof WRSwimmingLookControl) {
+                ((WRSwimmingLookControl) lookControl).stopLooking();
+            }
+            //ToDo: Flying look Control
+
+            // At tick 71
+            if (elapsedTime == 40) {
+                // Eat the block underneath
+                /*if (level.getBlockState(pos).is(Blocks.GRASS) && WRConfig.canGrief(level)) {
+                    level.destroyBlock(pos, false);
+                    ate();*/
+                level.levelEvent(2001, grazeBlockPosition, Block.getId(Blocks.GRASS_BLOCK.defaultBlockState()));
+                level.setBlock(grazeBlockPosition, Blocks.DIRT.defaultBlockState(), 2);
+                ate();
+            }
+            System.out.println(elapsedTime);
+            // Play the idle anim once
+            super.start("idle1", 2, 50);
+            super.tick();
+        }
+    }
 
 
 
