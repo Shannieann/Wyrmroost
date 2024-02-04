@@ -23,7 +23,6 @@ public class ModelOverworldDrake<T extends EntityOverworldDrake> extends Animate
 
 		int variant = object.getVariant();
 		String gender = (object.isBaby())? "child" : object.getGender();
-		System.out.println("textures/entity/dragon/overworld_drake/" + gender + "_" + variant + ".png");
 		return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/overworld_drake/" + gender + "_" + variant + ".png");
 	}
 
