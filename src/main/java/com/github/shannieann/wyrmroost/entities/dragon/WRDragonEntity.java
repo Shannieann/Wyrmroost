@@ -1514,6 +1514,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      C.2) Navigation and Control: Swimming
     // ====================================
 
+    //Only return true for "true swimmers" (can swim and dive)
     public abstract boolean speciesCanSwim();
 
     public boolean isUsingSwimmingNavigator() {
@@ -1521,7 +1522,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     public boolean shouldUseSwimmingNavigator() {
-        //If it cannot fly and i's not in Water and it's not on the ground either, it's falling..
+        //If it cannot fly, and it's not in water, and it's not on the ground either, it's falling..
         //Use swimming navigator here for animation purposes
         if (!speciesCanFly() && !this.isInWater() && !this.isOnGround()) {
             return true;
