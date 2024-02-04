@@ -254,7 +254,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //If we do not have an ability animation, we will proceed to try and perform Idle:
         //Idle:
         //If the entity is onGround and not doing anything else, have a chance for it to perform an idle animation
-        if (this.getRandom().nextDouble() < 0.001 && this.isOnGround() && !this.isAggressive()) {
+        if (this.getRandom().nextDouble() < 0.001 && this.isOnGround() && !this.isAggressive() && idleAnimationVariants()>0) {
             int idleVariant = this.random.nextInt(idleAnimationVariants())+1;
             event.getController().setAnimation(new AnimationBuilder().addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
