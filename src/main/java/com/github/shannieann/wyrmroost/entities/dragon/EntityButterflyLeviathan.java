@@ -65,12 +65,14 @@ import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
-// 2023.02.03:
+// 2023.02.04:
 // Tests on WRSitGoal.
 // SittING animation?
-// Age!
+// WRIdleGoal
 // Gender, Integer
-// Push around and swim? Disable when sitting? 
+// Push around and swim? Disable when sitting? Confirm
+// Age!
+// Restes AttackGoal with new variant logic
 
 //TODO: GOALS:
 // Return to Water Goal
@@ -106,7 +108,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity {
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> LIGHTNING_COOLDOWN = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.INT);
-
     public static final int CONDUIT_SLOT = 0;
     public final float entityDeltaPitchLimit = 1.0F;
     public final float entityYawAdjustment = 0.30F;

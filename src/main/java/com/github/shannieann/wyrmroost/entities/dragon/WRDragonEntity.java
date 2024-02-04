@@ -249,14 +249,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
             return PlayState.CONTINUE;
         }
+
+        //ToDo: Should extract this to WRIdleGoal, otherwise it won't work
         //If we do not have an ability animation, we will proceed to try and perform Idle:
         //Idle:
         //If the entity is onGround and not doing anything else, have a chance for it to perform an idle animation
-        if (this.getRandom().nextDouble() < 1.0 && this.isOnGround() && !this.isAggressive()) {
-            int idleVariant = this.random.nextInt(IDLE_ANIMATION_VARIANTS)+1;
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("idle"+idleAnimationVariants(), ILoopType.EDefaultLoopTypes.LOOP));
+        if (this.getRandom().nextDouble() < 0.001 && this.isOnGround() && !this.isAggressive()) {
+            int idleVariant = this.random.nextInt(idleAnimationVariants())+1;
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
         }
+
         //Else, just return base:
         //This will not cause a transition to a stiff pose, as walking animations will be running concurrently...
         //We are only resetting the position of the iBones/Bones here
