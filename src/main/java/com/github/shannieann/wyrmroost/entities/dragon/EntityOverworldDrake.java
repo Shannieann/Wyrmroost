@@ -67,6 +67,8 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 /* Just gonna use sniffity's method of organizing cuz its good - koala
 // TODO:
     Tidy up class, remove unnecessary methods, make sure methods follow a logical order (probs best to do this after we organize BFL, follow the same format)
+    WRReturnToLandGoal (should not be specific to OWDs) which makes land creatures find their way back to land...
+        For this one, we should try and use the GroundNavigator if possible...
 
 
 
