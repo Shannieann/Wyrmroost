@@ -828,58 +828,24 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
             setTarget(null);
 
-
-
+        //ToDo: We need to check all goals once we correctly setup age plus age states (baby, juvenile, adult, etc)
         updateAgeProgress();
         if (age < 0 && tickCount % AGE_UPDATE_INTERVAL == 0) entityData.set(AGE, age);
-
         if (this.level.isClientSide) {
             doSpecialEffects();
             int age = getAge();
             if (age < 0) setAge(++age);
             else if (age > 0) setAge(--age);
         }
+
         //Update sleep timers
         if (sleepCooldown > 0) {
             sleepCooldown = Math.max(sleepCooldown-1,0);
         }
 
-        //ToDo: Update Sleep Goal Logic!!
-        /*
-        if (getSleeping()) {
-            LookControl lookControl = getLookControl();
-            if (lookControl instanceof WRGroundLookControl) {
-                ((WRGroundLookControl)lookControl).stopLooking();
-            }
-            if (lookControl instanceof WRSwimmingLookControl) {
-                ((WRSwimmingLookControl)lookControl).stopLooking();
-            }
-            //ToDo: Flying look Control
-            if (getHealth() < getMaxHealth() && getRandom().nextDouble() < 0.005) {
-                heal(1);
-            }
-            if (shouldWakeUp()) {
-                setSleeping(false);
-            } else {
-                this.setAnimation("sleep");
-                this.setAnimationType(1);
-                this.setAnimationTime(20);
-            }
-        } else if (shouldSleep()) {
-            setSleeping(true);
-        }
-        */
-
-        //Sitting
-        if (this.isInSittingPose()) {
-            this.setAnimation("sit");
-            this.setAnimationType(2);
-            this.setAnimationTime(20);
-        }
-
+        //YAW OPERATIONS:
+        //The following lines of code handle the dynamic yaw animations for entities...
         if (isUsingSwimmingNavigator() && level.isClientSide){
-            //YAW OPERATIONS:
-            //The following lines of code handle the dynamic yaw animations for entities...
             //Grab the change in the entity's Yaw, deltaYRot...
             //deltaYaw will tell us in which direction the entity is rotating...
             deltaYRot = this.yRot - prevYRot;
@@ -911,7 +877,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             // If the rotation looks choppy (adjusts too fast), decrease adjustment
             // If the entity seems to "dislocate", reduce the multipliers for bone rotation in the Model class.
             // Reducing rotation multiplier in model class can also reduce choppiness, at the cost of how wide the bone rotation is.
-
 
             //PITCH OPERATIONS:
             //TODO: Breaching if checks and model class checks, organize
@@ -946,7 +911,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 pitchExtremitiesRadians = (pitchExtremities * (Mth.PI / 180.0F));
 
                 //EXTREMITY PITCH OPERATIONS:
-
                 prevSetExtremityPitch = setExtremityPitch;
                 if (adjustExtremityPitch  > deltaPitch) {
                     adjustExtremityPitch = adjustExtremityPitch - adjustmentExtremityPitch;
