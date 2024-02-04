@@ -79,13 +79,15 @@ public class EntityOverworldDrake extends WRDragonEntity
     /*
     private static final EntitySerializer<EntityOverworldDrake> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
-
-
      */
     // inventory slot constants
     public static final int SADDLE_SLOT = 0;
     public static final int ARMOR_SLOT = 1;
     public static final int CHEST_SLOT = 2;
+
+    static {
+        IDLE_ANIMATION_VARIANTS = 3;
+    }
 
     // Dragon Entity Data
     private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(EntityOverworldDrake.class, EntityDataSerializers.BOOLEAN);
@@ -399,12 +401,7 @@ public class EntityOverworldDrake extends WRDragonEntity
     {
         return stack.is(Tags.Items.CROPS_WHEAT);
     }
-    @Override
-    public void ate()
-    {
-        if (isBaby()) ageUp(60);
-        if (getHealth() < getMaxHealth()) heal(4f);
-    }
+
     // ====================================
     //      E.1) Client: Sounds
     // ====================================
@@ -467,64 +464,69 @@ public class EntityOverworldDrake extends WRDragonEntity
     class OWDGrazeGoal extends AnimatedGoal{
 
         private BlockPos grazeBlockPosition;
-        public OWDGrazeGoal(EntityOverworldDrake entity) {
+        public OWDGrazeGoal(EntityOverworldDrake entity)
+        {
             super(entity);
             this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK, Goal.Flag.JUMP));
         }
 
-
         @Override
-        public boolean canUse() {
+        public boolean canUse()
+        {
             //This should get a blockPos that is positioned correctly relative to the OWD's head.
             grazeBlockPosition = new BlockPos(Mafs.getYawVec(yBodyRot, 0, getBbWidth() / 2 + 1).add(position())).below();
             if (!level.getBlockState(grazeBlockPosition).is(Blocks.GRASS_BLOCK)){
                 return false;
             }
+            //ToDo: Once we implement config, we should check for WRCanGrief...
 
-            // Ok this was wolf's original if statement for graze goal...
+            //Only graze if no target, not sitting and not sleeping
+            //Graze chance is higher when baby and when health is lower than max health
             return (!level.isClientSide && getTarget() == null
-                    && !isInSittingPose()
+                    && !getSitting()
                     && !getSleeping()
-                    && getRandom().nextDouble() < (isBaby() || getHealth() < getMaxHealth()? 0.005 : 0.001));
+                    && getRandom().nextDouble() < ((isBaby() || getHealth() < getMaxHealth())? 0.005 : 0.001));
         }
 
         @Override
-        public void start() {
+        public void start()
+        {
             entity.clearAI();
             entity.setXRot(0);
             entity.getNavigation().stop();
         }
 
         @Override
-        public void tick() {
+        public void tick()
+        {
             LookControl lookControl = entity.getLookControl();
-            if (lookControl instanceof WRGroundLookControl) {
-                ((WRGroundLookControl) lookControl).stopLooking();
-            }
-            if (lookControl instanceof WRSwimmingLookControl) {
-                ((WRSwimmingLookControl) lookControl).stopLooking();
-            }
-            //ToDo: Flying look Control
+            ((WRGroundLookControl) lookControl).stopLooking();
 
-            // At tick 71
             if (elapsedTime == 40) {
                 // Eat the block underneath
-                /*if (level.getBlockState(pos).is(Blocks.GRASS) && WRConfig.canGrief(level)) {
-                    level.destroyBlock(pos, false);
-                    ate();*/
                 level.levelEvent(2001, grazeBlockPosition, Block.getId(Blocks.GRASS_BLOCK.defaultBlockState()));
                 level.setBlock(grazeBlockPosition, Blocks.DIRT.defaultBlockState(), 2);
-                ate();
+                eatGrass();
             }
-            System.out.println(elapsedTime);
             // Play the idle anim once
-            super.start("idle1", 2, 50);
+            super.start("graze", 2, 50);
             super.tick();
         }
+
+        @Override
+        public boolean canContinueToUse()
+        {
+            if (getSitting() || getSleeping() || getTarget() != null)
+                return false;
+            return super.canContinueToUse();
+        }
+
+        public void eatGrass()
+        {
+            if (isBaby()) ageUp(60);
+            if (getHealth() < getMaxHealth()) heal(4f);
+        }
     }
-
-
-
 
     /*@Override
     public void recievePassengerKeybind(int key, int mods, boolean pressed)
