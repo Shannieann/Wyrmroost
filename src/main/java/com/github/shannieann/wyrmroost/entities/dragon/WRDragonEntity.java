@@ -163,7 +163,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> YAW_UNLOCK = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
-
     public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<String> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
@@ -1045,22 +1044,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
         return false;
     };
-
-    // ====================================
-    //      B.2) Tick and AI: Sit
-    // ====================================
-
-    @Override
-    public void setInSittingPose(boolean flag)
-    {
-        super.setInSittingPose(flag);
-        if (flag) {
-            clearAI();
-            setAnimation("sitting");
-            setAnimationType(3);
-            setAnimationTime(20);
-        }
-    }
 
     // ====================================
     //      C) Navigation and Control
