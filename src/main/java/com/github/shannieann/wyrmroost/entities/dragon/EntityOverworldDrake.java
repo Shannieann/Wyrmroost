@@ -442,7 +442,7 @@ public class EntityOverworldDrake extends WRDragonEntity
         super.registerGoals();
 
         //goalSelector.addGoal(0, new WRSleepGoal(this));
-        goalSelector.addGoal(4, new MoveToHomeGoal(this));
+        //goalSelector.addGoal(4, new MoveToHomeGoal(this));
         //goalSelector.addGoal(5, new ControlledAttackGoal(this, 1.425, true /*AnimationPacket.send(this, HORN_ATTACK_ANIMATION)*/));
         //goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         //goalSelector.addGoal(7, new DragonBreedGoal(this));
@@ -499,9 +499,9 @@ public class EntityOverworldDrake extends WRDragonEntity
         @Override
         public void tick()
         {
-            LookControl lookControl = entity.getLookControl();
-            ((WRGroundLookControl) lookControl).stopLooking();
-
+            if (lookControl instanceof WRGroundLookControl) {
+                ((WRGroundLookControl) lookControl).stopLooking();
+            }
             if (elapsedTime == 40) {
                 // Eat the block underneath
                 level.levelEvent(2001, grazeBlockPosition, Block.getId(Blocks.GRASS_BLOCK.defaultBlockState()));
