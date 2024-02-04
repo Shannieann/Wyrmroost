@@ -66,6 +66,8 @@ import java.util.EnumSet;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 /* Just gonna use sniffity's method of organizing cuz its good - koala
 // TODO:
+    Tidy up class, remove unnecessary methods, make sure methods follow a logical order (probs best to do this after we organize BFL, follow the same format)
+
 
 
 */
@@ -440,21 +442,21 @@ public class EntityOverworldDrake extends WRDragonEntity
     {
         super.registerGoals();
 
-        goalSelector.addGoal(0, new WRSleepGoal(this));
+        //goalSelector.addGoal(0, new WRSleepGoal(this));
         goalSelector.addGoal(4, new MoveToHomeGoal(this));
-        goalSelector.addGoal(5, new ControlledAttackGoal(this, 1.425, true /*AnimationPacket.send(this, HORN_ATTACK_ANIMATION)*/));
-        goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
-        goalSelector.addGoal(7, new DragonBreedGoal(this));
+        //goalSelector.addGoal(5, new ControlledAttackGoal(this, 1.425, true /*AnimationPacket.send(this, HORN_ATTACK_ANIMATION)*/));
+        //goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
+        //goalSelector.addGoal(7, new DragonBreedGoal(this));
         goalSelector.addGoal(8, new OWDGrazeGoal(this));
-        goalSelector.addGoal(9, new WaterAvoidingRandomStrollGoal(this, 1));
+        //goalSelector.addGoal(9, new WaterAvoidingRandomStrollGoal(this, 1));
         goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
         goalSelector.addGoal(11, new RandomLookAroundGoal(this));
 
-        targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
-        targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        targetSelector.addGoal(3, new DefendHomeGoal(this));
-        targetSelector.addGoal(4, new HurtByTargetGoal(this));
-        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Player.class, true, EntitySelector.ENTITY_STILL_ALIVE::test));
+        //targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
+        //targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+        //targetSelector.addGoal(3, new DefendHomeGoal(this));
+        //targetSelector.addGoal(4, new HurtByTargetGoal(this));
+        //targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Player.class, true, EntitySelector.ENTITY_STILL_ALIVE::test));
     }
 
     // ====================================
@@ -471,6 +473,7 @@ public class EntityOverworldDrake extends WRDragonEntity
 
         @Override
         public boolean canUse() {
+            //This should get a blockPos that is positioned correctly relative to the OWD's head.
             grazeBlockPosition = new BlockPos(Mafs.getYawVec(yBodyRot, 0, getBbWidth() / 2 + 1).add(position())).below();
             if (!level.getBlockState(grazeBlockPosition).is(Blocks.GRASS_BLOCK)){
                 return false;
