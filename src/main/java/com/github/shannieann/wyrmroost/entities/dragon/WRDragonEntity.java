@@ -176,8 +176,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //TODO: What is this?
     private static final UUID SCALE_MOD_UUID = UUID.fromString("81a0addd-edad-47f1-9aa7-4d76774e055a");
     private static final int AGE_UPDATE_INTERVAL = 200;
+    //ToDo: Ensure we're setting this stuff correctly
     protected static int IDLE_ANIMATION_VARIANTS;
     protected static int ATTACK_ANIMATION_VARIANTS;
+    //ToDo: SittING / SleepING animations are not implemented for BFL. Once we implement for land creatures, they should not interfere with sleep goal.
     protected static int SITTING_ANIMATION_TIME;
     protected static int SLEEPING_ANIMATION_TIME;
     protected static final boolean ATTACK_ANIMATION_MOVES = true;
@@ -207,7 +209,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         DragonInventory inv = createInv();
         inventory = LazyOptional.of(inv == null? null : () -> inv);
         //TODO: DEFAULT NAVIGATORS
-        //TODO: Test pushing entities and moving? Check for push, do not proceed if push
     }
 
     // =====================
