@@ -3,8 +3,8 @@ package com.github.shannieann.wyrmroost.entities.dragon.ai.goals;
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 
 public class WRIdleGoal extends AnimatedGoal{
-    private int idleAnimationVariants;
-    private int idleAnimation1Time;
+    private final int idleAnimationVariants;
+    private final int idleAnimation1Time;
     private int idleAnimation2Time;
     private int idleAnimation3Time;
 
@@ -36,7 +36,7 @@ public class WRIdleGoal extends AnimatedGoal{
             return false;
         if (this.entity.isAggressive())
             return false;
-        if (this.entity.getRandom().nextDouble() < /*0.001*/ 1)
+        if (this.entity.getRandom().nextDouble() < 0.001)
             return true;
         return false;
     }
@@ -46,13 +46,10 @@ public class WRIdleGoal extends AnimatedGoal{
         int idleVariant = entity.getRandom().nextInt(idleAnimationVariants)+1;
         int idleAnimationTime;
         switch (idleVariant) {
-            case 1: idleAnimationTime = idleAnimation1Time;
-            break;
-            case 2: idleAnimationTime = idleAnimation2Time;
-            break;
-            case 3: idleAnimationTime = idleAnimation3Time;
-            break;
-            default: idleAnimationTime = idleAnimation1Time;
+            case 1 -> idleAnimationTime = idleAnimation1Time;
+            case 2 -> idleAnimationTime = idleAnimation2Time;
+            case 3 -> idleAnimationTime = idleAnimation3Time;
+            default -> idleAnimationTime = idleAnimation1Time;
         }
         super.start("idle"+idleVariant, 2,idleAnimationTime);
     }
