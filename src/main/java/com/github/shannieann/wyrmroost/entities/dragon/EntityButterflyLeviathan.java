@@ -60,10 +60,11 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
 // 2023.02.04:
 // WRIdleGoal
+// Walking on two BFL attacks?
 // Gender, Integer
 // Push around and swim? Disable when sitting? Confirm
 // Age!
-// Restes AttackGoal with new variant logic
+// Retest AttackGoal with new variant logic
 
 //TODO: GOALS:
 // Return to Water Goal
