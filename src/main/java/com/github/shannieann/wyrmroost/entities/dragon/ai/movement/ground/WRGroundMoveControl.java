@@ -66,7 +66,7 @@ public class WRGroundMoveControl extends MoveControl{
             BlockPos blockpos = this.mob.blockPosition();
             BlockState blockstate = this.mob.level.getBlockState(blockpos);
             VoxelShape voxelshape = blockstate.getCollisionShape(this.mob.level, blockpos);
-            if (targetY > (double) this.mob.maxUpStep && targetX * targetX + targetZ * targetZ < (double) Math.max(1.0F, this.mob.getBbWidth()) || !voxelshape.isEmpty() && this.mob.getY() < voxelshape.max(Direction.Axis.Y) + (double) blockpos.getY()) {
+            if (targetY > (double) this.mob.getStepHeight() && targetX * targetX + targetZ * targetZ < (double) Math.max(1.0F, this.mob.getBbWidth()) || !voxelshape.isEmpty() && this.mob.getY() < voxelshape.max(Direction.Axis.Y) + (double) blockpos.getY()) {
                 this.mob.getJumpControl().jump();
                 this.operation = MoveControl.Operation.JUMPING;
             }
