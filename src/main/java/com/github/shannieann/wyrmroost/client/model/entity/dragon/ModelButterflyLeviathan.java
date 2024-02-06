@@ -31,7 +31,7 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<EntityButterflyLev
         int variant = object.getVariant();
         String variantString;
         switch (variant) {
-            case -1 -> variantString = "special";
+            case -1 -> variantString = "base_special";
             case 0 -> variantString = "base0";
             case 1 -> variantString = "base1";
             default -> variantString = "base0";
