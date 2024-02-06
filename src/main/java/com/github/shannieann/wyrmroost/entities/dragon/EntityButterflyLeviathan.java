@@ -5,6 +5,7 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRandomLookAroundGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSitGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSleepGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.ground.WRGroundLookControl;
@@ -66,8 +67,7 @@ import java.util.Random;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
 // 2023.02.04:
-// Tests on WRSitGoal.
-// SittING animation?
+// WRSitGoal: Animation is currently the same as land...
 // WRIdleGoal
 // Gender, Integer
 // Push around and swim? Disable when sitting? Confirm
@@ -712,7 +712,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
         goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 64,48));
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
-        goalSelector.addGoal(9, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(9, new WRRandomLookAroundGoal(this,100,135));
 
         //targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
         //targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
