@@ -6,7 +6,9 @@ import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swim.WRSwimmi
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.control.LookControl;
 public class WRSitGoal extends AnimatedGoal {
-    //ToDo: Test on land creatures
+    //ToDo:
+    // Test on land creatures
+    // SittING?
     private final WRDragonEntity entity;
 
     public WRSitGoal(WRDragonEntity entity) {
