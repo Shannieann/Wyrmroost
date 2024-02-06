@@ -239,7 +239,7 @@ public class EntityRoyalRed extends WRDragonEntity {
     @Override
     public float getScale() {
         float i = getAgeScale(0.3f);
-        if (getGender().equals("male")) i *= 0.8f;
+        if (getGender() == 1) i *= 0.8f;
         return i;
     }
 

@@ -59,8 +59,7 @@ import java.util.Random;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
 // 2023.02.04:
-// WRIdleGoal
-// Walking on two BFL attacks?
+// Walking on BFL attacks BFL?
 // Gender, Integer
 // Push around and swim? Disable when sitting? Confirm
 // Age!

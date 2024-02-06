@@ -26,7 +26,7 @@ public class ModelSilverGlider<T extends EntitySilverGlider> extends AnimatedGeo
         if (dragon.hasCustomName() && dragon.getCustomName().getContents().equalsIgnoreCase("lady")){
             return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "canari_wyvern/lady.png");
         }
-        String gender = dragon.getGender().equals("male")? "male" : "female";
+        String gender = dragon.getGender() == 1? "male" : "female";
         int variant = dragon.getVariant();
         return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "canari_wyvern/body_" + gender + variant + ".png");
     }

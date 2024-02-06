@@ -164,7 +164,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> YAW_UNLOCK = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
-    public static final EntityDataAccessor<String> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
+    /**
+     * GENDER:
+     * 0 --> FEMALE
+     * 1 --> MALE
+     * Originally determined via coin flip
+     */
+    public static final EntityDataAccessor<Integer> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
     public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> SITTING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
@@ -349,7 +355,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(BREACHING, false);
         entityData.define(YAW_UNLOCK, false);
         entityData.define(DRAGON_X_ROTATION, 0f);
-        entityData.define(GENDER, "male");
+        entityData.define(GENDER, 0);
         entityData.define(SLEEPING, false);
         entityData.define(SITTING, false);
         entityData.define(VARIANT, 0);
@@ -383,16 +389,25 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @javax.annotation.Nullable SpawnGroupData data, @javax.annotation.Nullable CompoundTag dataTag)
     {
-        //ToDo: Improve finalize spawn, account for default gender condiitons, do not use strings
-        String gender;
+        //ToDo: Improve finalize spawn
+        /**
+         * GENDER:
+         * 0 --> FEMALE
+         * 1 --> MALE
+         * Originally determined via coin flip
+         */
+        int gender;
         if (getRandom().nextBoolean()){
-            gender = "male";
+            gender = 1;
         } else {
-            gender = "female";
+            gender = 0;
         }
+
         if (hasEntityDataAccessor(GENDER)) {
             setGender(gender);
         }
+
+        //determineVariant is a method in each subclass, specific to each creature
         if (hasEntityDataAccessor(VARIANT)) {
             setVariant(determineVariant());
         }
@@ -603,12 +618,20 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     //      A.3) Entity Data: GENDER
     // ====================================
-    public String getGender()
+
+    /**
+     * GENDER:
+     * 0 --> FEMALE
+     * 1 --> MALE
+     * Originally determined via coin flip
+     */
+
+    public int getGender()
     {
-        return (!hasEntityDataAccessor(GENDER) || entityData.get(GENDER).equals("male")) ? "male" : "female";
+        return entityData.get(GENDER);
     }
 
-    public void setGender(String gender)
+    public void setGender(int gender)
     {
         entityData.set(GENDER, gender);
     }
@@ -1922,7 +1945,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!(mate instanceof WRDragonEntity)) return false;
         WRDragonEntity dragon = (WRDragonEntity) mate;
         if (isInSittingPose() || dragon.isInSittingPose()) return false;
-        if (hasEntityDataAccessor(GENDER) && (getGender()).equals(dragon.getGender())) return false;
+        if (hasEntityDataAccessor(GENDER) && (getGender()) == (dragon.getGender())) return false;
         return super.canMate(mate);
     }
 
