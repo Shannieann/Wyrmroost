@@ -4,15 +4,11 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.AnimatedGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRRandomLookAroundGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSitGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRSleepGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.ground.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRWaterLeapGoal;
-import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
@@ -27,8 +23,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -38,7 +32,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
@@ -58,7 +51,6 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.extensions.IForgeEntity;
-import net.minecraftforge.event.ForgeEventFactory;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
@@ -67,7 +59,6 @@ import java.util.Random;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
 // 2023.02.04:
-// WRSitGoal: Animation is currently the same as land...
 // WRIdleGoal
 // Gender, Integer
 // Push around and swim? Disable when sitting? Confirm
@@ -131,6 +122,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public static final int WATER_ATTACK_QUEUE_TIME_1 = 7;
     public static final int LAND_ATTACK_QUEUE_TIME_2 = 7;
     public static final int WATER_ATTACK_QUEUE_TIME_2 = 7;
+    public final int idleAnimation1Time = 80;
 
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
         super(entityType, level);
@@ -709,10 +701,11 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         goalSelector.addGoal(4, new BFLAttackGoal(this));
         goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,8));
-        goalSelector.addGoal(6, new WRWaterLeapGoal(this, 1,12,30,64));
-        goalSelector.addGoal(7, new WRRandomSwimmingGoal(this, 1.0, 64,48));
+        goalSelector.addGoal(5, new WRWaterLeapGoal(this, 1,12,30,64));
+        goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 1.0, 64,48));
+        goalSelector.addGoal(7,new WRIdleGoal(this, idleAnimation1Time));
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
-        goalSelector.addGoal(9, new WRRandomLookAroundGoal(this,100,135));
+        goalSelector.addGoal(9, new WRRandomLookAroundGoal(this,45));
 
         //targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
         //targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));

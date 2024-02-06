@@ -8,14 +8,12 @@ public class WRRandomLookAroundGoal extends Goal {
     private final Mob mob;
     private double relX;
     private double relZ;
-    private final int lookCooldown;
     private final double lookAngleRange;
     private int lookTime;
 
-    public WRRandomLookAroundGoal(Mob pMob, int lookCooldown, double lookAngleRange) {
+    public WRRandomLookAroundGoal(Mob pMob, double lookAngleRange) {
         this.mob = pMob;
         //These values ensure the mob is not looking around all over the place with large turn angles and fast rotation
-        this.lookCooldown = lookCooldown;
         this.lookAngleRange = lookAngleRange/180.0D;
     }
 
@@ -30,7 +28,7 @@ public class WRRandomLookAroundGoal extends Goal {
         double d0 = (Math.PI * lookAngleRange) * this.mob.getRandom().nextDouble();
         this.relX = Math.cos(d0);
         this.relZ = Math.sin(d0);
-        this.lookTime = lookCooldown + this.mob.getRandom().nextInt(20);
+        this.lookTime = 20 + this.mob.getRandom().nextInt(20);
     }
 
     public boolean canContinueToUse() {
