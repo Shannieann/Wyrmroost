@@ -59,37 +59,27 @@ import java.util.Random;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
 // 2023.02.04:
-// Walking on BFL attacks BFL?
-// Gender, Integer
+// Walking on BFL.... test by attack another BFL? Perhaps getNavigation.isDone() on superclass...
 // Push around and swim? Disable when sitting? Confirm
 // Age!
+// Assets: Child?
 // Retest AttackGoal with new variant logic
-
-//TODO: GOALS:
-// Return to Water Goal
-
-//TODO: ANIMATIONS:
+// Showcase!
+// Retest return to Water Goal
 // Retest Water Leap animations
 // Retest Water Sleep animations
+// Showcase!
 // Retest water lightning strike animation
+// Taming Logic, confirm no debug code is leftover...
+// Breeding...
+// Eggs...
+// Ride logic + rewrite key-binds
+// DragonStaff: Home, follow, defend...
 
 //TODO: CLASS:
 // Tidy up
 // This class: See which methods are needed, which are not
 // Fix serializer - perhaps remove entirely?
-
-//TODO: TAMING
-// Taming logic
-// All goals when tamed
-// Eggs, breeding, taming
-// Ride logic + rewrite key-binds
-
-//TODO: ASSETS:
-// Assets: Child?
-
-//TODO: TEST AND SHOWCASE
-// Water movement + breaching
-// Attacks
 
 //TODO: FINAL
 // Config spawn
