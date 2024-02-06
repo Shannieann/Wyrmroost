@@ -20,7 +20,7 @@ public class WRRandomLookAroundGoal extends Goal {
     }
 
     public boolean canUse() {
-        return this.mob.getRandom().nextFloat() < 0.02F;
+        return this.mob.getRandom().nextFloat() < 0.005F;
     }
 
 

@@ -215,14 +215,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // =====================
 
     @Override
-    public void registerControllers(AnimationData data) {
+    public void registerControllers(AnimationData data)
+    {
         data.addAnimationController(new AnimationController(this, "controllerAbility", 0, this::predicateAbility));
         data.addAnimationController(new AnimationController(this, "controllerBasicLocomotion", 0, this::predicateBasicLocomotion));
 
     }
 
     @Override
-    public AnimationFactory getFactory() {
+    public AnimationFactory getFactory()
+    {
         return this.factory;
     }
 
@@ -249,17 +251,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             event.getController().setAnimation(new AnimationBuilder().addAnimation(animation, loopType));
             return PlayState.CONTINUE;
         }
-
-        //ToDo: Should extract this to WRIdleGoal, otherwise it won't work
-        //If we do not have an ability animation, we will proceed to try and perform Idle:
-        //Idle:
-        //If the entity is onGround and not doing anything else, have a chance for it to perform an idle animation
-        if (this.getRandom().nextDouble() < 0.001 && this.isOnGround() && !this.isAggressive() && idleAnimationVariants()>0) {
-            int idleVariant = this.random.nextInt(idleAnimationVariants())+1;
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("idle"+idleVariant, ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
-        }
-
         //Else, just return base:
         //This will not cause a transition to a stiff pose, as walking animations will be running concurrently...
         //We are only resetting the position of the iBones/Bones here
@@ -337,7 +328,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return PlayState.CONTINUE;
     }
 
-    protected abstract int idleAnimationVariants();
+    public abstract int idleAnimationVariants();
 
     //ToDo: Is this needed?
     protected abstract int attackAnimationVariants();

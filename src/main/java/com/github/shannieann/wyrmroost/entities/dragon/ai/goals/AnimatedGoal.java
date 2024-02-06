@@ -26,7 +26,6 @@ public abstract class AnimatedGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        //Accounts for 10 transition ticks
         if (elapsedTime > animationTime) {
             return false;
         }
