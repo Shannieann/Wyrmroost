@@ -6,7 +6,6 @@ import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.network.packets.*;
 import com.github.shannieann.wyrmroost.registry.*;
 import com.github.shannieann.wyrmroost.util.ModUtils;
-import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
