@@ -284,7 +284,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (this.getSleeping() || this.getSitting() || this.getBreaching()){
             return PlayState.STOP;
         }
-        if (this.getDeltaMovement().length() !=0 && this.isAggressive() && this.getNavigation().getTargetPos() != null) {
+
+        if (this.getDeltaMovement().length() != 0 && this.isAggressive()) {
             switch (navigationType) {
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
                 case FLYING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly_fast", ILoopType.EDefaultLoopTypes.LOOP));
@@ -292,7 +293,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             return PlayState.CONTINUE;
         }
-        if (this.getDeltaMovement().length() !=0 && !this.isAggressive() && this.getNavigation().getTargetPos() != null) {
+        if (this.getDeltaMovement().length() !=0 && !this.isAggressive() && this.getNavigation().isDone()) {
             switch (navigationType) {
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
                 case FLYING ->
