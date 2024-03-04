@@ -414,7 +414,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setVariant(determineVariant());
         }
 
-        //ToDo: Spawn Egg + Command, set age to 1
+        if (reason == MobSpawnType.SPAWN_EGG || reason == MobSpawnType.COMMAND) {
+            setAgeProgress(1);
+        } else {
+            setAgeProgress(0);
+        }
 
         return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
     }
