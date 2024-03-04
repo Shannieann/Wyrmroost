@@ -174,11 +174,14 @@ public class EntityOverworldDrake extends WRDragonEntity
         if (isInSittingPose() || getSleeping()) size = size.scale(1, 0.75f);
         return size;
     }
+    /*
     @Override
     public float getScale()
     {
         return getAgeScale(0.275f);
     }
+
+     */
 
     // ====================================
     //      B) Tick and AI
@@ -234,6 +237,17 @@ public class EntityOverworldDrake extends WRDragonEntity
         if (canBeControlledByRider()) speed += 0.45f;
         return speed;
     }
+
+    @Override
+    public float ageProgressAmount() {
+        return 0;
+    }
+
+    @Override
+    public float initialBabyScale() {
+        return 0;
+    }
+
     @Override
     public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {

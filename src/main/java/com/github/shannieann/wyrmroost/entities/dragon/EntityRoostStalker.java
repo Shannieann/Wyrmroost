@@ -98,6 +98,16 @@ public class EntityRoostStalker extends WRDragonEntity
         entityData.define(SCAVENGING, false);
     }
 
+    @Override
+    public float ageProgressAmount() {
+        return 0;
+    }
+
+    @Override
+    public float initialBabyScale() {
+        return 0;
+    }
+
     /*
     @Override
     public EntitySerializer<? extends WRDragonEntity> getSerializer() {

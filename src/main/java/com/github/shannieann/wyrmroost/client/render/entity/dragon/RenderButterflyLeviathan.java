@@ -39,7 +39,9 @@ public class RenderButterflyLeviathan extends WRDragonRender<EntityButterflyLevi
                             float red, float green, float blue, float partialTicks) {
         super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn,
                 red, green, blue, partialTicks);
-
-        stackIn.scale(2.4F, 2.4F, 2.4F);
+        //ToDo: Test
+        float ageProgressScale = animatable.getScale();
+        stackIn.scale(2.4F * ageProgressScale, 2.4F * ageProgressScale, 2.4F * ageProgressScale);
+        //ToDO: Update other creatures based on age progress
     }
 }

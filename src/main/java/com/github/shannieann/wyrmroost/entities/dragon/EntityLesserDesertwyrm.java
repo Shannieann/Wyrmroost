@@ -94,6 +94,16 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
         }
     }
 
+    @Override
+    public float ageProgressAmount() {
+        return 0;
+    }
+
+    @Override
+    public float initialBabyScale() {
+        return 0;
+    }
+
 
     public static <F extends Mob> boolean getSpawnPlacement(EntityType<F> entityType, ServerLevelAccessor serverLevelAccessor, MobSpawnType spawnType, BlockPos pos, Random random)
     {

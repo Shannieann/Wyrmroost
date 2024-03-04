@@ -101,8 +101,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public int sleepCooldown;
     public int breedCount;
-    private float ageProgress = 1;
-
     //Only for swimmers:
     public float prevYRot;
     public float deltaYRot;
@@ -158,8 +156,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Deprecated // https://github.com/MinecraftForge/MinecraftForge/issues/7622
     public final LazyOptional<DragonInventory> inventory;
     public final LerpedFloat sleepTimer = LerpedFloat.unit();
+    public static final EntityDataAccessor<Float> AGE_PROGRESS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
 
-    public static final EntityDataAccessor<Integer> AGE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> YAW_UNLOCK = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
@@ -180,7 +178,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     //TODO: What is this?
     private static final UUID SCALE_MOD_UUID = UUID.fromString("81a0addd-edad-47f1-9aa7-4d76774e055a");
-    private static final int AGE_UPDATE_INTERVAL = 200;
+
+    //TODO: The value below could also be set in an abstract method
+    private static final int AGE_UPDATE_INTERVAL = 1200;
     //ToDo: Ensure we're setting this stuff correctly
     protected static int IDLE_ANIMATION_VARIANTS;
     protected static int ATTACK_ANIMATION_VARIANTS;
@@ -353,7 +353,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         this.entityData.define(ANIMATION_TYPE, 1);
         this.entityData.define(ANIMATION_TIME, 0);
         entityData.define(HOME_POS, BlockPos.ZERO);
-        entityData.define(AGE, 0);
+        entityData.define(AGE_PROGRESS, 0F);
         entityData.define(BREACHING, false);
         entityData.define(YAW_UNLOCK, false);
         entityData.define(DRAGON_X_ROTATION, 0f);
@@ -413,6 +413,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (hasEntityDataAccessor(VARIANT)) {
             setVariant(determineVariant());
         }
+
+        //ToDo: Spawn Egg + Command, set age to 1
+
         return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
     }
 
@@ -432,7 +435,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     playSound(SoundEvents.ARMOR_EQUIP_DIAMOND, 1, 1, true);
                 }
             }
-        } else if (key == AGE) {
+        }
+        /*else if (key == AGE) {
             setAge(entityData.get(AGE));
             updateAgeProgress();
             refreshDimensions();
@@ -445,7 +449,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     instance.addTransientModifier(mod);
                 }
             }
-        } else super.onSyncedDataUpdated(key);
+        }
+               */
+        else super.onSyncedDataUpdated(key);
+
     }
 
 
@@ -456,12 +463,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
    */
 
 
-
     public String getAnimation()
     {
         return entityData.get(ANIMATION);
     }
-
     public void setAnimation(String animation) {
         entityData.set(ANIMATION, animation);
     }
@@ -470,17 +475,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         return entityData.get(ANIMATION_TYPE);
     }
-
     public void setAnimationType(int animation)
     {
         entityData.set(ANIMATION_TYPE, animation);
     }
-
     public int getAnimationTime()
     {
         return entityData.get(ANIMATION_TIME);
     }
-
     public void setAnimationTime(int animationTime)
     {
         entityData.set(ANIMATION_TIME, animationTime);
@@ -489,7 +491,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void setBreaching(boolean breaching) {
         entityData.set(BREACHING, breaching);
     }
-
     public boolean getBreaching() {
         return entityData.get(BREACHING);
 
@@ -498,7 +499,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void setYawUnlocked(boolean unlock) {
         entityData.set(YAW_UNLOCK, unlock);
     }
-
     public boolean getYawUnlocked() {
         return entityData.get(YAW_UNLOCK);
 
@@ -530,40 +530,67 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     //      A.1) Entity Data: AGE
     // ====================================
-    public void updateAgeProgress()
-    {
-        // no reason to recalculate this value several times per tick/frame...
-        float growth = DragonEggProperties.get(getType()).getGrowthTime();
-        float min = Math.min(getAge(), 0);
-        ageProgress = 1 - (min / growth);
-    }
 
-    public float ageProgress()
+    /**
+     * AGE PROGRESS CATEGORIES:
+     * 0 to 0.5 --> HATCHLING
+     * 0.5 TO 1 --> JUVENILE
+     * 1 --> ADULT
+     */
+
+    //ToDo: Cleanup old, commented code, remove
+    public boolean isHatchling()
     {
-        return ageProgress;
+        return getAgeProgress() < 0.5f;
     }
 
     public boolean isJuvenile()
     {
-        return ageProgress() > 0.5f;
+        return getAgeProgress() > 0.5f;
     }
 
     public boolean isAdult()
     {
-        return ageProgress() >= 1f;
+        return getAgeProgress() >= 1f;
     }
 
-    public boolean isHatchling()
+    public float getAgeProgress() {
+        return entityData.get(AGE_PROGRESS);
+    }
+
+    //Method automatically refreshes the entity's dimensions, adjusting the bounding box size
+    public void setAgeProgress(float ageProgress) {
+        entityData.set(AGE_PROGRESS,Math.max(ageProgress,1));
+        this.refreshDimensions();
+    }
+
+    //Amount by which to increase age progress each minute...
+    //Age progress starts at 0 and caps out at 1.
+    //Hence, if ageProgressAmount = 0.1, it will take 10 minutes for an entity to fully grow
+    public abstract float ageProgressAmount();
+    //Initial scale for the baby entity...
+    //This corresponds to the ratio babyEntitySize / adultEntitySize
+    //For example, if initialBabyScale is 0.2, then the entity as a baby starts out at 20% of its adult size
+    public abstract float initialBabyScale();
+
+    //Overrides method in living entity
+    //This allows for WRDragonEntity's dimensions to be correctly refreshed when refreshDimensions is called
+    @Override
+    public float getScale()
     {
-        return ageProgress() < 0.5f;
+        return initialBabyScale() + ((1 - initialBabyScale()) * getAgeProgress());
     }
 
+        /*
     @Override
     public boolean isBaby()
     {
         return !isAdult();
     }
 
+     */
+
+    /*
     @Override
     public void setBaby(boolean baby)
     {
@@ -571,12 +598,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(AGE, this.age);
     }
 
+    /*
+
     @Override
     public int getAge()
     {
         return age;
     }
 
+     */
+
+
+    /*
     @Override
     public void ageUp(int age, boolean forced)
     {
@@ -584,16 +617,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(AGE, this.age);
     }
 
-    @Override
-    public float getScale()
-    {
-        return 0.5f + (0.5f * ageProgress());
-    }
-
-    public float getAgeScale(float baby)
-    {
-        return baby + ((1 - baby) * ageProgress());
-    }
+     */
 
     // ====================================
     //      A.2) Entity Data: ARMOR
@@ -831,7 +855,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void tick() {
         super.tick();
-        System.out.println(this.getAnimation());
         setEatingCooldown(Math.max(getEatingCooldown()-1,0));
 
         if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0); // Shouldn't be rotated on ground or water
@@ -851,14 +874,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
             setTarget(null);
 
-        //ToDo: We need to check all goals once we correctly setup age plus age states (baby, juvenile, adult, etc)
-        updateAgeProgress();
-        if (age < 0 && tickCount % AGE_UPDATE_INTERVAL == 0) entityData.set(AGE, age);
-        if (this.level.isClientSide) {
-            doSpecialEffects();
-            int age = getAge();
-            if (age < 0) setAge(++age);
-            else if (age > 0) setAge(--age);
+
+        // UPDATE AGE:
+        // The entity's is updated once every minute (AGE_UPDATE_INTERVAL == 1200)
+        // Abstract method ageProgressAmount() sets the float amount by which to update age every minute
+
+        if (!isAdult() && tickCount % AGE_UPDATE_INTERVAL == 0) {
+            setAgeProgress(getAgeProgress()+ageProgressAmount());
         }
 
         //Update sleep timers
@@ -2009,12 +2031,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         return getScale();
     }
-
+    //ToDo: What is this?
+    /*
     @Override
     public float getVoicePitch()
     {
         return ((random.nextFloat() - random.nextFloat()) * 0.2f + 1) * (2 - ageProgress());
     }
+
+     */
 
     @Override
     public void playAmbientSound()

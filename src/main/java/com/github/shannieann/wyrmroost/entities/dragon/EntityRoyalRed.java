@@ -227,6 +227,16 @@ public class EntityRoyalRed extends WRDragonEntity {
     }
 
     @Override
+    public float ageProgressAmount() {
+        return 0;
+    }
+
+    @Override
+    public float initialBabyScale() {
+        return 0;
+    }
+
+    @Override
     public boolean isImmobile() {
         return super.isImmobile() || isKnockedOut();
     }
@@ -236,12 +246,16 @@ public class EntityRoyalRed extends WRDragonEntity {
         return getBbHeight() + 0.5f;
     }
 
+    //ToDo: Fix
+    /*
     @Override
     public float getScale() {
         float i = getAgeScale(0.3f);
         if (getGender() == 1) i *= 0.8f;
         return i;
     }
+
+     */
 
 
     // ====================================
@@ -323,7 +337,7 @@ public class EntityRoyalRed extends WRDragonEntity {
     }
 
     public boolean canBreatheFire() {
-        return ageProgress() > 0.75f;
+        return getAgeProgress() > 0.75f;
     }
 
     public boolean isKnockedOut() {

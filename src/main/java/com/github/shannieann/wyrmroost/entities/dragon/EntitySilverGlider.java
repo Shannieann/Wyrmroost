@@ -1,3 +1,4 @@
+
 package com.github.shannieann.wyrmroost.entities.dragon;
 
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
@@ -327,6 +328,16 @@ public class EntitySilverGlider extends WRDragonEntity
     public Attribute[] getScaledAttributes()
     {
         return new Attribute[] {MAX_HEALTH};
+    }
+
+    @Override
+    public float ageProgressAmount() {
+        return 0;
+    }
+
+    @Override
+    public float initialBabyScale() {
+        return 0;
     }
 
     public static AttributeSupplier.Builder getAttributeSupplier()

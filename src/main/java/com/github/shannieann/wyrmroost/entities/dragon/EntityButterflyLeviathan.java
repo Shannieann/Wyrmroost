@@ -58,11 +58,12 @@ import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
-// 2023.02.04:
-// Walking on BFL.... test by attack another BFL? Perhaps getNavigation.isDone() on superclass...
-// Push around and swim? Disable when sitting? Confirm
-// Age!
+// 2023.03.03:
 // Assets: Child?
+// Test bounding box growing
+// Test model + texture update
+
+
 // Retest AttackGoal with new variant logic
 // Showcase!
 // Retest return to Water Goal
@@ -159,6 +160,16 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public int idleAnimationVariants(){
         return 1;
     }
+
+    @Override
+    public float ageProgressAmount(){
+        return 0.1F;
+    }
+
+    @Override
+    public float initialBabyScale() {
+        return 0.5F;
+    }
     //TODO:
     // Correct ALL Serializers: https://docs.minecraftforge.net/en/latest/networking/entities/
     // Do we actually need Serializers?
@@ -250,11 +261,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     @Override
     protected float getStandingEyeHeight(Pose poseIn, EntityDimensions size) {
         return size.height * 0.6f;
-    }
-
-    @Override
-    public float getScale() {
-        return getAgeScale(0.225f);
     }
 
     @Override

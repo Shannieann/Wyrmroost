@@ -109,6 +109,16 @@ public class EntityCanariWyvern extends WRDragonEntity
         super.defineSynchedData();
     }
 
+    @Override
+    public float ageProgressAmount() {
+        return 0;
+    }
+
+    @Override
+    public float initialBabyScale() {
+        return 0;
+    }
+
 
 
     /*
