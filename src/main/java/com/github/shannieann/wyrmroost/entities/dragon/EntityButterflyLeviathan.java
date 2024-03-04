@@ -9,6 +9,7 @@ import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.ground.WRGrou
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRWaterLeapGoal;
+import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
@@ -59,15 +60,13 @@ import java.util.Random;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
 // 2023.03.03:
-// Age code, test bounding box growing correctly by setting the update interval to something small and the age progress amount in SPAWN EGG or COMMAND to 0
-// Age code, test model scaling up
-// Assets: Child texture + model
-// Implement code to swap from child texture + model to adult texture + model
-
 // Retest AttackGoal with new animation variant logic
 // Test bounding boxes on attack goal by drawing
 // Update age logic in attack goal
 // Showcase!
+
+// Assets: Child texture + model
+// Implement code to swap from child texture + model to adult texture + model
 
 // Retest return to Water Goal
 // Retest Water Leap animations
@@ -124,7 +123,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     public static final int LAND_ATTACK_QUEUE_TIME_1 = 7;
     public static final int WATER_ATTACK_QUEUE_TIME_1 = 7;
-    public static final int LAND_ATTACK_QUEUE_TIME_2 = 7;
+    public static final int LAND_ATTACK_QUEUE_TIME_2 = 6;
     public static final int WATER_ATTACK_QUEUE_TIME_2 = 7;
     public final int idleAnimation1Time = 80;
 
@@ -151,7 +150,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         super.defineSynchedData();
         entityData.define(HAS_CONDUIT, false);
         entityData.define(LIGHTNING_COOLDOWN, 0);
-
     }
 
     public static AttributeSupplier.Builder getAttributeSupplier() {
@@ -187,18 +185,17 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     //TODO:
     // Correct ALL Serializers: https://docs.minecraftforge.net/en/latest/networking/entities/
     // Do we actually need Serializers?
-    /*
 
 
     public static final EntitySerializer<EntityButterflyLeviathan> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
-            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
+            .track(EntitySerializer.INT, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
 
     @Override
     public EntitySerializer<EntityButterflyLeviathan> getSerializer() {
         return SERIALIZER;
     }
-    */
+
 
     @Override
     public boolean checkSpawnRules(LevelAccessor pLevel, MobSpawnType pReason) {
