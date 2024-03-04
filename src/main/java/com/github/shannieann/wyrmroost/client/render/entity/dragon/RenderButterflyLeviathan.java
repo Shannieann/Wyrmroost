@@ -25,23 +25,23 @@ public class RenderButterflyLeviathan extends WRDragonRender<EntityButterflyLevi
         return RenderType.entityCutoutNoCull(texture);
     }
 
-    //TODO: REMOVE
-    @Override
-    protected int getBlockLightLevel(EntityButterflyLeviathan entityIn, BlockPos partialTicks) {
-        return 15;
-    }
-    //TODO: Scale upwards based on age
-
-
     @Override
     public void renderEarly(EntityButterflyLeviathan animatable, PoseStack stackIn, float ticks,
                             MultiBufferSource renderTypeBuffer, VertexConsumer vertexBuilder, int packedLightIn, int packedOverlayIn,
                             float red, float green, float blue, float partialTicks) {
         super.renderEarly(animatable, stackIn, ticks, renderTypeBuffer, vertexBuilder, packedLightIn, packedOverlayIn,
                 red, green, blue, partialTicks);
-        //ToDo: Test
+        //ToDO: Update all other creatures based on age progress, with the same or similar methods
+        //ToDo: Test model and texture swap
         float ageProgressScale = animatable.getScale();
+        /*
+        if (!animatable.isAdult()) {
+            //scale factor 1, for baby model
+        } else {
+            //scale factor 2, for adult model
+        }
+
+         */
         stackIn.scale(2.4F * ageProgressScale, 2.4F * ageProgressScale, 2.4F * ageProgressScale);
-        //ToDO: Update other creatures based on age progress
     }
 }

@@ -174,6 +174,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         return 1;
     }
 
+    //ToDo: Config
     @Override
     public float ageProgressAmount(){
         return 0.1F;
@@ -181,7 +182,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     @Override
     public float initialBabyScale() {
-        return 0.5F;
+        return 0.1F;
     }
     //TODO:
     // Correct ALL Serializers: https://docs.minecraftforge.net/en/latest/networking/entities/

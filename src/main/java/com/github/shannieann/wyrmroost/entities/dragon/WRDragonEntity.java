@@ -176,14 +176,24 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> EATING_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
+
+
     //TODO: What is this?
     private static final UUID SCALE_MOD_UUID = UUID.fromString("81a0addd-edad-47f1-9aa7-4d76774e055a");
 
+
+
     //TODO: The value below could also be set in an abstract method
-    private static final int AGE_UPDATE_INTERVAL = 1200;
-    //ToDo: Ensure we're setting this stuff correctly
+    //ToDo: Return to regular value of 1200
+    private static final int AGE_UPDATE_INTERVAL = 200;
+
+
+
+    //ToDo: Ensure we're setting this stuff correctly, test with idle variants and attack variants
     protected static int IDLE_ANIMATION_VARIANTS;
     protected static int ATTACK_ANIMATION_VARIANTS;
+
+
     //ToDo: SittING / SleepING animations are not implemented for BFL. Once we implement for land creatures, they should not interfere with sleep goal.
     protected static int SITTING_ANIMATION_TIME;
     protected static int SLEEPING_ANIMATION_TIME;
@@ -236,7 +246,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public <E extends IAnimatable> PlayState predicateAbility(AnimationEvent<E> event)
     {
-        //BoneType: invisible Bones
+        //BoneType: INVISIBLE Bones
+
         //All Ability Animations to be played are stored as DataParameters Strings
         //We begin by getting the animation that should be played.
         //This string may have been set as part of an AnimatedGoal that requires a one-shot ability animation to play..
@@ -264,8 +275,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return PlayState.CONTINUE;
     }
 
-    public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
-        //BoneType: regular Bones
+    public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event)
+    {
+        //BoneType: VISIBLE Bones
 
 
         /*
@@ -415,7 +427,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
         if (reason == MobSpawnType.SPAWN_EGG || reason == MobSpawnType.COMMAND) {
-            setAgeProgress(1);
+            //ToDo: revert to setAgeProgress(1)
+            setAgeProgress(0);
         } else {
             setAgeProgress(0);
         }
@@ -564,7 +577,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     //Method automatically refreshes the entity's dimensions, adjusting the bounding box size
     public void setAgeProgress(float ageProgress) {
-        entityData.set(AGE_PROGRESS,Math.max(ageProgress,1));
+        entityData.set(AGE_PROGRESS,Math.min(ageProgress,1));
         this.refreshDimensions();
     }
 
@@ -572,6 +585,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //Age progress starts at 0 and caps out at 1.
     //Hence, if ageProgressAmount = 0.1, it will take 10 minutes for an entity to fully grow
     public abstract float ageProgressAmount();
+
     //Initial scale for the baby entity...
     //This corresponds to the ratio babyEntitySize / adultEntitySize
     //For example, if initialBabyScale is 0.2, then the entity as a baby starts out at 20% of its adult size
@@ -882,7 +896,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         // UPDATE AGE:
         // The entity's is updated once every minute (AGE_UPDATE_INTERVAL == 1200)
         // Abstract method ageProgressAmount() sets the float amount by which to update age every minute
-
+        System.out.println("AGE PROGRESS: " +getAgeProgress());
+        System.out.println("AGE PROGRESS AMOUNT: " +ageProgressAmount());
         if (!isAdult() && tickCount % AGE_UPDATE_INTERVAL == 0) {
             setAgeProgress(getAgeProgress()+ageProgressAmount());
         }
