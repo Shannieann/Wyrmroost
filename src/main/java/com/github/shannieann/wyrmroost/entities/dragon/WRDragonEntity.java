@@ -141,15 +141,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
-    /*
+
     public static final EntitySerializer<WRDragonEntity> SERIALIZER = EntitySerializer.builder(b -> b
             .track(EntitySerializer.POS.optional(), "HomePos", t -> Optional.ofNullable(t.getHomePos()), (d, v) -> d.setHomePos(v.orElse(null)))
             .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
+            .track(EntitySerializer.INT, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
+            .track(EntitySerializer.FLOAT, "AgeProgress", WRDragonEntity::getAgeProgress, WRDragonEntity::setAgeProgress)
             .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::getSleeping, WRDragonEntity::setSleeping)
+            .track(EntitySerializer.BOOL, "Sitting", WRDragonEntity::getSitting, WRDragonEntity::setSitting)
             .track(EntitySerializer.INT, "BreedCount", WRDragonEntity::getBreedCount, WRDragonEntity::setBreedCount));
-
-
-     */
 
     public static final byte HEAL_PARTICLES_EVENT_ID = 8;
 
@@ -157,7 +157,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public final LazyOptional<DragonInventory> inventory;
     public final LerpedFloat sleepTimer = LerpedFloat.unit();
     public static final EntityDataAccessor<Float> AGE_PROGRESS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
-
     public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> YAW_UNLOCK = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
@@ -185,7 +184,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     //TODO: The value below could also be set in an abstract method
     //ToDo: Return to regular value of 1200
-    private static final int AGE_UPDATE_INTERVAL = 200;
+    private static final int AGE_UPDATE_INTERVAL = 10;
 
 
 
@@ -361,11 +360,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     protected void defineSynchedData()
     {
-        this.entityData.define(ANIMATION, "base");
-        this.entityData.define(ANIMATION_TYPE, 1);
-        this.entityData.define(ANIMATION_TIME, 0);
+        entityData.define(ANIMATION, "base");
+        entityData.define(ANIMATION_TYPE, 1);
+        entityData.define(ANIMATION_TIME, 0);
         entityData.define(HOME_POS, BlockPos.ZERO);
-        entityData.define(AGE_PROGRESS, 0F);
+        entityData.define(AGE_PROGRESS, 0f);
         entityData.define(BREACHING, false);
         entityData.define(YAW_UNLOCK, false);
         entityData.define(DRAGON_X_ROTATION, 0f);
@@ -383,6 +382,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void addAdditionalSaveData(CompoundTag nbt)
     {
         super.addAdditionalSaveData(nbt);
+        ((EntitySerializer<WRDragonEntity>) getSerializer()).deserialize(this, nbt);
+
         /*
         if (inventory.isPresent()) nbt.put("Inv", inventory.orElse(null).serializeNBT());
         ((EntitySerializer<WRDragonEntity>) getSerializer()).serialize(this, nbt);
@@ -394,9 +395,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void readAdditionalSaveData(CompoundTag nbt)
     {
         super.readAdditionalSaveData(nbt);
+        ((EntitySerializer<WRDragonEntity>) getSerializer()).deserialize(this, nbt);
+
         /*
         if (inventory.isPresent()) inventory.orElse(null).deserializeNBT(nbt.getCompound("Inv"));
-        ((EntitySerializer<WRDragonEntity>) getSerializer()).deserialize(this, nbt);
          */
     }
 
@@ -426,6 +428,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setVariant(determineVariant());
         }
 
+        /*
         if (reason == MobSpawnType.SPAWN_EGG || reason == MobSpawnType.COMMAND) {
             //ToDo: revert to setAgeProgress(1)
             setAgeProgress(0);
@@ -433,10 +436,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setAgeProgress(0);
         }
 
+         */
+
         return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
     }
 
     @Override
+    //ToDo, correct
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         if (key.equals(SLEEPING) || isUsingFlyingNavigator() || key.equals(TamableAnimal.DATA_FLAGS_ID)) {
             refreshDimensions();
@@ -453,6 +459,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 }
             }
         }
+        /*
+        if (key.equals(AGE_PROGRESS)) {
+            System.out.println("SYNCED AGE PROGRESS: "+entityData.get(AGE_PROGRESS));
+            setAgeProgress(entityData.get(AGE_PROGRESS));
+
+        }
+
+         */
         /*else if (key == AGE) {
             setAge(entityData.get(AGE));
             updateAgeProgress();
@@ -471,13 +485,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         else super.onSyncedDataUpdated(key);
 
     }
-
-
-    /*
     public EntitySerializer<? extends WRDragonEntity> getSerializer(){
         return SERIALIZER;
     }
-   */
+
 
 
     public String getAnimation()
@@ -576,7 +587,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     //Method automatically refreshes the entity's dimensions, adjusting the bounding box size
-    public void setAgeProgress(float ageProgress) {
+    public void setAgeProgress(float ageProgress)
+    {
         entityData.set(AGE_PROGRESS,Math.min(ageProgress,1));
         this.refreshDimensions();
     }
