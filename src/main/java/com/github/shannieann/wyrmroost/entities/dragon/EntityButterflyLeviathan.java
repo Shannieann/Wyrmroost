@@ -98,6 +98,10 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Config attributes
 // Tidy up EntityTypeRegistry
 
+//TODO: Others
+// Datagen
+// Registry, tidy
+
 public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity {
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> LIGHTNING_COOLDOWN = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.INT);
