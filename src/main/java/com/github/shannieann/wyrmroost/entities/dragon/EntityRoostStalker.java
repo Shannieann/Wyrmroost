@@ -7,9 +7,6 @@ import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DefendHomeGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DragonBreedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.MoveToHomeGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRFollowOwnerGoal;
-import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
-import com.github.shannieann.wyrmroost.items.book.action.BookActions;
-import com.github.shannieann.wyrmroost.network.packets.AddPassengerPacket;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import net.minecraft.core.BlockPos;
@@ -20,8 +17,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Container;
-import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -35,10 +30,7 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.Rabbit;
 import net.minecraft.world.entity.animal.Turtle;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -49,11 +41,8 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
-
-import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 
 public class EntityRoostStalker extends WRDragonEntity
 {

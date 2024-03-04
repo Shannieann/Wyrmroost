@@ -13,8 +13,6 @@ import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swim.WRSwimmingLookControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swim.WRSwimmingMoveControl;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.swim.WRSwimmingNavigator;
-import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggProperties;
-import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.items.DragonArmorItem;
 import com.github.shannieann.wyrmroost.items.DragonEggItem;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
@@ -29,7 +27,6 @@ import com.mojang.math.Vector3f;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -140,16 +137,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
-
-
-    public static final EntitySerializer<WRDragonEntity> SERIALIZER = EntitySerializer.builder(b -> b
-            .track(EntitySerializer.POS.optional(), "HomePos", t -> Optional.ofNullable(t.getHomePos()), (d, v) -> d.setHomePos(v.orElse(null)))
-            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
-            .track(EntitySerializer.INT, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
-            .track(EntitySerializer.FLOAT, "AgeProgress", WRDragonEntity::getAgeProgress, WRDragonEntity::setAgeProgress)
-            .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::getSleeping, WRDragonEntity::setSleeping)
-            .track(EntitySerializer.BOOL, "Sitting", WRDragonEntity::getSitting, WRDragonEntity::setSitting)
-            .track(EntitySerializer.INT, "BreedCount", WRDragonEntity::getBreedCount, WRDragonEntity::setBreedCount));
 
     public static final byte HEAL_PARTICLES_EVENT_ID = 8;
 
@@ -363,17 +350,26 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(ANIMATION, "base");
         entityData.define(ANIMATION_TYPE, 1);
         entityData.define(ANIMATION_TIME, 0);
-        entityData.define(HOME_POS, BlockPos.ZERO);
-        entityData.define(AGE_PROGRESS, 0f);
+
         entityData.define(BREACHING, false);
         entityData.define(YAW_UNLOCK, false);
-        entityData.define(DRAGON_X_ROTATION, 0f);
+
         entityData.define(GENDER, 0);
+        entityData.define(VARIANT, 0);
+
         entityData.define(SLEEPING, false);
         entityData.define(SITTING, false);
-        entityData.define(VARIANT, 0);
+
         entityData.define(ARMOR, ItemStack.EMPTY);
+
         entityData.define(EATING_COOLDOWN, 0);
+
+
+        entityData.define(HOME_POS, BlockPos.ZERO);
+        entityData.define(AGE_PROGRESS, 0f);
+
+        entityData.define(DRAGON_X_ROTATION, 0f);
+
         super.defineSynchedData();
     }
 
@@ -381,8 +377,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     public void addAdditionalSaveData(CompoundTag nbt)
     {
+        //ToDo: Add missing SaveData
         super.addAdditionalSaveData(nbt);
-        ((EntitySerializer<WRDragonEntity>) getSerializer()).deserialize(this, nbt);
+        nbt.putInt("Gender",getGender());
+        nbt.putInt("Variant",getVariant());
+
+        nbt.putBoolean("Sleeping",getSleeping());
+        nbt.putBoolean("Sitting",getSitting());
+
+        nbt.putInt("Eating Cooldown",getEatingCooldown());
+
+        nbt.putFloat("Age Progress",getAgeProgress());
 
         /*
         if (inventory.isPresent()) nbt.put("Inv", inventory.orElse(null).serializeNBT());
@@ -394,9 +399,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @SuppressWarnings({"unchecked", "ConstantConditions"})
     public void readAdditionalSaveData(CompoundTag nbt)
     {
-        super.readAdditionalSaveData(nbt);
-        ((EntitySerializer<WRDragonEntity>) getSerializer()).deserialize(this, nbt);
+        //ToDo: Read missing SaveData
 
+        super.readAdditionalSaveData(nbt);
+        setGender(nbt.getInt("Gender"));
+        setVariant(nbt.getInt("Variant"));
+
+        setSleeping(nbt.getBoolean("Sleeping"));
+        setSitting(nbt.getBoolean("Sitting"));
+
+        setEatingCooldown(nbt.getInt("Eating Cooldown"));
+
+        setAgeProgress(nbt.getFloat("Age Progress"));
         /*
         if (inventory.isPresent()) inventory.orElse(null).deserializeNBT(nbt.getCompound("Inv"));
          */
@@ -485,11 +499,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         else super.onSyncedDataUpdated(key);
 
     }
-    public EntitySerializer<? extends WRDragonEntity> getSerializer(){
-        return SERIALIZER;
-    }
-
-
 
     public String getAnimation()
     {

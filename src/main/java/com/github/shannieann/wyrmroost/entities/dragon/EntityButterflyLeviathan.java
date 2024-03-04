@@ -9,7 +9,6 @@ import com.github.shannieann.wyrmroost.entities.dragon.ai.movement.ground.WRGrou
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.aquatics.WRWaterLeapGoal;
-import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
 import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
@@ -182,21 +181,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public float initialBabyScale() {
         return 0.1F;
     }
-    //TODO:
-    // Correct ALL Serializers: https://docs.minecraftforge.net/en/latest/networking/entities/
-    // Do we actually need Serializers?
-
-
-    public static final EntitySerializer<EntityButterflyLeviathan> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.INT, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant)
-            .track(EntitySerializer.INT, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
-
-    @Override
-    public EntitySerializer<EntityButterflyLeviathan> getSerializer() {
-        return SERIALIZER;
-    }
-
-
     @Override
     public boolean checkSpawnRules(LevelAccessor pLevel, MobSpawnType pReason) {
         return true;
