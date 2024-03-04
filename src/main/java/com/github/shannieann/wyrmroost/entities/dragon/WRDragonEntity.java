@@ -267,6 +267,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
         //BoneType: regular Bones
 
+
         /*
         //Basic Locomotion: Death
         if ((this.dead || this.getHealth() < 0.01 || this.isDeadOrDying())) {
@@ -293,7 +294,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             return PlayState.CONTINUE;
         }
-        if (this.getDeltaMovement().length() !=0 && !this.isAggressive() && this.getNavigation().isDone()) {
+        if (this.getDeltaMovement().length() !=0 && !this.isAggressive() && !this.getNavigation().isDone()) {
             switch (navigationType) {
                 case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
                 case FLYING ->
@@ -830,6 +831,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void tick() {
         super.tick();
+        System.out.println(this.getAnimation());
         setEatingCooldown(Math.max(getEatingCooldown()-1,0));
 
         if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0); // Shouldn't be rotated on ground or water
