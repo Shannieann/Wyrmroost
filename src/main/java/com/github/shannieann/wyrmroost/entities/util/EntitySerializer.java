@@ -18,6 +18,7 @@ public class EntitySerializer<E extends Entity>
 {
     public static final NBTBridge<Boolean> BOOL = bridge((key, nbt, value) -> nbt.putBoolean(key, value), (key, nbt) -> nbt.getBoolean(key));
     public static final NBTBridge<Integer> INT = bridge((key, nbt, value) -> nbt.putInt(key, value), (key, nbt) -> nbt.getInt(key));
+    public static final NBTBridge<Float> FLOAT = bridge((key, nbt, value) -> nbt.putFloat(key, value), (key, nbt) -> nbt.getFloat(key));
     public static final NBTBridge<String > STRING = bridge((key, nbt, value) -> nbt.putString(key, value), (key, nbt) -> nbt.getString(key));
     public static final NBTBridge<CompoundTag> NBT = bridge((key, nbt, value) -> nbt.put(key, value), (key, nbt) -> nbt.getCompound(key));
     public static final NBTBridge<BlockPos> POS = bridge((key, nbt, value) -> nbt.putLong(key, value.asLong()), (key, nbt) -> BlockPos.of(nbt.getLong(key)));
