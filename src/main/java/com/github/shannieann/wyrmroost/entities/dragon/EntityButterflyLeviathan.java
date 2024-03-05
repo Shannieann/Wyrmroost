@@ -82,7 +82,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // BFLSleepGoal - discuss animations (going to sleep)
 
 //ToDo: Age
-// Remove debug stuff
 // Assets: Child texture + model
 // Implement code to swap from child texture + model to adult texture + model
 

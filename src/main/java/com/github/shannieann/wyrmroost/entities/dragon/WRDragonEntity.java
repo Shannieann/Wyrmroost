@@ -622,44 +622,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return initialBabyScale() + ((1 - initialBabyScale()) * getAgeProgress());
     }
 
-        /*
-    @Override
-    public boolean isBaby()
-    {
-        return !isAdult();
-    }
-
-     */
-
-    /*
-    @Override
-    public void setBaby(boolean baby)
-    {
-        setAge(baby? DragonEggProperties.get(getType()).getGrowthTime() : 0);
-        entityData.set(AGE, this.age);
-    }
-
-    /*
-
-    @Override
-    public int getAge()
-    {
-        return age;
-    }
-
-     */
-
-
-    /*
-    @Override
-    public void ageUp(int age, boolean forced)
-    {
-        super.ageUp(age, forced);
-        entityData.set(AGE, this.age);
-    }
-
-     */
-
     // ====================================
     //      A.2) Entity Data: ARMOR
     // ====================================
@@ -910,7 +872,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //TODO: Is this necessary?
         //Won't targets get cleared automatically elsewhere?
         //Perhaps we only need to check for player not creative / spectator
-        // todo figure out a better target system?
         LivingEntity target = getTarget();
         if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
             setTarget(null);
@@ -919,8 +880,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         // UPDATE AGE:
         // The entity's is updated once every minute (AGE_UPDATE_INTERVAL == 1200)
         // Abstract method ageProgressAmount() sets the float amount by which to update age every minute
-        System.out.println("AGE PROGRESS: " +getAgeProgress());
-        System.out.println("AGE PROGRESS AMOUNT: " +ageProgressAmount());
         if (!isAdult() && tickCount % AGE_UPDATE_INTERVAL == 0) {
             setAgeProgress(getAgeProgress()+ageProgressAmount());
         }
