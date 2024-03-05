@@ -821,12 +821,12 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     // The attack variant defines the animation variant which defines the time when it makes sense to perform the attack...
                     if (elapsedTime == attackQueueTime) {
                         //Perform the corresponding melee attack...
-                        aabb1 = getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67);
-                        aabb2 = getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(4.0f)).inflate(0.67);
-                        aabb3 = getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(6.0f)).inflate(0.67);
-                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67), 40);
-                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(4.0f)).inflate(0.67), 40);
-                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(6.0f)).inflate(0.67), 40);
+                        aabb1 = getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(1.0F)).inflate(1.2);
+                        aabb2 = getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(5.0F)).inflate(0.67);
+                        aabb3 = getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(7.0F)).inflate(0.67);
+                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(1.0F)).inflate(1.2), 40);
+                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(5.0F)).inflate(0.67), 40);
+                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(7.0F)).inflate(0.67), 40);
                         meleeAttackQueued = false;
                     }
                 }
