@@ -131,9 +131,9 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public static final int LAND_ATTACK_QUEUE_TIME_2 = 6;
     public static final int WATER_ATTACK_QUEUE_TIME_2 = 7;
     public final int idleAnimation1Time = 80;
-    public AABB aabb1;
-    public AABB aabb2;
-    public AABB aabb3;
+    public static AABB aabb1;
+    public static AABB aabb2;
+    public static AABB aabb3;
 
 
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {

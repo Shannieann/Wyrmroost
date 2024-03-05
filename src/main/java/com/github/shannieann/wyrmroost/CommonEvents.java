@@ -12,8 +12,10 @@ import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.github.shannieann.wyrmroost.world.WREntitySpawning;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
@@ -32,6 +34,7 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.model.pipeline.VertexBufferConsumer;
 import net.minecraftforge.common.MinecraftForge;
@@ -54,6 +57,8 @@ import java.util.List;
  * Manually add listeners
  */
 public class CommonEvents {
+
+
     public static void init() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
@@ -185,21 +190,33 @@ public class CommonEvents {
         RenderLevelStageEvent.Stage stage = event.getStage();
         if (stage == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
             Minecraft mc = Minecraft.getInstance();
+            Camera camera = mc.gameRenderer.getMainCamera();
+            Vec3 viewPosition = camera.getPosition();
+            PoseStack matrix_stack = event.getPoseStack();
+            matrix_stack.pushPose();
+            matrix_stack.translate(-viewPosition.x, -viewPosition.y, -viewPosition.z);
+
             List<EntityButterflyLeviathan> entityList = mc.level.getEntitiesOfClass(EntityButterflyLeviathan.class, new AABB(-50, -50, -50, 50, 50, 50));
+            List<Player> playerList = mc.level.getEntitiesOfClass(Player.class, new AABB(-50, -50, -50, 50, 50, 50));
+
+            if (!playerList.isEmpty()) {
+                playerList.get(0);
+            }
             if (!entityList.isEmpty()) {
                 if (entityList.get(0).aabb1 != null) {
-                    LevelRenderer.renderLineBox(event.getPoseStack(), mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb1, 1, 0, 0, 1);
-
+                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb1, 1, 0, 0, 1.0F);
+                    System.out.print("RENDERED AABB");
                 }
                 if (entityList.get(0).aabb2 != null) {
-                    LevelRenderer.renderLineBox(event.getPoseStack(), mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb2, 0, 1, 0, 1);
+                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb2, 0, 1, 0, 1.0F);
 
                 }
                 if (entityList.get(0).aabb3 != null) {
-                    LevelRenderer.renderLineBox(event.getPoseStack(), mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb3, 1, 0, 1, 1);
+                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb3, 1, 0, 1, 1.0F);
                 }
+                matrix_stack.popPose();
+                mc.renderBuffers().bufferSource().endBatch();
             }
         }
-
     }
 }
