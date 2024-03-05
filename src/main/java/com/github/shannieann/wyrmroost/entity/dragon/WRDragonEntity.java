@@ -1271,6 +1271,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
     }
 
+
     // Will be used for BFL, etc.
     protected void handleWaterRiding(float speed, Vec3 vec3d,  LivingEntity livingentity){
         double moveY = vec3d.y;
@@ -1284,6 +1285,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         vec3d = new Vec3(livingentity.xxa, moveY, livingentity.zza);
         super.travel(vec3d);
     }
+
+
 
     // TODO dragon flapping wings sound
     // I feel like this is super messy rn, but I just wanted to get this working. TODO clean this up
@@ -1737,6 +1740,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 setEatingCooldown(500);
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
+        }
+
+        if (isOwnedBy(player) && getPassengers().isEmpty() && canAddPassenger(player)) {
+          player.startRiding(this);
+        }
+
+
+        if (!isOwnedBy(player) && canBeControlledByRider() && canAddPassenger(player)) {
+            player.startRiding(this);
         }
 
         if (isOwnedBy(player) && player.isShiftKeyDown()) {

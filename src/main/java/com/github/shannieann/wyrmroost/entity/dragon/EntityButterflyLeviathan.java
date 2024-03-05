@@ -448,6 +448,9 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 if (!isJumpingOutOfWater()) xRot = entity.xRot * 0.5f;
                 handleWaterRiding(getTravelSpeed(), vec3d, entity);
             }
+
+
+            //ToDo: Remove this
             // add motion if were coming out of water fast; jump out of water like a dolphin
             if (getDeltaMovement().y > 0.25 && level.getBlockState(new BlockPos(getEyePosition(1)).above()).getFluidState().isEmpty())
                 setDeltaMovement(getDeltaMovement().multiply(1.2, 1.5f, 1.2d));
@@ -482,6 +485,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 : (float) getAttributeValue(MOVEMENT_SPEED);
         //@formatter:on
     }
+
 
     @Override
     public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event) {
