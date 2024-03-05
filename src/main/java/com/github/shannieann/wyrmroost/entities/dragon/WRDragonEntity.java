@@ -177,7 +177,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
 
-    //ToDo: Ensure we're setting this stuff correctly, test with idle variants and attack variants
     protected static int IDLE_ANIMATION_VARIANTS;
     protected static int ATTACK_ANIMATION_VARIANTS;
 
@@ -338,9 +337,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public abstract int idleAnimationVariants();
 
-    //ToDo: Is this needed?
-    protected abstract int attackAnimationVariants();
-
     // ====================================
     //      A) Entity Data
     // ====================================
@@ -444,15 +440,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setVariant(determineVariant());
         }
 
-        /*
+
         if (reason == MobSpawnType.SPAWN_EGG || reason == MobSpawnType.COMMAND) {
-            //ToDo: revert to setAgeProgress(1)
-            setAgeProgress(0);
+            setAgeProgress(1);
         } else {
-            setAgeProgress(0);
+            setAgeProgress(1);
         }
 
-         */
+
 
         return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
     }

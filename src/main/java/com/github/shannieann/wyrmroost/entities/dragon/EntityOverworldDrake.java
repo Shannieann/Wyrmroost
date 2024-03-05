@@ -60,11 +60,6 @@ public class EntityOverworldDrake extends WRDragonEntity
     public static final int CHEST_SLOT = 2;
 
     @Override
-    public int attackAnimationVariants(){
-        return 2;
-    }
-
-    @Override
     public int idleAnimationVariants(){
         return 3;
     }

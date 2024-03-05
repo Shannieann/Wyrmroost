@@ -48,10 +48,6 @@ public class EntityRoostStalker extends WRDragonEntity
 {
     public void tameLogic (Player tamer, ItemStack stack) {
     };
-    @Override
-    public int attackAnimationVariants(){
-        return 0;
-    }
 
     @Override
     public int idleAnimationVariants(){

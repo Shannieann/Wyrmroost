@@ -59,10 +59,6 @@ public class EntityRoyalRed extends WRDragonEntity {
         SITTING_ANIMATION_TIME = 60;
         SLEEPING_ANIMATION_TIME = 60;
     }
-    @Override
-    public int attackAnimationVariants(){
-        return 0;
-    }
 
     @Override
     public int idleAnimationVariants(){

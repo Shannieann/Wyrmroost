@@ -48,11 +48,6 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
     private static final EntityDataAccessor<Boolean> BURROWED = SynchedEntityData.defineId(EntityLesserDesertwyrm.class, EntityDataSerializers.BOOLEAN);
 
     @Override
-    public int attackAnimationVariants(){
-        return 0;
-    }
-
-    @Override
     public int idleAnimationVariants(){
         return 0;
     }

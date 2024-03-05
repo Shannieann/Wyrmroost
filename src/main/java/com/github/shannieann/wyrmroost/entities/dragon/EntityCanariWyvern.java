@@ -40,11 +40,6 @@ public class EntityCanariWyvern extends WRDragonEntity
      */
 
     @Override
-    public int attackAnimationVariants(){
-        return 1;
-    }
-
-    @Override
     public int idleAnimationVariants(){
         return 1;
     }

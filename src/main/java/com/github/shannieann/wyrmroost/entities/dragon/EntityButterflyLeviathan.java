@@ -68,7 +68,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //2024.05.03
 //ToDo: Movement
-// Retest return to Water Goal
 // Retest Water Leap animations
 // Retest Water Sleep animations
 // Showcase!
@@ -173,11 +172,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, 14)
                 .add(FOLLOW_RANGE, 50);
-    }
-
-    @Override
-    public int attackAnimationVariants(){
-        return 2;
     }
 
     @Override

@@ -74,7 +74,7 @@ public class CommonEvents {
         forgeBus.addListener(CommonEvents::loadLoot);
         forgeBus.addListener(CommonEvents::onBiomeLoading);
         forgeBus.addListener(CommonEvents::onEntityMountEvent);
-        forgeBus.addListener(CommonEvents::onRenderWorldLast);
+        //forgeBus.addListener(CommonEvents::onRenderWorldLast);
 
         //forgeBus.addListener(VillagerHelper::addWandererTrades);
         //forgeBus.addListener(CommonEvents::preCropGrowth);
@@ -186,7 +186,9 @@ public class CommonEvents {
         }
     }
 
+    /*
     public static void onRenderWorldLast(RenderLevelStageEvent event) {
+
         RenderLevelStageEvent.Stage stage = event.getStage();
         if (stage == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
             Minecraft mc = Minecraft.getInstance();
@@ -208,4 +210,6 @@ public class CommonEvents {
             }
         }
     }
+
+         */
 }
