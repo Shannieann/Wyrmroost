@@ -54,7 +54,9 @@ import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.extensions.IForgeEntity;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
@@ -131,10 +133,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public static final int LAND_ATTACK_QUEUE_TIME_2 = 6;
     public static final int WATER_ATTACK_QUEUE_TIME_2 = 7;
     public final int idleAnimation1Time = 80;
-    public static AABB aabb1;
-    public static AABB aabb2;
-    public static AABB aabb3;
-
 
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
         super(entityType, level);
@@ -820,13 +818,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     // Note: the time for the attack to be performed depends on the attack variant being used
                     // The attack variant defines the animation variant which defines the time when it makes sense to perform the attack...
                     if (elapsedTime == attackQueueTime) {
+                        List<AABB> attackBoxes = generateAttackBoxes();
+                        if (!attackBoxes.isEmpty()) {
+                            for (int i = 0; i <attackBoxes.size(); i++) {
+                                attackInBox(attackBoxes.get(i));
+                            }
+                        }
                         //Perform the corresponding melee attack...
-                        aabb1 = getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(1.0F)).inflate(1.2);
-                        aabb2 = getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(5.0F)).inflate(0.67);
-                        aabb3 = getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(7.0F)).inflate(0.67);
-                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(1.0F)).inflate(1.2), 40);
-                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(5.0F)).inflate(0.67), 40);
-                        attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(7.0F)).inflate(0.67), 40);
                         meleeAttackQueued = false;
                     }
                 }
@@ -992,7 +990,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         public void queueMeleeAttack() {
             //Randomly define an attack variant...
-            //ToDo: Confirm with new variant logic
             attackVariant = 1+getRandom().nextInt(ATTACK_ANIMATION_VARIANTS);
             //Queue a melee attack, ensuring it happens once we reach the proper time...
             meleeAttackQueued = true;
@@ -1020,6 +1017,14 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     super.start(ATTACK_ANIMATION+navVariant+attackVariant,2,time);
                 }
             }
+        }
+
+        public List<AABB> generateAttackBoxes(){
+            List<AABB> attackBoxList = new ArrayList<>();
+            attackBoxList.add(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(1.0F)).inflate(1.2));
+            attackBoxList.add(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(5.0F)).inflate(0.67));
+            attackBoxList.add(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(7.0F)).inflate(0.67));
+            return attackBoxList;
         }
     }
 }
