@@ -200,8 +200,8 @@ public class CommonEvents {
                 for (int i = 0; i<entityList.size(); i++) {
                     List<AABB> attackBoxes = entityList.get(i).generateAttackBoxes();
                     LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(0), 1,0,0,1);
-                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(1), 1,0,0,1);
-                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(2), 1,0,0,1);
+                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(1), 0,1,0,1);
+                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(2), 0,0,1,1);
                 }
                 matrix_stack.popPose();
                 mc.renderBuffers().bufferSource().endBatch();
