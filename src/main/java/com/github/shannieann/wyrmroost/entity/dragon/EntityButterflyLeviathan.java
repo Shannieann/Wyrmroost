@@ -11,7 +11,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRWaterLe
 import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
-import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -312,9 +312,9 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                             conduitPos.x,
                             conduitPos.y + 2.25,
                             conduitPos.z,
-                            Mafs.nextDouble(getRandom()) * 1.5f,
-                            Mafs.nextDouble(getRandom()),
-                            Mafs.nextDouble(getRandom()) * 1.5f);
+                            WRMathsUtility.nextDouble(getRandom()) * 1.5f,
+                            WRMathsUtility.nextDouble(getRandom()),
+                            WRMathsUtility.nextDouble(getRandom()) * 1.5f);
             }
 
             // nearby entities: if evil, kill, if not, give reallly cool potion effect
@@ -415,7 +415,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         // If tamed, lightning must be commanded...
         // Lightning attacks can be performed if either in water, rain or bubble...
         //Or if there's a lightning rod relatively close to the BFL
-        if (getLightningAttackCooldown() <= 0 && !isHatchling() && !isTame()) {
+        if (getLightningAttackCooldown() <= 0 && !isHatchling()) {
             if (isInWaterRainOrBubble()) {
                 return true;
             }
@@ -448,7 +448,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 if (!isJumpingOutOfWater()) xRot = entity.xRot * 0.5f;
                 handleWaterRiding(getTravelSpeed(), vec3d, entity);
             }
-
 
             //ToDo: Remove this
             // add motion if were coming out of water fast; jump out of water like a dolphin
@@ -561,7 +560,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         if (pressed /*&& noAnimations()*/) {
             if (key == KeybindHandler.MOUNT_KEY) /*setAnimation(BITE_ANIMATION)*/ ;
             else if (key == KeybindHandler.ALT_MOUNT_KEY && !level.isClientSide && tamedLightningCheck()) {
-                EntityHitResult ertr = Mafs.clipEntities(getControllingPlayer(), 40, e -> e instanceof LivingEntity && e != this);
+                EntityHitResult ertr = WRMathsUtility.clipEntities(getControllingPlayer(), 40, e -> e instanceof LivingEntity && e != this);
                 if (ertr != null && wantsToAttack((LivingEntity) ertr.getEntity(), getOwner())) {
                     setTarget((LivingEntity) ertr.getEntity());
                     /*AnimationPacket.send(this, LIGHTNING_ANIMATION);*/
@@ -656,9 +655,9 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     @Override
     public void doSpecialEffects() {
         if (getVariant() == -1 && tickCount % 25 == 0) {
-            double x = getX() + (Mafs.nextDouble(getRandom()) * getBbWidth() + 1);
+            double x = getX() + (WRMathsUtility.nextDouble(getRandom()) * getBbWidth() + 1);
             double y = getY() + (getRandom().nextDouble() * getBbHeight() + 1);
-            double z = getZ() + (Mafs.nextDouble(getRandom()) * getBbWidth() + 1);
+            double z = getZ() + (WRMathsUtility.nextDouble(getRandom()) * getBbWidth() + 1);
             level.addParticle(ParticleTypes.END_ROD, x, y, z, 0, 0.05f, 0);
         }
     }
@@ -952,7 +951,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
                 //Decide which attack to use: LightningAttack or MeleeAttack.
 
-                if (canPerformLightningAttack()) {
+                //Do not randomly use lightning attacks if tamed
+                if (!isTame() && canPerformLightningAttack()) {
                     queueLightningAttack();
                 }
                 else if (canPerformMeleeAttack()) {

@@ -19,7 +19,7 @@ import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRKeybind;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
-import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Vector3d;
@@ -1552,7 +1552,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 vec3d = vec3d.scale(1.5);
                 setNavigator(NavigationType.FLYING);
             }
-            Vec3 pos = Mafs.getYawVec(player.yBodyRot, vec3d.x, vec3d.z).add(player.getX(), player.getY() + vec3d.y, player.getZ());
+            Vec3 pos = WRMathsUtility.rotateXZVectorByYawAngle(player.yBodyRot, vec3d.x, vec3d.z).add(player.getX(), player.getY() + vec3d.y, player.getZ());
             setPos(pos.x, pos.y, pos.z);
         }
     }
@@ -1575,13 +1575,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void positionRider(Entity passenger)
     {
         Vec3 offset = getPassengerPosOffset(passenger, getPassengers().indexOf(passenger));
-        System.out.println("X offset: " +offset.x +" Y offset: " + offset.y + "Z offset: " + offset.z);
-        Vec3 pos = Mafs.getYawVec(yBodyRot, offset.x, offset.z).add(getX(), getY() + offset.y + passenger.getMyRidingOffset(), getZ());
+        //We have an offset, for the passenger, from the entity it is riding...
+        //i.e: A vector that points from the entity to the passenger...
+        //However, we do not position the passenger relative to the entity, we position them relative to an absolute coordinate system...
+        //Hence, we must turn this offset vector, relative to the entity, into one relative to Minecraft's coordinates...
+        //To do this, we apply a transformation to the offset vector...
+        Vec3 pos = WRMathsUtility.rotateXZVectorByYawAngle(yBodyRot, offset.x, offset.z).add(getX(), getY() + offset.y + passenger.getMyRidingOffset(), getZ());
         passenger.setPos(pos.x, pos.y, pos.z);
     }
 
     public Vec3 getPassengerPosOffset(Entity entity, int index)
     {
+        //Note: Method will, probably, be Overriden in child classes
         return new Vec3(0, getPassengersRidingOffset(), 0);
     }
 
@@ -1628,11 +1633,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         return false;
     }
-
-    /**
-     * which tl;dr does not update any AI including Goal Selectors, Pathfinding, Moving, etc.
-     * Do not perform any AI actions while: Not Sleeping; not being controlled, etc.
-     */
+    
     //Do not perform AI actions while entity is being ridden
     // Do *NOT* check for Sleeping, as this is now a Goal and entity's AI must still work while asleep
     @Override
@@ -1980,9 +1981,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         {
             for (int i = 0; i < getBbWidth() * getBbHeight(); ++i)
             {
-                double x = getX() + Mafs.nextDouble(getRandom()) * getBbWidth() + 0.4d;
+                double x = getX() + WRMathsUtility.nextDouble(getRandom()) * getBbWidth() + 0.4d;
                 double y = getY() + getRandom().nextDouble() * getBbHeight();
-                double z = getZ() + Mafs.nextDouble(getRandom()) * getBbWidth() + 0.4d;
+                double z = getZ() + WRMathsUtility.nextDouble(getRandom()) * getBbWidth() + 0.4d;
                 level.addParticle(ParticleTypes.HAPPY_VILLAGER, x, y, z, 0, 0, 0);
             }
         }
