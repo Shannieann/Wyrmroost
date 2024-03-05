@@ -36,6 +36,7 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -61,6 +62,7 @@ import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
@@ -69,10 +71,10 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Retest return to Water Goal
 // Retest Water Leap animations
 // Retest Water Sleep animations
-// Retest water lightning strike animation
 // Showcase!
 
 //TODO: Attack:
+// Test
 // Showcase attack goal!
 
 //ToDo: Other fixes:
@@ -80,6 +82,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // BFLSitGoal - discuss animations (sitting down)
 // BFLSleepGoal - test logic
 // BFLSleepGoal - discuss animations (going to sleep)
+// Retest water lightning strike animation
 
 //ToDo: Age
 // Assets: Child texture + model
@@ -597,10 +600,10 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             return;
         }
 
-        if (((this.isOnGround() && !this.isUnderWater() && getLightningAttackCooldown() > 50) || tamer.isCreative()) && isFood(stack) && getEatingCooldown() <= 0) {
+        if (((this.isOnGround() && !this.isUnderWater() && getLightningAttackCooldown() > 50) || tamer.isCreative() || this.isHatchling()) && isFood(stack) && getEatingCooldown() <= 0) {
             eat(this.level, stack);
             setEatingCooldown(40);
-            if (tamer.isCreative()) {
+            if (tamer.isCreative() || this.isHatchling())  {
                 super.attemptTame(1.0f, tamer, stack);
             } else {
                 super.attemptTame(0.2f, tamer, stack);
@@ -714,6 +717,15 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         //Todo: Exclude other BFLs, exclude fish
     }
 
+    public Predicate<LivingEntity> aquaticRandomTargetPredicate = entity -> {
+        //Avoid targeting fish, to avoid creating lag
+        if (entity instanceof AbstractFish || entity instanceof EntityButterflyLeviathan) {
+            return false;
+        }
+        //If we are not in water, we can target entities in water and out of water...
+        //If we are in water, only target entities in water...
+        return (!this.isInWater() || entity.isInWater());
+    };
 
     public class BFLAttackGoal extends AnimatedGoal {
         private int navRecalculationTicks;
@@ -753,9 +765,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             }
             target = getTarget();
             if (target != null && target != entity.getOwner()) {
-                if (!isTame()) {
-                    return !(target instanceof EntityButterflyLeviathan);
-                }
                 return true;
             }
             return false;

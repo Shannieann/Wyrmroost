@@ -1067,16 +1067,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return super.isInvulnerableTo(source);
     }
 
-    public Predicate<LivingEntity> aquaticRandomTargetPredicate = entity -> {
-        //Avoid targeting fish, to avoid creating lag
-        if (entity instanceof AbstractFish) {
-            return false;
-        }
-        //If we are not in water, we can target entities in water and out of water...
-        //If we are in water, only target entities in water...
-        return (!this.isInWater() || entity.isInWater());
-    };
-
     // ====================================
     //      C) Navigation and Control
     // ====================================
