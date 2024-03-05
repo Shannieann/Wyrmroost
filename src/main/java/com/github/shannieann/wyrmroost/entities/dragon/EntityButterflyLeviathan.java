@@ -60,35 +60,39 @@ import java.util.List;
 import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
-//TODO: Pending BFL Fixes:
 
-// 2023.03.03:
-// Retest AttackGoal with new animation variant logic
-// Test bounding boxes on attack goal by drawing
-// Update age logic in attack goal
-// Showcase!
-
-// Assets: Child texture + model
-// Implement code to swap from child texture + model to adult texture + model
-
+//2024.05.03
+//ToDo: Movement
 // Retest return to Water Goal
 // Retest Water Leap animations
 // Retest Water Sleep animations
 // Retest water lightning strike animation
 // Showcase!
 
+//TODO: Attack:
+// Update age logic in attack goal
+// Showcase attack goal!
+
+//ToDo: Other fixes:
+// BFLSitGoal - test logic
+// BFLSitGoal - discuss animations (sitting down)
+// BFLSleepGoal - test logic
+// BFLSleepGoal - discuss animations (going to sleep)
+
+//ToDo: Age
+// Remove debug stuff
+// Assets: Child texture + model
+// Implement code to swap from child texture + model to adult texture + model
+
+//ToDo: Taming
 // Taming Logic, confirm no debug code is leftover...
-
-// Assets: BFL sitting?
-// BFLSitGoal, test once again
-
 // Tamed - defendOwnerGoal
 // Tamed - attack logic when tamed
 
+//ToDo: Other tamed stuff
 // Breeding...
 // Eggs...
 // Conduit
-
 // Ride logic + rewrite key-binds
 // DragonStaff: Home, follow, defend...
 
