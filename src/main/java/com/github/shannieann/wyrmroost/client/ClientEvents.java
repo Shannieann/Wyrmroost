@@ -10,7 +10,7 @@ import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.S
 import com.github.shannieann.wyrmroost.client.render.entity.effect.RenderLightningNova;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.GeodeTippedArrowRenderer;
-import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.registry.*;
 import com.github.shannieann.wyrmroost.util.ModUtils;
