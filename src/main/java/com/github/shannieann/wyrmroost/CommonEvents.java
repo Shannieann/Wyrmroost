@@ -195,24 +195,13 @@ public class CommonEvents {
             PoseStack matrix_stack = event.getPoseStack();
             matrix_stack.pushPose();
             matrix_stack.translate(-viewPosition.x, -viewPosition.y, -viewPosition.z);
-
-            List<EntityButterflyLeviathan> entityList = mc.level.getEntitiesOfClass(EntityButterflyLeviathan.class, new AABB(-50, -50, -50, 50, 50, 50));
-            List<Player> playerList = mc.level.getEntitiesOfClass(Player.class, new AABB(-50, -50, -50, 50, 50, 50));
-
-            if (!playerList.isEmpty()) {
-                playerList.get(0);
-            }
+            List<EntityButterflyLeviathan> entityList = mc.level.getEntitiesOfClass(EntityButterflyLeviathan.class, new AABB(mc.player.getOnPos()).inflate(20));
             if (!entityList.isEmpty()) {
-                if (entityList.get(0).aabb1 != null) {
-                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb1, 1, 0, 0, 1.0F);
-                    System.out.print("RENDERED AABB");
-                }
-                if (entityList.get(0).aabb2 != null) {
-                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb2, 0, 1, 0, 1.0F);
-
-                }
-                if (entityList.get(0).aabb3 != null) {
-                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb3, 1, 0, 1, 1.0F);
+                for (int i = 0; i<entityList.size(); i++) {
+                    List<AABB> attackBoxes = entityList.get(i).generateAttackBoxes();
+                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(0), 1,0,0,1);
+                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(1), 1,0,0,1);
+                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(2), 1,0,0,1);
                 }
                 matrix_stack.popPose();
                 mc.renderBuffers().bufferSource().endBatch();
