@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost;
 
 import com.github.shannieann.wyrmroost.client.screen.AnimateScreen;
 import com.github.shannieann.wyrmroost.client.screen.DebugScreen;
+import com.github.shannieann.wyrmroost.entities.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.items.base.ArmorBase;
@@ -9,6 +10,15 @@ import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.github.shannieann.wyrmroost.world.WREntitySpawning;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
+import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -20,7 +30,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.client.model.pipeline.VertexBufferConsumer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -31,6 +44,8 @@ import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+import java.util.List;
 
 /**
  * Reflection is shit and we shouldn't use it
@@ -72,7 +87,7 @@ public class CommonEvents {
             LazySpawnEggItem.addEggsToMap();
 
             //for (EntityType<?> entry : ModUtils.getRegistryEntries(WREntityTypes.REGISTRY))
-             //   if (entry instanceof WREntityTypes) ((WREntityTypes<?>) entry).callBack();
+            //   if (entry instanceof WREntityTypes) ((WREntityTypes<?>) entry).callBack();
 
             //for (WRBlocks.BlockExtension extension : WRBlocks.EXTENSIONS) extension.callBack();
             //WRBlocks.EXTENSIONS.clear();
@@ -85,7 +100,7 @@ public class CommonEvents {
         for (EntityType<?> entry : ModUtils.getRegistryEntries(WREntityTypes.REGISTRY)) {
             if (entry instanceof WREntityTypes) {
                 WREntityTypes<LivingEntity> e = (WREntityTypes<LivingEntity>) entry;
-                if (e.attributes != null){
+                if (e.attributes != null) {
                     event.put(e, e.attributes.get());
                 }
             }
@@ -93,8 +108,8 @@ public class CommonEvents {
     }
 
     //public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event){
-   //     event.registerLayerDefinition(RoostStalkerModel.LAYER_LOCATION, RoostStalkerModel::createBodyLayer);
-   // }
+    //     event.registerLayerDefinition(RoostStalkerModel.LAYER_LOCATION, RoostStalkerModel::createBodyLayer);
+    // }
 
     /*@Deprecated  todo: remove in 1.17
    public static void remap(RegistryEvent.MissingMappings<Item> event) {
@@ -107,16 +122,14 @@ public class CommonEvents {
     //      Forge Bus
     // =====================
 
-    public static void debugStick(PlayerInteractEvent.RightClickItem event)
-    {
+    public static void debugStick(PlayerInteractEvent.RightClickItem event) {
         if (!WRConfig.DEBUG_MODE.get()) return;
         Player player = event.getPlayer();
         ItemStack stack = player.getItemInHand(event.getHand());
         if (stack.getItem() != Items.STICK || !stack.getHoverName().getString().equals("Debug Stick"))
             return;
         EntityHitResult ertr = Mafs.clipEntities(event.getPlayer(), 50, 1, null);
-        if (ertr != null)
-        {
+        if (ertr != null) {
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);
 
@@ -159,7 +172,7 @@ public class CommonEvents {
                     .build());
     }
 
-    public static void onEntityMountEvent (EntityMountEvent event) {
+    public static void onEntityMountEvent(EntityMountEvent event) {
         if (event.getEntityMounting() instanceof WRDragonEntity) {
             if (event.isMounting() && event.getEntityBeingMounted() instanceof Minecart || event.getEntityBeingMounted() instanceof Boat) {
                 event.setCanceled(true);
@@ -167,14 +180,14 @@ public class CommonEvents {
         }
     }
 
-}
+    public static void onRenderWorldLast(RenderLevelStageEvent event) {
+        Minecraft mc = Minecraft.getInstance();
+        EntityRenderDispatcher renderManager = mc.getEntityRenderDispatcher();
+        List<EntityButterflyLeviathan> entityList = mc.level.getEntitiesOfClass(EntityButterflyLeviathan.class, new AABB(-50, -50, -50, 50, 50, 50));
+        LevelRenderer.renderLineBox(event.getPoseStack(), mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb1, 1, 0, 0, 1);
+        LevelRenderer.renderLineBox(event.getPoseStack(), mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb2, 0, 1, 0, 1);
+        LevelRenderer.renderLineBox(event.getPoseStack(), mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb3, 1, 0, 1, 1);
 
 
-   /* public static void preCropGrowth(BlockEvent.CropGrowEvent.Pre event)
-    {
-        LevelAccessor level = event.getWorld();
-        BlockPos pos = event.getPos();
-        if (level.getBiomeName(pos).get() == WRWorld.FROST_CREVASSE && level.getBrightness(LightLayer.BLOCK, pos) <= 11)
-            event.setResult(Event.Result.DENY);
     }
-}*/
+}

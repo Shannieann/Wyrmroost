@@ -45,6 +45,7 @@ import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -58,6 +59,7 @@ import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //TODO: Pending BFL Fixes:
+
 // 2023.03.03:
 // Retest AttackGoal with new animation variant logic
 // Test bounding boxes on attack goal by drawing
@@ -129,6 +131,10 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public static final int LAND_ATTACK_QUEUE_TIME_2 = 6;
     public static final int WATER_ATTACK_QUEUE_TIME_2 = 7;
     public final int idleAnimation1Time = 80;
+    public AABB aabb1;
+    public AABB aabb2;
+    public AABB aabb3;
+
 
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
         super(entityType, level);
@@ -815,6 +821,9 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     // The attack variant defines the animation variant which defines the time when it makes sense to perform the attack...
                     if (elapsedTime == attackQueueTime) {
                         //Perform the corresponding melee attack...
+                        aabb1 = getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67);
+                        aabb2 = getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(4.0f)).inflate(0.67);
+                        aabb3 = getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(6.0f)).inflate(0.67);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(2.0)).inflate(0.67), 40);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(4.0f)).inflate(0.67), 40);
                         attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(6.0f)).inflate(0.67), 40);
