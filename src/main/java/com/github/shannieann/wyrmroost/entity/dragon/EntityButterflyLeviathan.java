@@ -545,7 +545,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     @Override
     public Vec3 getPassengerPosOffset(Entity entity, int index) {
-        return new Vec3(0, getPassengersRidingOffset(), index == 1 ? -2 : 0);
+        return new Vec3(0, this.getType().getDimensions().height*1.2D, index == 1 ? -2 : 0);
     }
 
     @Override

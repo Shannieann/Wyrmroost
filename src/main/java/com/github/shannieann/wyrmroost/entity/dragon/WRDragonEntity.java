@@ -1575,6 +1575,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void positionRider(Entity passenger)
     {
         Vec3 offset = getPassengerPosOffset(passenger, getPassengers().indexOf(passenger));
+        System.out.println("X offset: " +offset.x +" Y offset: " + offset.y + "Z offset: " + offset.z);
         Vec3 pos = Mafs.getYawVec(yBodyRot, offset.x, offset.z).add(getX(), getY() + offset.y + passenger.getMyRidingOffset(), getZ());
         passenger.setPos(pos.x, pos.y, pos.z);
     }
@@ -1583,6 +1584,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         return new Vec3(0, getPassengersRidingOffset(), 0);
     }
+
     @Override
     protected void addPassenger(Entity passenger)
     {
