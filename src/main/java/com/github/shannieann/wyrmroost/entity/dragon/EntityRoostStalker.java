@@ -8,7 +8,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.DragonBreedGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.MoveToHomeGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRFollowOwnerGoal;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
-import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -225,9 +225,9 @@ public class EntityRoostStalker extends WRDragonEntity
     {
         if (getVariant() == -1 && tickCount % 25 == 0)
         {
-            double x = getX() + (Mafs.nextDouble(getRandom()) * 0.7d);
+            double x = getX() + (WRMathsUtility.nextDouble(getRandom()) * 0.7d);
             double y = getY() + (getRandom().nextDouble() * 0.5d);
-            double z = getZ() + (Mafs.nextDouble(getRandom()) * 0.7d);
+            double z = getZ() + (WRMathsUtility.nextDouble(getRandom()) * 0.7d);
             level.addParticle(ParticleTypes.END_ROD, x, y, z, 0, 0.05f, 0);
         }
     }

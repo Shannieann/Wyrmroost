@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entity.dragon.ai.movement.fly;
 
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.tags.BlockTags;
@@ -64,7 +64,7 @@ public class FlyerMoveController extends MoveControl
                     operation = MoveControl.Operation.JUMPING;
                 }
             }
-            dragon.setYRot(rotlerp(dragon.getYRot(), (float) (Mth.atan2(z, x) * (180f / Mafs.PI)) - 90f, dragon.getYawRotationSpeed()));
+            dragon.setYRot(rotlerp(dragon.getYRot(), (float) (Mth.atan2(z, x) * (180f / WRMathsUtility.PI)) - 90f, dragon.getYawRotationSpeed()));
             dragon.setSpeed(speed);
             operation = Operation.WAIT;
         }

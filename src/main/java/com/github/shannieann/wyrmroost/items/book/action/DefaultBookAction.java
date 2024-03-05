@@ -5,7 +5,7 @@ import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
-import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.server.level.ServerPlayer;
@@ -59,7 +59,7 @@ public class DefaultBookAction implements BookAction
     @Nullable
     private WRDragonEntity clip(Player player)
     {
-        EntityHitResult ertr = Mafs.clipEntities(player, 40, 0.75, e -> e instanceof WRDragonEntity && ((WRDragonEntity) e).isOwnedBy(player));
+        EntityHitResult ertr = WRMathsUtility.clipEntities(player, 40, 0.75, e -> e instanceof WRDragonEntity && ((WRDragonEntity) e).isOwnedBy(player));
         return ertr != null? (WRDragonEntity) ertr.getEntity() : null;
     }
 

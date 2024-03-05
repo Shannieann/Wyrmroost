@@ -16,9 +16,9 @@ import java.util.function.Predicate;
  * Half of this shit is just me throwing numbers in and hoping it works,
  * seems to be going well so far!
  */
-public final class Mafs
+public final class WRMathsUtility
 {
-    private Mafs()
+    private WRMathsUtility()
     {/* good try */}
 
     /**
@@ -46,11 +46,14 @@ public final class Mafs
     }
 
     /**
-     * A good way to get a position offset by the direction of a yaw angle.
+     * Given a yaw angle FOR A REFERENCE SYSTEM and an offset X and Z,
+     * this method will return a new vector with X and Z coordinates rotated by that yaw angle
+     * See: https://postimg.cc/9DkSnKSr
      */
-    public static Vec3 getYawVec(float yaw, double xOffset, double zOffset)
+
+    public static Vec3 rotateXZVectorByYawAngle(float yawAngleDEG, double xOffset, double zOffset)
     {
-        return new Vec3(xOffset, 0, zOffset).yRot(-yaw * (PI / 180f));
+        return new Vec3(xOffset, 0, zOffset).yRot(-yawAngleDEG * (PI / 180f));
     }
 
     /**

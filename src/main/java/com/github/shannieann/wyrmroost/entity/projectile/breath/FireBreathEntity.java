@@ -3,7 +3,7 @@ package com.github.shannieann.wyrmroost.entity.projectile.breath;
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
-import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -41,7 +41,7 @@ public class FireBreathEntity extends BreathWeaponEntity
         {
             if (random.nextDouble() <= 0.25d) playSound(SoundEvents.FIRE_EXTINGUISH, 1, 1);
             for (int i = 0; i < 15; i++)
-                level.addParticle(ParticleTypes.SMOKE, getX(), getY(), getZ(), Mafs.nextDouble(random) * 0.2f, random.nextDouble() * 0.08f, Mafs.nextDouble(random) * 0.2f);
+                level.addParticle(ParticleTypes.SMOKE, getX(), getY(), getZ(), WRMathsUtility.nextDouble(random) * 0.2f, random.nextDouble() * 0.08f, WRMathsUtility.nextDouble(random) * 0.2f);
             remove(RemovalReason.DISCARDED);
             return;
         }

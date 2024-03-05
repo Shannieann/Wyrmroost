@@ -3,7 +3,7 @@ package com.github.shannieann.wyrmroost.items.book.action;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.sounds.SoundEvents;
@@ -52,7 +52,7 @@ public class TargetBookAction implements BookAction
     private EntityHitResult clip(Player player, WRDragonEntity dragon)
     {
         if (dragon == null) return null;
-        return Mafs.clipEntities(player,
+        return WRMathsUtility.clipEntities(player,
                 40,
                 0.35,
                 e -> e instanceof LivingEntity && dragon.wantsToAttack((LivingEntity) e, dragon.getOwner()));

@@ -5,7 +5,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.items.base.ArmorBase;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
-import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.github.shannieann.wyrmroost.world.WREntitySpawning;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -125,7 +125,7 @@ public class CommonEvents {
         ItemStack stack = player.getItemInHand(event.getHand());
         if (stack.getItem() != Items.STICK || !stack.getHoverName().getString().equals("Debug Stick"))
             return;
-        EntityHitResult ertr = Mafs.clipEntities(event.getPlayer(), 50, 1, null);
+        EntityHitResult ertr = WRMathsUtility.clipEntities(event.getPlayer(), 50, 1, null);
         if (ertr != null) {
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);

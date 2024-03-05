@@ -19,7 +19,7 @@ public class LerpedFloat
 
     public float get(float x)
     {
-        return Mafs.linTerp(previous, current, x);
+        return WRMathsUtility.linTerp(previous, current, x);
     }
 
     public float get()

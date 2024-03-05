@@ -5,7 +5,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.registry.WREffects;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRItems;
-import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -92,7 +92,7 @@ public class SoulCrystalEntity extends ThrowableItemProjectile
             ModUtils.playLocalSound(level, blockPosition(), SoundEvents.GLASS_BREAK, 1f, 1.75f);
             ItemParticleOption data = new ItemParticleOption(ParticleTypes.ITEM, getItem());
             for (int i = 0; i < 8; ++i)
-                level.addParticle(data, getX(), getY(), getZ(), Mafs.nextDouble(random) * 0.25, random.nextDouble() * 0.15, Mafs.nextDouble(random) * 0.25);
+                level.addParticle(data, getX(), getY(), getZ(), WRMathsUtility.nextDouble(random) * 0.25, random.nextDouble() * 0.15, WRMathsUtility.nextDouble(random) * 0.25);
         }
         else super.handleEntityEvent(event);
     }

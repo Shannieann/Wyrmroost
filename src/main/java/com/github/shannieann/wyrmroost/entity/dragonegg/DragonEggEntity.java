@@ -5,7 +5,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.DragonEggItem;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
-import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.math.Vector3f;
 import net.minecraft.core.Direction;
@@ -227,12 +227,12 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
         f += f;
         for (int i = 0; i < f * intensity; ++i)
         {
-            double x = getX() + (Mafs.nextDouble(random) * getBbWidth() / 2);
-            double y = getY() + (Mafs.nextDouble(random) * getBbHeight());
-            double z = getZ() + (Mafs.nextDouble(random) * getBbWidth() / 2);
-            double xMot = Mafs.nextDouble(random) * getBbWidth() * 0.35;
+            double x = getX() + (WRMathsUtility.nextDouble(random) * getBbWidth() / 2);
+            double y = getY() + (WRMathsUtility.nextDouble(random) * getBbHeight());
+            double z = getZ() + (WRMathsUtility.nextDouble(random) * getBbWidth() / 2);
+            double xMot = WRMathsUtility.nextDouble(random) * getBbWidth() * 0.35;
             double yMot = random.nextDouble() * getBbHeight() * 0.5;
-            double zMot = Mafs.nextDouble(random) * getBbWidth() * 0.35;
+            double zMot = WRMathsUtility.nextDouble(random) * getBbWidth() * 0.35;
             level.addParticle(new ItemParticleOption(ParticleTypes.ITEM, new ItemStack(Items.EGG)), x, y, z, xMot, yMot, zMot);
         }
     }

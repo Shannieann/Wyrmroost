@@ -7,7 +7,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
-import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
@@ -171,7 +171,7 @@ public class EntityOverworldDrake extends WRDragonEntity
         // =====================
         if (thrownPassenger != null)
         {
-            thrownPassenger.setDeltaMovement(Mafs.nextDouble(getRandom()), 0.1 + getRandom().nextDouble(), Mafs.nextDouble(getRandom()));
+            thrownPassenger.setDeltaMovement(WRMathsUtility.nextDouble(getRandom()), 0.1 + getRandom().nextDouble(), WRMathsUtility.nextDouble(getRandom()));
             ((ServerChunkCache) level.getChunkSource()).broadcastAndSend(thrownPassenger, new ClientboundSetEntityMotionPacket(thrownPassenger)); // notify client
             thrownPassenger = null;
         }
@@ -462,7 +462,7 @@ public class EntityOverworldDrake extends WRDragonEntity
         public boolean canUse()
         {
             //This should get a blockPos that is positioned correctly relative to the OWD's head.
-            grazeBlockPosition = new BlockPos(Mafs.getYawVec(yBodyRot, 0, getBbWidth() / 2 + 1).add(position())).below();
+            grazeBlockPosition = new BlockPos(WRMathsUtility.getYawVec(yBodyRot, 0, getBbWidth() / 2 + 1).add(position())).below();
             if (!level.getBlockState(grazeBlockPosition).is(Blocks.GRASS_BLOCK)){
                 return false;
             }
