@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.client.render.entity.effect;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.model.effect.ModelLightningNova;
-import com.github.shannieann.wyrmroost.entities.effect.EffectLightningNova;
+import com.github.shannieann.wyrmroost.entity.effect.EffectLightningNova;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;

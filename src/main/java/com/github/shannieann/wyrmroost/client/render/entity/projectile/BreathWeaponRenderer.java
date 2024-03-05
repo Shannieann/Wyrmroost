@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render.entity.projectile;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.projectile.DragonProjectileEntity;
+import com.github.shannieann.wyrmroost.entity.projectile.DragonProjectileEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;

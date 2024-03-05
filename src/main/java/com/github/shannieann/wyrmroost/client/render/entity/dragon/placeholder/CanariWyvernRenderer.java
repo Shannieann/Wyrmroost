@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder;
 
 import com.github.shannieann.wyrmroost.client.model.entity.dragon.ModelCanariWyvern;
-import com.github.shannieann.wyrmroost.entities.dragon.EntityCanariWyvern;
+import com.github.shannieann.wyrmroost.entity.dragon.EntityCanariWyvern;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 

@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.items;
 
-import com.github.shannieann.wyrmroost.entities.projectile.SoulCrystalEntity;
+import com.github.shannieann.wyrmroost.entity.projectile.SoulCrystalEntity;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.nbt.CompoundTag;
@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-import static com.github.shannieann.wyrmroost.entities.projectile.SoulCrystalEntity.*;
+import static com.github.shannieann.wyrmroost.entity.projectile.SoulCrystalEntity.*;
 
 
 @SuppressWarnings("ConstantConditions")

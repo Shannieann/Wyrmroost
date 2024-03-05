@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render;
 
 import com.github.shannieann.wyrmroost.client.render.entity.DragonEggRenderer;
-import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggEntity;
+import com.github.shannieann.wyrmroost.entity.dragonegg.DragonEggEntity;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;

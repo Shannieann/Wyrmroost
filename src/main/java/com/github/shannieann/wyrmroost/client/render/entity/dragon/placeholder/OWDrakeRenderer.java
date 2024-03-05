@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder;
 
 import com.github.shannieann.wyrmroost.client.model.entity.dragon.ModelOverworldDrake;
-import com.github.shannieann.wyrmroost.entities.dragon.EntityOverworldDrake;
+import com.github.shannieann.wyrmroost.entity.dragon.EntityOverworldDrake;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;

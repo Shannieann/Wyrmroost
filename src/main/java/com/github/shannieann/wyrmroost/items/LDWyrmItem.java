@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.items;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.EntityLesserDesertwyrm;
+import com.github.shannieann.wyrmroost.entity.dragon.EntityLesserDesertwyrm;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.ModUtils;

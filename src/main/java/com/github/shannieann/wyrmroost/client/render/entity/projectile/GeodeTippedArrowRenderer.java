@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render.entity.projectile;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.projectile.GeodeTippedArrowEntity;
+import com.github.shannieann.wyrmroost.entity.projectile.GeodeTippedArrowEntity;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import net.minecraft.client.renderer.entity.ArrowRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;

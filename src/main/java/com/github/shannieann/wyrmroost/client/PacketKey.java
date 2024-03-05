@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.client;
 
-import com.github.shannieann.wyrmroost.entities.dragon.ai.DebuggingTool;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.DebuggingTool;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;

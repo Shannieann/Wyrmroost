@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.containers;
 
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.containers.util.DynamicSlot;
-import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.DragonArmorItem;
 import com.github.shannieann.wyrmroost.registry.WRIO;
 import net.minecraft.core.BlockPos;

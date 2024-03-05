@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.network.packets;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.EntitySilverGlider;
+import com.github.shannieann.wyrmroost.entity.dragon.EntitySilverGlider;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;

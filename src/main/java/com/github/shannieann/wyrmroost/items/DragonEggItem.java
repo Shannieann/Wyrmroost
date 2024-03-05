@@ -1,9 +1,9 @@
 package com.github.shannieann.wyrmroost.items;
 
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggEntity;
-import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggProperties;
+import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entity.dragonegg.DragonEggEntity;
+import com.github.shannieann.wyrmroost.entity.dragonegg.DragonEggProperties;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import net.minecraft.ChatFormatting;

@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.items.book.action;
 
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
-import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.util.Mafs;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;

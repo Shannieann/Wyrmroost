@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.items.book.action;
 
-import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;

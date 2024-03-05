@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.model.entity.dragon;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.EntityLesserDesertwyrm;
+import com.github.shannieann.wyrmroost.entity.dragon.EntityLesserDesertwyrm;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 

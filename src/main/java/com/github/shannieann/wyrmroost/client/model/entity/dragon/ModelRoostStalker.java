@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.client.model.entity.dragon;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.layer.DragonEyesLayer;
-import com.github.shannieann.wyrmroost.entities.dragon.EntityRoostStalker;
+import com.github.shannieann.wyrmroost.entity.dragon.EntityRoostStalker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;

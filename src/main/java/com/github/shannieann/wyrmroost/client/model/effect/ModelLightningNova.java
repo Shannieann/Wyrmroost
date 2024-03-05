@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.model.effect;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.effect.EffectLightningNova;
+import com.github.shannieann.wyrmroost.entity.effect.EffectLightningNova;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 

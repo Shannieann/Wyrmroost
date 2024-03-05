@@ -4,7 +4,7 @@ package com.github.shannieann.wyrmroost.client.model.entity.dragon;// Made with 
 
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.EntityOverworldDrake;
+import com.github.shannieann.wyrmroost.entity.dragon.EntityOverworldDrake;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 

@@ -1,13 +1,13 @@
 package com.github.shannieann.wyrmroost.registry;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entities.dragon.*;
-import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggEntity;
-import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggProperties;
-import com.github.shannieann.wyrmroost.entities.effect.EffectLightningNova;
-import com.github.shannieann.wyrmroost.entities.projectile.GeodeTippedArrowEntity;
-import com.github.shannieann.wyrmroost.entities.projectile.SoulCrystalEntity;
-import com.github.shannieann.wyrmroost.entities.projectile.breath.FireBreathEntity;
+import com.github.shannieann.wyrmroost.entity.dragon.*;
+import com.github.shannieann.wyrmroost.entity.dragonegg.DragonEggEntity;
+import com.github.shannieann.wyrmroost.entity.dragonegg.DragonEggProperties;
+import com.github.shannieann.wyrmroost.entity.effect.EffectLightningNova;
+import com.github.shannieann.wyrmroost.entity.projectile.GeodeTippedArrowEntity;
+import com.github.shannieann.wyrmroost.entity.projectile.SoulCrystalEntity;
+import com.github.shannieann.wyrmroost.entity.projectile.breath.FireBreathEntity;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagKey;

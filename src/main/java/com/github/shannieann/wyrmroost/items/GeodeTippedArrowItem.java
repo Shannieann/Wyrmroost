@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.items;
 
-import com.github.shannieann.wyrmroost.entities.projectile.GeodeTippedArrowEntity;
+import com.github.shannieann.wyrmroost.entity.projectile.GeodeTippedArrowEntity;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;

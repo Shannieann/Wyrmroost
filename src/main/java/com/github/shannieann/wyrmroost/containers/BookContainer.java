@@ -1,35 +1,5 @@
 package com.github.shannieann.wyrmroost.containers;
 
-import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.client.screen.widgets.CollapsibleWidget;
-import com.github.shannieann.wyrmroost.containers.util.DynamicSlot;
-import com.github.shannieann.wyrmroost.containers.util.Slot3D;
-import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.DragonInventory;
-import com.github.shannieann.wyrmroost.items.book.action.BookAction;
-import com.github.shannieann.wyrmroost.registry.WRIO;
-import com.github.shannieann.wyrmroost.util.ModUtils;
-import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectInstance;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.Slot;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec2;
-import net.minecraftforge.network.NetworkHooks;
-
-import javax.annotation.Nonnull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import static com.github.shannieann.wyrmroost.client.ClientEvents.getClient;
-
 /*public class BookContainer extends AbstractContainerMenu
 {
     public final WRDragonEntity dragon;
