@@ -69,6 +69,7 @@ public class CommonEvents {
         forgeBus.addListener(CommonEvents::loadLoot);
         forgeBus.addListener(CommonEvents::onBiomeLoading);
         forgeBus.addListener(CommonEvents::onEntityMountEvent);
+        forgeBus.addListener(CommonEvents::onRenderWorldLast);
 
         //forgeBus.addListener(VillagerHelper::addWandererTrades);
         //forgeBus.addListener(CommonEvents::preCropGrowth);
@@ -181,13 +182,24 @@ public class CommonEvents {
     }
 
     public static void onRenderWorldLast(RenderLevelStageEvent event) {
-        Minecraft mc = Minecraft.getInstance();
-        EntityRenderDispatcher renderManager = mc.getEntityRenderDispatcher();
-        List<EntityButterflyLeviathan> entityList = mc.level.getEntitiesOfClass(EntityButterflyLeviathan.class, new AABB(-50, -50, -50, 50, 50, 50));
-        LevelRenderer.renderLineBox(event.getPoseStack(), mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb1, 1, 0, 0, 1);
-        LevelRenderer.renderLineBox(event.getPoseStack(), mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb2, 0, 1, 0, 1);
-        LevelRenderer.renderLineBox(event.getPoseStack(), mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb3, 1, 0, 1, 1);
+        RenderLevelStageEvent.Stage stage = event.getStage();
+        if (stage == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
+            Minecraft mc = Minecraft.getInstance();
+            List<EntityButterflyLeviathan> entityList = mc.level.getEntitiesOfClass(EntityButterflyLeviathan.class, new AABB(-50, -50, -50, 50, 50, 50));
+            if (!entityList.isEmpty()) {
+                if (entityList.get(0).aabb1 != null) {
+                    LevelRenderer.renderLineBox(event.getPoseStack(), mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb1, 1, 0, 0, 1);
 
+                }
+                if (entityList.get(0).aabb2 != null) {
+                    LevelRenderer.renderLineBox(event.getPoseStack(), mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb2, 0, 1, 0, 1);
+
+                }
+                if (entityList.get(0).aabb3 != null) {
+                    LevelRenderer.renderLineBox(event.getPoseStack(), mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), entityList.get(0).aabb3, 1, 0, 1, 1);
+                }
+            }
+        }
 
     }
 }
