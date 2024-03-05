@@ -45,6 +45,7 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.BucketPickup;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.phys.AABB;
@@ -87,8 +88,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //ToDo: Taming
 // Taming Logic, confirm no debug code is leftover...
-// Tamed - defendOwnerGoal
-// Tamed - attack logic when tamed
 
 //ToDo: Other tamed stuff
 // Breeding...
@@ -370,6 +369,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     }
      */
     //TODO: REMOVE
+    /*
     public void conduitAnimation(int time) {
         if (getLookControl() instanceof WRGroundLookControl) ((WRGroundLookControl) getLookControl()).stopLooking();
         if (time == 0) playSound(WRSounds.ENTITY_BFLY_ROAR.get(), 5f, 1, true);
@@ -386,22 +386,9 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             }
         }
     }
-    //TODO: REMOVE
-    public void biteAnimation(int time) {
-        if (time == 0) playSound(WRSounds.ENTITY_BFLY_HURT.get(), 1, 1, true);
-        else if (time == 6)
-            attackInBox(getBoundingBox().move(Vec3.directionFromRotation(isUnderWater() ? xRot : 0, yHeadRot).scale(5.5f)).inflate(0.85), 40);
-    }
 
-    //TODO: REMOVE
-    private static void createLightning(Level level, Vec3 position, boolean effectOnly) {
-        if (level.isClientSide) return;
-        LightningBolt entity = EntityType.LIGHTNING_BOLT.create(level);
-        entity.moveTo(position);
-        entity.setVisualOnly(effectOnly);
-        level.addFreshEntity(entity);
-    }
 
+     */
     @Override
     public boolean isImmuneToArrows() {
         return true;
@@ -434,7 +421,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         // If tamed, lightning must be commanded...
         // Lightning attacks can be performed if either in water, rain or bubble...
         //Or if there's a lightning rod relatively close to the BFL
-        if (getLightningAttackCooldown() <= 0 && !isBaby() && !isTame()) {
+        if (getLightningAttackCooldown() <= 0 && !isHatchling() && !isTame()) {
             if (isInWaterRainOrBubble()) {
                 return true;
             }
@@ -444,7 +431,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         }
         return false;
     }
-
 
     public List<AABB> generateAttackBoxes(){
         List<AABB> attackBoxList = new ArrayList<>();
@@ -763,11 +749,14 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             if (canBeControlledByRider()) {
                 return false;
             }
-            if (isBaby()) {
+            if (isHatchling()) {
                 return false;
             }
             target = getTarget();
             if (target != null && target != entity.getOwner()) {
+                if (!isTame()) {
+                    return !(target instanceof EntityButterflyLeviathan);
+                }
                 return true;
             }
             return false;

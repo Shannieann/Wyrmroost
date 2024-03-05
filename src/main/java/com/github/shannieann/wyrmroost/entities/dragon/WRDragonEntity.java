@@ -38,6 +38,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.stats.Stats;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
@@ -53,6 +54,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -1083,19 +1085,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return level.getEntitiesOfClass(LivingEntity.class, getBoundingBox().inflate(radius), filter.and(e -> e != this));
     }
 
-    @Override // Dont damage owners other pets!
+    @Override
     public boolean doHurtTarget(Entity entity)
     {
-        /*
-        //TODO: set animation before we call this method
-        if (this.getAnimation().equals("base")) {
-            int attackVariant = this.random.nextInt(ATTACK_ANIMATION_VARIANTS)+1;
-            this.setAnimation("attack_"+attackVariant);
-            this.setAnimationType(2);
-            this.setAnimationTime(80);
-        }
-
-         */
         return !isAlliedTo(entity) && super.doHurtTarget(entity);
     }
 
@@ -1106,11 +1098,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return !isAlliedTo(target);
     }
 
-    @Override
-    public boolean canAttack(LivingEntity target)
-    {
-        return !isHatchling() && !canBeControlledByRider() && super.canAttack(target);
-    }
+
 
     @Override
     public boolean isInvulnerableTo(DamageSource source)
@@ -1120,15 +1108,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return super.isInvulnerableTo(source);
     }
 
-    public Predicate<LivingEntity> aquaticRandomTargetPredicate = e -> {
-        EntityType<?> type = e.getType();
-        if (canAttack(e)) {
-            return
-                    //If we are not in water, we can target entities in water and out of water...
-                    //If we are in water, only target entities in water...
-                    (!this.isInWater() || e.isInWater());
+    public Predicate<LivingEntity> aquaticRandomTargetPredicate = entity -> {
+        //Avoid targeting fish, to avoid creating lag
+        if (entity instanceof AbstractFish) {
+            return false;
         }
-        return false;
+        //If we are not in water, we can target entities in water and out of water...
+        //If we are in water, only target entities in water...
+        return (!this.isInWater() || entity.isInWater());
     };
 
     // ====================================
