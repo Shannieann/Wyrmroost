@@ -34,6 +34,8 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -70,7 +72,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Showcase!
 
 //TODO: Attack:
-// Update age logic in attack goal
 // Showcase attack goal!
 
 //ToDo: Other fixes:
@@ -429,10 +430,11 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     }
 
     public boolean canPerformLightningAttack() {
-        // Assuming both cooldown availability and juvenile plus growth stage...
+        // Assuming both cooldown availability and baby plus growth stage, and not tamed...
+        // If tamed, lightning must be commanded...
         // Lightning attacks can be performed if either in water, rain or bubble...
         //Or if there's a lightning rod relatively close to the BFL
-        if (getLightningAttackCooldown() <= 0 && isJuvenile()) {
+        if (getLightningAttackCooldown() <= 0 && !isBaby() && !isTame()) {
             if (isInWaterRainOrBubble()) {
                 return true;
             }
@@ -719,12 +721,12 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
         goalSelector.addGoal(9, new WRRandomLookAroundGoal(this,45));
 
-        //targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
-        //targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
+        targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
+        targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new HurtByTargetGoal(this));
         //targetSelector.addGoal(4, new DefendHomeGoal(this));
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, aquaticRandomTargetPredicate));
-        //Todo: Exclude other BFLs?
+        //Todo: Exclude other BFLs, exclude fish
     }
 
 
@@ -755,13 +757,20 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
 
-        //Goal is usable if entity is not being ridden and it has a target
-        //TODO: What happens when tamed / defend?
-        //ToDo: Age
+        //Goal is usable if entity is not being ridden, and it has a target different to its owner
         @Override
         public boolean canUse() {
+            if (canBeControlledByRider()) {
+                return false;
+            }
+            if (isBaby()) {
+                return false;
+            }
             target = getTarget();
-            return !canBeControlledByRider() && target != null;
+            if (target != null && target != entity.getOwner()) {
+                return true;
+            }
+            return false;
         }
 
         @Override
@@ -1031,6 +1040,5 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 }
             }
         }
-
     }
 }
