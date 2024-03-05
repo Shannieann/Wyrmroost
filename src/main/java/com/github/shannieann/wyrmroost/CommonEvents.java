@@ -74,7 +74,7 @@ public class CommonEvents {
         forgeBus.addListener(CommonEvents::loadLoot);
         forgeBus.addListener(CommonEvents::onBiomeLoading);
         forgeBus.addListener(CommonEvents::onEntityMountEvent);
-        //forgeBus.addListener(CommonEvents::onRenderWorldLast);
+        forgeBus.addListener(CommonEvents::onRenderWorldLast);
 
         //forgeBus.addListener(VillagerHelper::addWandererTrades);
         //forgeBus.addListener(CommonEvents::preCropGrowth);
@@ -186,30 +186,29 @@ public class CommonEvents {
         }
     }
 
-    /*
     public static void onRenderWorldLast(RenderLevelStageEvent event) {
 
-        RenderLevelStageEvent.Stage stage = event.getStage();
-        if (stage == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
-            Minecraft mc = Minecraft.getInstance();
-            Camera camera = mc.gameRenderer.getMainCamera();
-            Vec3 viewPosition = camera.getPosition();
-            PoseStack matrix_stack = event.getPoseStack();
-            matrix_stack.pushPose();
-            matrix_stack.translate(-viewPosition.x, -viewPosition.y, -viewPosition.z);
-            List<EntityButterflyLeviathan> entityList = mc.level.getEntitiesOfClass(EntityButterflyLeviathan.class, new AABB(mc.player.getOnPos()).inflate(20));
-            if (!entityList.isEmpty()) {
-                for (int i = 0; i<entityList.size(); i++) {
-                    List<AABB> attackBoxes = entityList.get(i).generateAttackBoxes();
-                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(0), 1,0,0,1);
-                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(1), 0,1,0,1);
-                    LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(2), 0,0,1,1);
+        if (WRConfig.DEBUG_MODE.get()) {
+            RenderLevelStageEvent.Stage stage = event.getStage();
+            if (stage == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
+                Minecraft mc = Minecraft.getInstance();
+                Camera camera = mc.gameRenderer.getMainCamera();
+                Vec3 viewPosition = camera.getPosition();
+                PoseStack matrix_stack = event.getPoseStack();
+                matrix_stack.pushPose();
+                matrix_stack.translate(-viewPosition.x, -viewPosition.y, -viewPosition.z);
+                List<EntityButterflyLeviathan> entityList = mc.level.getEntitiesOfClass(EntityButterflyLeviathan.class, new AABB(mc.player.getOnPos()).inflate(20));
+                if (!entityList.isEmpty()) {
+                    for (int i = 0; i<entityList.size(); i++) {
+                        List<AABB> attackBoxes = entityList.get(i).generateAttackBoxes();
+                        LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(0), 1,0,0,1);
+                        LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(1), 0,1,0,1);
+                        LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(2), 0,0,1,1);
+                    }
+                    matrix_stack.popPose();
+                    mc.renderBuffers().bufferSource().endBatch();
                 }
-                matrix_stack.popPose();
-                mc.renderBuffers().bufferSource().endBatch();
             }
         }
     }
-
-         */
 }

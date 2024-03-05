@@ -27,13 +27,27 @@ public final class WRServerConfig {
 
     public static class Server {
         private Server(final ForgeConfigSpec.Builder builder) {
+            WYRMROOST_OPTIONS = new WyrmroostOptionsConfig(builder);
             DRAGON_OPTIONS = new DragonOptionsConfig(builder);
             GRIEFING = new GriefingConfig(builder);
             ENTITIES = new EntitiesConfig(builder);
         }
+        public final WyrmroostOptionsConfig WYRMROOST_OPTIONS;
         public final DragonOptionsConfig DRAGON_OPTIONS;
         public final GriefingConfig GRIEFING;
         public final EntitiesConfig ENTITIES;
+
+    }
+    public static class WyrmroostOptionsConfig {
+        public final ForgeConfigSpec.BooleanValue debugMode;
+
+        WyrmroostOptionsConfig(ForgeConfigSpec.Builder builder ) {
+            builder.push("wyrmroost_otions");
+            this.debugMode = builder
+                    .comment("Debug Mode - Do NOT enable unless directed by a Wyrmroost Developer")
+                    .translation(LANG_PREFIX+"debug_mode")
+                    .define("enable_debug_mode", false);
+        }
 
     }
 
