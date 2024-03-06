@@ -462,7 +462,7 @@ public class EntityOverworldDrake extends WRDragonEntity
         public boolean canUse()
         {
             //This should get a blockPos that is positioned correctly relative to the OWD's head.
-            grazeBlockPosition = new BlockPos(WRMathsUtility.getYawVec(yBodyRot, 0, getBbWidth() / 2 + 1).add(position())).below();
+            grazeBlockPosition = new BlockPos(WRMathsUtility.rotateXZVectorByYawAngle(yBodyRot, 0, getBbWidth() / 2 + 1).add(position())).below();
             if (!level.getBlockState(grazeBlockPosition).is(Blocks.GRASS_BLOCK)){
                 return false;
             }

@@ -1165,15 +1165,36 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void travel(Vec3 vec3d){
         if (!this.isAlive()) return;
         if (this.isVehicle() && this.canBeControlledByRider()) {
-            LivingEntity livingentity = (LivingEntity)this.getControllingPassenger();
+            LivingEntity rider = (LivingEntity)this.getControllingPassenger();
+
+            //Store previous yaw value
             this.yRotO = this.getYRot();
-            this.setXRot(livingentity.getXRot() * 0.5F);
-            this.setRot(this.getYRot(), this.getXRot());
-            this.yHeadRot = this.yBodyRot;
-            this.setYRot(livingentity.getYRot());
+            //While being ridden, entity's pitch = 0.5 of rider's pitch
+            this.setXRot(rider.getXRot() * 0.5F);
+            //Client (rendering): Align body to entity direction
             this.yBodyRot = this.getYRot();
-            float xMov = livingentity.xxa * 0.5F;
-            float zMov = livingentity.zza;
+            //Client (rendering): Align head to body
+            this.yHeadRot = this.yBodyRot;
+
+            float xMov = rider.xxa * 0.5F;
+
+            //Acceleration System
+            float zMov = rider.zza;
+
+
+
+            //If rider wants to turn...
+            //Lineal Interpolation system for changing the vehicle's yaw...
+            //The Vehicle's Yaw will approach the Rider's Yaw...
+            //The speed at which it approaches depends on the speed of the vehicle...
+            float maxSpeedValue = 1.0F;
+            float alphaValue = zMov > maxSpeedValue ? 1.0F : zMov/maxSpeedValue;
+            if (rider.yRot>this.yRot){
+                setYRot(this.yRot+(rider.yRot-this.yRot)*alphaValue);
+            } else if (rider.yRot<this.yRot){
+                setYRot(this.yRot+(rider.yRot-this.yRot)*alphaValue);
+            }
+
             if (zMov < 0.0F) { // Huh? Ig I'll keep it here because it works
                 zMov *= 0.25F; // Ohhh its like if you're going backward you're slower I guess.
             }
@@ -1185,20 +1206,20 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 float speed = getTravelSpeed();
                 if (isUsingFlyingNavigator())
                 {
-                    handleFreeFlyingRiding(speed, livingentity); // Free Flying (Diving, 180s, etc.)
+                    handleFreeFlyingRiding(speed, rider); // Free Flying (Diving, 180s, etc.)
 
                     //else handleCombatFlyingMovement(speed, livingentity); // Combat flying (More controlled flight)
                 }
                 else if (isUsingSwimmingNavigator())
                 {
                     System.out.println("hello!!");
-                    handleWaterRiding(speed, vec3d, livingentity);
+                    handleWaterRiding(speed, vec3d, rider);
                 }
                 else
                 {
-                    handleGroundRiding(speed, xMov, zMov, vec3d, livingentity);
+                    handleGroundRiding(speed, xMov, zMov, vec3d, rider);
                 }
-            } else if (livingentity instanceof Player) {
+            } else if (rider instanceof Player) {
                 this.setDeltaMovement(Vec3.ZERO);
             }
 
@@ -1633,7 +1654,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         return false;
     }
-    
+
     //Do not perform AI actions while entity is being ridden
     // Do *NOT* check for Sleeping, as this is now a Goal and entity's AI must still work while asleep
     @Override

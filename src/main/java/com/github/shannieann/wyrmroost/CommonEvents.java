@@ -33,6 +33,7 @@ import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import net.minecraftforge.event.entity.EntityMountEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -66,6 +67,7 @@ public class CommonEvents {
         forgeBus.addListener(CommonEvents::onBiomeLoading);
         forgeBus.addListener(CommonEvents::onEntityMountEvent);
         forgeBus.addListener(CommonEvents::onRenderWorldLast);
+        forgeBus.addListener(CommonEvents::onPlayerTick);
 
         //forgeBus.addListener(VillagerHelper::addWandererTrades);
         //forgeBus.addListener(CommonEvents::preCropGrowth);
@@ -176,6 +178,25 @@ public class CommonEvents {
             }
         }
     }
+
+    public static void onPlayerTick(LivingEvent.LivingUpdateEvent event) {
+        if (event.getEntityLiving() instanceof Player) {
+            Player player = (Player) event.getEntityLiving();
+            Entity vehicle = player.getVehicle();
+            if (vehicle instanceof WRDragonEntity) {
+                float vehicleYaw = ((WRDragonEntity)vehicle).getYRot();
+                float yaw = player.yRot;
+                float maxDifference = 1;
+                if (yaw > vehicleYaw+maxDifference) {
+                    yaw = vehicleYaw+maxDifference;
+                } else if (yaw < vehicleYaw-maxDifference) {
+                    yaw = vehicleYaw-maxDifference;
+                }
+                player.yRot = yaw;
+            }
+        }
+    }
+
 
     public static void onRenderWorldLast(RenderLevelStageEvent event) {
 
