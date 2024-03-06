@@ -4832,13 +4832,13 @@
 				"body1": {
 					"rotation": {
 						"0.0": {
-							"vector": ["50+math.cos(query.anim_time*270/0.25)*0.2", "math.sin(query.anim_time*270/0.25)*0.2", "math.cos(query.anim_time*270/0.25)*0.1"]
+							"vector": [0, "math.sin(query.anim_time*270/0.25)*0.2", "math.cos(query.anim_time*270/0.25)*0.1"]
 						},
 						"0.75": {
-							"vector": [12.72275, -1.68201, 0]
+							"vector": [0, -1.68201, 0]
 						},
 						"1.5": {
-							"vector": ["-math.cos((query.anim_time + 0.1) * 180) *0.5", "math.cos((query.anim_time + 0.1) * 180) *4", 0]
+							"vector": [0, "math.cos((query.anim_time + 0.1) * 180) *4", 0]
 						}
 					},
 					"position": {
