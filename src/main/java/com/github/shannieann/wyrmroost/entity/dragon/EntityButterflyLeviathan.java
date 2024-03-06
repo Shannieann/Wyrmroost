@@ -64,15 +64,10 @@ import java.util.function.Predicate;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-//2024.05.03
-//ToDo: Movement
-// Retest Water Leap animations
-// Retest Water Sleep animations
-// Showcase!
-
-//TODO: Attack:
-// Test
-// Showcase attack goal!
+//2024.06.03
+//ToDo: Showcases
+// Showcase melee attack
+// Showcase movement
 
 //ToDo: Other fixes:
 // BFLSitGoal - test logic
@@ -88,11 +83,16 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //ToDo: Taming
 // Taming Logic, confirm no debug code is leftover...
 
+//ToDo: Riding
+// Ground riding... acceleration can be handled by setDeltaMovement(getDeltaMovement().add(accel))
+// Split logic...
+// Allow some creatures to spin unlock, some not to
+
+
 //ToDo: Other tamed stuff
 // Breeding...
 // Eggs...
 // Conduit
-// Ride logic + rewrite key-binds
 // DragonStaff: Home, follow, defend...
 
 //TODO: CLASS:
