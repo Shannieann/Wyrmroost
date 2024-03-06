@@ -1163,6 +1163,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     public void travel(Vec3 vec3d){
+        //ToDo:
+        // 1 - Implement acceleration system properly
+        // 2 - Confirm why Server vs. Client Speeds are different (NFCord?)
+        // 3 - Test if getDeltaMovement does increase when NOT overriding move relative
+        // 4 - Implement systems for dragons
         if (!this.isAlive()) return;
         if (this.isVehicle() && this.canBeControlledByRider()) {
             LivingEntity rider = (LivingEntity)this.getControllingPassenger();
@@ -1176,33 +1181,58 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             //Client (rendering): Align head to body
             this.yHeadRot = this.yBodyRot;
 
-            float xMov = rider.xxa * 0.5F;
+            //float xMov = rider.xxa * 0.5F;
+            float forwardMotion = rider.zza;
 
+
+            //ToDo: Client and Server Movement Speeds are different, why...
             //Acceleration System
-            float zMov = rider.zza;
+            float maxRidingSpeed = 5.0F;
+            float accelerationValue = 0.1F;
+            //Accelerate Forward
+            //ToDo: Test this speed method, with moveRelative being commented out
+            System.out.println("Speed: "+this.getDeltaMovement().length());
+            if (rider.zza > 0){
+                if (this.zza<maxRidingSpeed) {
+                    this.setZza(this.zza+((maxRidingSpeed-this.zza)*accelerationValue));
+                    if (level.isClientSide()) {
+                        System.out.println("Client Movement Speed Z: " +this.zza);
+                    } else {
+                        System.out.println("Server Movement Speed Z: " + this.zza);
+                    }
+
+                }
+                //ToDo: NYI
+            } else if (rider.zza < 0) {
+                if (this.zza>-maxRidingSpeed) {
+                    this.setZza(this.zza+(maxRidingSpeed-this.zza)*accelerationValue);
+                }
+            }
 
 
+            //Accelerate Backwards
+
+            //ToDo: Decelerate
 
             //If rider wants to turn...
             //Lineal Interpolation system for changing the vehicle's yaw...
             //The Vehicle's Yaw will approach the Rider's Yaw...
             //The speed at which it approaches depends on the speed of the vehicle...
             float maxSpeedValue = 1.0F;
-            float alphaValue = zMov > maxSpeedValue ? 1.0F : zMov/maxSpeedValue;
+            float alphaValue = forwardMotion > maxSpeedValue ? 1.0F : forwardMotion/maxSpeedValue;
             if (rider.yRot>this.yRot){
                 setYRot(this.yRot+(rider.yRot-this.yRot)*alphaValue);
             } else if (rider.yRot<this.yRot){
                 setYRot(this.yRot+(rider.yRot-this.yRot)*alphaValue);
             }
 
-            if (zMov < 0.0F) { // Huh? Ig I'll keep it here because it works
-                zMov *= 0.25F; // Ohhh its like if you're going backward you're slower I guess.
+
+            if (forwardMotion < 0.0F) { // Huh? Ig I'll keep it here because it works
+                forwardMotion *= 0.25F; // Ohhh its like if you're going backward you're slower I guess.
             }
-
-            // TODO add water control
             this.flyingSpeed = this.getSpeed() * 0.1F;
-            if (this.isControlledByLocalInstance()) {
 
+            if (this.isControlledByLocalInstance()) {
                 float speed = getTravelSpeed();
                 if (isUsingFlyingNavigator())
                 {
@@ -1212,15 +1242,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 }
                 else if (isUsingSwimmingNavigator())
                 {
-                    System.out.println("hello!!");
+                    //System.out.println("hello!!");
                     handleWaterRiding(speed, vec3d, rider);
                 }
                 else
                 {
-                    handleGroundRiding(speed, xMov, zMov, vec3d, rider);
+                    super.travel(new Vec3(xxa, vec3d.y, zza));
                 }
             } else if (rider instanceof Player) {
-                this.setDeltaMovement(Vec3.ZERO);
+                super.travel(new Vec3(xxa, vec3d.y, zza));
             }
 
             this.calculateEntityAnimation(this, isUsingFlyingNavigator());
@@ -1230,6 +1260,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             super.travel(vec3d);
         }
     }
+
+
+    @Override
+    public void moveRelative(float pAmount, Vec3 pRelative) {
+        if (this.isControlledByLocalInstance()){
+            this.setDeltaMovement(this.getDeltaMovement().add(pRelative));
+        } else {
+            super.moveRelative(pAmount,pRelative);
+        }
+    }
+
+
 
         // Separated these methods to make it look cleaner. Also allows for subclasses to possibly override them if need be.
     protected void handleFreeFlyingRiding(float speed, LivingEntity livingentity) {

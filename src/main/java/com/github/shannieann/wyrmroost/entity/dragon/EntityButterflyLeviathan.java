@@ -446,7 +446,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 LivingEntity entity = (LivingEntity) getControllingPassenger();
 
                 if (!isJumpingOutOfWater()) xRot = entity.xRot * 0.5f;
-                handleWaterRiding(getTravelSpeed(), vec3d, entity);
+                //handleWaterRiding(getTravelSpeed(), vec3d, entity);
             }
 
             //ToDo: Remove this
