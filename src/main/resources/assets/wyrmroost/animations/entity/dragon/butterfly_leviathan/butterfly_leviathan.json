@@ -4330,7 +4330,7 @@
 			"bones": {
 				"body1": {
 					"rotation": {
-						"vector": ["-50+math.cos(query.anim_time*270/0.25)*0.2", "math.sin(query.anim_time*270/0.25)*0.2", "math.cos(query.anim_time*270/0.25)*0.1"]
+						"vector": [0, "math.sin(query.anim_time*270/0.25)*0.2", "math.cos(query.anim_time*270/0.25)*0.1"]
 					}
 				},
 				"body2": {
@@ -4573,7 +4573,7 @@
 			"bones": {
 				"body1": {
 					"rotation": {
-						"vector": ["-50+math.cos((query.anim_time + 0.1) * 180) *5", "math.cos((query.anim_time + 0.1) * 180) *4", 0]
+						"vector": [0, "math.cos((query.anim_time + 0.1) * 180) *4", 0]
 					},
 					"position": {
 						"vector": [0, "math.cos((query.anim_time + 0.1) * 180) *2", "math.cos((query.anim_time + 0.1) * 180) *2"]
