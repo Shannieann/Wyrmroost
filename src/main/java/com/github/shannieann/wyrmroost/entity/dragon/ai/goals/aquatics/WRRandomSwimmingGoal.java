@@ -59,9 +59,10 @@ public class WRRandomSwimmingGoal extends Goal {
         Vec3 targetVec =  BehaviorUtils.getRandomSwimmablePos(this.entity, radius, verticalDistance);
         if (targetVec != null) {
             Vec3 entityPos = this.entity.position();
-            double distance = entityPos.subtract(targetVec).length();
+            double deltaX = targetVec.x - entityPos.x;
+            double deltaZ = targetVec.z - entityPos.z;
 
-            if (distance < 24) {
+            if ((Math.sqrt(deltaX*deltaX+deltaZ*deltaZ)) < 12) {
                 return null;
             }
             return (targetVec);
