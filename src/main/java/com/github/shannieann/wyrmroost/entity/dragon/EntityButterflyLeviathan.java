@@ -697,7 +697,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 //        goalSelector.addGoal(3, new DragonBreedGoal(this));
 
         goalSelector.addGoal(4, new BFLAttackGoal(this));
-        goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,8));
+        goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,12,3));
         goalSelector.addGoal(5, new WRWaterLeapGoal(this, 1,12,30,64));
         goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 1.0, 64,48));
         goalSelector.addGoal(7,new WRIdleGoal(this, idleAnimation1Time));

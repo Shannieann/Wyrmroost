@@ -10,6 +10,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGround
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.fly.FlyerMoveController;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.fly.FlyerPathNavigator;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundNavigation;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingMoveControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingNavigator;
@@ -1075,7 +1076,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             case GROUND -> {
                 this.moveControl = new WRGroundMoveControl(this, groundMaxYaw);
                 this.lookControl = new WRGroundLookControl(this);
-                this.navigation = new GroundPathNavigation(this, this.level);
+                this.navigation = new WRGroundNavigation(this, this.level);
             }
             case FLYING -> {
                 this.moveControl = new FlyerMoveController(this);
@@ -1145,10 +1146,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return NavigationType.GROUND;
         }
         return NavigationType.GROUND;
-    }
-
-    public boolean isLandNavigator(){
-        return this.getNavigation() instanceof GroundPathNavigation;
     }
 
     @Override
@@ -1442,7 +1439,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
     public boolean isUsingLandNavigator() {
-        return getNavigation() instanceof GroundPathNavigation;
+        return (getNavigation() instanceof GroundPathNavigation);
     }
 
     // ====================================
