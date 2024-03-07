@@ -146,7 +146,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         this.deltaPitchLimit = entityDeltaPitchLimit;
         this.adjustmentYaw = entityYawAdjustment;
         this.adjustmentExtremityPitch = entityExtremityPitchAdjustment;
-        this.groundMaxYaw = 10;
+        this.groundMaxYaw = 5;
         this.setNavigator(NavigationType.SWIMMING);
     }
 
@@ -165,7 +165,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 180)
-                .add(MOVEMENT_SPEED, 0.08F)
+                .add(MOVEMENT_SPEED, 0.10F)
                 .add(ForgeMod.SWIM_SPEED.get(), 0.15F)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, 14)
