@@ -5,6 +5,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.AnimatedGoal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import java.util.EnumSet;
@@ -51,22 +52,37 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         if (!entity.isUsingSwimmingNavigator()) {
             return false;
         }
-        if (entity.getRandom().nextDouble() < 0.001) {
+        if (entity.getRandom().nextDouble() < /*0.001*/ 0.1) {
         //Get a random position...
             Vec3 randomPosition = (BehaviorUtils.getRandomSwimmablePos(this.entity, 32, 0));
             if (randomPosition != null) {
                 //Shift the random position to the water surface, and check if we have indeed reached water...
                 BlockPos waterTargetBlockPos = entity.level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, new BlockPos(randomPosition)).below();
-                waterTargetPosition = new Vec3(waterTargetBlockPos.getX(),waterTargetBlockPos.getY(),waterTargetBlockPos.getZ());
                 if (!(entity.level.getFluidState(waterTargetBlockPos).is(FluidTags.WATER))) {
                     return false;
                 }
-                //Get the initial position, 20 blocks below the target position, plus a random variation on X / Z, +/- 12
-                BlockPos initialBlockPos = new BlockPos(waterTargetPosition.x+entity.getRandom().nextInt(horizontalOffset*2+1)-horizontalOffset,waterTargetPosition.y-minWaterDistance,waterTargetPosition.z+entity.getRandom().nextInt(horizontalOffset*2+1)-horizontalOffset);
+                //Check to see we have a 3*3 column of water blocks from the water surface to the initial position, 20 blocks below...
+                for (int xOffset = -1; xOffset <=1; xOffset++) {
+                    for (int yOffset = 0; yOffset >= -20; yOffset--) {
+                        for (int zOffset = -1; zOffset <= 1; zOffset++) {
+                            BlockPos.MutableBlockPos targetBlockPosMutable = waterTargetBlockPos.mutable();
+                            targetBlockPosMutable.move(xOffset,yOffset,zOffset);
+                            if (!entity.level.isLoaded(targetBlockPosMutable)) {
+                                return false;
+                            }
+                            if (!entity.level.getFluidState(targetBlockPosMutable).is(FluidTags.WATER)) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+                //Set the initial jump position 20 blocks below the random water position...
+                BlockPos initialBlockPos = waterTargetBlockPos.below(20);
                 if (!(entity.level.getFluidState(initialBlockPos).is(FluidTags.WATER))) {
                     return false;
                 }
                 initialPosition = new Vec3(initialBlockPos.getX(),initialBlockPos.getY(),initialBlockPos.getZ());
+                waterTargetPosition = new Vec3(waterTargetBlockPos.getX(),waterTargetBlockPos.getY(),waterTargetBlockPos.getZ());
                 return true;
             }
         }
