@@ -429,7 +429,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public List<AABB> generateAttackBoxes(){
         List<AABB> attackBoxList = new ArrayList<>();
         attackBoxList.add(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(1.0F)).inflate(1.2));
-        attackBoxList.add(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(5.0F)).inflate(0.67));
+        attackBoxList.add(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(5.0F)).inflate(0.67,2.5,0.67));
         attackBoxList.add(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(7.0F)).inflate(0.67));
         return attackBoxList;
     }
