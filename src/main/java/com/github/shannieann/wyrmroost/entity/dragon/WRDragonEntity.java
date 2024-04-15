@@ -1167,48 +1167,30 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         double setForwardAcceleration = 0;
         if (this.isVehicle() && this.canBeControlledByRider()) {
             if (!this.isAlive()) return;
-            System.out.print("DeltaMovement length: "+this.getDeltaMovement().length());
-            System.out.print("DeltaMovement X: "+this.getDeltaMovement().x);
-            System.out.print("DeltaMovement Y: "+this.getDeltaMovement().y);
-            System.out.print("DeltaMovement Z: "+this.getDeltaMovement().z);
 
-            //Parameters for calculating speed, we need this as we cannot use getDeltaMovement in the travel method
-            double deltaX = this.position().x-travelX0;
-            double deltaY = this.position().y-travelY0;
-            double deltaZ = this.position().z-travelZ0;
-            float speedTravel = (float) Math.sqrt(deltaX*deltaX+deltaY*deltaY+deltaZ*deltaZ);
-            System.out.println("Travel Speed:" +speedTravel);
-            //Update values
-            travelX0 = this.position().x;
-            travelY0 = this.position().y;
-            travelZ0 = this.position().z;
-            //Convert speed relative to Minecraft coordinates to speed relative to entity coordinates
-            Vec3 speedRelativeToEntity = WRMathsUtility.rotateXZVectorByYawAngle(yRot,deltaX,deltaZ);
-            double strafeSpeed = speedRelativeToEntity.x;
-            double ySpeed = speedRelativeToEntity.y;
-            double forwardSpeed = speedRelativeToEntity.z;
-            System.out.println("Forward Speed:" +forwardSpeed);
             LivingEntity rider = (LivingEntity)this.getControllingPassenger();
             //Store previous yaw value
             this.yRotO = this.getYRot();
             //While being ridden, entity's pitch = 0.5 of rider's pitch
             //ToDo: needed?
-            // this.setXRot(rider.getXRot() * 0.5F);
-            
+            this.setXRot(rider.getXRot() * 0.5F);
+
             //Client (rendering): Align body to entity direction
             this.yBodyRot = this.getYRot();
             //Client (rendering): Align head to body
             this.yHeadRot = this.yBodyRot;
 
-            float xMov = rider.xxa * 0.5F;
-            float forwardAcceleration = rider.zza;
-            double forwardMotion = forwardSpeed;
+            float sideMotion = rider.xxa * 0.5F;
+            float forwardMotion = rider.zza;
 
-
-            //If rider wants to turn...
+            //ToDo: IF lerp turn, not for all creatures...
+            //ToDo: Default ground riding case...
+            //ToDo: Ground riding speeds...
+            //ToDo: OWD drake - ground riding + accelerate...
+            //If rider wants to turn sideways (yaw)...
             //Linear Interpolation system for changing the vehicle's yaw...
             //The Vehicle's Yaw will approach the Rider's Yaw...
-            //The speed at which it approaches depends on the speed of the vehicle..
+            //The speed at which it approaches depends on the speed of the vehicle...
             Vec3 deltaMovement = getDeltaMovement();
             double deltaMovementXZlength = Math.sqrt(deltaMovement.x*deltaMovement.x+deltaMovement.z*deltaMovement.z);
             double alphaValue =  deltaMovementXZlength > 1.0F ? 1.0F : deltaMovementXZlength;
@@ -1239,7 +1221,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 }
                 else
                 {
-                    handleGroundRiding(speed, xMov, forwardAcceleration, vec3d, rider);
+                    handleGroundRiding(speed, sideMotion, forwardMotion, vec3d, rider);
                 }
             }
             //ToDo when do we reach this?
