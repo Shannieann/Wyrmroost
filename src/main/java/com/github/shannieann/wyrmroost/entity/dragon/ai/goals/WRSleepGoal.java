@@ -105,6 +105,9 @@ public class WRSleepGoal extends AnimatedGoal{
         if (!entity.getSleeping()){
             return false;
         }
+        if (!entity.isIdling()) {
+            return false;
+        }
         return true;
     }
 
