@@ -776,7 +776,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             target = getTarget();
             //Stop using if target is lost
             //Unless we have set up a lightning fork, in which case we must finish the fork first...
-            if (!lightningForkSetup && target == null) {
+            if (!lightningForkQueued && target == null) {
                 return false;
             }
             return true;
@@ -847,17 +847,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     //Keep calling so long as we exceed the appropriate time as this must be performed over multiple ticks
                     if (elapsedTime > LIGHTNING_FORK_ANIMATION_QUEUE) {
                         //If we have not yet set up the appropriate directions for the lightningLine, do that...
-                        if (!lightningForkSetup) {
-                            toTarget = target.position().subtract(position()).normalize();
-                            toTarget1 = toTarget.yRot(0.523599F);
-                            toTarget2 = toTarget.yRot(-0.523599F);
-                            strikePos = position();
-                            strikePos1 = position();
-                            strikePos2 = position();
-                            lightningForkSetup = true;
-                        }
-                        //Else, just continue summoning the lightning fork...
-                        else if (lightningLineCounter < 25) {
+                        if (lightningLineCounter < 25) {
                             //Instantiate 3 lightning bolts
                             LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT,level);
                             LightningBolt lightningBolt1 = new LightningBolt(EntityType.LIGHTNING_BOLT,level);
@@ -979,6 +969,14 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     //Set the animationPlaying flag correctly, start playing the animation via the super class
                     animationPlaying =true;
                     super.start(LIGHTNING_FORK_ANIMATION, 2, LIGHTNING_FORK_ANIMATION_TIME);
+                    //Set-up the Lightning Fork parameters
+                    toTarget = target.position().subtract(position()).normalize();
+                    toTarget1 = toTarget.yRot(0.523599F);
+                    toTarget2 = toTarget.yRot(-0.523599F);
+                    strikePos = position();
+                    strikePos1 = position();
+                    strikePos2 = position();
+                    lightningForkSetup = true;
                 } else {
                     //Queue up ability to play when animation reaches the appropriate point
                     lightningStrikeQueued = true;
