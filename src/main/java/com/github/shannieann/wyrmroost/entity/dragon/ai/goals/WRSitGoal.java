@@ -16,10 +16,20 @@ public class WRSitGoal extends AnimatedGoal {
     }
 
     public boolean canUse() {
+        //can only sit if not already sitting
         if (!entity.getSitting()){
             return false;
         }
-        if (!entity.isOnGround() && !entity.isUsingFlyingNavigator()) {
+        //can only sit if on ground
+        if (!entity.isOnGround()) {
+            return false;
+        }
+        //can not sit if flying
+        if (entity.isUsingFlyingNavigator()) {
+            return false;
+        }
+        //can not sit if in water
+        if (entity.isInWater()){
             return false;
         }
         return true;
