@@ -143,6 +143,8 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         maxUpStep = 3;
         setPathfindingMalus(BlockPathTypes.WATER, 0);
         setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0);
+        setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0);
+        setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0);
         this.deltaPitchLimit = entityDeltaPitchLimit;
         this.adjustmentYaw = entityYawAdjustment;
         this.adjustmentExtremityPitch = entityExtremityPitchAdjustment;
@@ -812,7 +814,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             if (target == null){
                 return;
             }
-            getLookControl().setLookAt(target,0.0F,30F);
             //If an animation is already playing, play until completion...
             if (animationPlaying) {
                 if (super.canContinueToUse()) {
@@ -847,6 +848,11 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     }
                 }
                 if (lightningForkQueued) {
+                    float desiredAngleYaw = (float)(Mth.atan2(target.position().z-position().z, target.position().x - position().x) * (double)(180F / (float)Math.PI));
+                    setYRot(desiredAngleYaw);
+                    setYHeadRot(desiredAngleYaw);
+                    setYBodyRot(desiredAngleYaw);
+
                     //Animation Logic: If lightingLine is queued, and we have reached the appropriate time, call the GoalLogic...
                     //Keep calling so long as we exceed the appropriate time as this must be performed over multiple ticks
                     if (elapsedTime > LIGHTNING_FORK_ANIMATION_QUEUE) {
@@ -963,6 +969,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             // B: A Lightning strike attack, used if on water...
 
             if (target !=null && !animationPlaying) {
+                float desiredAngleYaw = (float)(Mth.atan2(
+                        target.position().z-position().z,
+                        target.position().x - position().x)
+                        * (double)(180F / (float)Math.PI));
+                setYRot(desiredAngleYaw);
+                yHeadRot = desiredAngleYaw;
+                yBodyRot = desiredAngleYaw;
                 //If on ground, queue a lightning fork...
                 //If on water, queue a lightning strike
                 if (isUsingLandNavigator()) {
@@ -973,7 +986,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     //Set the animationPlaying flag correctly, start playing the animation via the super class
                     animationPlaying =true;
                     super.start(LIGHTNING_FORK_ANIMATION, 2, LIGHTNING_FORK_ANIMATION_TIME);
-                    //Set-up the Lightning Fork parameters
+                    //Set up the Lightning Fork parameters
                     toTarget = target.position().subtract(position()).normalize();
                     toTarget1 = toTarget.yRot(0.523599F);
                     toTarget2 = toTarget.yRot(-0.523599F);
@@ -981,7 +994,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     strikePos1 = position();
                     strikePos2 = position();
                     lightningForkSetup = true;
-                } else {
+                } else if (isUsingSwimmingNavigator()){
                     //Queue up ability to play when animation reaches the appropriate point
                     lightningStrikeQueued = true;
                     //Stop moving in preparation for Lightning Strike
@@ -1016,7 +1029,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             boolean swimming = isUsingSwimmingNavigator();
             String navVariant = swimming? "water" : "land";
             //Get the entity to face its target properly
-            float desiredAngleYaw = (float)(Mth.atan2(target.position().z-position().z, target.position().x - position().x) * (double)(180F / (float)Math.PI)) - 90.0F;
+            float desiredAngleYaw = (float)(Mth.atan2(target.position().z-position().z, target.position().x - position().x) * (double)(180F / (float)Math.PI));
             setYRot(desiredAngleYaw);
             yHeadRot = desiredAngleYaw;
             yBodyRot = desiredAngleYaw;
