@@ -767,7 +767,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         @Override
         public void start() {
-            getLookControl().setLookAt(target);
+            getLookControl().setLookAt(target,0.0F,30F);
             setAggressive(true);
         }
 
@@ -809,7 +809,10 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             // Hence, we queue a melee attack, and start performing the melee attack animation...
             // We only actually perform the melee attack once it makes sense to do so in terms of the animation...
             target = getTarget();
-
+            if (target == null){
+                return;
+            }
+            getLookControl().setLookAt(target,0.0F,30F);
             //If an animation is already playing, play until completion...
             if (animationPlaying) {
                 if (super.canContinueToUse()) {
@@ -829,6 +832,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
                 //If a melee attack is queued...
                 if (meleeAttackQueued) {
+                    getLookControl().setLookAt(target,0.0F,30F);
                     // Note: the time for the attack to be performed depends on the attack variant being used
                     // The attack variant defines the animation variant which defines the time when it makes sense to perform the attack...
                     if (elapsedTime == attackQueueTime) {
@@ -847,6 +851,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     //Keep calling so long as we exceed the appropriate time as this must be performed over multiple ticks
                     if (elapsedTime > LIGHTNING_FORK_ANIMATION_QUEUE) {
                         //If we have not yet set up the appropriate directions for the lightningLine, do that...
+                        getLookControl().setLookAt(target,0.0F,30F);
                         if (lightningLineCounter < 25) {
                             //Instantiate 3 lightning bolts
                             LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT,level);
@@ -895,7 +900,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             if (!lightningForkQueued && !lightningStrikeQueued) {
                 target = getTarget();
                 if (target != null) {
-                    getLookControl().setLookAt(target);
                     double distanceToTargetSqr = distanceToSqr(target);
                     //Recalculate navigation only if we can see target, if we have not recently recalculated and if target has moved...
                     if ((getSensing().hasLineOfSight(target))
