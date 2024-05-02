@@ -8,6 +8,8 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRWaterLeapGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundMoveControl;
 import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
@@ -847,11 +849,14 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     }
                 }
                 if (lightningForkQueued) {
-                    //Animation Logic: If lightingLine is queued, and we have reached the appropriate time, call the GoalLogic...
+                    float desiredAngleYaw = (float)(Mth.atan2(target.position().z-position().z, target.position().x - position().x) * (double)(180F / (float)Math.PI))-90.0F;
+                    setYRot(desiredAngleYaw);
+                    setYHeadRot(desiredAngleYaw);
+                    setYBodyRot(desiredAngleYaw);
+                    //Animation Logic: If lightingFork is queued, and we have reached the appropriate time, call the GoalLogic...
                     //Keep calling so long as we exceed the appropriate time as this must be performed over multiple ticks
                     if (elapsedTime > LIGHTNING_FORK_ANIMATION_QUEUE) {
                         //If we have not yet set up the appropriate directions for the lightningLine, do that...
-                        getLookControl().setLookAt(target,0.0F,30F);
                         if (lightningLineCounter < 25) {
                             //Instantiate 3 lightning bolts
                             LightningBolt lightningBolt = new LightningBolt(EntityType.LIGHTNING_BOLT,level);
@@ -939,12 +944,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 //Update timer: Reduce by 1 if not already at 0
                 this.navRecalculationTicks = Math.max(this.navRecalculationTicks - 1, 0);
 
-                //Reduce by 1 if not already at 0
-
-                //checkForLightningCounter = Math.max(checkForLightningCounter- 1, 0);
-
                 //Decide which attack to use: LightningAttack or MeleeAttack.
-
                 //Do not randomly use lightning attacks if tamed
                 if (!isTame() && canPerformLightningAttack()) {
                     queueLightningAttack();
@@ -962,7 +962,14 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             // A: A Lightning Fork attack, used if on ground
             // B: A Lightning strike attack, used if on water...
 
+
             if (target !=null && !animationPlaying) {
+                //Correct rotation
+                float desiredAngleYaw = (float)(Mth.atan2(target.position().z-position().z, target.position().x - position().x) * (double)(180F / (float)Math.PI));
+                setYRot(desiredAngleYaw);
+                setYHeadRot(desiredAngleYaw);
+                setYBodyRot(desiredAngleYaw);
+
                 //If on ground, queue a lightning fork...
                 //If on water, queue a lightning strike
                 if (isUsingLandNavigator()) {
@@ -972,8 +979,9 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     getNavigation().stop();
                     //Set the animationPlaying flag correctly, start playing the animation via the super class
                     animationPlaying =true;
+
                     super.start(LIGHTNING_FORK_ANIMATION, 2, LIGHTNING_FORK_ANIMATION_TIME);
-                    //Set-up the Lightning Fork parameters
+                    //Set up the Lightning Fork parameters
                     toTarget = target.position().subtract(position()).normalize();
                     toTarget1 = toTarget.yRot(0.523599F);
                     toTarget2 = toTarget.yRot(-0.523599F);
@@ -1016,10 +1024,10 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             boolean swimming = isUsingSwimmingNavigator();
             String navVariant = swimming? "water" : "land";
             //Get the entity to face its target properly
-            float desiredAngleYaw = (float)(Mth.atan2(target.position().z-position().z, target.position().x - position().x) * (double)(180F / (float)Math.PI)) - 90.0F;
+            float desiredAngleYaw = (float)(Mth.atan2(target.position().z-position().z, target.position().x - position().x) * (double)(180F / (float)Math.PI))-90.0F;
             setYRot(desiredAngleYaw);
-            yHeadRot = desiredAngleYaw;
-            yBodyRot = desiredAngleYaw;
+            setYHeadRot(desiredAngleYaw);
+            setYBodyRot(desiredAngleYaw);
             //set the attackQueueTime depending on which animation variant is being used
             switch (attackVariant) {
                 case 1 ->
