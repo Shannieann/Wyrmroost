@@ -52,7 +52,10 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         if (!entity.isUsingSwimmingNavigator()) {
             return false;
         }
-        if (entity.getRandom().nextDouble() < /*0.001*/ 0.1) {
+        if (entity.getTarget()!=null){
+            return false;
+        }
+        if (entity.getRandom().nextDouble() < 0.001) {
         //Get a random position...
             Vec3 randomPosition = (BehaviorUtils.getRandomSwimmablePos(this.entity, 32, 0));
             if (randomPosition != null) {
