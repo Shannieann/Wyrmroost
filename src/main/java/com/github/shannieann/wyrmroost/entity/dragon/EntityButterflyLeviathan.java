@@ -895,7 +895,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             if (!lightningForkQueued && !lightningStrikeQueued) {
                 target = getTarget();
                 if (target != null) {
-                    //getLookControl().setLookAt(target);
+                    getLookControl().setLookAt(target);
                     double distanceToTargetSqr = distanceToSqr(target);
                     //Recalculate navigation only if we can see target, if we have not recently recalculated and if target has moved...
                     if ((getSensing().hasLineOfSight(target))
