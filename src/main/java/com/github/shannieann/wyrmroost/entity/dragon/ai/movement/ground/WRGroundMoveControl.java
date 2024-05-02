@@ -72,7 +72,6 @@ public class WRGroundMoveControl extends MoveControl{
                     this.mob.setYRot(targetMobAngle);
                     this.mob.setYBodyRot(this.mob.getYRot());
                     this.mob.setYHeadRot(this.mob.getYRot());
-
                 }
             } else {
                 this.mob.setYRot(this.rotlerp(this.mob.getYRot(), horizontalAngle, maximumYawChange));
