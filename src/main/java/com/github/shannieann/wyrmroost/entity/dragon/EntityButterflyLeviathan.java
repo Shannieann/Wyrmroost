@@ -143,7 +143,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
         super(entityType, level);
         noCulling = WRConfig.NO_CULLING.get();
-        maxUpStep = 2;
+        maxUpStep = 3;
         setPathfindingMalus(BlockPathTypes.WATER, 0);
         setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0);
         this.deltaPitchLimit = entityDeltaPitchLimit;
