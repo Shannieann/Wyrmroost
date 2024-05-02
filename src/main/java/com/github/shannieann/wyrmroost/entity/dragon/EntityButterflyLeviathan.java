@@ -64,9 +64,8 @@ import java.util.function.Predicate;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-//2024.04.14
+//2024.05.02
 //ToDo: Showcases
-// Showcase melee attack
 // Showcase movement
 
 //ToDo: Other fixes:
