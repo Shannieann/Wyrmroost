@@ -4,6 +4,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -61,7 +62,21 @@ public class WRGroundMoveControl extends MoveControl{
                 return;
             }
             float horizontalAngle = (float) (Mth.atan2(targetZ, targetX) * (double) (180F / (float) Math.PI)) - 90.0F;
-            this.mob.setYRot(this.rotlerp(this.mob.getYRot(), horizontalAngle, maximumYawChange));
+            if (this.mob.isAggressive()) {
+                LivingEntity targetMob = this.mob.getTarget();
+                if (targetMob !=null){
+                    float targetMobAngle = (float) (Mth.atan2(
+                            targetMob.position().z-this.mob.getZ(),
+                            targetMob.position().x-this.mob.getX())
+                            * (double) (180F / (float) Math.PI)) - 90.0F;
+                    this.mob.setYRot(targetMobAngle);
+                    this.mob.setYBodyRot(this.mob.getYRot());
+                    this.mob.setYHeadRot(this.mob.getYRot());
+
+                }
+            } else {
+                this.mob.setYRot(this.rotlerp(this.mob.getYRot(), horizontalAngle, maximumYawChange));
+            }
             this.mob.setSpeed((float) (this.speedModifier * this.mob.getAttributeValue(Attributes.MOVEMENT_SPEED)));
             BlockPos blockpos = this.mob.blockPosition();
             BlockState blockstate = this.mob.level.getBlockState(blockpos);
@@ -88,7 +103,6 @@ public class WRGroundMoveControl extends MoveControl{
                 return false;
             }
         }
-
         return true;
     }
 }
