@@ -867,14 +867,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setNavigator(properNavigator);
         }
 
-        //TODO: Is this necessary?
-        //Won't targets get cleared automatically elsewhere?
-        //Perhaps we only need to check for player not creative / spectator
-        LivingEntity target = getTarget();
-        if (target != null && (!target.isAlive() || !canAttack(target) || !wantsToAttack(target, getOwner())))
-            setTarget(null);
-
-
         // UPDATE AGE:
         // The entity's is updated once every minute (AGE_UPDATE_INTERVAL == 1200)
         // Abstract method ageProgressAmount() sets the float amount by which to update age every minute
