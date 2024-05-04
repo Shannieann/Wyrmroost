@@ -46,15 +46,20 @@ public class DragonEggItem extends Item
     }*/
 
     @Override
-    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity)
-    {
-        if (!player.isCreative()) return false;
-        if (!entity.isAlive()) return false;
-        if (!(entity instanceof WRDragonEntity)) return false;
+    public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
+        if (!player.isCreative()) {
+            return false;
+        }
+        if (!entity.isAlive()) {
+            return false;
+        }
+        if (!(entity instanceof WRDragonEntity)) {
+            return false;
+        }
 
         CompoundTag nbt = new CompoundTag();
-        nbt.putString(DragonEggEntity.DATA_DRAGON_TYPE, EntityType.getKey(entity.getType()).toString());
-        nbt.putInt(DragonEggEntity.DATA_HATCH_TIME, DragonEggProperties.get(entity.getType()).getHatchTime());
+        nbt.putString("Contained Dragon", EntityType.getKey(entity.getType()).toString());
+        nbt.putInt("Hatch Time", DragonEggProperties.get(entity.getType()).getHatchTime());
         stack.setTag(nbt);
 
         player.displayClientMessage(getName(stack), true);
@@ -62,27 +67,30 @@ public class DragonEggItem extends Item
     }
 
     @Override
-    public InteractionResult useOn(UseOnContext ctx)
-    {
-        Player player = ctx.getPlayer();
-        if (player.isShiftKeyDown()) return super.useOn(ctx);
+    public InteractionResult useOn(UseOnContext context) {
+        Player player = context.getPlayer();
+        if (player.isShiftKeyDown()) return super.useOn(context);
 
-        Level level = ctx.getLevel();
-        CompoundTag tag = ctx.getItemInHand().getTag();
-        BlockPos pos = ctx.getClickedPos();
+        Level level = context.getLevel();
+        CompoundTag tag = context.getItemInHand().getTag();
+        BlockPos pos = context.getClickedPos();
         BlockState state = level.getBlockState(pos);
 
-        if (tag == null || !tag.contains(DragonEggEntity.DATA_DRAGON_TYPE)) return InteractionResult.PASS;
-        if (!state.getCollisionShape(level, pos).isEmpty()) pos = pos.relative(ctx.getClickedFace());
-        if (!level.getEntitiesOfClass(DragonEggEntity.class, new AABB(pos)).isEmpty())
+        if (tag == null || !tag.contains("Contained Dragon")){
+            return InteractionResult.PASS;
+        }
+        if (!state.getCollisionShape(level, pos).isEmpty()) {
+            pos = pos.relative(context.getClickedFace());
+        }
+        if (!level.getEntitiesOfClass(DragonEggEntity.class, new AABB(pos)).isEmpty()) {
             return InteractionResult.FAIL;
+        }
 
-        DragonEggEntity eggEntity = new DragonEggEntity(ModUtils.getEntityTypeByKey(tag.getString(DragonEggEntity.DATA_DRAGON_TYPE)), tag.getInt(DragonEggEntity.DATA_HATCH_TIME), level);
+        DragonEggEntity eggEntity = new DragonEggEntity(ModUtils.getEntityTypeByKey(tag.getString("Contained Dragon")), tag.getInt("Hatch Time"), level);
         eggEntity.absMoveTo(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d);
 
         if (!level.isClientSide) level.addFreshEntity(eggEntity);
-        if (!player.isCreative()) player.setItemInHand(ctx.getHand(), ItemStack.EMPTY);
-
+        if (!player.isCreative()) player.setItemInHand(context.getHand(), ItemStack.EMPTY);
         return InteractionResult.SUCCESS;
     }
     
@@ -91,7 +99,7 @@ public class DragonEggItem extends Item
     {
         CompoundTag tag = stack.getTag();
         if (tag == null || tag.isEmpty()) return super.getName(stack);
-        Optional<EntityType<?>> type = EntityType.byString(tag.getString(DragonEggEntity.DATA_DRAGON_TYPE));
+        Optional<EntityType<?>> type = EntityType.byString(tag.getString("Contained Dragon"));
         
         if (type.isPresent())
         {
@@ -107,8 +115,8 @@ public class DragonEggItem extends Item
     {
         CompoundTag tag = stack.getTag();
 
-        if (tag != null && tag.contains(DragonEggEntity.DATA_HATCH_TIME))
-            tooltip.add(new TranslatableComponent("item.wyrmroost.egg.tooltip", tag.getInt(DragonEggEntity.DATA_HATCH_TIME) / 1200).withStyle(ChatFormatting.AQUA));
+        if (tag != null && tag.contains("Contained Dragon"))
+            tooltip.add(new TranslatableComponent("item.wyrmroost.egg.tooltip", tag.getInt("Hatch Time") / 1200).withStyle(ChatFormatting.AQUA));
         Player player = ClientEvents.getPlayer();
         if (player != null && player.isCreative())
             tooltip.add(new TranslatableComponent("item.wyrmroost.egg.creativetooltip").withStyle(ChatFormatting.GRAY));
@@ -123,8 +131,8 @@ public class DragonEggItem extends Item
     {
         ItemStack stack = new ItemStack(WRItems.DRAGON_EGG.get());
         CompoundTag tag = new CompoundTag();
-        tag.putString(DragonEggEntity.DATA_DRAGON_TYPE, EntityType.getKey(type).toString());
-        tag.putInt(DragonEggEntity.DATA_HATCH_TIME, hatchTime);
+        tag.putString("Contained Dragon", EntityType.getKey(type).toString());
+        tag.putInt("Hatch Time", hatchTime);
         stack.setTag(tag);
         return stack;
     }
