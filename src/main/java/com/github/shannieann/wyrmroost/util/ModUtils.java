@@ -99,16 +99,6 @@ public final class ModUtils
     }
 
     /**
-     * Get an entity type by a string "key"
-     */
-    @Nullable
-    @SuppressWarnings("unchecked")
-    public static <T extends Entity> EntityType<T> getEntityTypeByKey(@Nonnull String key)
-    {
-        return (EntityType<T>) EntityType.byString(key).orElse(null);
-    }
-
-    /**
      * Play a sound on the local client.
      *
      * @param level  :thinking:
@@ -205,4 +195,17 @@ public final class ModUtils
             itr.remove();
         }
     }
+
+    //////////////////////
+    /**
+     * Get an entity type by a string "key"
+     */
+    @Nullable
+    @SuppressWarnings("unchecked")
+    public static <T extends Entity> EntityType<T> getEntityTypeByKey(@Nonnull String key)
+    {
+        return (EntityType<T>) EntityType.byString(key).orElse(null);
+    }
+
+
 }
