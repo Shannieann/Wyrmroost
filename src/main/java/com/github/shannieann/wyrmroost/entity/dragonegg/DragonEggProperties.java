@@ -51,8 +51,7 @@ public class DragonEggProperties
     /**
      * Get the conditions the egg has to be under to continue hatching
     */
-    public boolean testConditions(DragonEggEntity egg)
-    {
+    public boolean testHatchingProgressConditions(DragonEggEntity egg) {
         return conditions.test(egg);
     }
 
