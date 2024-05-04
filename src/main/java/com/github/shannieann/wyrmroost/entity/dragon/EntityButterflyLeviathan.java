@@ -67,6 +67,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //2024.05.04
 //ToDo: Showcases
 // Showcase movement
+// BFL attack - fix look distance + head rot
 
 //ToDo: Eggs
 // DragonEggItem
