@@ -64,9 +64,16 @@ import java.util.function.Predicate;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-//2024.05.02
+//2024.05.04
 //ToDo: Showcases
 // Showcase movement
+
+//ToDo: Eggs
+// DragonEggItem
+// GeckoLib
+// Egg Properties
+// Builders
+// Breeding methods
 
 //ToDo: Other fixes:
 // BFLSitGoal - test logic
@@ -82,11 +89,10 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //ToDo: Taming
 // Taming Logic, confirm no debug code is leftover...
 
-
 //ToDo: Other tamed stuff
 // Breeding...
-// Eggs...
 // Conduit
+// Armor
 // DragonStaff: Home, follow, defend...
 
 //ToDo: Riding
