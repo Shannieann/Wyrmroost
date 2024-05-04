@@ -35,9 +35,9 @@ public class DragonEggStackRenderer extends BlockEntityWithoutLevelRenderer
     private static ResourceLocation getEggTexture(ItemStack stack)
     {
         CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains(DragonEggEntity.DATA_DRAGON_TYPE))
+        if (tag != null && tag.contains("Dragon Type"))
         {
-            EntityType<?> type = ModUtils.getEntityTypeByKey(tag.getString(DragonEggEntity.DATA_DRAGON_TYPE));
+            EntityType<?> type = ModUtils.getEntityTypeByKey(tag.getString("Dragon Type"));
             if (type != null) return DragonEggRenderer.getDragonEggTexture(type);
         }
 
