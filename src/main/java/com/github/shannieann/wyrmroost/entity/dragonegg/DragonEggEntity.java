@@ -33,12 +33,10 @@ import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
 
-public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnData
-{
+public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnData {
     private static final int HATCH_ID = 1;
     private static final int WIGGLE_ID = 2;
     private static final int UPDATE_CONDITIONS_INTERVAL = 50;
-
     public EntityType<WRDragonEntity> containedDragon;
     public DragonEggProperties properties; // cache for speed
     public Direction wiggleDirection = Direction.NORTH;
