@@ -82,17 +82,17 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //ToDo: Taming
 // Taming Logic, confirm no debug code is leftover...
 
-//ToDo: Riding
-// Ground riding... acceleration can be handled by setDeltaMovement(getDeltaMovement().add(accel))
-// Split logic...
-// Allow some creatures to spin unlock, some not to
-
 
 //ToDo: Other tamed stuff
 // Breeding...
 // Eggs...
 // Conduit
 // DragonStaff: Home, follow, defend...
+
+//ToDo: Riding
+// Ground riding... acceleration can be handled by setDeltaMovement(getDeltaMovement().add(accel))
+// Split logic...
+// Allow some creatures to spin unlock, some not to
 
 //TODO: CLASS:
 // Tidy up
@@ -236,6 +236,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     //      A.4) Entity Data: HOME
     // ====================================
 
+    //ToDo: Needed?
     @Override
     public boolean defendsHome() {
         return true;
@@ -389,6 +390,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         return true;
     }
 
+    @Override
     public boolean isOnFire() {
         return false;
     }
@@ -852,7 +854,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     setYHeadRot(desiredAngleYaw);
                     setYBodyRot(desiredAngleYaw);
 
-                    //Animation Logic: If lightingLine is queued, and we have reached the appropriate time, call the GoalLogic...
+                    //Animation Logic: If lightingFork is queued, and we have reached the appropriate time, call the GoalLogic...
                     //Keep calling so long as we exceed the appropriate time as this must be performed over multiple ticks
                     if (elapsedTime > LIGHTNING_FORK_ANIMATION_QUEUE) {
                         //If we have not yet set up the appropriate directions for the lightningLine, do that...
