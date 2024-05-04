@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.items.book.action;
+package com.github.shannieann.wyrmroost.item.book.action;
 
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;

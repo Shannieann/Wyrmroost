@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.data;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.items.LazySpawnEggItem;
+import com.github.shannieann.wyrmroost.item.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.registry.WRBlocks;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.ModUtils;

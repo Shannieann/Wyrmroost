@@ -2,8 +2,8 @@ package com.github.shannieann.wyrmroost;
 
 import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.items.LazySpawnEggItem;
-import com.github.shannieann.wyrmroost.items.base.ArmorBase;
+import com.github.shannieann.wyrmroost.item.LazySpawnEggItem;
+import com.github.shannieann.wyrmroost.item.base.ArmorBase;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.github.shannieann.wyrmroost.util.ModUtils;

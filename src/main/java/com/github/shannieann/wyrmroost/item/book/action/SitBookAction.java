@@ -1,7 +1,7 @@
-package com.github.shannieann.wyrmroost.items.book.action;
+package com.github.shannieann.wyrmroost.item.book.action;
 
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
+import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 

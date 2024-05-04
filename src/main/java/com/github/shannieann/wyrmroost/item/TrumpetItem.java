@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.items;
+package com.github.shannieann.wyrmroost.item;
 
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.registry.WRSounds;

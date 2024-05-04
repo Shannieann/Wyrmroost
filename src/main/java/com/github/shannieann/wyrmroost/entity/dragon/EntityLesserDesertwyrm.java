@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-import com.github.shannieann.wyrmroost.items.LDWyrmItem;
+import com.github.shannieann.wyrmroost.item.LDWyrmItem;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import net.minecraft.core.BlockPos;

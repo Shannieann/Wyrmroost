@@ -1,10 +1,10 @@
-package com.github.shannieann.wyrmroost.items.book.action;
+package com.github.shannieann.wyrmroost.item.book.action;
 
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
+import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;

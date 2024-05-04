@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.items.book.action;
+package com.github.shannieann.wyrmroost.item.book.action;
 
 import java.util.ArrayList;
 import java.util.List;

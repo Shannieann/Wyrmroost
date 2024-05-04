@@ -1,9 +1,9 @@
-package com.github.shannieann.wyrmroost.items.book;
+package com.github.shannieann.wyrmroost.item.book;
 
 import com.github.shannieann.wyrmroost.client.render.TarragonTomeRenderer;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.items.book.action.BookAction;
-import com.github.shannieann.wyrmroost.items.book.action.BookActions;
+import com.github.shannieann.wyrmroost.item.book.action.BookAction;
+import com.github.shannieann.wyrmroost.item.book.action.BookActions;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;

@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.model.tome;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
+import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
 import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 

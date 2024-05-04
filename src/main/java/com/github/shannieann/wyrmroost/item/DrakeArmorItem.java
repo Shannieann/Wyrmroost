@@ -1,7 +1,7 @@
-package com.github.shannieann.wyrmroost.items;
+package com.github.shannieann.wyrmroost.item;
 
-import com.github.shannieann.wyrmroost.items.base.ArmorBase;
-import com.github.shannieann.wyrmroost.items.base.ArmorMaterials;
+import com.github.shannieann.wyrmroost.item.base.ArmorBase;
+import com.github.shannieann.wyrmroost.item.base.ArmorMaterials;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;

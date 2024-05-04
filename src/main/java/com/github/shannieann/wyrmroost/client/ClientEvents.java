@@ -11,7 +11,7 @@ import com.github.shannieann.wyrmroost.client.render.entity.effect.RenderLightni
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.GeodeTippedArrowRenderer;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.items.LazySpawnEggItem;
+import com.github.shannieann.wyrmroost.item.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.registry.*;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import com.mojang.math.Vector3d;

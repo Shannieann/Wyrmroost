@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.projectile;
 
-import com.github.shannieann.wyrmroost.items.GeodeTippedArrowItem;
+import com.github.shannieann.wyrmroost.item.GeodeTippedArrowItem;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import net.minecraft.network.FriendlyByteBuf;

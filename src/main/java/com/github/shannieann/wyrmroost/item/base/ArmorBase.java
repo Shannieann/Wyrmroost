@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.items.base;
+package com.github.shannieann.wyrmroost.item.base;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.registry.WRItems;

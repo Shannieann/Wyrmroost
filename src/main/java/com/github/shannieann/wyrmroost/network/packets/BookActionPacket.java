@@ -1,8 +1,8 @@
 package com.github.shannieann.wyrmroost.network.packets;
 
-import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
-import com.github.shannieann.wyrmroost.items.book.action.BookAction;
-import com.github.shannieann.wyrmroost.items.book.action.BookActions;
+import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
+import com.github.shannieann.wyrmroost.item.book.action.BookAction;
+import com.github.shannieann.wyrmroost.item.book.action.BookActions;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import net.minecraft.network.FriendlyByteBuf;

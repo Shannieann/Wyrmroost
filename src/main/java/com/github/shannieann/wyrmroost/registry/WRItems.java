@@ -2,11 +2,11 @@ package com.github.shannieann.wyrmroost.registry;
 
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.items.*;
-import com.github.shannieann.wyrmroost.items.base.ArmorBase;
-import com.github.shannieann.wyrmroost.items.base.ArmorMaterials;
-import com.github.shannieann.wyrmroost.items.base.ToolMaterials;
-import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
+import com.github.shannieann.wyrmroost.item.*;
+import com.github.shannieann.wyrmroost.item.base.ArmorBase;
+import com.github.shannieann.wyrmroost.item.base.ArmorMaterials;
+import com.github.shannieann.wyrmroost.item.base.ToolMaterials;
+import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.tags.ItemTags;

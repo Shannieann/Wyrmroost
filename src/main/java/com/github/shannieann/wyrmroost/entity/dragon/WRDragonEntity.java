@@ -14,8 +14,8 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGround
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingMoveControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingNavigator;
-import com.github.shannieann.wyrmroost.items.DragonArmorItem;
-import com.github.shannieann.wyrmroost.items.DragonEggItem;
+import com.github.shannieann.wyrmroost.item.DragonArmorItem;
+import com.github.shannieann.wyrmroost.item.DragonEggItem;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRKeybind;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
