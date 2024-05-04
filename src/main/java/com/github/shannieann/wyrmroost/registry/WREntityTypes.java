@@ -348,9 +348,9 @@ public class WREntityTypes<E extends Entity> extends EntityType<E>
             return spawnPlacement(ON_GROUND, Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Animal::checkMobSpawnRules);
         }
 
-        private Builder<T> dragonEgg(DragonEggProperties props)
+        private Builder<T> dragonEgg(DragonEggProperties properties)
         {
-            this.dragonEggProperties = props;
+            this.dragonEggProperties = properties;
             return this;
         }
 
