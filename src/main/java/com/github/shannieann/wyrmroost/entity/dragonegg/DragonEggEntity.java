@@ -15,6 +15,9 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
@@ -46,20 +49,22 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
     public boolean wiggling = false;
     public int hatchTime;
 
-    public DragonEggEntity(EntityType<? extends DragonEggEntity> type, Level level)
-    {
+
+    public static final EntityDataAccessor<String> CONTAINED_DRAGON = SynchedEntityData.defineId(DragonEggEntity.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<Integer> HATCH_TIME = SynchedEntityData.defineId(DragonEggEntity.class,EntityDataSerializers.INT);
+
+
+    public DragonEggEntity(EntityType<? extends DragonEggEntity> type, Level level) {
         super(type, level);
     }
 
-    public DragonEggEntity(EntityType<WRDragonEntity> type, int hatchTime, Level level)
-    {
+    public DragonEggEntity(EntityType<WRDragonEntity> dragonType, int hatchTime, Level level) {
         super(WREntityTypes.DRAGON_EGG.get(), level);
-        this.containedDragon = type;
+        this.containedDragon = dragonType;
         this.hatchTime = hatchTime;
     }
 
-    public DragonEggEntity(PlayMessages.SpawnEntity packet, Level level)
-    {
+    public DragonEggEntity(PlayMessages.SpawnEntity packet, Level level) {
         super(WREntityTypes.DRAGON_EGG.get(), level);
         this.containedDragon = ModUtils.getEntityTypeByKey(packet.getAdditionalData().readUtf());
     }
@@ -68,15 +73,16 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
     //           Entity NBT
     // ================================
     @Override
-    protected void defineSynchedData()
-    {
+    protected void defineSynchedData() {
+        entityData.define(CONTAINED_DRAGON, "none");
+        entityData.define(HATCH_TIME, 0);
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound)
+    public void readAdditionalSaveData(CompoundTag nbt)
     {
-        containedDragon = ModUtils.getEntityTypeByKey(compound.getString(DATA_DRAGON_TYPE));
-        hatchTime = compound.getInt(DATA_HATCH_TIME);
+        nbt.putInt("Hatch Time",getHatchTime());
+        nbt.putString("Contained Dragon",getContainedDragon());
     }
 
     @Override
@@ -84,6 +90,22 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
     {
         compound.putString(DATA_DRAGON_TYPE, getDragonKey());
         compound.putInt(DATA_HATCH_TIME, hatchTime);
+    }
+
+    public String getContainedDragon(){
+        return entityData.get(CONTAINED_DRAGON);
+    }
+
+    public void setContainedDragon(String containedDragon){
+        entityData.set(CONTAINED_DRAGON,containedDragon);
+    }
+
+    public int getHatchTime(){
+        return entityData.get(HATCH_TIME);
+    }
+
+    public void setHatchTime(int hatchTime){
+        entityData.set(HATCH_TIME,hatchTime);
     }
 
     public String getDragonKey()
