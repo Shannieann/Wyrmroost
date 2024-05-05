@@ -1696,7 +1696,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     //tameLogic is specific to each creature, it contains the conditions for taming
-    public abstract void tameLogic (Player tamer, ItemStack stack);
+    public abstract InteractionResult tameLogic (Player tamer, ItemStack stack);
 
     //attemptTame is ran when the taming conditions are met
     public boolean attemptTame(float tameSucceedChance, @Nullable Player tamer, ItemStack stack) {
@@ -1757,7 +1757,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (!isTame()){
-            tameLogic(player,stack);
+            return tameLogic(player,stack);
         }
 
         if (isOwnedBy(player) && isFood(stack)) {

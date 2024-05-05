@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.DustParticleOptions;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.tags.ItemTags;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -383,8 +384,8 @@ public class EntitySilverGlider extends WRDragonEntity
         }
     }
 
-    public void tameLogic (Player tamer, ItemStack stack) {
-
+    public InteractionResult tameLogic (Player tamer, ItemStack stack) {
+        return InteractionResult.PASS;
     };
 
 }

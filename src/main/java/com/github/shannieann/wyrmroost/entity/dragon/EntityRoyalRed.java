@@ -16,6 +16,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
@@ -64,8 +65,8 @@ public class EntityRoyalRed extends WRDragonEntity {
     public int idleAnimationVariants(){
         return 0;
     }
-    public void tameLogic (Player tamer, ItemStack stack) {
-
+    public InteractionResult tameLogic (Player tamer, ItemStack stack) {
+        return InteractionResult.PASS;
     };
     public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);

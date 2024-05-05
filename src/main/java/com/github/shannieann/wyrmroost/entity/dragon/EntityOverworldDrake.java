@@ -16,6 +16,7 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -331,8 +332,8 @@ public class EntityOverworldDrake extends WRDragonEntity
     {
         return new DragonInventory(this, 24);
     }
-    public void tameLogic (Player tamer, ItemStack stack) {
-
+    public InteractionResult tameLogic (Player tamer, ItemStack stack) {
+        return InteractionResult.PASS;
     };
     @Override
     public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad)

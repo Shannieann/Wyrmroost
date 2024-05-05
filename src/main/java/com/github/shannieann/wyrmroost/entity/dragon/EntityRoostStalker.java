@@ -53,7 +53,10 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 public class EntityRoostStalker extends WRDragonEntity
 {
 
-    public void tameLogic(Player tamer, ItemStack stack) {
+    public InteractionResult tameLogic(Player tamer, ItemStack stack) {
+        if (tamer.level.isClientSide){
+            return InteractionResult.CONSUME;
+        }
         //Taming
         // The reason we don't use isFood here is that roost stalkers eat meat as food. Eggs are just the taming food.
         // Changed from only the "egg" item to *all* egg items. Meaning eggs from other mods and other vanilla eggs are good too.
@@ -66,8 +69,12 @@ public class EntityRoostStalker extends WRDragonEntity
             // Dogs get more health when they are tamed, so maybe roosties get the same? Idk what wolf was thinking tho tbh,
             // 20 should just be the default health for roost stalkers.
             float tameChance = (tamer.isCreative() || this.isHatchling())? 1.0f : 0.25f;
-            if (attemptTame(tameChance, tamer, stack)) getAttribute(MAX_HEALTH).setBaseValue(20);
+            if (attemptTame(tameChance, tamer, stack)) {
+                getAttribute(MAX_HEALTH).setBaseValue(20);
+            }
+            return InteractionResult.SUCCESS;
         }
+        return InteractionResult.PASS;
     }
     @Override
     public int idleAnimationVariants(){

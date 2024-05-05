@@ -5,6 +5,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -43,8 +44,8 @@ public class EntityCanariWyvern extends WRDragonEntity
     public int idleAnimationVariants(){
         return 1;
     }
-    public void tameLogic (Player tamer, ItemStack stack) {
-
+    public InteractionResult tameLogic (Player tamer, ItemStack stack) {
+        return InteractionResult.PASS;
     };
     public Player pissedOffTarget;
 

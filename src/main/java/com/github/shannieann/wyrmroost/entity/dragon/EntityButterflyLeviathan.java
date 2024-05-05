@@ -22,6 +22,7 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -604,9 +605,9 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     //ToDo: Hatchling?
     //((beached && lightningCooldown > 60 && level.isRainingAt(blockPosition())) || player.isCreative() || isHatchling()) && isFood(stack)) {
 
-    public void tameLogic(Player tamer, ItemStack stack) {
+    public InteractionResult tameLogic(Player tamer, ItemStack stack) {
         if (level.isClientSide) {
-            return;
+            return InteractionResult.CONSUME;
         }
 
         if (((this.isOnGround() && !this.isUnderWater() && getLightningAttackCooldown() > 50) || tamer.isCreative() || this.isHatchling()) && isFood(stack) && getEatingCooldown() <= 0) {
@@ -617,7 +618,9 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             } else {
                 super.attemptTame(0.2f, tamer, stack);
             }
+            return InteractionResult.SUCCESS;
         }
+        return InteractionResult.PASS;
     }
 
     // ====================================
