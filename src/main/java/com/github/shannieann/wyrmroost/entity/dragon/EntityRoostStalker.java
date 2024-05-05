@@ -85,7 +85,11 @@ public class EntityRoostStalker extends WRDragonEntity
     public EntityRoostStalker(EntityType<? extends EntityRoostStalker> stalker, Level level)
     {
         super(stalker, level);
-        maxUpStep = 0;
+    }
+
+    @Override
+    public float getStepHeight() {
+        return 0;
     }
 
     @Override

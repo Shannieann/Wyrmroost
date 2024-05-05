@@ -146,7 +146,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
         super(entityType, level);
         noCulling = WRConfig.NO_CULLING.get();
-        maxUpStep = 3;
         setPathfindingMalus(BlockPathTypes.WATER, 0);
         setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0);
         setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0);
@@ -512,6 +511,11 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     @Override
     public boolean speciesCanWalk() {
         return true;
+    }
+
+    @Override
+    public float getStepHeight() {
+        return 3;
     }
 
     // ====================================

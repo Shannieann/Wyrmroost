@@ -208,7 +208,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     protected WRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        maxUpStep = 1;
         //TODO: CONFIG
         this.noCulling = true;
         DragonInventory inv = createInv();
@@ -1138,6 +1137,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return NavigationType.GROUND;
         }
         return NavigationType.GROUND;
+    }
+
+    @Override
+    public float getStepHeight() {
+        return 1;
     }
 
     @Override
