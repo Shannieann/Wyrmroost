@@ -59,7 +59,7 @@ public class EntityRoostStalker extends WRDragonEntity
         }
         //Taming
         // The reason we don't use isFood here is that roost stalkers eat meat as food. Eggs are just the taming food.
-        // Changed from only the "egg" item to *all* egg items. Meaning eggs from other mods and other vanilla eggs are good too.
+        // Other mod eggs will work here, too.
         // (Not sure if this is a good idea but why not?)
         if (!isTame() && stack.is(Tags.Items.EGGS))
         {
