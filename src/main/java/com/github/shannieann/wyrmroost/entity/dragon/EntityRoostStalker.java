@@ -7,6 +7,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.DefendHomeGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.DragonBreedGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.MoveToHomeGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRFollowOwnerGoal;
+import com.github.shannieann.wyrmroost.network.packets.AddPassengerPacket;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import net.minecraft.core.BlockPos;
@@ -17,6 +18,8 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Container;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
@@ -41,14 +44,31 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
+import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
 
+import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
+
 public class EntityRoostStalker extends WRDragonEntity
 {
-    public void tameLogic (Player tamer, ItemStack stack) {
-    };
 
+    public void tameLogic(Player tamer, ItemStack stack) {
+        //Taming
+        // The reason we don't use isFood here is that roost stalkers eat meat as food. Eggs are just the taming food.
+        // Changed from only the "egg" item to *all* egg items. Meaning eggs from other mods and other vanilla eggs are good too.
+        // (Not sure if this is a good idea but why not?)
+        if (!isTame() && stack.is(Tags.Items.EGGS))
+        {
+            eat(tamer.getLevel(), stack);
+            //TODO: Why are we changing the max health upon taming?
+
+            // Dogs get more health when they are tamed, so maybe roosties get the same? Idk what wolf was thinking tho tbh,
+            // 20 should just be the default health for roost stalkers.
+            float tameChance = (tamer.isCreative() || this.isHatchling())? 1.0f : 0.25f;
+            if (attemptTame(tameChance, tamer, stack)) getAttribute(MAX_HEALTH).setBaseValue(20);
+        }
+    }
     @Override
     public int idleAnimationVariants(){
         return 0;
@@ -103,7 +123,7 @@ public class EntityRoostStalker extends WRDragonEntity
     public static AttributeSupplier.Builder getAttributeSupplier()
     {
         return (Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 16.0D)
+                .add(MAX_HEALTH, 16.0D)
                 .add(Attributes.MOVEMENT_SPEED, 0.285D)
                 .add(Attributes.ATTACK_DAMAGE, 2.0D));
     }
@@ -153,7 +173,6 @@ public class EntityRoostStalker extends WRDragonEntity
                 eat(this.level, item);
         }
     }
-
     /*
     @Override
     public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
@@ -216,9 +235,9 @@ public class EntityRoostStalker extends WRDragonEntity
         }
 
         return InteractionResult.PASS;
-    }
+    }*/
 
-     */
+
 
     @Override
     public void doSpecialEffects()
