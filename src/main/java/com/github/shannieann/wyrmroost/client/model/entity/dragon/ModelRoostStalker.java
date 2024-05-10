@@ -35,7 +35,7 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
 
     @Override
     public ResourceLocation getTextureLocation(EntityRoostStalker object) {
-        System.out.println(object.getVariant());
+        //System.out.println(object.getVariant());
         return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/rooststalker_" + object.getVariant() + ".png");
     }
 
@@ -104,25 +104,22 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
                 //matrixStackIn.mulPose(Vector3f.XP.rotation(jaw.xRot + 1.57f));
             }
 
-            // Translate the item's render location to the bone's location
-            // (Don't ask me why its multiplied by 1/16, I was wondering why it rendered so far away and looked at Alex's ice and fire code so thanks Alex)
-            // scale it
-            matrixStackIn.scale(1.5f, 1.5f, 1.5f);
-            /*
-            Small note here:
-            Not actually sure if this line moves the item at all?
-            This might entirely rely on the manual translations
-            Have to double-check.
-             */
-            Vector3d pos = bone.getLocalPosition();
+            Vector3d pos = bone.getModelPosition();
             // Rotate according to model rotations
             matrixStackIn.mulPoseMatrix(bone.getModelRotationMat());
-            matrixStackIn.translate(pos.x * 00.0625F, pos.y * 00.0625F, pos.z * 00.0625F);
+
+// Translate the item's render location to the bone's location
+            // (Don't ask me why its multiplied by 1/16, I was wondering why it rendered so far away and looked at Alex's ice and fire code so thanks Alex)
+            // scale it
+            float scale = 1f/16f;
+            matrixStackIn.translate(pos.x * (scale), pos.y * (scale), pos.z * (scale));
             // Manual fixing
-            matrixStackIn.translate(0, 0.25, -0.6);
+            //matrixStackIn.translate(0, 0.20, -0.6);
             // And rotate correctly (so the rooststalker is holding it sideways)
             matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(-90));
 
+            // Correctly scale
+            matrixStackIn.scale(1.5f, 1.5f, 1.5f);
             // Finally, render the item
             renderer.renderItem(roostStalker, item, ItemTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, packedLightIn);
         }
