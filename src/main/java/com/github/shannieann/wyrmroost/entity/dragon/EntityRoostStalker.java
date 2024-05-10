@@ -53,34 +53,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 public class EntityRoostStalker extends WRDragonEntity
 {
 
-    public InteractionResult tameLogic(Player tamer, ItemStack stack) {
-        if (tamer.level.isClientSide){
-            return InteractionResult.CONSUME;
-        }
-        //Taming
-        // The reason we don't use isFood here is that roost stalkers eat meat as food. Eggs are just the taming food.
-        // Other mod eggs will work here, too.
-        // (Not sure if this is a good idea but why not?)
-        if (!isTame() && stack.is(Tags.Items.EGGS))
-        {
-            eat(tamer.getLevel(), stack);
-            //TODO: Why are we changing the max health upon taming?
-
-            // Dogs get more health when they are tamed, so maybe roosties get the same? Idk what wolf was thinking tho tbh,
-            // 20 should just be the default health for roost stalkers.
-            float tameChance = (tamer.isCreative() || this.isHatchling())? 1.0f : 0.25f;
-            if (attemptTame(tameChance, tamer, stack)) {
-                getAttribute(MAX_HEALTH).setBaseValue(20);
-            }
-            return InteractionResult.SUCCESS;
-        }
-        return InteractionResult.PASS;
-    }
-    @Override
-    public int idleAnimationVariants(){
-        return 0;
-    }
-
     public static final int ITEM_SLOT = 0;
     //TODO: What are we using this serializer for?
     //public static final EntitySerializer<EntityRoostStalker> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
@@ -89,10 +61,143 @@ public class EntityRoostStalker extends WRDragonEntity
     private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(EntityRoostStalker.class, EntityDataSerializers.ITEM_STACK);
     private static final EntityDataAccessor<Boolean> SCAVENGING = SynchedEntityData.defineId(EntityRoostStalker.class, EntityDataSerializers.BOOLEAN);
 
+
+
     public EntityRoostStalker(EntityType<? extends EntityRoostStalker> stalker, Level level)
     {
         super(stalker, level);
     }
+
+
+    // ====================================
+    //      Animations
+    // ====================================
+    @Override
+    public int idleAnimationVariants(){
+        return 0;
+    }
+
+    // ====================================
+    //      A) Entity Data
+    // ====================================
+    public static AttributeSupplier.Builder getAttributeSupplier()
+    {
+        return (Mob.createMobAttributes()
+                .add(MAX_HEALTH, 16.0D)
+                .add(Attributes.MOVEMENT_SPEED, 0.285D)
+                .add(Attributes.ATTACK_DAMAGE, 2.0D));
+    }
+
+    @Override
+    protected void defineSynchedData()
+    {
+        super.defineSynchedData();
+        entityData.define(ITEM, ItemStack.EMPTY);
+        entityData.define(SCAVENGING, false);
+    }
+
+    @Override
+    public EntityDimensions getDimensions(Pose pose)
+    {
+        return getType().getDimensions().scale(getScale());
+    }
+
+    public boolean isScavenging()
+    {
+        return entityData.get(SCAVENGING);
+    }
+
+    public void setScavenging(boolean b)
+    {
+        entityData.set(SCAVENGING, b);
+    }
+
+    // ====================================
+    //      A.1) Entity Data: AGE
+    // ====================================
+
+    @Override
+    public float ageProgressAmount() {
+        return 0;
+    }
+
+    @Override
+    public float initialBabyScale() {
+        return 0;
+    }
+
+    // ====================================
+    //      A.7) Entity Data: VARIANT
+    // ====================================
+
+    /**
+     * (This is a temporary solution to get all the variants in game.)
+     A few things to note for Rooststalker here:
+     - We can't separate the pattern and the color because the pattern changes depending on the color.
+     - The digit in the tens place decides color
+     - 0 is the default red-brown color
+     - 1 is green
+     - 2 is black
+     - 3 is blue
+     - 4 is albino (rare version)
+     - The digit in the ones place decides the pattern
+     - 0 is patternless
+     - 1 is spider/ribcage
+     - 2 is socks
+     - 3 is diamond
+     - 4 is striped
+     - 5 is reverse-striped (rare)
+     - Koala
+     */
+    @Override
+    public int determineVariant()
+    {
+        // Rare chance for albino. Otherwise, a random choice of the other 4 colors.
+        // Since it is the digit in the tens place, we multiply by 10.
+        int color = (getRandom().nextDouble() < 0.005)? 40 : getRandom().nextInt(0, 4) * 10;
+        // Random pattern
+        int pattern = getRandom().nextInt(0,6);
+
+
+        return color + pattern;
+    }
+
+    // ====================================
+    //      A.8) Entity Data: Miscellaneous
+    // ====================================
+
+    // ====================================
+    //      B) Tick and AI
+    // ====================================
+    @Override
+    public void aiStep()
+    {
+        super.aiStep();
+
+        //TODO: Could this logic be extracted to the super class?
+        sleepTimer.add(getSleeping()? 0.08f : -0.15f);
+
+        if (!level.isClientSide)
+        {
+            ItemStack item = getStackInSlot(ITEM_SLOT);
+            if (isFood(item) && getHealth() < getMaxHealth() && getRandom().nextDouble() <= 0.0075)
+                eat(this.level, item);
+        }
+    }
+
+    // ====================================
+    //      B.1) Tick and AI: Attack and Hurt
+    // ====================================
+    @Override
+    public boolean isInvulnerableTo(DamageSource source)
+    {
+        return source == DamageSource.DROWN || super.isInvulnerableTo(source);
+    }
+
+    // ====================================
+    //      C) Navigation and Control
+    // ====================================
+
 
     @Override
     public float getStepHeight() {
@@ -105,39 +210,177 @@ public class EntityRoostStalker extends WRDragonEntity
     }
 
     @Override
-    protected void defineSynchedData()
+    public boolean speciesCanWalk() {
+        return true;
+    }
+
+    @Override
+    public boolean dragonCanFly()
     {
-        super.defineSynchedData();
-        //entityData.define(SLEEPING, false);
-        //entityData.define(VARIANT, "base");
-        entityData.define(ITEM, ItemStack.EMPTY);
-        entityData.define(SCAVENGING, false);
+        return false;
     }
 
     @Override
-    public float ageProgressAmount() {
-        return 0;
+    public boolean speciesCanSwim() {
+        return false;
     }
 
     @Override
-    public float initialBabyScale() {
-        return 0;
+    public boolean speciesCanBeRidden() {
+        return false;
     }
 
-    /*
     @Override
-    public EntitySerializer<? extends WRDragonEntity> getSerializer() {
-        return super.getSerializer();
-    }
-     */
-
-    public static AttributeSupplier.Builder getAttributeSupplier()
+    // Override normal dragon body controller to allow rotations while sitting: its small enough for it, why not. :P
+    protected BodyRotationControl createBodyControl()
     {
-        return (Mob.createMobAttributes()
-                .add(MAX_HEALTH, 16.0D)
-                .add(Attributes.MOVEMENT_SPEED, 0.285D)
-                .add(Attributes.ATTACK_DAMAGE, 2.0D));
+        return new BodyRotationControl(this);
     }
+
+
+    // ====================================
+    //      D) Taming
+    // ====================================
+        public InteractionResult tameLogic(Player tamer, ItemStack stack) {
+            if (tamer.level.isClientSide){
+                return InteractionResult.CONSUME;
+            }
+            //Taming
+            // The reason we don't use isFood here is that roost stalkers eat meat as food. Eggs are just the taming food.
+            // Other mod eggs will work here, too.
+            // (Not sure if this is a good idea but why not?)
+            if (!isTame() && stack.is(Tags.Items.EGGS))
+            {
+                eat(tamer.getLevel(), stack);
+                //TODO: Why are we changing the max health upon taming?
+
+                // Dogs get more health when they are tamed, so maybe roosties get the same? Idk what wolf was thinking tho tbh,
+                // 20 should just be the default health for roost stalkers.
+                float tameChance = (tamer.isCreative() || this.isHatchling())? 1.0f : 0.25f;
+                if (attemptTame(tameChance, tamer, stack)) {
+                    getAttribute(MAX_HEALTH).setBaseValue(20);
+                }
+                return InteractionResult.SUCCESS;
+            }
+            return InteractionResult.PASS;
+        }
+    // ====================================
+    //      D.1) Taming: Inventory
+    // ====================================
+    @Override
+    public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad)
+    {
+        if (slot == ITEM_SLOT) setItem(stack);
+    }
+
+    @Override
+    public ItemStack getItemBySlot(EquipmentSlot slot)
+    {
+        return slot == EquipmentSlot.MAINHAND? getItem() : super.getItemBySlot(slot);
+    }
+
+    public ItemStack getItem()
+    {
+        return entityData.get(ITEM);
+    }
+
+    private boolean hasItem()
+    {
+        return getItem() != ItemStack.EMPTY;
+    }
+
+    public void setItem(ItemStack item)
+    {
+        entityData.set(ITEM, item);
+        if (!item.isEmpty()) playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 0.5f, 1);
+    }
+
+    @Override
+    public void applyTomeInfo(NewTarragonTomeContainer container) {
+        container.addExtraSlot((item) -> true); // Anything can be put into this slot
+    }
+
+    @Override
+    public DragonInventory createInv()
+    {
+        return new DragonInventory(this, 1);
+    }
+
+    // ====================================
+    //      D.2) Taming: Breeding and Food
+    // ====================================
+
+    @Override
+    public boolean isBreedingItem(ItemStack stack)
+    {
+        return stack.getItem() == Items.GOLD_NUGGET;
+    }
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public boolean isFood(ItemStack stack)
+    {
+        return stack.getItem().isEdible() && stack.getFoodProperties(this).isMeat();
+    }
+
+    // ====================================
+    //      E) Client
+    // ====================================
+    @Override
+    public void doSpecialEffects()
+    {
+        if (getVariant() == -1 && tickCount % 25 == 0)
+        {
+            double x = getX() + (WRMathsUtility.nextDouble(getRandom()) * 0.7d);
+            double y = getY() + (getRandom().nextDouble() * 0.5d);
+            double z = getZ() + (WRMathsUtility.nextDouble(getRandom()) * 0.7d);
+            level.addParticle(ParticleTypes.END_ROD, x, y, z, 0, 0.05f, 0);
+        }
+    }
+
+    @Override
+    public Vec2 getTomeDepictionOffset() {
+        return switch (getVariant()){
+            case -1 -> new Vec2(1, 0);
+            default -> new Vec2(0,0);
+        };
+    }
+
+    // ====================================
+    //      E.1) Client: Sounds
+    // ====================================
+
+    @Nullable
+    @Override
+    protected SoundEvent getAmbientSound()
+    {
+        return WRSounds.ENTITY_STALKER_IDLE.get();
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
+    {
+        return WRSounds.ENTITY_STALKER_HURT.get();
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getDeathSound()
+    {
+        return WRSounds.ENTITY_STALKER_DEATH.get();
+    }
+
+    @Override
+    public float getSoundVolume()
+    {
+        return 0.8f;
+    }
+
+
+    // ====================================
+    //      F) Goals
+    // ====================================
 
     @Override
     protected void registerGoals()
@@ -168,290 +411,6 @@ public class EntityRoostStalker extends WRDragonEntity
         targetSelector.addGoal(4, new HurtByTargetGoal(this).setAlertOthers());
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, true, target -> target instanceof Chicken || target instanceof Rabbit || target instanceof Turtle));
     }
-
-    @Override
-    public void aiStep()
-    {
-        super.aiStep();
-
-        //TODO: Could this logic be extracted to the super class?
-        sleepTimer.add(getSleeping()? 0.08f : -0.15f);
-
-        if (!level.isClientSide)
-        {
-            ItemStack item = getStackInSlot(ITEM_SLOT);
-            if (isFood(item) && getHealth() < getMaxHealth() && getRandom().nextDouble() <= 0.0075)
-                eat(this.level, item);
-        }
-    }
-    /*
-    @Override
-    public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
-    {
-        final InteractionResult success = InteractionResult.sidedSuccess(level.isClientSide);
-
-        //Taming
-        if (!isTame() && stack.is(Tags.Items.EGGS))
-        {
-            eat(stack);
-            //TODO: Why are we changing the max health upon taming?
-            if (tame(getRandom().nextDouble() < 0.25, player)) getAttribute(MAX_HEALTH).setBaseValue(20);
-            return success;
-        }
-
-        //Breeding
-        if (isTame() && isBreedingItem(stack))
-        {
-            if (!level.isClientSide && canFallInLove() && getAge() == 0)
-            {
-                setInLove(player);
-                stack.shrink(1);
-                return InteractionResult.SUCCESS;
-            }
-            return InteractionResult.CONSUME;
-        }
-
-        //Player Commands
-        if (isOwnedBy(player))
-        {
-            //Sitting
-            if (player.isShiftKeyDown())
-            {
-                setOrderedToSit(!isInSittingPose());
-                return success;
-            }
-            //Riding
-            if (stack.isEmpty() && stack.isEmpty() && !isLeashed() && player.getPassengers().size() < 3)
-            {
-                if (!level.isClientSide && startRiding(player, true))
-                {
-                    //TODO: SIT ON HEAD ANIMATION?
-                    setOrderedToSit(false);
-                    AddPassengerPacket.send(this, player);
-                }
-                return success;
-            }
-            //Give Item (or exchange)
-            //TODO: How do we take items away from Rooststalker without giving them anything in exchange?
-
-            // With the new tome system, you can take away items in the tome - InvasiveKoala
-            if ((!stack.isEmpty() && !isFood(stack)) || !stack.isEmpty())
-            {
-                //TODO: Check setStackInSlot method's comments. We are not performing the checks for sidedness.
-                //TODO: Perhaps perform these checks before the mob interact is ever called?
-                player.setItemInHand(hand, getItem());
-                setStackInSlot(ITEM_SLOT, stack);
-                return success;
-            }
-        }
-
-        return InteractionResult.PASS;
-    }*/
-
-
-
-    @Override
-    public void doSpecialEffects()
-    {
-        if (getVariant() == -1 && tickCount % 25 == 0)
-        {
-            double x = getX() + (WRMathsUtility.nextDouble(getRandom()) * 0.7d);
-            double y = getY() + (getRandom().nextDouble() * 0.5d);
-            double z = getZ() + (WRMathsUtility.nextDouble(getRandom()) * 0.7d);
-            level.addParticle(ParticleTypes.END_ROD, x, y, z, 0, 0.05f, 0);
-        }
-    }
-
-    @Override
-    public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad)
-    {
-        if (slot == ITEM_SLOT) setItem(stack);
-    }
-
-    @Override
-    public ItemStack getItemBySlot(EquipmentSlot slot)
-    {
-        return slot == EquipmentSlot.MAINHAND? getItem() : super.getItemBySlot(slot);
-    }
-
-    /*@Override
-    public void applyStaffInfo(BookContainer container)
-    {
-        super.applyStaffInfo(container);
-
-        container.slot(BookContainer.accessorySlot(getInventory(), ITEM_SLOT, 0, 0, -15, DragonControlScreen.SADDLE_UV))
-                .addAction(BookActions.TARGET);
-    }*/
-
-    @Override
-    public boolean isInvulnerableTo(DamageSource source)
-    {
-        return source == DamageSource.DROWN || super.isInvulnerableTo(source);
-    }
-
-    @Override
-    public boolean isBreedingItem(ItemStack stack)
-    {
-        return stack.getItem() == Items.GOLD_NUGGET;
-    }
-
-    @Override
-    public EntityDimensions getDimensions(Pose pose)
-    {
-        return getType().getDimensions().scale(getScale());
-    }
-
-
-    /**
-    A few things to note for Rooststalker here:
-    - We can't separate the pattern and the color because the pattern changes depending on the color.
-    - The digit in the tens place decides color
-        - 0 is the default red-brown color
-        - 1 is green
-        - 2 is black
-        - 3 is blue
-        - 4 is albino (rare version)
-    - The digit in the ones place decides the pattern
-        - 0 is patternless
-        - 1 is spider/ribcage
-        - 2 is socks
-        - 3 is diamond
-        - 4 is striped
-        - 5 is reverse-striped (rare)
-     - Koala
-     */
-    @Override
-    public int determineVariant()
-    {
-        // Rare chance for albino. Otherwise, a random choice of the other 4 colors.
-        // Since it is the digit in the tens place, we multiply by 10.
-        int color = (getRandom().nextDouble() < 0.005)? 40 : getRandom().nextInt(0, 4) * 10;
-        // Random pattern
-        int pattern = getRandom().nextInt(0,6);
-
-
-        return color + pattern;
-    }
-
-
-    @Override
-    // Override normal dragon body controller to allow rotations while sitting: its small enough for it, why not. :P
-    protected BodyRotationControl createBodyControl()
-    {
-        return new BodyRotationControl(this);
-    }
-
-    @Override
-    public boolean speciesCanWalk() {
-        return true;
-    }
-
-    public ItemStack getItem()
-    {
-        return entityData.get(ITEM);
-    }
-
-    private boolean hasItem()
-    {
-        return getItem() != ItemStack.EMPTY;
-    }
-
-    public void setItem(ItemStack item)
-    {
-        entityData.set(ITEM, item);
-        if (!item.isEmpty()) playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 0.5f, 1);
-    }
-
-    public boolean isScavenging()
-    {
-        return entityData.get(SCAVENGING);
-    }
-
-    public void setScavenging(boolean b)
-    {
-        entityData.set(SCAVENGING, b);
-    }
-
-    @Override
-    public boolean dragonCanFly()
-    {
-        return false;
-    }
-
-    @Override
-    public boolean speciesCanSwim() {
-        return false;
-    }
-
-    @Override
-    public boolean speciesCanBeRidden() {
-        return false;
-    }
-
-
-    @Nullable
-    @Override
-    protected SoundEvent getAmbientSound()
-    {
-        return WRSounds.ENTITY_STALKER_IDLE.get();
-    }
-
-    @Nullable
-    @Override
-    protected SoundEvent getHurtSound(DamageSource damageSourceIn)
-    {
-        return WRSounds.ENTITY_STALKER_HURT.get();
-    }
-
-    @Nullable
-    @Override
-    protected SoundEvent getDeathSound()
-    {
-        return WRSounds.ENTITY_STALKER_DEATH.get();
-    }
-
-    @Override
-    public float getSoundVolume()
-    {
-        return 0.8f;
-    }
-
-    @Override
-    @SuppressWarnings("ConstantConditions")
-    public boolean isFood(ItemStack stack)
-    {
-        return stack.getItem().isEdible() && stack.getFoodProperties(this).isMeat();
-    }
-
-    @Override
-    public Vec2 getTomeDepictionOffset() {
-        return switch (getVariant()){
-            case -1 -> new Vec2(1, 0);
-            default -> new Vec2(0,0);
-        };
-    }
-
-    @Override
-    public void applyTomeInfo(NewTarragonTomeContainer container) {
-        container.addExtraSlot((item) -> true); // Anything can be put into this slot
-    }
-
-    @Override
-    public DragonInventory createInv()
-    {
-        return new DragonInventory(this, 1);
-    }
-
-    //TODO: Safe to delete this?
-    /*
-    public static void setSpawnBiomes(BiomeLoadingEvent event)
-    {
-        Biome.BiomeCategory category = event.getCategory();
-        if (category == Biome.BiomeCategory.PLAINS || category == Biome.BiomeCategory.FOREST || category == Biome.BiomeCategory.EXTREME_HILLS)
-            event.getSpawns().addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(WREntityTypes.ROOSTSTALKER.get(), 7, 2, 9));
-    }
-
-     */
 
 
     class ScavengeGoal extends MoveToBlockGoal
@@ -561,4 +520,116 @@ public class EntityRoostStalker extends WRDragonEntity
             chest.getLevel().blockEvent(chest.getBlockPos(), chest.getBlockState().getBlock(), 1, chest.openersCounter.getOpenerCount());
         }
     }
+
+
+
+
+    // No Man's Land (Old code from the 1.16 version)
+
+
+
+
+
+    /*
+    @Override
+    public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
+    {
+        final InteractionResult success = InteractionResult.sidedSuccess(level.isClientSide);
+
+        //Taming
+        if (!isTame() && stack.is(Tags.Items.EGGS))
+        {
+            eat(stack);
+            //TODO: Why are we changing the max health upon taming?
+            if (tame(getRandom().nextDouble() < 0.25, player)) getAttribute(MAX_HEALTH).setBaseValue(20);
+            return success;
+        }
+
+        //Breeding
+        if (isTame() && isBreedingItem(stack))
+        {
+            if (!level.isClientSide && canFallInLove() && getAge() == 0)
+            {
+                setInLove(player);
+                stack.shrink(1);
+                return InteractionResult.SUCCESS;
+            }
+            return InteractionResult.CONSUME;
+        }
+
+        //Player Commands
+        if (isOwnedBy(player))
+        {
+            //Sitting
+            if (player.isShiftKeyDown())
+            {
+                setOrderedToSit(!isInSittingPose());
+                return success;
+            }
+            //Riding
+            if (stack.isEmpty() && stack.isEmpty() && !isLeashed() && player.getPassengers().size() < 3)
+            {
+                if (!level.isClientSide && startRiding(player, true))
+                {
+                    //TODO: SIT ON HEAD ANIMATION?
+                    setOrderedToSit(false);
+                    AddPassengerPacket.send(this, player);
+                }
+                return success;
+            }
+            //Give Item (or exchange)
+            //TODO: How do we take items away from Rooststalker without giving them anything in exchange?
+
+            // With the new tome system, you can take away items in the tome - InvasiveKoala
+            if ((!stack.isEmpty() && !isFood(stack)) || !stack.isEmpty())
+            {
+                //TODO: Check setStackInSlot method's comments. We are not performing the checks for sidedness.
+                //TODO: Perhaps perform these checks before the mob interact is ever called?
+                player.setItemInHand(hand, getItem());
+                setStackInSlot(ITEM_SLOT, stack);
+                return success;
+            }
+        }
+
+        return InteractionResult.PASS;
+    }*/
+
+
+
+
+
+    /*@Override
+    public void applyStaffInfo(BookContainer container)
+    {
+        super.applyStaffInfo(container);
+
+        container.slot(BookContainer.accessorySlot(getInventory(), ITEM_SLOT, 0, 0, -15, DragonControlScreen.SADDLE_UV))
+                .addAction(BookActions.TARGET);
+    }*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //TODO: Safe to delete this?
+    /*
+    public static void setSpawnBiomes(BiomeLoadingEvent event)
+    {
+        Biome.BiomeCategory category = event.getCategory();
+        if (category == Biome.BiomeCategory.PLAINS || category == Biome.BiomeCategory.FOREST || category == Biome.BiomeCategory.EXTREME_HILLS)
+            event.getSpawns().addSpawn(MobCategory.CREATURE, new MobSpawnSettings.SpawnerData(WREntityTypes.ROOSTSTALKER.get(), 7, 2, 9));
+    }
+
+     */
+
+
 }
