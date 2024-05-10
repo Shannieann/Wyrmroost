@@ -4,6 +4,7 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
+import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import net.minecraft.CrashReport;
 import net.minecraft.ReportedException;
@@ -61,7 +62,8 @@ public class RiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
             throw new ReportedException(CrashReport.forThrowable(new Throwable(), "Dragon should have a bone named 'rider" + passengerIndex + "' to have a rider layer!"));
         }
         GeoBone bone = model.getBone("rider" + passengerIndex).get();
-        stack.translate(bone.getModelPosition().x * 00.0625F, bone.getModelPosition().y * 00.0625F, bone.getModelPosition().z * 00.0625F);
+        Vector3d modelPos = bone.getModelPosition();
+        stack.translate(modelPos.x * 00.0625F, modelPos.y * 00.0625F, modelPos.z * 00.0625F);
         stack.mulPoseMatrix(bone.getModelRotationMat());
         dragon.cameraBonePos.put(passenger.getUUID(), bone.getLocalPosition());
     }
