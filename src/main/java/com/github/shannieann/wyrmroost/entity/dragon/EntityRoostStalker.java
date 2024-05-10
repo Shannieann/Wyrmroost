@@ -155,8 +155,9 @@ public class EntityRoostStalker extends WRDragonEntity
         // Rare chance for albino. Otherwise, a random choice of the other 4 colors.
         // Since it is the digit in the tens place, we multiply by 10.
         int color = (getRandom().nextDouble() < 0.005)? 40 : getRandom().nextInt(0, 4) * 10;
-        // Random pattern
-        int pattern = getRandom().nextInt(0,6);
+        // Rare chance for reverse-striped
+        // Otherwise a random pattern
+        int pattern = (getRandom().nextDouble() < 0.005) ? 5 : getRandom().nextInt(0,5);
 
 
         return color + pattern;
