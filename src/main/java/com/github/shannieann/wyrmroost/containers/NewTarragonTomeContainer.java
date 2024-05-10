@@ -60,7 +60,6 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
 
         // Create saddle/armor/chest slots so quick move goes to them first
 
-        // TODO Add chest inventory
 
         for (int row = 0; row < 3; row++){
             for(int column = 0; column < 9; column++){
