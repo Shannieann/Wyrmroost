@@ -73,7 +73,6 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
         dragon.applyTomeInfo(this);
 
         if (hasChestSlot()) setChestInventory(hasChestEquipped());
-        // Create a listener to
 
 
 
