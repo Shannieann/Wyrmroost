@@ -119,7 +119,7 @@ public class ClientEvents
         event.registerEntityRenderer(WREntityTypes.ROYAL_RED.get(), RenderRoyalRed::new);
         event.registerEntityRenderer(WREntityTypes.BUTTERFLY_LEVIATHAN.get(), RenderButterflyLeviathan::new);
 
-        event.registerEntityRenderer(WREntityTypes.LESSER_DESERTWYRM.get(), RenderLesserDeserwyrm::new);
+        event.registerEntityRenderer(WREntityTypes.LESSER_DESERTWYRM.get(), RenderLesserDesertwyrm::new);
         event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RenderRoostStalker::new);
 
         //event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RoostStalkerRenderer2::new);
@@ -171,7 +171,7 @@ public class ClientEvents
             float zRot = dragon.cameraRotVector.z();
             Vector3d bonePos = dragon.cameraBonePos.get(uuid);
             if (bonePos != null) {
-                Vec3 vecBonePos = new Vec3(bonePos.x, bonePos.y-5.7F, bonePos.z);
+                Vec3 vecBonePos = new Vec3(bonePos.x, bonePos.y+dragon.getMountCameraYOffset(), bonePos.z);
                 // Set camera position
 
                 //Sniffity: Previous method was forcing the camera position to update to the Dragon's position.

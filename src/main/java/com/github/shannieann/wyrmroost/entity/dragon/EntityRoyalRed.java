@@ -595,6 +595,16 @@ public class EntityRoyalRed extends WRDragonEntity {
     }*/
 
     // ====================================
+    //      E.2) Client: Camera
+    // ====================================
+
+    @Override
+    public float getMountCameraYOffset() {
+        return -5.7f;
+    }
+
+
+    // ====================================
     //      F) Goals
     // ====================================
 

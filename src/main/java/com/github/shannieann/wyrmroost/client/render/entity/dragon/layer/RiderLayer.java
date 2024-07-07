@@ -76,7 +76,7 @@ public class RiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
         render = manager.getRenderer(entityIn);
         matrixStack.pushPose();
         try {
-            render.render(entityIn, 0, partialTicks, matrixStack, bufferIn, packedLight);
+            render.render(entityIn, entityIn.yRot, partialTicks, matrixStack, bufferIn, packedLight);
         } catch (Throwable throwable1) {
             throw new ReportedException(CrashReport.forThrowable(throwable1, "Rendering entity in world"));
         }

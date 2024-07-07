@@ -1,6 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder;
 
 import com.github.shannieann.wyrmroost.client.model.entity.dragon.ModelOverworldDrake;
+import com.github.shannieann.wyrmroost.client.render.entity.dragon.layer.RiderLayer;
 import com.github.shannieann.wyrmroost.entity.dragon.EntityOverworldDrake;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -14,6 +15,7 @@ import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 public class OWDrakeRenderer<T extends EntityOverworldDrake> extends GeoEntityRenderer<T> {
     public OWDrakeRenderer(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelOverworldDrake<>());
+        this.addLayer(new RiderLayer<>(this));
     }
 
     @Override

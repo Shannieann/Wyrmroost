@@ -656,6 +656,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         return entityData.get(GENDER);
     }
+    // To make file names look nicer
+    public String getGenderString(){
+        return (getGender() == 0)? "female" : "male";
+    }
 
     public void setGender(int gender)
     {
@@ -1806,6 +1810,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad)
     {
+
     }
 
     @Override
@@ -2059,12 +2064,22 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
     // ====================================
+    //      E.2) Client: Camera
+    // ====================================
+
+    // TODO maybe change to a Vec3 when needed? (getMountCameraOffset).
+    public float getMountCameraYOffset(){
+        return 0.0f;
+    }
+
+    // ====================================
     //      F) Goals
     // ====================================
 
     // ====================================
     //      F.n) Goals: n
     // ====================================
+
 
 }
 
