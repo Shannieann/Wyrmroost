@@ -4,8 +4,8 @@ import com.github.shannieann.wyrmroost.client.model.entity.dragon.ModelLesserDes
 import com.github.shannieann.wyrmroost.entity.dragon.EntityLesserDesertwyrm;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 
-public class RenderLesserDeserwyrm extends WRDragonRender<EntityLesserDesertwyrm> {
-    public RenderLesserDeserwyrm(EntityRendererProvider.Context renderManager) {
+public class RenderLesserDesertwyrm extends WRDragonRender<EntityLesserDesertwyrm> {
+    public RenderLesserDesertwyrm(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelLesserDesertwyrm());
         //TODO: Shadow?
         this.shadowRadius = 0.0F;
