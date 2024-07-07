@@ -16,15 +16,20 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -33,19 +38,18 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.Tags;
+import software.bernie.shadowed.eliotlash.mclib.utils.MathHelper;
 
 import javax.annotation.Nullable;
 
 import java.util.EnumSet;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
-/* Just gonna use sniffity's method of organizing cuz its good - koala
+/*
 // TODO:
     Tidy up class, remove unnecessary methods, make sure methods follow a logical order (probs best to do this after we organize BFL, follow the same format)
     WRReturnToLandGoal (should not be specific to OWDs) which makes land creatures find their way back to land...
         For this one, we should try and use the GroundNavigator if possible...
-
-
 
 */
 
@@ -76,6 +80,7 @@ public class EntityOverworldDrake extends WRDragonEntity
 
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public LivingEntity thrownPassenger;
+    public boolean shouldRoar = false, shouldBuck = false;
 
     public EntityOverworldDrake(EntityType<? extends EntityOverworldDrake> drake, Level level)
     {
@@ -86,15 +91,9 @@ public class EntityOverworldDrake extends WRDragonEntity
     //      A) Entity Data
     // ====================================
 
-    /*
-    @Override
-    public EntitySerializer<EntityOverworldDrake> getSerializer()
-    {
-        return SERIALIZER;
-    }
 
 
-     */
+
     @Override
     protected void defineSynchedData()
     {
@@ -177,8 +176,6 @@ public class EntityOverworldDrake extends WRDragonEntity
             thrownPassenger = null;
         }
 
-        //if (!level.isClientSide && getTarget() == null && !isInSittingPose() && !getSleeping() && level.getBlockState(blockPosition().below()).getBlock() == Blocks.GRASS_BLOCK && getRandom().nextDouble() < (isBaby() || getHealth() < getMaxHealth()? 0.005 : 0.001));
-        //AnimationPacket.send(this, GRAZE_ANIMATION); TODO READD
     }
     // ====================================
     //      B.1) Tick and AI: Attack and Hurt
@@ -190,11 +187,12 @@ public class EntityOverworldDrake extends WRDragonEntity
 
         super.setTarget(target);
 
-        boolean flag = getTarget() != null;
-        setSprinting(flag);
+        boolean targetExists = getTarget() != null;
+        setSprinting(targetExists);
 
-        /*if (flag && prev != target && target.getType() == EntityType.PLAYER && !isTame() && noAnimations())
-            AnimationPacket.send(this, EntityOverworldDrake.ROAR_ANIMATION);*/ // TODO ADD
+        // TODO maybe an isAnimating() method in superclass?
+        if (targetExists && prev != target && target.getType() == EntityType.PLAYER && !isTame() && getAnimation().equals("base"))
+            shouldRoar = true;
     }
     // ====================================
     //      C) Navigation and Control
@@ -204,7 +202,7 @@ public class EntityOverworldDrake extends WRDragonEntity
     public float getTravelSpeed()
     {
         float speed = (float) getAttributeValue(MOVEMENT_SPEED);
-        if (canBeControlledByRider()) speed += 0.45f;
+        if (canBeControlledByRider()) speed += 0.15f;
         return speed;
     }
 
@@ -218,14 +216,14 @@ public class EntityOverworldDrake extends WRDragonEntity
         return 0;
     }
 
-    @Override
+    /*@Override
     public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
         if (backView)
             event.getCamera().move(ClientEvents.getViewCollision(-0.5, this), 0.75, 0);
         else
             event.getCamera().move(ClientEvents.getViewCollision(-3, this), 0.3, 0);
-    }
+    }*/
 
     @Override
     public boolean speciesCanWalk() {
@@ -270,27 +268,20 @@ public class EntityOverworldDrake extends WRDragonEntity
     {
         super.positionRider(entity);
 
-        if (entity instanceof LivingEntity)
+        if (entity instanceof LivingEntity passenger)
         {
-            LivingEntity passenger = ((LivingEntity) entity);
             if (isTame()) setSprinting(passenger.isSprinting());
-            else if (!level.isClientSide && passenger instanceof Player)
+            else if (!level.isClientSide && passenger instanceof Player player)
             {
                 double rng = getRandom().nextDouble();
 
-                /*
-                if (rng < 0.01) tame(true, (Player) passenger);
-                else if (rng <= 0.1)
 
+                if (rng < 0.005) tame(player);
 
+                else if (rng <= 0.2)
                 {
-                    setTarget(passenger);
-                    boardingCooldown = 60;
-                    ejectPassengers();
-                    thrownPassenger = passenger; // needs to be queued for next tick otherwise some voodoo shit breaks the throwing off logic >.>
+                    shouldBuck = true;
                 }
-
-                 */
             }
         }
     }
@@ -298,31 +289,39 @@ public class EntityOverworldDrake extends WRDragonEntity
     // ====================================
     //      D) Taming
     // ====================================
-    /*
+
     @Override
-    public InteractionResult playerInteraction(Player player, InteractionHand hand, ItemStack stack)
-    {
-        if (stack.getItem() == Items.SADDLE && !isSaddled() && isJuvenile())
-        {
-            if (!level.isClientSide)
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+
+        if (!isJuvenile())
+            super.mobInteract(player, hand);
+
+
+        ItemStack stack = player.getItemInHand(hand);
+
+        if (isSaddled()){
+            player.startRiding(this);
+        }
+        else if (stack.getItem() == Items.SADDLE) {
             {
+            if (!level.isClientSide) {
                 getInventory().insertItem(SADDLE_SLOT, stack.copy(), false);
                 stack.shrink(1);
             }
             return InteractionResult.sidedSuccess(level.isClientSide);
+            }
         }
 
-        if (!isTame() && isHatchling() && isFood(stack))
-        {
-         //   tame(getRandom().nextInt(10) == 0, player);
-            stack.shrink(1);
-            return InteractionResult.sidedSuccess(level.isClientSide);
-        }
 
-        return super.playerInteraction(player, hand, stack);
+        //if (!isTame() && isHatchling() && isFood(stack))
+        //{
+            //   tame(getRandom().nextInt(10) == 0, player);
+        //    stack.shrink(1);
+        //    return InteractionResult.sidedSuccess(level.isClientSide);
+        //}
+
+        return super.mobInteract(player, hand);
     }
-
-     */
 
     // ====================================
     //      D.1) Taming: Inventory
@@ -422,6 +421,17 @@ public class EntityOverworldDrake extends WRDragonEntity
     {
         return WRSounds.ENTITY_OWDRAKE_DEATH.get();
     }
+
+    // ====================================
+    //      E.2) Client: Camera
+    // ====================================
+
+
+    @Override
+    public float getMountCameraYOffset() {
+        return -3.7f;
+    }
+
     // ====================================
     //      F) Goals
     // ====================================
@@ -430,7 +440,9 @@ public class EntityOverworldDrake extends WRDragonEntity
     {
         super.registerGoals();
 
-        //goalSelector.addGoal(0, new WRSleepGoal(this));
+        goalSelector.addGoal(0, new WRSleepGoal(this));
+        goalSelector.addGoal(1, new OWDBuckGoal(this));
+        goalSelector.addGoal(2, new OWDRoarGoal(this));
         //goalSelector.addGoal(4, new MoveToHomeGoal(this));
         //goalSelector.addGoal(5, new ControlledAttackGoal(this, 1.425, true /*AnimationPacket.send(this, HORN_ATTACK_ANIMATION)*/));
         //goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
@@ -443,13 +455,14 @@ public class EntityOverworldDrake extends WRDragonEntity
         //targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         //targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         //targetSelector.addGoal(3, new DefendHomeGoal(this));
-        //targetSelector.addGoal(4, new HurtByTargetGoal(this));
+        targetSelector.addGoal(4, new HurtByTargetGoal(this));
         //targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Player.class, true, EntitySelector.ENTITY_STILL_ALIVE::test));
     }
 
     // ====================================
     //      F.n) Goals: OWDGrazeGoal
     // ====================================
+
     class OWDGrazeGoal extends AnimatedGoal{
 
         private BlockPos grazeBlockPosition;
@@ -510,11 +523,142 @@ public class EntityOverworldDrake extends WRDragonEntity
             return super.canContinueToUse();
         }
 
-        public void eatGrass()
+        private void eatGrass()
         {
             if (isBaby()) ageUp(60);
             if (getHealth() < getMaxHealth()) heal(4f);
         }
+    }
+
+    // ====================================
+    //      F.n) Goals: OWDRoarGoal
+    // ====================================
+
+    class OWDRoarGoal extends AnimatedGoal{
+
+        public OWDRoarGoal(EntityOverworldDrake entity)
+        {
+            super(entity);
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK, Goal.Flag.JUMP));
+        }
+
+        @Override
+        public boolean canUse()
+        {
+            // This is set to true whenever the OWD gets a new target.
+            return shouldRoar;
+        }
+
+        @Override
+        public void start()
+        {
+            entity.clearAI();
+            entity.getNavigation().stop();
+            shouldRoar = false;
+        }
+
+        @Override
+        public void tick()
+        {
+            if (lookControl instanceof WRGroundLookControl) {
+                ((WRGroundLookControl) lookControl).stopLooking();
+            }
+
+            if (elapsedTime == 1){
+                playSound(WRSounds.ENTITY_OWDRAKE_ROAR.get(), 3f, 1f);
+            }
+            else if (elapsedTime == 15) {
+                applyWeakness();
+            }
+            // Play the idle anim once
+            super.start("roar", 2, 50);
+            super.tick();
+        }
+
+        @Override
+        public boolean canContinueToUse()
+        {
+            if (getSleeping())
+                return false;
+            return super.canContinueToUse();
+        }
+
+
+        // This method is taken from the old code
+        private void applyWeakness()
+        {
+            for (LivingEntity entity : getEntitiesNearby(15, e -> !isAlliedTo(e))) // Dont get too close now ;)
+            {
+                entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200));
+                if (distanceToSqr(entity) <= 10)
+                {
+                    double angle = WRMathsUtility.getAngle(getX(), getZ(), entity.getX(), entity.getZ()) * Math.PI / 180;
+                    entity.push(1.2 * -Math.cos(angle), 0.4d, 1.2 * -Math.sin(angle));
+                }
+            }
+        }
+    }
+
+    // ====================================
+    //      F.n) Goals: OWDBuckGoal
+    // ====================================
+
+    class OWDBuckGoal extends AnimatedGoal{
+
+        Player passenger;
+        public OWDBuckGoal(EntityOverworldDrake entity)
+        {
+            super(entity);
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK, Goal.Flag.JUMP));
+        }
+
+        @Override
+        public boolean canUse()
+        {
+            if (hasExactlyOnePlayerPassenger()){
+                passenger = (Player) getPassengers().get(0);
+                return shouldBuck;
+            }
+            return false;
+        }
+
+        @Override
+        public void start()
+        {
+            entity.clearAI();
+            entity.getNavigation().stop();
+            shouldBuck = false;
+        }
+
+        @Override
+        public void tick()
+        {
+            if (lookControl instanceof WRGroundLookControl) {
+                ((WRGroundLookControl) lookControl).stopLooking();
+            }
+
+            if (elapsedTime == 1){
+                // TODO another sound for this?
+                playSound(WRSounds.ENTITY_OWDRAKE_HURT.get(), 3f, 1f);
+            }
+            else if (elapsedTime == 30) {
+                setTarget(passenger);
+                boardingCooldown = 60;
+                ejectPassengers();
+                thrownPassenger = passenger;
+            }
+            // TODO the buck animation isnt playing... the goal itself works but this looks weird in-game and idk why
+            super.start("buck", 2, 50);
+            super.tick();
+        }
+
+        @Override
+        public boolean canContinueToUse()
+        {
+            return !getSleeping();
+        }
+
+
     }
 
     /*@Override
