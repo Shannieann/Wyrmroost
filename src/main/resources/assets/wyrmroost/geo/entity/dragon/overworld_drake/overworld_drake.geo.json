@@ -594,6 +594,12 @@
 					]
 				},
 				{
+					"name": "rider1",
+					"parent": "sChest",
+					"pivot": [0, 57, 0],
+					"rotation": [-7.5, 0, 0]
+				},
+				{
 					"name": "ileg1Right",
 					"parent": "body2",
 					"pivot": [6, 27.8, 12]
