@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.client;
 
+import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.client.render.entity.DragonEggRenderer;
@@ -10,10 +11,12 @@ import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.S
 import com.github.shannieann.wyrmroost.client.render.entity.effect.RenderLightningNova;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.GeodeTippedArrowRenderer;
+import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.item.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.registry.*;
 import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Camera;
@@ -23,13 +26,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.core.Rotations;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.*;
@@ -64,6 +71,7 @@ public class ClientEvents
         forgeBus.addListener(RenderHelper::renderEntities);
         forgeBus.addListener(ClientEvents::cameraPerspective);
         forgeBus.addListener(ClientEvents::preLivingRender);
+        forgeBus.addListener(ClientEvents::onRenderWorldLast);
         //forgeBus.addListener(ClientEvents::postLivingRender);
         forgeBus.addListener(ClientEvents::onKeyInput);
 
@@ -173,7 +181,7 @@ public class ClientEvents
             if (bonePos != null) {
                 Vec3 vecBonePos = new Vec3(bonePos.x, bonePos.y+dragon.getMountCameraYOffset(), bonePos.z);
                 // Set camera position
-
+                //System.out.println(vecBonePos.y);
                 //Sniffity: Previous method was forcing the camera position to update to the Dragon's position.
                 //This essentially caused the camera to no longer transition smoothly from position A to B if the dragon was moving
                 //It would instead jump from position A to B..
@@ -183,7 +191,7 @@ public class ClientEvents
                 //This prevents the camera from being too far "ahead" of the dragon...
                 Vec3 cameraPos = event.getCamera().getPosition();
                 event.getCamera().setPosition(cameraPos.add(vecBonePos)); // Not using move() here because it does weird stuff when you look around... (center of rotation messed up)
-                event.getCamera().move(-calcCameraDistance(1.0, dragon), 0, 0);
+                //event.getCamera().move(-calcCameraDistance(1.0, dragon), 0, 0);
 
             }
 
@@ -287,6 +295,31 @@ public class ClientEvents
                 if (ClientEvents.KEY_TEST.isDown()) {
                     Wyrmroost.NETWORK.sendToServer(new PacketKey());
                 }
+        }
+    }
+    public static void onRenderWorldLast(RenderLevelStageEvent event) {
+
+        if (WRConfig.DEBUG_MODE.get()) {
+            RenderLevelStageEvent.Stage stage = event.getStage();
+            if (stage == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
+                Minecraft mc = Minecraft.getInstance();
+                Camera camera = mc.gameRenderer.getMainCamera();
+                Vec3 viewPosition = camera.getPosition();
+                PoseStack matrix_stack = event.getPoseStack();
+                matrix_stack.pushPose();
+                matrix_stack.translate(-viewPosition.x, -viewPosition.y, -viewPosition.z);
+                List<EntityButterflyLeviathan> entityList = mc.level.getEntitiesOfClass(EntityButterflyLeviathan.class, new AABB(mc.player.getOnPos()).inflate(20));
+                if (!entityList.isEmpty()) {
+                    for (int i = 0; i<entityList.size(); i++) {
+                        List<AABB> attackBoxes = entityList.get(i).generateAttackBoxes();
+                        LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(0), 1,0,0,1);
+                        LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(1), 0,1,0,1);
+                        LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(2), 0,0,1,1);
+                    }
+                    matrix_stack.popPose();
+                    mc.renderBuffers().bufferSource().endBatch();
+                }
+            }
         }
     }
 
