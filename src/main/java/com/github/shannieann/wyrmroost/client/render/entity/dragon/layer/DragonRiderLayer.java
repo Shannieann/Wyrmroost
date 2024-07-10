@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.client.renderer.entity.EntityRenderer;
+import net.minecraft.core.Rotations;
 import net.minecraft.world.entity.Entity;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
@@ -21,11 +22,11 @@ import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
 // MAJOR inspiration from Ice and Fire's rendering
 
-public class RiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
+public class DragonRiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
     protected final GeoModelProvider provider;
     protected GeoModel model;
 
-    public RiderLayer(IGeoRenderer<T> entityRendererIn) {
+    public DragonRiderLayer(IGeoRenderer<T> entityRendererIn) {
         super(entityRendererIn);
         this.provider = this.entityRenderer.getGeoModelProvider();
     }
@@ -43,7 +44,7 @@ public class RiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
                 ClientEvents.dragonRiders.remove(passenger.getUUID());
                 float riderRot = passenger.yRotO + (passenger.getYRot() - passenger.yRotO) * partialTicks;
                 translateToBody(matrixStackIn, model, passengerIndex, dragon, passenger); // TODO maybe make this only activate on needed frames? EDIT: Probably not, each animation is different and it wouldn't be worth it
-                matrixStackIn.translate(0.0, -2.0, 0.0);
+                matrixStackIn.translate(0.0, -0.6f, 0.0);
                 matrixStackIn.pushPose();
                 matrixStackIn.mulPose(new Quaternion(Vector3f.YP, riderRot + 180, true));
                 renderEntity(passenger, partialTicks, matrixStackIn, bufferIn, packedLightIn);
@@ -63,8 +64,14 @@ public class RiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
         }
         GeoBone bone = model.getBone("rider" + passengerIndex).get();
         Vector3d modelPos = bone.getModelPosition();
-        stack.translate(modelPos.x * 00.0625F, modelPos.y * 00.0625F, modelPos.z * 00.0625F);
+        modelPos.scale(0.0625f);
+        stack.translate(modelPos.x, modelPos.y, modelPos.z);
         stack.mulPoseMatrix(bone.getModelRotationMat());
+
+        if (model.getBone("cameraPos"+passengerIndex).isEmpty()){
+            throw new ReportedException(CrashReport.forThrowable(new Throwable(), "Dragon should have a bone named 'cameraPos" + passengerIndex + "' to have a rider layer!"));
+        }
+        bone = model.getBone("cameraPos" + passengerIndex).get();
         dragon.cameraBonePos.put(passenger.getUUID(), bone.getLocalPosition());
     }
 
@@ -76,7 +83,7 @@ public class RiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
         render = manager.getRenderer(entityIn);
         matrixStack.pushPose();
         try {
-            render.render(entityIn, entityIn.yRot, partialTicks, matrixStack, bufferIn, packedLight);
+            render.render(entityIn, entityIn.yRotO, partialTicks, matrixStack, bufferIn, packedLight);
         } catch (Throwable throwable1) {
             throw new ReportedException(CrashReport.forThrowable(throwable1, "Rendering entity in world"));
         }
