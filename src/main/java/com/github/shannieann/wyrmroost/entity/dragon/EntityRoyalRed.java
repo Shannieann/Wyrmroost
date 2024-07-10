@@ -530,8 +530,8 @@ public class EntityRoyalRed extends WRDragonEntity {
     }
 
     @Override
-    public void applyTomeInfo(NewTarragonTomeContainer container) {
-        container.addArmorSlot();
+    public boolean canEquipArmor() {
+        return true;
     }
 
     // ====================================

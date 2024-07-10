@@ -48,6 +48,8 @@ import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
 
+import java.util.function.Predicate;
+
 import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 
 public class EntityRoostStalker extends WRDragonEntity
@@ -296,9 +298,10 @@ public class EntityRoostStalker extends WRDragonEntity
         if (!item.isEmpty()) playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 0.5f, 1);
     }
 
+    @Nullable
     @Override
-    public void applyTomeInfo(NewTarragonTomeContainer container) {
-        container.addExtraSlot((item) -> true); // Anything can be put into this slot
+    public Predicate<ItemStack> canEquipSpecialItem() {
+        return (stack) -> true;
     }
 
     @Override

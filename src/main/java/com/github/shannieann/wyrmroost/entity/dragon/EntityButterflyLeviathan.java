@@ -651,9 +651,10 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         };
     }
 
+    @Nullable
     @Override
-    public void applyTomeInfo(NewTarragonTomeContainer container) {
-        container.addExtraSlot((item) -> item.is(Items.CONDUIT));
+    public Predicate<ItemStack> canEquipSpecialItem() {
+        return (item) -> item.is(Items.CONDUIT);
     }
 
     // ====================================
