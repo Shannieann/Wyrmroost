@@ -8,12 +8,17 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGround
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
+import com.google.common.collect.ImmutableList;
+import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
+import net.minecraft.client.gui.screens.inventory.InventoryScreen;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerChunkCache;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
@@ -36,8 +41,16 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.Tags;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.builder.ILoopType;
+import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
+import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.shadowed.eliotlash.mclib.utils.MathHelper;
 
 import javax.annotation.Nullable;
@@ -69,8 +82,6 @@ public class EntityOverworldDrake extends WRDragonEntity
         return 3;
     }
     // Dragon Entity Data
-    private static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(EntityOverworldDrake.class, EntityDataSerializers.BOOLEAN);
-
     // Dragon Entity Animations
     // NOT USED ANYMORE -- Keeping for reference but will prolly delete later
     //public static final Animation GRAZE_ANIMATION = LogicalAnimation.create(35, EntityOverworldDrake::grazeAnimation, () -> OverworldDrakeModel::grazeAnimation);
@@ -82,9 +93,52 @@ public class EntityOverworldDrake extends WRDragonEntity
     public LivingEntity thrownPassenger;
     public boolean shouldRoar = false, shouldBuck = false;
 
+    // TODO move to superclass maybe... this is a test for now.
+    public float momentum = 0.0f;
+
     public EntityOverworldDrake(EntityType<? extends EntityOverworldDrake> drake, Level level)
     {
         super(drake, level);
+    }
+
+    // =====================
+    //      Animation Logic
+    // =====================
+
+    // TODO temporary! Just so the animations look cool in my riding tests for now.
+    @Override
+    public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
+        if (getDeltaMovement().length() >= 0.2f){
+            if (momentum > 0.1f)
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
+            else
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+
+        return super.predicateBasicLocomotion(event);
+    }
+
+    // Chest handling
+    // Create a new predicate b/c this should be able to run even when other animations are running as well
+    public <E extends IAnimatable> PlayState predicateChest(AnimationEvent<E> event){
+        // If the main rider is a player
+        if (isControlledByLocalInstance()){
+            // If they enter their inventory
+            if (ClientEvents.getClient().screen instanceof EffectRenderingInventoryScreen){
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("chest_open", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
+            } else if (ClientEvents.getClient().screen == null) {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("chest_close", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
+            }
+        }
+        return PlayState.CONTINUE;
+    }
+
+
+    @Override
+    public void registerControllers(AnimationData data) {
+        super.registerControllers(data);
+        data.addAnimationController(new AnimationController(this, "controllerChest", 0, this::predicateChest));
     }
 
     // ====================================
@@ -98,7 +152,6 @@ public class EntityOverworldDrake extends WRDragonEntity
     protected void defineSynchedData()
     {
         super.defineSynchedData();
-        entityData.define(SADDLED, false);
     }
 
     public static AttributeSupplier.Builder getAttributeSupplier()
@@ -166,6 +219,7 @@ public class EntityOverworldDrake extends WRDragonEntity
         sitTimer.add((isInSittingPose() || getSleeping())? 0.1f : -0.1f);
         sleepTimer.add(getSleeping()? 0.04f : -0.06f);
 
+
         // =====================
         //       Throwing Passenger Off Logic
         // =====================
@@ -176,7 +230,20 @@ public class EntityOverworldDrake extends WRDragonEntity
             thrownPassenger = null;
         }
 
+        // =====================
+        // Momentum Logic
+        // =====================
+        if (canBeControlledByRider()) {
+            // If we're not moving, decrease momentum
+            if (getDeltaMovement().length() <= 0.2f) {
+                if (momentum > 0) momentum -= 0.01f;;
+            } else { // Otherwise, increase it if you're sprinting (up to 0.3f)
+                if (momentum < 0.3f) momentum += 0.001f;
+            }
+        }
+
     }
+
     // ====================================
     //      B.1) Tick and AI: Attack and Hurt
     // ====================================
@@ -198,12 +265,19 @@ public class EntityOverworldDrake extends WRDragonEntity
     //      C) Navigation and Control
     // ====================================
 
+
+    @Override
+    public void travel(Vec3 vec3d) {
+
+        super.travel(vec3d);
+    }
+
     @Override
     public float getTravelSpeed()
     {
         float speed = (float) getAttributeValue(MOVEMENT_SPEED);
-        if (canBeControlledByRider()) speed += 0.15f;
-        return speed;
+        //if (canBeControlledByRider()) speed += 0.15f;
+        return speed + momentum;
     }
 
     @Override
@@ -216,19 +290,21 @@ public class EntityOverworldDrake extends WRDragonEntity
         return 0;
     }
 
-    /*@Override
+    @Override
     public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
         if (backView)
             event.getCamera().move(ClientEvents.getViewCollision(-0.5, this), 0.75, 0);
         else
             event.getCamera().move(ClientEvents.getViewCollision(-3, this), 0.3, 0);
-    }*/
+    }
 
     @Override
     public boolean speciesCanWalk() {
         return true;
     }
+
+
 
 
     // ====================================
@@ -278,7 +354,7 @@ public class EntityOverworldDrake extends WRDragonEntity
 
                 if (rng < 0.005) tame(player);
 
-                else if (rng <= 0.2)
+                else if (rng <= 0.1)
                 {
                     shouldBuck = true;
                 }
@@ -296,10 +372,9 @@ public class EntityOverworldDrake extends WRDragonEntity
         if (!isJuvenile())
             super.mobInteract(player, hand);
 
-
         ItemStack stack = player.getItemInHand(hand);
 
-        if (isSaddled()){
+        if (canAddPassenger(player)){
             player.startRiding(this);
         }
         else if (stack.getItem() == Items.SADDLE) {
@@ -331,9 +406,10 @@ public class EntityOverworldDrake extends WRDragonEntity
     {
         return new DragonInventory(this, 24);
     }
-    public InteractionResult tameLogic (Player tamer, ItemStack stack) {
+    // Does not apply here because we don't feed anything to tame it.
+    public InteractionResult tameLogic(Player tamer, ItemStack stack) {
         return InteractionResult.PASS;
-    };
+    }
     @Override
     public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad)
     {
@@ -349,6 +425,7 @@ public class EntityOverworldDrake extends WRDragonEntity
                 if (playSound) playSound(SoundEvents.ARMOR_EQUIP_DIAMOND, 1f, 1f);
                 break;
             case CHEST_SLOT:
+                entityData.set(CHESTED, !stack.isEmpty());
                 if (playSound) playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1f, 1f);
                 break;
         }
@@ -360,19 +437,22 @@ public class EntityOverworldDrake extends WRDragonEntity
             default -> new Vec2(0,3);
         };
     }
+
     @Override
-    public void applyTomeInfo(NewTarragonTomeContainer container) {
-        container.addSaddleSlot().addArmorSlot().addChestSlot();
-    }
-    public boolean hasChest()
-    {
-        return !getStackInSlot(CHEST_SLOT).isEmpty();
+    public boolean canEquipArmor() {
+        return true;
     }
 
-    public boolean isSaddled()
-    {
-        return entityData.get(SADDLED);
+    @Override
+    public boolean canEquipSaddle() {
+        return true;
     }
+
+    @Override
+    public boolean canEquipChest() {
+        return true;
+    }
+
     @Override
     public void dropStorage()
     {
@@ -429,7 +509,7 @@ public class EntityOverworldDrake extends WRDragonEntity
 
     @Override
     public float getMountCameraYOffset() {
-        return -3.7f;
+        return -3.5f;
     }
 
     // ====================================
@@ -458,6 +538,8 @@ public class EntityOverworldDrake extends WRDragonEntity
         targetSelector.addGoal(4, new HurtByTargetGoal(this));
         //targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Player.class, true, EntitySelector.ENTITY_STILL_ALIVE::test));
     }
+
+
 
     // ====================================
     //      F.n) Goals: OWDGrazeGoal
@@ -518,7 +600,7 @@ public class EntityOverworldDrake extends WRDragonEntity
         @Override
         public boolean canContinueToUse()
         {
-            if (getSitting() || getSleeping() || getTarget() != null)
+            if (getSitting() || getSleeping() || isVehicle() || getTarget() != null)
                 return false;
             return super.canContinueToUse();
         }
@@ -603,6 +685,7 @@ public class EntityOverworldDrake extends WRDragonEntity
     //      F.n) Goals: OWDBuckGoal
     // ====================================
 
+    // Should this even be a goal?
     class OWDBuckGoal extends AnimatedGoal{
 
         Player passenger;
@@ -641,24 +724,21 @@ public class EntityOverworldDrake extends WRDragonEntity
                 // TODO another sound for this?
                 playSound(WRSounds.ENTITY_OWDRAKE_HURT.get(), 3f, 1f);
             }
-            else if (elapsedTime == 30) {
+            else if (elapsedTime == 26) {
                 setTarget(passenger);
                 boardingCooldown = 60;
                 ejectPassengers();
                 thrownPassenger = passenger;
             }
-            // TODO the buck animation isnt playing... the goal itself works but this looks weird in-game and idk why
+
             super.start("buck", 2, 50);
             super.tick();
         }
 
         @Override
-        public boolean canContinueToUse()
-        {
-            return !getSleeping();
+        public boolean canContinueToUse() {
+            return hasExactlyOnePlayerPassenger() && !isTame() && super.canContinueToUse();
         }
-
-
     }
 
     /*@Override

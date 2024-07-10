@@ -28,6 +28,7 @@ import com.mojang.math.Vector3f;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.Rotations;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -73,6 +74,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -128,9 +130,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public int WAKE_UP_ANIMATION_TIME;
     public int WAKE_UP_WATER_ANIMATION_TIME;
 
-    // Used in setting 1st person camera positions when flying but set in RiderLayer & WRDragonRender
-    // EDIT: made this a hashmap because I realized there could be more than one passenger lmao
-    public Vector3f cameraRotVector = Vector3f.ZERO;
+    // Used in setting 1st person camera positions when flying but set in DragonRiderLayer & WRDragonRender
+    public Vector3f cameraRotVector = new Vector3f();
     public Map<UUID, Vector3d> cameraBonePos = new HashMap<>();
 
     //TODO: CANCEL DAMAGE FROM CACTUS AND BERRY BUSHES AND OTHERS
@@ -150,6 +151,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public final LerpedFloat sleepTimer = LerpedFloat.unit();
     public static final EntityDataAccessor<Float> AGE_PROGRESS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
+    public static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+    public static final EntityDataAccessor<Boolean> CHESTED = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> YAW_UNLOCK = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
@@ -213,6 +216,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         DragonInventory inv = createInv();
         inventory = LazyOptional.of(inv == null? null : () -> inv);
         //TODO: DEFAULT NAVIGATORS
+
     }
 
     // =====================
@@ -361,6 +365,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(SITTING, false);
 
         entityData.define(ARMOR, ItemStack.EMPTY);
+        entityData.define(SADDLED, false);
+        entityData.define(CHESTED, false);
 
         entityData.define(EATING_COOLDOWN, 0);
 
@@ -369,7 +375,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(AGE_PROGRESS, 0f);
 
         entityData.define(DRAGON_X_ROTATION, 0f);
-
         super.defineSynchedData();
     }
 
@@ -840,7 +845,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public ItemStack getPickedResult(HitResult target)
     {
-        return new ItemStack(SpawnEggItem.byId(getType()));
+        return new ItemStack(ForgeSpawnEggItem.fromEntityType(getType()));
     }
 
     public int getEatingCooldown() {
@@ -1313,6 +1318,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         super.travel(vec3d);
     }
 
+    /**
+     For use in individual dragon classes if you override the handle___Riding methods.
+     Honestly im not sure if this is the best way to do this...
+     */
+    protected void superTravel(Vec3 pTravelVector){
+        super.travel(pTravelVector);
+    }
+
 
 
     // TODO dragon flapping wings sound
@@ -1729,9 +1742,24 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return entity.isAlliedTo(getTeam());
     }
 
-    // Wondering if I should make this abstract
+    /**
+     * This is no longer to be overriden in each dragon class.
+     * Instead, override #canEquipArmor, #canEquipSaddle, etc.
+     * @param container to add things to
+     */
     public void applyTomeInfo(NewTarragonTomeContainer container){
-
+        if (canEquipSaddle()){
+            container.addSaddleSlot();
+        }
+        if (canEquipArmor()){
+            container.addArmorSlot();
+        }
+        if (canEquipChest()){
+            container.addChestSlot();
+        }
+        if (canEquipSpecialItem() != null){
+            container.addExtraSlot(canEquipSpecialItem());
+        }
     }
 
     /*{
@@ -1838,6 +1866,29 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public DragonInventory getInventory()
     {
         return inventory.orElseThrow(() -> new NoSuchElementException("This boi doesn't have an inventory wtf are u doing"));
+    }
+
+    public boolean canEquipSaddle(){
+        return false;
+    }
+    public boolean canEquipArmor(){
+        return false;
+    }
+    public boolean canEquipChest(){
+        return false;
+    }
+    @Nullable
+    public Predicate<ItemStack> canEquipSpecialItem(){
+        return null;
+    }
+
+    public boolean isSaddled()
+    {
+        return canEquipSaddle() && entityData.get(SADDLED);
+    }
+    public boolean isChested()
+    {
+        return canEquipChest() && entityData.get(CHESTED);
     }
 
     @Override
