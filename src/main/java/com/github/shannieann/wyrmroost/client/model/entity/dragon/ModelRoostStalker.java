@@ -109,7 +109,7 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
             matrixStackIn.mulPoseMatrix(bone.getModelRotationMat());
 
 // Translate the item's render location to the bone's location
-            // (Don't ask me why its multiplied by 1/16, I was wondering why it rendered so far away and looked at Alex's ice and fire code so thanks Alex)
+            // Divide by 16 to convert from pixels to coordinates (i think, I got inspiration from Ice and Fire code)
             // scale it
             float scale = 1f/16f;
             matrixStackIn.translate(pos.x * (scale), pos.y * (scale), pos.z * (scale));
