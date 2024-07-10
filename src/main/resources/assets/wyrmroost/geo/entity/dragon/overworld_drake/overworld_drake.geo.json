@@ -7,8 +7,8 @@
 				"texture_width": 512,
 				"texture_height": 256,
 				"visible_bounds_width": 12,
-				"visible_bounds_height": 4.5,
-				"visible_bounds_offset": [0, 1.75, 0]
+				"visible_bounds_height": 5,
+				"visible_bounds_offset": [0, 1.5, 0]
 			},
 			"bones": [
 				{
@@ -246,13 +246,13 @@
 					]
 				},
 				{
-					"name": "iNuzzleWuzzleUWU",
+					"name": "itopjaw",
 					"parent": "head",
 					"pivot": [0, 29, -37]
 				},
 				{
-					"name": "NuzzleWuzzleUWU",
-					"parent": "iNuzzleWuzzleUWU",
+					"name": "topjaw",
+					"parent": "itopjaw",
 					"pivot": [0, 29, -37],
 					"rotation": [10.43, 0, 0],
 					"cubes": [
@@ -261,7 +261,7 @@
 				},
 				{
 					"name": "hornNose1",
-					"parent": "NuzzleWuzzleUWU",
+					"parent": "topjaw",
 					"pivot": [0, 29.8, -43],
 					"rotation": [65.22, 0, 0],
 					"cubes": [
@@ -279,7 +279,7 @@
 				},
 				{
 					"name": "eyeLeft",
-					"parent": "NuzzleWuzzleUWU",
+					"parent": "topjaw",
 					"pivot": [-6.7, 31, -38],
 					"rotation": [0, -15.68, 0],
 					"cubes": [
@@ -288,7 +288,7 @@
 				},
 				{
 					"name": "eyeRight",
-					"parent": "NuzzleWuzzleUWU",
+					"parent": "topjaw",
 					"pivot": [6.7, 31, -38],
 					"rotation": [0, 15.68, 0],
 					"cubes": [
@@ -595,9 +595,14 @@
 				},
 				{
 					"name": "rider1",
-					"parent": "sChest",
-					"pivot": [0, 57, 0],
+					"parent": "body1",
+					"pivot": [0, 35, -3],
 					"rotation": [-7.5, 0, 0]
+				},
+				{
+					"name": "cameraPos1",
+					"parent": "rider1",
+					"pivot": [0, 57, 0]
 				},
 				{
 					"name": "ileg1Right",
@@ -704,6 +709,33 @@
 					"rotation": [-3, 0, 0],
 					"cubes": [
 						{"origin": [0, 2, -50], "size": [0, 40, 132], "uv": [240, 80]}
+					]
+				},
+				{
+					"name": "chest",
+					"parent": "body2",
+					"pivot": [-2, 31.5, 1],
+					"rotation": [0, 0, 180],
+					"cubes": [
+						{"origin": [-13, 26.5, 1], "size": [18, 3, 7], "inflate": 0.05, "uv": [70, 140]}
+					]
+				},
+				{
+					"name": "lid",
+					"parent": "chest",
+					"pivot": [-2, 27.5, 1],
+					"rotation": [180, 0, 0],
+					"cubes": [
+						{"origin": [-13, 27.5, -6], "size": [18, 1, 7], "inflate": 0.075, "uv": [70, 121]}
+					]
+				},
+				{
+					"name": "knob",
+					"parent": "lid",
+					"pivot": [-0.5, 27.5, 1.8],
+					"rotation": [180, 0, 0],
+					"cubes": [
+						{"origin": [-12, 26.5, 8.8], "size": [16, 2, 1], "inflate": 0.05, "uv": [126, 126]}
 					]
 				}
 			]
