@@ -4,16 +4,19 @@ import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.entity.dragon.*;
 import com.github.shannieann.wyrmroost.entity.dragonegg.DragonEggEntity;
 import com.github.shannieann.wyrmroost.entity.dragonegg.DragonEggProperties;
+import com.github.shannieann.wyrmroost.entity.dragonegg.WRDragonEggEntity;
 import com.github.shannieann.wyrmroost.entity.effect.EffectLightningNova;
 import com.github.shannieann.wyrmroost.entity.projectile.GeodeTippedArrowEntity;
 import com.github.shannieann.wyrmroost.entity.projectile.SoulCrystalEntity;
 import com.github.shannieann.wyrmroost.entity.projectile.breath.FireBreathEntity;
+import com.github.shannieann.wyrmroost.item.WRDragonEggItem;
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.*;
 import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -30,6 +33,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
+import static com.github.shannieann.wyrmroost.registry.WRItems.MAIN_ITEM_GROUP;
 import static net.minecraft.world.entity.SpawnPlacements.Type.ON_GROUND;
 
 @SuppressWarnings("unchecked")

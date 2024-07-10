@@ -1,0 +1,9 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "wyrmroost:item/dragon_egg_wr"
+  },
+  "overrides": [
+    { "predicate": { "wyrmroost:contained_dragon": 1.0 }, "model": "wyrmroost:item/butterfly_leviathan_egg" }
+  ]
+}

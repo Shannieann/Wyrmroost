@@ -4,6 +4,7 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.entity.dragonegg.DragonEggEntity;
 import com.github.shannieann.wyrmroost.entity.dragonegg.DragonEggProperties;
+import com.github.shannieann.wyrmroost.entity.dragonegg.WRDragonEggEntity;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import net.minecraft.ChatFormatting;
@@ -30,8 +31,8 @@ import java.util.Optional;
 public class DragonEggItem extends Item
 {
     //private static final BlockEntityWithoutLevelRenderer renderer = new DragonEggStackRenderer(null, null);
-    public DragonEggItem()
-    {
+    public DragonEggItem() {
+
         super(WRItems.builder().stacksTo(1));
     }
 
@@ -58,8 +59,8 @@ public class DragonEggItem extends Item
         }
 
         CompoundTag nbt = new CompoundTag();
-        nbt.putString("Contained Dragon", EntityType.getKey(entity.getType()).toString());
-        nbt.putInt("Hatch Time", DragonEggProperties.get(entity.getType()).getHatchTime());
+        nbt.putString("ContainedDragon", EntityType.getKey(entity.getType()).toString());
+        nbt.putInt("HatchTime", DragonEggProperties.get(entity.getType()).getHatchTime());
         stack.setTag(nbt);
 
         player.displayClientMessage(getName(stack), true);
@@ -68,6 +69,8 @@ public class DragonEggItem extends Item
 
     @Override
     public InteractionResult useOn(UseOnContext context) {
+
+
         Player player = context.getPlayer();
         if (player.isShiftKeyDown()) return super.useOn(context);
 
@@ -76,17 +79,13 @@ public class DragonEggItem extends Item
         BlockPos pos = context.getClickedPos();
         BlockState state = level.getBlockState(pos);
 
-        if (tag == null || !tag.contains("Contained Dragon")){
-            return InteractionResult.PASS;
-        }
         if (!state.getCollisionShape(level, pos).isEmpty()) {
             pos = pos.relative(context.getClickedFace());
         }
-        if (!level.getEntitiesOfClass(DragonEggEntity.class, new AABB(pos)).isEmpty()) {
-            return InteractionResult.FAIL;
-        }
 
-        DragonEggEntity eggEntity = new DragonEggEntity(ModUtils.getEntityTypeByKey(tag.getString("Contained Dragon")), tag.getInt("Hatch Time"), level);
+
+
+        DragonEggEntity eggEntity = new DragonEggEntity(ModUtils.getEntityTypeByKey(tag.getString("ContainedDragon")), tag.getInt("Hatch Time"), level);
         eggEntity.absMoveTo(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d);
 
         if (!level.isClientSide) level.addFreshEntity(eggEntity);
@@ -99,7 +98,7 @@ public class DragonEggItem extends Item
     {
         CompoundTag tag = stack.getTag();
         if (tag == null || tag.isEmpty()) return super.getName(stack);
-        Optional<EntityType<?>> type = EntityType.byString(tag.getString("Contained Dragon"));
+        Optional<EntityType<?>> type = EntityType.byString(tag.getString("ContainedDragon"));
         
         if (type.isPresent())
         {
@@ -115,8 +114,8 @@ public class DragonEggItem extends Item
     {
         CompoundTag tag = stack.getTag();
 
-        if (tag != null && tag.contains("Contained Dragon"))
-            tooltip.add(new TranslatableComponent("item.wyrmroost.egg.tooltip", tag.getInt("Hatch Time") / 1200).withStyle(ChatFormatting.AQUA));
+        if (tag != null && tag.contains("ContainedDragon"))
+            tooltip.add(new TranslatableComponent("item.wyrmroost.egg.tooltip", tag.getInt("HatchTime") / 1200).withStyle(ChatFormatting.AQUA));
         Player player = ClientEvents.getPlayer();
         if (player != null && player.isCreative())
             tooltip.add(new TranslatableComponent("item.wyrmroost.egg.creativetooltip").withStyle(ChatFormatting.GRAY));
@@ -131,8 +130,8 @@ public class DragonEggItem extends Item
     {
         ItemStack stack = new ItemStack(WRItems.DRAGON_EGG.get());
         CompoundTag tag = new CompoundTag();
-        tag.putString("Contained Dragon", EntityType.getKey(type).toString());
-        tag.putInt("Hatch Time", hatchTime);
+        tag.putString("ContainedDragon", EntityType.getKey(type).toString());
+        tag.putInt("HatchTime", hatchTime);
         stack.setTag(tag);
         return stack;
     }

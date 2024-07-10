@@ -2,21 +2,27 @@ package com.github.shannieann.wyrmroost.registry;
 
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.Wyrmroost;
+import com.github.shannieann.wyrmroost.config.WRServerConfig;
+import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.item.*;
 import com.github.shannieann.wyrmroost.item.base.ArmorBase;
 import com.github.shannieann.wyrmroost.item.base.ArmorMaterials;
 import com.github.shannieann.wyrmroost.item.base.ToolMaterials;
 import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
+import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.NonNullList;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.Item.Properties;
+import net.minecraftforge.event.RegistryEvent;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
@@ -125,6 +131,10 @@ public class WRItems
     public static final RegistryObject<Item> DIAMOND_DRAGON_ARMOR = register("diamond_dragon_armor", () -> new DragonArmorItem(8, net.minecraft.world.item.ArmorMaterials.DIAMOND.getEnchantmentValue()));
     public static final RegistryObject<Item> NETHERITE_DRAGON_ARMOR = register("netherite_dragon_armor", () -> new DragonArmorItem(10, net.minecraft.world.item.ArmorMaterials.DIAMOND.getEnchantmentValue()));
 
+    //ToDo: Simplify name
+    public static final RegistryObject<WRDragonEggItem> DRAGON_EGG_WR = WRItems.REGISTRY.register("dragon_egg_wr", () -> new WRDragonEggItem(new Item.Properties().tab(MAIN_ITEM_GROUP)));
+
+
     static RegistryObject<Item> register(String name, Supplier<Item> item)
     {
         return REGISTRY.register(name, item);
@@ -165,5 +175,26 @@ public class WRItems
         {
             return ItemTags.bind("forge:" + path);
         }
+    }
+
+
+    public static void registerItemProperties(RegistryEvent.Register<Item> event) {
+        ItemProperties.register(DRAGON_EGG_WR.get(), new ResourceLocation(Wyrmroost.MOD_ID, "contained_dragon"),
+                (stack, world, entity, seed) -> {
+                    if (stack.hasTag() && stack.getTag().contains("contained_dragon")) {
+                        String containedDragon = stack.getTag().getString("contained_dragon");
+                        switch (containedDragon) {
+                            case "wyrmroost:butterfly_leviathan":
+                                return 1.0F;
+                            case "dragon_type_2":
+                                return 2.0F;
+                            case "dragon_type_3":
+                                return 3.0F;
+                            default:
+                                return 0.0F;
+                        }
+                    }
+                    return 0.0F;
+                });
     }
 }

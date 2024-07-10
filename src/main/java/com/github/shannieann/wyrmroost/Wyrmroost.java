@@ -7,6 +7,7 @@ import com.github.shannieann.wyrmroost.network.packets.*;
 import com.github.shannieann.wyrmroost.registry.*;
 import com.github.shannieann.wyrmroost.util.ModUtils;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -38,6 +39,8 @@ public class Wyrmroost
         WRBlocks.REGISTRY.register(bus);
         //WRBlockEntities.REGISTRY.register(bus);
         WRItems.REGISTRY.register(bus);
+        bus.addGenericListener(Item.class, WRItems::registerItemProperties);
+
         WRIO.REGISTRY.register(bus);
         WRSounds.REGISTRY.register(bus);
         //WRWorld.Features.REGISTRY.register(bus);
