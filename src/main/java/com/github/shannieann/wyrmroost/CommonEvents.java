@@ -1,18 +1,12 @@
 package com.github.shannieann.wyrmroost;
 
-import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.item.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.item.base.ArmorBase;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
-import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.github.shannieann.wyrmroost.world.WREntitySpawning;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -24,10 +18,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.EntityHitResult;
-import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.LootTableLoadEvent;
 import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
@@ -39,8 +30,6 @@ import net.minecraftforge.event.world.BiomeLoadingEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-
-import java.util.List;
 
 /**
  * Reflection is shit and we shouldn't use it
@@ -67,7 +56,6 @@ public class CommonEvents {
         forgeBus.addListener(CommonEvents::loadLoot);
         forgeBus.addListener(CommonEvents::onBiomeLoading);
         forgeBus.addListener(CommonEvents::onEntityMountEvent);
-        forgeBus.addListener(CommonEvents::onRenderWorldLast);
         forgeBus.addListener(CommonEvents::onPlayerTick);
 
         //forgeBus.addListener(VillagerHelper::addWandererTrades);
@@ -199,29 +187,4 @@ public class CommonEvents {
     }
 
 
-    public static void onRenderWorldLast(RenderLevelStageEvent event) {
-
-        if (WRConfig.DEBUG_MODE.get()) {
-            RenderLevelStageEvent.Stage stage = event.getStage();
-            if (stage == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
-                Minecraft mc = Minecraft.getInstance();
-                Camera camera = mc.gameRenderer.getMainCamera();
-                Vec3 viewPosition = camera.getPosition();
-                PoseStack matrix_stack = event.getPoseStack();
-                matrix_stack.pushPose();
-                matrix_stack.translate(-viewPosition.x, -viewPosition.y, -viewPosition.z);
-                List<EntityButterflyLeviathan> entityList = mc.level.getEntitiesOfClass(EntityButterflyLeviathan.class, new AABB(mc.player.getOnPos()).inflate(20));
-                if (!entityList.isEmpty()) {
-                    for (int i = 0; i<entityList.size(); i++) {
-                        List<AABB> attackBoxes = entityList.get(i).generateAttackBoxes();
-                        LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(0), 1,0,0,1);
-                        LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(1), 0,1,0,1);
-                        LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(2), 0,0,1,1);
-                    }
-                    matrix_stack.popPose();
-                    mc.renderBuffers().bufferSource().endBatch();
-                }
-            }
-        }
-    }
 }
