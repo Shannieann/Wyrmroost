@@ -26,6 +26,8 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
 import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Rotations;
@@ -68,6 +70,7 @@ import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
@@ -87,6 +90,7 @@ import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.builder.ILoopType;
 import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.SoundKeyframeEvent;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
@@ -226,8 +230,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void registerControllers(AnimationData data)
     {
-        data.addAnimationController(new AnimationController(this, "controllerAbility", 0, this::predicateAbility));
-        data.addAnimationController(new AnimationController(this, "controllerBasicLocomotion", 0, this::predicateBasicLocomotion));
+        data.addAnimationController(new AnimationController<>(this, "controllerAbility", 0, this::predicateAbility));
+
+        AnimationController<? extends WRDragonEntity> locomotion = new AnimationController<>(this, "controllerBasicLocomotion", 0, this::predicateBasicLocomotion);
+        locomotion.registerSoundListener(this::locomotionListener);
+        data.addAnimationController(locomotion);
 
     }
 
@@ -2113,7 +2120,23 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (!getSleeping()) super.playAmbientSound();
     }
 
+    @Override
+    protected void playStepSound(BlockPos pPos, BlockState pState) {
+        // Does nothing by default. usually steps will be handled in locomotionListener
+    }
 
+    /**
+     * @return The sound you want to play based on the animation.
+     */
+    private <E extends WRDragonEntity> void locomotionListener(SoundKeyframeEvent<E> event){
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player != null){
+            locomotionSoundEvent(event, player, event.getController().getCurrentAnimation().animationName);
+        }
+    }
+    protected <E extends WRDragonEntity> void locomotionSoundEvent(SoundKeyframeEvent<E> event, LocalPlayer player, String anim){
+
+    }
     // ====================================
     //      E.2) Client: Camera
     // ====================================
