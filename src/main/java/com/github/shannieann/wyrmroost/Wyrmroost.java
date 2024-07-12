@@ -31,7 +31,7 @@ public class Wyrmroost
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         CommonEvents.init();
-        if (ModUtils.isClient()) ClientEvents.init();
+
 
         //bus.register(CapabilityEvent.class);
         WREntityTypes.REGISTRY.register(bus);
@@ -39,7 +39,7 @@ public class Wyrmroost
         WRBlocks.REGISTRY.register(bus);
         //WRBlockEntities.REGISTRY.register(bus);
         WRItems.REGISTRY.register(bus);
-        bus.addGenericListener(Item.class, WRItems::registerItemProperties);
+        if (ModUtils.isClient()) ClientEvents.init(); // Moved registerItemProperties to client events b/c it crashed on a dedicated server
 
         WRIO.REGISTRY.register(bus);
         WRSounds.REGISTRY.register(bus);
