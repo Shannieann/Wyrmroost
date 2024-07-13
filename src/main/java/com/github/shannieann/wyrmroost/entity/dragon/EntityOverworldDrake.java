@@ -107,7 +107,7 @@ public class EntityOverworldDrake extends WRDragonEntity
     //      Animation Logic
     // =====================
 
-    // TODO temporary! Just so the animations look cool in my riding tests for now.
+    // TODO remove bc its temporary! Just so the animations look cool in my riding tests for now.
     @Override
     public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
         if (getDeltaMovement().length() >= 0.2f){
@@ -127,9 +127,10 @@ public class EntityOverworldDrake extends WRDragonEntity
         // If the main rider is a player
         if (isControlledByLocalInstance()){
             // If they enter their inventory
+            // TODO this doesn't really work. It opens, but then resets after the animation is done.
             if (ClientEvents.getClient().screen instanceof EffectRenderingInventoryScreen){
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("chest_open", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
-            } else if (ClientEvents.getClient().screen == null) {
+            } else {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("chest_close", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
             }
         }
@@ -146,15 +147,6 @@ public class EntityOverworldDrake extends WRDragonEntity
     // ====================================
     //      A) Entity Data
     // ====================================
-
-
-
-
-    @Override
-    protected void defineSynchedData()
-    {
-        super.defineSynchedData();
-    }
 
     public static AttributeSupplier.Builder getAttributeSupplier()
     {
@@ -240,7 +232,7 @@ public class EntityOverworldDrake extends WRDragonEntity
             if (getDeltaMovement().length() <= 0.2f) {
                 if (momentum > 0) momentum -= 0.01f;;
             } else { // Otherwise, increase it if you're sprinting (up to 0.3f)
-                if (momentum < 0.3f) momentum += 0.001f;
+                if (momentum < 0.2f) momentum += 0.001f;
             }
         }
 

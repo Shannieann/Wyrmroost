@@ -180,7 +180,7 @@ public class ClientEvents
             float xRot = -dragon.cameraRotVector.x();
             float yRot = dragon.cameraRotVector.y();
             float zRot = dragon.cameraRotVector.z();
-            System.out.println(xRot + ", " + yRot +", " + zRot);
+            //System.out.println(xRot + ", " + yRot +", " + zRot);
             Vector3d bonePos = dragon.cameraBonePos.get(uuid);
             if (bonePos != null) {
                 Vec3 vecBonePos = new Vec3(bonePos.x, bonePos.y+dragon.getMountCameraYOffset(), bonePos.z);

@@ -54,7 +54,7 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
         super(type, worldIn);
     }
 
-    @org.jetbrains.annotations.Nullable
+    @Nullable
     @Override
     public AgeableMob getBreedOffspring(ServerLevel pLevel, AgeableMob pOtherParent) {
         return null;

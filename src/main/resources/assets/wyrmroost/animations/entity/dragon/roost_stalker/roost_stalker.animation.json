@@ -1388,7 +1388,7 @@
 		},
 		"walk_fast": {
 			"loop": true,
-			"animation_length": 3.33333,
+			"animation_length": 3.3333,
 			"bones": {
 				"body": {
 					"rotation": {
