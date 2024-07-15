@@ -322,8 +322,7 @@ public class EntityOverworldDrake extends WRDragonEntity
     }
 
     @Override
-    public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
-    {
+    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event) {
         if (backView)
             event.getCamera().move(ClientEvents.getViewCollision(-0.5, this), 0.75, 0);
         else

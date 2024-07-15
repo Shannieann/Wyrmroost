@@ -162,15 +162,14 @@ public class ClientEvents
 
 
 
-    private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event)
-    {
+    private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event) {
         Minecraft mc = getClient();
         Entity entity = mc.player.getVehicle();
         if (!(entity instanceof WRDragonEntity dragon)) return;
         CameraType view = mc.options.getCameraType();
-        // Third person camera views
+        // Third person camera views, both
         if (view != CameraType.FIRST_PERSON)
-            dragon.setMountCameraAngles(view == CameraType.THIRD_PERSON_BACK, event);
+            dragon.setThirdPersonMountCameraAngles(view == CameraType.THIRD_PERSON_BACK, event);
         else{ // 1st person
             // Set camera rotations based on bone values set in dragon renderer
             UUID uuid = mc.player.getUUID();

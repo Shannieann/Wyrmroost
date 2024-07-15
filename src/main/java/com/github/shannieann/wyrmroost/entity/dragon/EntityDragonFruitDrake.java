@@ -276,7 +276,7 @@ public class DragonFruitDrakeEntity extends WRDragonEntity implements IForgeShea
     }
 
     @Override
-    public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
+    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
         if (backView)
             event.getInfo().move(ClientEvents.getViewCollision(-0.25, this), 0.5, 0);

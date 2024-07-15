@@ -1544,6 +1544,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
+    //ToDo: How does this interact with travel?
     public void rideTick()
     {
         super.rideTick();
@@ -1649,7 +1650,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return passenger instanceof Player? (Player) passenger : null;
     }
 
-    public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
+    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
     }
 

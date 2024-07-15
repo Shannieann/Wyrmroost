@@ -424,7 +424,7 @@ public class EntityRoyalRed extends WRDragonEntity {
     }
 
     @Override
-    public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event) {
+    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event) {
         if (backView)
             event.getCamera().move(ClientEvents.getViewCollision(-8.5, this), 0, 0);
         //else

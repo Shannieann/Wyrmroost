@@ -496,7 +496,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
 
     @Override
-    public void setMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event) {
+    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event) {
         if (backView)
             event.getCamera().move(ClientEvents.getViewCollision(-10, this), 1, 0);
         else
