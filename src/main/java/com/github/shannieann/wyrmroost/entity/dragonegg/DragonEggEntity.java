@@ -6,7 +6,7 @@ import com.github.shannieann.wyrmroost.item.DragonEggItem;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.mojang.math.Vector3f;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.DustParticleOptions;
@@ -64,7 +64,7 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
 
     public DragonEggEntity(PlayMessages.SpawnEntity packet, Level level) {
         super(WREntityTypes.DRAGON_EGG.get(), level);
-        this.containedDragon = ModUtils.getEntityTypeByKey(packet.getAdditionalData().readUtf());
+        this.containedDragon = WRModUtils.getEntityTypeByKey(packet.getAdditionalData().readUtf());
     }
 
     // ================================

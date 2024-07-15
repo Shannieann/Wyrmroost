@@ -21,7 +21,7 @@ import com.github.shannieann.wyrmroost.registry.WRKeybind;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
@@ -30,7 +30,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Rotations;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -65,7 +64,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.SpawnEggItem;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -1951,7 +1949,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         Vec3 mouth = getApproximateMouthPos();
         //ClientSide: Spawn Particles + sound
         if (level.isClientSide) {
-            ModUtils.playLocalSound(level, new BlockPos(mouth), getEatingSound(stack), 1f, 1f);
+            WRModUtils.playLocalSound(level, new BlockPos(mouth), getEatingSound(stack), 1f, 1f);
         }
         else {
             //ServerSide: Heal
