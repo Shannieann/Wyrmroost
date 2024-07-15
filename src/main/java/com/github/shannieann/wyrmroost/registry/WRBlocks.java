@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.registry;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
@@ -325,7 +325,7 @@ public class WRBlocks {
 
         public void callBack()
         {
-            if (ModUtils.isClient())
+            if (WRModUtils.isClient())
             {
                 if (renderType != null) ItemBlockRenderTypes.setRenderLayer(block.get(), renderType.get().get());
                 if (tintFunc != null)

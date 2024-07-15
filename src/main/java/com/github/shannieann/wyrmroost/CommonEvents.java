@@ -4,7 +4,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.item.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.item.base.ArmorBase;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.github.shannieann.wyrmroost.world.WREntitySpawning;
 import net.minecraft.world.InteractionResult;
@@ -85,7 +85,7 @@ public class CommonEvents {
 
     @SuppressWarnings("unchecked")
     public static void bindEntityAttributes(EntityAttributeCreationEvent event) {
-        for (EntityType<?> entry : ModUtils.getRegistryEntries(WREntityTypes.REGISTRY)) {
+        for (EntityType<?> entry : WRModUtils.getRegistryEntries(WREntityTypes.REGISTRY)) {
             if (entry instanceof WREntityTypes) {
                 WREntityTypes<LivingEntity> e = (WREntityTypes<LivingEntity>) entry;
                 if (e.attributes != null) {

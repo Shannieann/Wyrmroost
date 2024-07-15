@@ -3,7 +3,7 @@ package com.github.shannieann.wyrmroost.data;
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRItems;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.advancements.critereon.EntityFlagsPredicate;
@@ -110,7 +110,7 @@ class LootTableData extends LootTableProvider
         @Override
         protected Iterable<Block> getKnownBlocks()
         {
-            return ModUtils.getRegistryEntries(REGISTRY);
+            return WRModUtils.getRegistryEntries(REGISTRY);
         }
 
         private void leaves(Block leaves, Block sapling)
@@ -164,7 +164,7 @@ class LootTableData extends LootTableProvider
         @Override
         protected Iterable<EntityType<?>> getKnownEntities()
         {
-            return ModUtils.getRegistryEntries(WREntityTypes.REGISTRY);
+            return WRModUtils.getRegistryEntries(WREntityTypes.REGISTRY);
         }
 
         /**

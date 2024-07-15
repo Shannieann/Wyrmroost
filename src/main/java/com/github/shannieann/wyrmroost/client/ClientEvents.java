@@ -15,7 +15,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.item.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.registry.*;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
@@ -30,7 +30,6 @@ import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
-import net.minecraft.core.Rotations;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -104,7 +103,7 @@ public class ClientEvents
 
     private static void bakeParticles(ParticleFactoryRegisterEvent event)
     {
-        for (ParticleType<?> entry : ModUtils.getRegistryEntries(WRParticles.REGISTRY))
+        for (ParticleType<?> entry : WRModUtils.getRegistryEntries(WRParticles.REGISTRY))
             if (entry instanceof WRParticles<?>) ((WRParticles<?>) entry).bake();
     }
 

@@ -9,7 +9,7 @@ import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
-import static com.github.shannieann.wyrmroost.util.ModUtils.TEXTURE_FOLDER;
+import static com.github.shannieann.wyrmroost.util.WRModUtils.TEXTURE_FOLDER;
 
 public class ModelCanariWyvern<T extends EntityCanariWyvern> extends AnimatedGeoModel<T> {
 

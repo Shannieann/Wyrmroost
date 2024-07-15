@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.world.features;
 
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.WorldGenLevel;
@@ -22,7 +22,7 @@ public class NoExposureReplacementFeature extends Feature<ReplaceBlockConfigurat
     private static boolean checkExposure(WorldGenLevel level, BlockPos initialPos)
     {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
-        for (Direction direction : ModUtils.DIRECTIONS)
+        for (Direction direction : WRModUtils.DIRECTIONS)
         {
             BlockState state = level.getBlockState(pos.setWithOffset(initialPos, direction));
             if (state.isAir()) return false;

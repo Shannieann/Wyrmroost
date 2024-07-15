@@ -4,7 +4,7 @@ import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.registry.WRBlocks;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRItems;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.tags.BlockTagsProvider;
 import net.minecraft.data.tags.EntityTypeTagsProvider;
@@ -84,7 +84,7 @@ public class TagData
         @Override
         protected void addTags()
         {
-            for (Block block : ModUtils.getRegistryEntries(WRBlocks.REGISTRY))
+            for (Block block : WRModUtils.getRegistryEntries(WRBlocks.REGISTRY))
             {
                 if (block instanceof SnowyDirtBlock)
                 {

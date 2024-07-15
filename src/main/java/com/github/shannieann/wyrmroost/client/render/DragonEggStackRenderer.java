@@ -1,8 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render;
 
 import com.github.shannieann.wyrmroost.client.render.entity.DragonEggRenderer;
-import com.github.shannieann.wyrmroost.entity.dragonegg.DragonEggEntity;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.geom.EntityModelSet;
@@ -37,7 +36,7 @@ public class DragonEggStackRenderer extends BlockEntityWithoutLevelRenderer
         CompoundTag tag = stack.getTag();
         if (tag != null && tag.contains("Dragon Type"))
         {
-            EntityType<?> type = ModUtils.getEntityTypeByKey(tag.getString("Dragon Type"));
+            EntityType<?> type = WRModUtils.getEntityTypeByKey(tag.getString("Dragon Type"));
             if (type != null) return DragonEggRenderer.getDragonEggTexture(type);
         }
 

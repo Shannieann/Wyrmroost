@@ -4,7 +4,7 @@ import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.entity.dragon.EntityLesserDesertwyrm;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRItems;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -22,7 +22,7 @@ public class LDWyrmItem extends Item
     {
         super(WRItems.builder());
 
-        if (ModUtils.isClient())
+        if (WRModUtils.isClient())
             ItemProperties.register(this, Wyrmroost.id("is_alive"), (stack, world, player, z) ->
             {
                 if (stack.hasTag() && stack.getTag().contains(DATA_CONTENTS)) return 1f;

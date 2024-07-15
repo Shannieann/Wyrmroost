@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.item.book.action;
 
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -42,12 +42,12 @@ public class HomeBookAction implements BookAction
         if (level.getBlockState(pos).getMaterial().isSolid())
         {
             dragon.setHomePos(pos);
-            ModUtils.playLocalSound(level, pos, SoundEvents.BEACON_POWER_SELECT, 0.75f, 2f);
-            ModUtils.playLocalSound(level, pos, SoundEvents.BOOK_PAGE_TURN, 0.75f, 1f);
+            WRModUtils.playLocalSound(level, pos, SoundEvents.BEACON_POWER_SELECT, 0.75f, 2f);
+            WRModUtils.playLocalSound(level, pos, SoundEvents.BOOK_PAGE_TURN, 0.75f, 1f);
         }
         else
         {
-            ModUtils.playLocalSound(level, pos, SoundEvents.REDSTONE_TORCH_BURNOUT, 0.75f, 1);
+            WRModUtils.playLocalSound(level, pos, SoundEvents.REDSTONE_TORCH_BURNOUT, 0.75f, 1);
             for (int i = 0; i < 10; i++)
                 level.addParticle(ParticleTypes.SMOKE, pos.getX() + 0.5d, pos.getY() + 1, pos.getZ() + 0.5d, 0, i * 0.025, 0);
         }

@@ -4,7 +4,7 @@ import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
 import com.github.shannieann.wyrmroost.item.book.action.BookAction;
 import com.github.shannieann.wyrmroost.item.book.action.BookActions;
 import com.github.shannieann.wyrmroost.registry.WRItems;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.ItemStack;
@@ -34,7 +34,7 @@ public class BookActionPacket
     public boolean handle(Supplier<NetworkEvent.Context> context)
     {
         ServerPlayer player = context.get().getSender();
-        ItemStack stack = ModUtils.getHeldStack(player, WRItems.TARRAGON_TOME.get());
+        ItemStack stack = WRModUtils.getHeldStack(player, WRItems.TARRAGON_TOME.get());
         if (stack != null)
         {
             TarragonTomeItem.setAction(action, player, stack);

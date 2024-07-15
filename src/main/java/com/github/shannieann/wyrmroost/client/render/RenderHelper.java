@@ -6,7 +6,7 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
 import com.github.shannieann.wyrmroost.registry.WRItems;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -253,7 +253,7 @@ public class RenderHelper extends RenderType
     {
         Minecraft mc = Minecraft.getInstance();
         Player player = mc.player;
-        ItemStack stack = ModUtils.getHeldStack(player, WRItems.TARRAGON_TOME.get());
+        ItemStack stack = WRModUtils.getHeldStack(player, WRItems.TARRAGON_TOME.get());
         if (stack == null) return;
         WRDragonEntity dragon = TarragonTomeItem.getBoundDragon(mc.level, stack);
         TarragonTomeItem.getAction(stack).render(dragon, ms, partialTicks);

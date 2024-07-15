@@ -4,7 +4,7 @@ import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.item.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.registry.WRBlocks;
 import com.github.shannieann.wyrmroost.registry.WRItems;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.google.common.collect.Sets;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.data.HashCache;
@@ -41,7 +41,7 @@ class RecipeData extends RecipeProvider
         super.run(cache);
 
         Set<Item> registered = REGISTERED.stream().map(ItemLike::asItem).collect(Collectors.toCollection(Sets::newIdentityHashSet));
-        for (Item item : ModUtils.getRegistryEntries(WRItems.REGISTRY))
+        for (Item item : WRModUtils.getRegistryEntries(WRItems.REGISTRY))
         {
             if (!registered.contains(item))
                 Wyrmroost.LOG.warn("Item '{}' does not have a recipe associated with it!", item.getRegistryName());
@@ -235,7 +235,7 @@ class RecipeData extends RecipeProvider
 
     private static void exempt(Class<? extends ItemLike> exemptClass)
     {
-        for (Item item : ModUtils.getRegistryEntries(WRItems.REGISTRY))
+        for (Item item : WRModUtils.getRegistryEntries(WRItems.REGISTRY))
             if (exemptClass.isInstance(item)) REGISTERED.add(item);
     }
 

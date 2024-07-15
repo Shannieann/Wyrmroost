@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost;
 
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.google.common.collect.ImmutableList;
 import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
@@ -45,7 +45,7 @@ public class WRConfig
 
     public static boolean deckTheHalls()
     {
-        return ModUtils.DECK_THE_HALLS && DECK_THE_HALLS.get();
+        return WRModUtils.DECK_THE_HALLS && DECK_THE_HALLS.get();
     }
 
     public static void loadConfig(IConfigEvent event)

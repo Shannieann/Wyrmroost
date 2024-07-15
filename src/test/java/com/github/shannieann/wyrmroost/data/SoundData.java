@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.data;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -27,7 +27,7 @@ public class SoundData implements DataProvider
 {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
-    final Set<SoundEvent> registered = new HashSet<>(ModUtils.getRegistryEntries(WRSounds.REGISTRY));
+    final Set<SoundEvent> registered = new HashSet<>(WRModUtils.getRegistryEntries(WRSounds.REGISTRY));
     final DataGenerator gen;
     final ExistingFileHelper fileHelper;
     final JsonObject file;

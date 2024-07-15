@@ -5,7 +5,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.item.book.action.BookAction;
 import com.github.shannieann.wyrmroost.item.book.action.BookActions;
 import com.github.shannieann.wyrmroost.registry.WRItems;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvents;
@@ -73,7 +73,7 @@ public class TarragonTomeItem extends Item implements IAnimatable
         if (player.isShiftKeyDown())
         {
             clear(stack.getTag());
-            ModUtils.playLocalSound(level, player.blockPosition(), SoundEvents.PAINTING_BREAK, 0.75f, 1f);
+            WRModUtils.playLocalSound(level, player.blockPosition(), SoundEvents.PAINTING_BREAK, 0.75f, 1f);
             return new InteractionResultHolder<>(InteractionResult.sidedSuccess(level.isClientSide), stack);
         }
         // TODO what's the point of making right click return an interaction result if its never used?

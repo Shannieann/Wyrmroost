@@ -5,7 +5,7 @@ import com.github.shannieann.wyrmroost.client.PacketKey;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.network.packets.*;
 import com.github.shannieann.wyrmroost.registry.*;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -31,7 +31,7 @@ public class Wyrmroost
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 
         CommonEvents.init();
-        if (ModUtils.isClient()) ClientEvents.init();
+        if (WRModUtils.isClient()) ClientEvents.init();
 
         //bus.register(CapabilityEvent.class);
         WREntityTypes.REGISTRY.register(bus);

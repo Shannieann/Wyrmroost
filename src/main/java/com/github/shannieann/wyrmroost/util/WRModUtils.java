@@ -34,9 +34,9 @@ import java.util.stream.Collectors;
 /**
  * Created by WolfShotz 7/9/19 - 00:31
  */
-public final class ModUtils
+public final class WRModUtils
 {
-    private ModUtils() {} // NU CONSTRUCTOR
+    private WRModUtils() {} // NU CONSTRUCTOR
 
     public static final String TEXTURE_FOLDER = "textures/entity/dragon/";
 
@@ -196,10 +196,7 @@ public final class ModUtils
         }
     }
 
-    //////////////////////
-    /**
-     * Get an entity type by a string "key"
-     */
+    //Get an entity type by a string key
     @Nullable
     @SuppressWarnings("unchecked")
     public static <T extends Entity> EntityType<T> getEntityTypeByKey(@Nonnull String key)

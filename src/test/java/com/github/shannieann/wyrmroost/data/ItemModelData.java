@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.data;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.registry.WRItems;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.data.DataGenerator;
@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.*;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.client.model.generators.ItemModelBuilder;
 import net.minecraftforge.client.model.generators.ItemModelProvider;
-import net.minecraftforge.client.model.generators.ModelBuilder;
 import net.minecraftforge.client.model.generators.ModelFile;
 import net.minecraftforge.common.data.ExistingFileHelper;
 
@@ -92,7 +91,7 @@ class ItemModelData extends ItemModelProvider
         }*/
 
         final ModelFile spawnEggTemplate = uncheckedModel(mcLoc("item/template_spawn_egg"));
-        final Set<Item> registered = ModUtils.getRegistryEntries(WRItems.REGISTRY);
+        final Set<Item> registered = WRModUtils.getRegistryEntries(WRItems.REGISTRY);
 
         REGISTERED.forEach(registered::remove);
         for (Item item : registered)

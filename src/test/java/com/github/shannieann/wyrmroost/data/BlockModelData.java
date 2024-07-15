@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.data;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.registry.WRBlocks;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import net.minecraft.core.Direction;
 import net.minecraft.data.DataGenerator;
 import net.minecraft.resources.ResourceLocation;
@@ -66,7 +66,7 @@ class BlockModelData extends BlockStateProvider
         //ModUtils.runAndClear(woodGroups, this::woodGroup);
         //ModUtils.runAndClear(stoneGroups, this::stoneGroup);
 
-        Set<Block> registered = ModUtils.getRegistryEntries(REGISTRY);
+        Set<Block> registered = WRModUtils.getRegistryEntries(REGISTRY);
         registered.removeAll(registeredBlocks.keySet());
         for (Block block : registered)
         {
