@@ -54,8 +54,7 @@ public class ClientEvents
     public static Set<UUID> dragonRiders = new HashSet<>();
     public static boolean keybindFlight = true;
 
-    public static void init()
-    {
+    public static void init() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 
@@ -66,7 +65,6 @@ public class ClientEvents
         modBus.addListener(ClientEvents::registerRenderers);
         //bus.addListener(ClientEvents::bakeModels);
 
-        modBus.addGenericListener(Item.class, WRItems::registerItemProperties);
 
         forgeBus.addListener(RenderHelper::renderWorld);
         forgeBus.addListener(RenderHelper::renderOverlay);
