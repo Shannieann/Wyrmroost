@@ -15,8 +15,7 @@ import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
 public abstract class WRDragonRender<T extends WRDragonEntity> extends GeoEntityRenderer<T> {
     protected final String mainBoneName;
-    protected float defaultXRot = 0.0f;
-    private boolean rotIsSet = false;
+    protected Float defaultXRot = 0.0f;
 
     public WRDragonRender(EntityRendererProvider.Context renderManager, AnimatedGeoModel<T> modelProvider){
         this(renderManager,modelProvider, "");
@@ -35,7 +34,7 @@ public abstract class WRDragonRender<T extends WRDragonEntity> extends GeoEntity
     public void render(GeoModel model, T animatable, float partialTick, RenderType type, PoseStack poseStack, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
 
         poseStack.pushPose();
-        handleXRotation(poseStack, model, animatable);
+        handleXRotation(model, animatable);
         super.render(model, animatable, partialTick, type, poseStack, bufferSource, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         poseStack.popPose();
     }
@@ -47,12 +46,11 @@ public abstract class WRDragonRender<T extends WRDragonEntity> extends GeoEntity
         super.renderLate(animatable, poseStack, partialTick, bufferSource, buffer, packedLight, packedOverlay, red, green, blue, alpha);
     }
 
-    private void handleXRotation(PoseStack poseStack, GeoModel model, T animatable){
+    private void handleXRotation(GeoModel model, T animatable){
         // Sets the default rotation that the dragon should be at.
         // For example, the Royal Red's main bone is at 6 degrees by default, so without this it would always be slightly tilted downward.
-        if (!rotIsSet && !mainBoneName.isEmpty()) {
+        if (defaultXRot == null && !mainBoneName.isEmpty()) {
             defaultXRot = modelProvider.getBone(mainBoneName).getRotationX();
-            rotIsSet = true;
         }
 
         // Set rotations based on stuff in WRDragonEntity class
@@ -60,7 +58,6 @@ public abstract class WRDragonRender<T extends WRDragonEntity> extends GeoEntity
         if (model.getBone(mainBoneName).isPresent()) {
             GeoBone bone = model.getBone(mainBoneName).get();
             bone.setRotationX(defaultXRot + (animatable.getDragonXRotation()/57));
-            animatable.cameraRotVector = new Vector3f((defaultXRot + animatable.getDragonXRotation()), bone.getRotationY(), bone.getRotationZ());
         }
     }
 }

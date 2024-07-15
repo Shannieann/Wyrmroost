@@ -1551,6 +1551,20 @@
 						"vector": ["math.cos((query.anim_time - 1) * 240) *1", 0, "-math.cos((query.anim_time - 1) * 120) *1"]
 					}
 				}
+			},
+			"sound_effects": {
+				"0.92": {
+					"effect": "aa"
+				},
+				"1.52": {
+					"effect": "a"
+				},
+				"2.4": {
+					"effect": "a"
+				},
+				"2.96": {
+					"effect": "hah"
+				}
 			}
 		},
 		"walk_fast": {
@@ -2298,6 +2312,20 @@
 					"rotation": {
 						"vector": ["-math.cos((query.anim_time - 1) * 300) *2", 0, 0]
 					}
+				}
+			},
+			"sound_effects": {
+				"0.08": {
+					"effect": "hah"
+				},
+				"0.32": {
+					"effect": "aaaa"
+				},
+				"1.04": {
+					"effect": "baba"
+				},
+				"1.2": {
+					"effect": "aaa"
 				}
 			}
 		},
@@ -3576,6 +3604,17 @@
 					"rotation": {
 						"vector": [0, 0, 0]
 					}
+				}
+			},
+			"sound_effects": {
+				"0.28": {
+					"effect": "ra"
+				},
+				"0.96": {
+					"effect": "ra"
+				},
+				"2.48": {
+					"effect": "ra"
 				}
 			}
 		},

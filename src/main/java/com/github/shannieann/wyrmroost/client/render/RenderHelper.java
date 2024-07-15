@@ -213,7 +213,7 @@ public class RenderHelper extends RenderType
 
     public static MultiBufferSource.BufferSource getRenderBuffer()
     {
-        return Minecraft.getInstance().renderBuffers().bufferSource();
+        return ClientEvents.getClient().renderBuffers().bufferSource();
     }
 
     private static final Matrix4f flipX = Matrix4f.createScaleMatrix(-1, 1, 1);

@@ -251,7 +251,7 @@ public class EntityRoyalRed extends WRDragonEntity {
 
     @Override
     public void aiStep() {
-        System.out.println(getAnimation());
+        //System.out.println(getAnimation());
         super.aiStep();
         // =====================
         //       Update Timers

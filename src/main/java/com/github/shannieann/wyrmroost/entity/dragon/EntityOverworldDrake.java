@@ -28,10 +28,11 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
-import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -49,6 +50,7 @@ import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.builder.ILoopType;
 import software.bernie.geckolib3.core.controller.AnimationController;
+import software.bernie.geckolib3.core.event.SoundKeyframeEvent;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.shadowed.eliotlash.mclib.utils.MathHelper;
@@ -105,7 +107,7 @@ public class EntityOverworldDrake extends WRDragonEntity
     //      Animation Logic
     // =====================
 
-    // TODO temporary! Just so the animations look cool in my riding tests for now.
+    // TODO remove bc its temporary! Just so the animations look cool in my riding tests for now.
     @Override
     public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
         if (getDeltaMovement().length() >= 0.2f){
@@ -125,9 +127,10 @@ public class EntityOverworldDrake extends WRDragonEntity
         // If the main rider is a player
         if (isControlledByLocalInstance()){
             // If they enter their inventory
+            // TODO this doesn't really work. It opens, but then resets after the animation is done.
             if (ClientEvents.getClient().screen instanceof EffectRenderingInventoryScreen){
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("chest_open", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
-            } else if (ClientEvents.getClient().screen == null) {
+            } else {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("chest_close", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
             }
         }
@@ -144,15 +147,6 @@ public class EntityOverworldDrake extends WRDragonEntity
     // ====================================
     //      A) Entity Data
     // ====================================
-
-
-
-
-    @Override
-    protected void defineSynchedData()
-    {
-        super.defineSynchedData();
-    }
 
     public static AttributeSupplier.Builder getAttributeSupplier()
     {
@@ -238,7 +232,7 @@ public class EntityOverworldDrake extends WRDragonEntity
             if (getDeltaMovement().length() <= 0.2f) {
                 if (momentum > 0) momentum -= 0.01f;;
             } else { // Otherwise, increase it if you're sprinting (up to 0.3f)
-                if (momentum < 0.3f) momentum += 0.001f;
+                if (momentum < 0.2f) momentum += 0.001f;
             }
         }
 
@@ -473,12 +467,7 @@ public class EntityOverworldDrake extends WRDragonEntity
     // ====================================
     //      E.1) Client: Sounds
     // ====================================
-    @Override
-    protected void playStepSound(BlockPos pos, BlockState blockIn)
-    {
-        playSound(SoundEvents.COW_STEP, 0.3f, 1f);
-        super.playStepSound(pos, blockIn);
-    }
+
 
 
     @Nullable
@@ -502,6 +491,16 @@ public class EntityOverworldDrake extends WRDragonEntity
         return WRSounds.ENTITY_OWDRAKE_DEATH.get();
     }
 
+    @Override
+    protected <E extends WRDragonEntity> void locomotionSoundEvent(SoundKeyframeEvent<E> event, LocalPlayer player, String anim) {
+        super.locomotionSoundEvent(event, player, anim);
+        if ("buck".equals(anim)){
+            player.playSound(WRSounds.ENTITY_OWDRAKE_HURT.get(), 1.0f, 1.0f);
+        } else if ("walk".equals(anim) || "walk_fast".equals(anim)){
+            player.playSound(SoundEvents.COW_STEP, 0.3f, 1.0f);
+        }
+    }
+
     // ====================================
     //      E.2) Client: Camera
     // ====================================
@@ -523,20 +522,21 @@ public class EntityOverworldDrake extends WRDragonEntity
         goalSelector.addGoal(0, new WRSleepGoal(this));
         goalSelector.addGoal(1, new OWDBuckGoal(this));
         goalSelector.addGoal(2, new OWDRoarGoal(this));
-        //goalSelector.addGoal(4, new MoveToHomeGoal(this));
-        //goalSelector.addGoal(5, new ControlledAttackGoal(this, 1.425, true /*AnimationPacket.send(this, HORN_ATTACK_ANIMATION)*/));
-        //goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
+        goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2D, false));
+        goalSelector.addGoal(4, new MoveToHomeGoal(this));
+        goalSelector.addGoal(5, new ControlledAttackGoal(this, 1.425, true /*AnimationPacket.send(this, HORN_ATTACK_ANIMATION)*/));
+        goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         //goalSelector.addGoal(7, new DragonBreedGoal(this));
         goalSelector.addGoal(8, new OWDGrazeGoal(this));
-        //goalSelector.addGoal(9, new WaterAvoidingRandomStrollGoal(this, 1));
+        goalSelector.addGoal(9, new WaterAvoidingRandomStrollGoal(this, 1));
         goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
         goalSelector.addGoal(11, new RandomLookAroundGoal(this));
 
-        //targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
-        //targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        //targetSelector.addGoal(3, new DefendHomeGoal(this));
+        targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
+        targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+        targetSelector.addGoal(3, new DefendHomeGoal(this));
         targetSelector.addGoal(4, new HurtByTargetGoal(this));
-        //targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Player.class, true, EntitySelector.ENTITY_STILL_ALIVE::test));
+        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Player.class, true, EntitySelector.ENTITY_STILL_ALIVE::test));
     }
 
 
@@ -685,7 +685,6 @@ public class EntityOverworldDrake extends WRDragonEntity
     //      F.n) Goals: OWDBuckGoal
     // ====================================
 
-    // Should this even be a goal?
     class OWDBuckGoal extends AnimatedGoal{
 
         Player passenger;
@@ -720,11 +719,7 @@ public class EntityOverworldDrake extends WRDragonEntity
                 ((WRGroundLookControl) lookControl).stopLooking();
             }
 
-            if (elapsedTime == 1){
-                // TODO another sound for this?
-                playSound(WRSounds.ENTITY_OWDRAKE_HURT.get(), 3f, 1f);
-            }
-            else if (elapsedTime == 26) {
+            if (elapsedTime == 26) {
                 setTarget(passenger);
                 boardingCooldown = 60;
                 ejectPassengers();
@@ -740,6 +735,10 @@ public class EntityOverworldDrake extends WRDragonEntity
             return hasExactlyOnePlayerPassenger() && !isTame() && super.canContinueToUse();
         }
     }
+
+    // ====================================
+    //      F.n) Goals: OWDAttackGoal
+    // ====================================
 
     /*@Override
     public void recievePassengerKeybind(int key, int mods, boolean pressed)

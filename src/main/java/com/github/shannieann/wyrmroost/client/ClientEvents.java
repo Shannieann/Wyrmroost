@@ -34,6 +34,7 @@ import net.minecraft.core.particles.ParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeableLeatherItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
@@ -64,6 +65,8 @@ public class ClientEvents
         modBus.addListener(ClientEvents::bakeParticles);
         modBus.addListener(ClientEvents::registerRenderers);
         //bus.addListener(ClientEvents::bakeModels);
+
+        modBus.addGenericListener(Item.class, WRItems::registerItemProperties);
 
         forgeBus.addListener(RenderHelper::renderWorld);
         forgeBus.addListener(RenderHelper::renderOverlay);
@@ -176,11 +179,11 @@ public class ClientEvents
             float xRot = -dragon.cameraRotVector.x();
             float yRot = dragon.cameraRotVector.y();
             float zRot = dragon.cameraRotVector.z();
+            //System.out.println(xRot + ", " + yRot +", " + zRot);
             Vector3d bonePos = dragon.cameraBonePos.get(uuid);
             if (bonePos != null) {
                 Vec3 vecBonePos = new Vec3(bonePos.x, bonePos.y+dragon.getMountCameraYOffset(), bonePos.z);
                 // Set camera position
-                //System.out.println(vecBonePos.y);
                 //Sniffity: Previous method was forcing the camera position to update to the Dragon's position.
                 //This essentially caused the camera to no longer transition smoothly from position A to B if the dragon was moving
                 //It would instead jump from position A to B..

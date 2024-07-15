@@ -25,7 +25,7 @@ import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
 public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
     private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/roost_stalker/roost_stalker.geo.json");
-    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/roost_stalker/roost_stalker.json");
+    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/roost_stalker/roost_stalker.animation.json");
 
 
     @Override
@@ -111,8 +111,8 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
 // Translate the item's render location to the bone's location
             // Divide by 16 to convert from pixels to coordinates (i think, I got inspiration from Ice and Fire code)
             // scale it
-            float scale = 1f/16f;
-            matrixStackIn.translate(pos.x * (scale), pos.y * (scale), pos.z * (scale));
+            pos.scale(0.0625f);
+            matrixStackIn.translate(pos.x, pos.y + 0.13f, pos.z - 0.9f);
             // Manual fixing
             //matrixStackIn.translate(0, 0.20, -0.6);
             // And rotate correctly (so the rooststalker is holding it sideways)

@@ -32,14 +32,13 @@ public class Wyrmroost
 
         CommonEvents.init();
         if (WRModUtils.isClient()) ClientEvents.init();
-
         //bus.register(CapabilityEvent.class);
         WREntityTypes.REGISTRY.register(bus);
         WREntityTypes.Attributes.REGISTRY.register(bus);
         WRBlocks.REGISTRY.register(bus);
         //WRBlockEntities.REGISTRY.register(bus);
         WRItems.REGISTRY.register(bus);
-        bus.addGenericListener(Item.class, WRItems::registerItemProperties);
+        if (WRModUtils.isClient()) ClientEvents.init(); // Moved registerItemProperties to client events b/c it crashed on a dedicated server
 
         WRIO.REGISTRY.register(bus);
         WRSounds.REGISTRY.register(bus);

@@ -594,15 +594,16 @@
 					]
 				},
 				{
+					"name": "cameraPos1",
+					"parent": "sChest",
+					"pivot": [0, 57, -3],
+					"rotation": [-7.5, 0, 0]
+				},
+				{
 					"name": "rider1",
 					"parent": "body1",
 					"pivot": [0, 35, -3],
 					"rotation": [-7.5, 0, 0]
-				},
-				{
-					"name": "cameraPos1",
-					"parent": "rider1",
-					"pivot": [0, 57, 0]
 				},
 				{
 					"name": "ileg1Right",
