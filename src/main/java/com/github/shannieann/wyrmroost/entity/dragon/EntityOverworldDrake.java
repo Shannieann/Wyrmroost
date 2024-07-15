@@ -262,8 +262,45 @@ public class EntityOverworldDrake extends WRDragonEntity
 
     @Override
     public void travel(Vec3 vec3d) {
+        //ToDo: OWD drake - ground riding + accelerate
+        if (this.isVehicle() && this.canBeControlledByRider()) {
+            if (!this.isAlive()) {
+                return;
+            }
+            LivingEntity rider = (LivingEntity) this.getControllingPassenger();
+            //Store previous yaw value
+            this.yRotO = this.getYRot();
+            //Client (rendering): Align body to entity direction
+            this.yBodyRot = this.getYRot();
+            //Client (rendering): Align head to body
+            this.yHeadRot = this.yBodyRot;
+            //This should allow for strafing
+            float sideMotion = 0;
+            //This allows for moving forward
+            float forwardMotion = rider.zza;
 
-        super.travel(vec3d);
+            //If rider wants to turn sideways (yaw)...
+            //Linear Interpolation system for changing the vehicle's yaw...
+            //The Vehicle's Yaw will approach the Rider's Yaw...
+            //The speed at which it approaches depends on the speed of the vehicle...
+            Vec3 deltaMovement = getDeltaMovement();
+            double deltaMovementXZlength = Math.sqrt(deltaMovement.x * deltaMovement.x + deltaMovement.z * deltaMovement.z);
+            double alphaValue = deltaMovementXZlength > 1.0F ? 1.0F : deltaMovementXZlength;
+            if (rider.yRot > this.yRot) {
+                setYRot((float) (this.yRot + (rider.yRot - this.yRot) * alphaValue));
+            } else if (rider.yRot < this.yRot) {
+                setYRot((float) (this.yRot + (rider.yRot - this.yRot) * alphaValue));
+            }
+
+
+            if (forwardMotion < 0.0F) { // Huh? Ig I'll keep it here because it works
+                forwardMotion *= 0.25F; // Ohhh its like if you're going backward you're slower I guess.
+            }
+            if (this.isControlledByLocalInstance()){
+                float speed = getTravelSpeed();
+                handleGroundRiding(speed, sideMotion, forwardMotion, vec3d, rider);
+            }
+        }
     }
 
     @Override

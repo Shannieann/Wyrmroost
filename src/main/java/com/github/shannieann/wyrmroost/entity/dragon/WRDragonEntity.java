@@ -1172,48 +1172,35 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
 
+    //Handles travel methods for the DragonEntity. If needed, can be overriden in specific subclasses.
     @Override
     public void travel(Vec3 vec3d){
         double setForwardAcceleration = 0;
         if (this.isVehicle() && this.canBeControlledByRider()) {
-            if (!this.isAlive()) return;
-
+            if (!this.isAlive()){
+                return;
+            }
             LivingEntity rider = (LivingEntity)this.getControllingPassenger();
             //Store previous yaw value
             this.yRotO = this.getYRot();
             //While being ridden, entity's pitch = 0.5 of rider's pitch
-            //ToDo: needed?
+            //ToDo: Is this needed? Can't we just set the entity's pitch to the rider's pitch?
             this.setXRot(rider.getXRot() * 0.5F);
 
             //Client (rendering): Align body to entity direction
             this.yBodyRot = this.getYRot();
             //Client (rendering): Align head to body
             this.yHeadRot = this.yBodyRot;
-
+            //This should allow for strafing
             float sideMotion = rider.xxa * 0.5F;
+            //This allows for moving forward
             float forwardMotion = rider.zza;
-
-            //ToDo: IF lerp turn, not for all creatures...
-            //ToDo: Default ground riding case...
-            //ToDo: Ground riding speeds...
-            //ToDo: OWD drake - ground riding + accelerate...
-            //If rider wants to turn sideways (yaw)...
-            //Linear Interpolation system for changing the vehicle's yaw...
-            //The Vehicle's Yaw will approach the Rider's Yaw...
-            //The speed at which it approaches depends on the speed of the vehicle...
-            Vec3 deltaMovement = getDeltaMovement();
-            double deltaMovementXZlength = Math.sqrt(deltaMovement.x*deltaMovement.x+deltaMovement.z*deltaMovement.z);
-            double alphaValue =  deltaMovementXZlength > 1.0F ? 1.0F : deltaMovementXZlength;
-            if (rider.yRot>this.yRot){
-                setYRot((float)(this.yRot+(rider.yRot-this.yRot)*alphaValue));
-            } else if (rider.yRot<this.yRot){
-                setYRot((float)(this.yRot+(rider.yRot-this.yRot)*alphaValue));
-            }
-
 
             if (forwardMotion < 0.0F) { // Huh? Ig I'll keep it here because it works
                 forwardMotion *= 0.25F; // Ohhh its like if you're going backward you're slower I guess.
             }
+
+            //ToDo: What is this flying speed case?
             this.flyingSpeed = this.getSpeed() * 0.1F;
 
             if (this.isControlledByLocalInstance()) {
@@ -1300,8 +1287,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     protected void handleGroundRiding(float speed, float groundX, float groundZ, Vec3 vec3d, LivingEntity livingentity) {
         // normal movement
-        if (ClientEvents.getClient().options.keyJump.isDown() && getBlockStateOn().getMaterial().isSolid() && speciesCanFly()) jumpFromGround(); // Jump when on the ground, for taking off.
-        if (dragonCanFly() && getAltitude() > getFlightThreshold() + 1) setNavigator(NavigationType.FLYING);
+        if (ClientEvents.getClient().options.keyJump.isDown() && getBlockStateOn().getMaterial().isSolid() && speciesCanFly()) {
+            jumpFromGround(); // Jump when on the ground, for taking off.
+        }
+        if (dragonCanFly() && getAltitude() > getFlightThreshold() + 1) {
+            setNavigator(NavigationType.FLYING);
+        }
         else {
             this.setSpeed(speed);
             super.travel(new Vec3(groundX, vec3d.y, groundZ));
