@@ -261,14 +261,12 @@ public class ClientEvents
     }
 
 
-    public static double getViewCollision(double wanted, Entity entity)
-    {
-
+    public static double getViewCollision(double wanted, Entity entity) {
         Camera info = getClient().gameRenderer.getMainCamera();
         Vec3 position = info.getPosition();
         Vector3f forwards = info.getLookVector();
-        for (int i = 0; i < 8; ++i)
-        {
+        //Checks a cube of positions around the camera position
+        for (int i = 0; i < 8; ++i) {
             float f = (float) ((i & 1) * 2 - 1);
             float f1 = (float) ((i >> 1 & 1) * 2 - 1);
             float f2 = (float) ((i >> 2 & 1) * 2 - 1);
@@ -278,13 +276,13 @@ public class ClientEvents
             Vec3 vector3d = position.add(f, f1, f2);
             Vec3 vector3d1 = new Vec3(position.x - forwards.x() * wanted + f + f2, position.y - forwards.y() * wanted + f1, position.z - forwards.z() * wanted + f2);
             HitResult rtr = entity.level.clip(new ClipContext(vector3d, vector3d1, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
-            if (rtr.getType() != HitResult.Type.MISS)
-            {
+            if (rtr.getType() != HitResult.Type.MISS) {
                 double distance = rtr.getLocation().distanceTo(position);
-                if (distance < wanted) wanted = distance;
+                //If hit, update the minimum collision distance
+                if (distance < wanted)
+                    wanted = distance;
             }
         }
-
         return wanted;
     }
 

@@ -325,8 +325,17 @@ public class EntityOverworldDrake extends WRDragonEntity
     public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event) {
         if (backView)
             event.getCamera().move(ClientEvents.getViewCollision(-0.5, this), 0.75, 0);
-        else
-            event.getCamera().move(ClientEvents.getViewCollision(-3, this), 0.3, 0);
+        else {
+            //ToDo: Camera clips partially into ground, but does not rtr collide
+            //Need to update getViewCollision
+            double viewCollisionDistance = 0.5;
+            double viewCollision = ClientEvents.getViewCollision(viewCollisionDistance, this);
+            if (viewCollision >= viewCollisionDistance){
+                event.getCamera().move(-2.5, 0.3, 0);
+            } else {
+                event.getCamera().move(viewCollision, 0.3, 0);
+            }
+        }
     }
 
     @Override
