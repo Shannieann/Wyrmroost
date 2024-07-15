@@ -4,9 +4,8 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.entity.dragonegg.DragonEggEntity;
 import com.github.shannieann.wyrmroost.entity.dragonegg.DragonEggProperties;
-import com.github.shannieann.wyrmroost.entity.dragonegg.WRDragonEggEntity;
 import com.github.shannieann.wyrmroost.registry.WRItems;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -22,7 +21,6 @@ import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.AABB;
 
 import javax.annotation.Nullable;
 import java.util.List;
@@ -85,7 +83,7 @@ public class DragonEggItem extends Item
 
 
 
-        DragonEggEntity eggEntity = new DragonEggEntity(ModUtils.getEntityTypeByKey(tag.getString("ContainedDragon")), tag.getInt("Hatch Time"), level);
+        DragonEggEntity eggEntity = new DragonEggEntity(WRModUtils.getEntityTypeByKey(tag.getString("ContainedDragon")), tag.getInt("Hatch Time"), level);
         eggEntity.absMoveTo(pos.getX() + 0.5d, pos.getY() + 0.5d, pos.getZ() + 0.5d);
 
         if (!level.isClientSide) level.addFreshEntity(eggEntity);

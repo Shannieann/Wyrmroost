@@ -27,41 +27,27 @@ import java.util.List;
 import java.util.Optional;
 
 public class WRDragonEggItem extends Item {
-    public EntityType<? extends WRDragonEntity> containedDragon;
+    public WRDragonEntity containedDragon;
     public int hatchTime;
 
     public WRDragonEggItem(Properties pProperties) {
         super(WRItems.builder().stacksTo(1));
     }
 
-    public ItemStack getItemStack(WRDragonEntity entity, int hatchTime) {
+    //Used to create a DragonEgg, via breeding dragons
+    public ItemStack getItemStack(WRDragonEntity dragonEntity, int hatchTime) {
         ItemStack stack = new ItemStack(WRItems.DRAGON_EGG.get());
         CompoundTag nbt = new CompoundTag();
-        nbt.putString("contained_dragon", EntityType.getKey(entity.getType()).toString());
-        nbt.putInt("Hatch Time", hatchTime);
+        nbt.putString("contained_dragon", EntityType.getKey(dragonEntity.getType()).toString());
+        this.containedDragon = dragonEntity;
+        this.hatchTime = hatchTime;
+        nbt.putInt("hatch_time", hatchTime);
         stack.setTag(nbt);
         return stack;
     }
 
-    public String getContainedDragon(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains("contained_dragon")) {
-            return tag.getString("contained_dragon");
-        }
-        return "null";
-    }
-
-    public int getHatchTime(ItemStack stack) {
-        CompoundTag tag = stack.getTag();
-        if (tag != null && tag.contains("Hatch Time")) {
-            return tag.getInt("Hatch Time");
-        }
-        return -1;
-    }
-
     @Override
-    public Component getName(ItemStack stack)
-    {
+    public Component getName(ItemStack stack) {
         CompoundTag tag = stack.getTag();
         if (tag == null || tag.isEmpty()){
             return super.getName(stack);
@@ -86,18 +72,22 @@ public class WRDragonEggItem extends Item {
             pos = pos.relative(context.getClickedFace());
         }
 
-        WRDragonEggEntity dragonEggEntity = new WRDragonEggEntity(level, containedDragon,hatchTime);
-        dragonEggEntity.absMoveTo(pos.getX(), pos.getY() + 0.5d, pos.getZ());
+        //Creates a WRDragonEggEntity with a previously defined containedDragon and hatchTime
+        if (containedDragon != null) {
+            WRDragonEggEntity dragonEggEntity = new WRDragonEggEntity(level, containedDragon,hatchTime);
+            dragonEggEntity.absMoveTo(pos.getX(), pos.getY() + 0.5d, pos.getZ());
 
-        if (!level.isClientSide) {
-            level.addFreshEntity(dragonEggEntity);
+            if (!level.isClientSide) {
+                level.addFreshEntity(dragonEggEntity);
+            }
+
+            if (!player.isCreative()) {
+                player.getItemInHand(context.getHand()).shrink(1);
+            }
+            return InteractionResult.SUCCESS;
+
         }
-
-        if (!player.isCreative()) {
-            player.getItemInHand(context.getHand()).shrink(1);
-        }
-
-        return InteractionResult.SUCCESS;
+        return InteractionResult.FAIL;
     }
 
     @Override
@@ -114,7 +104,7 @@ public class WRDragonEggItem extends Item {
 
         CompoundTag nbt = new CompoundTag();
         nbt.putString("contained_dragon", EntityType.getKey(entity.getType()).toString());
-        nbt.putInt("Hatch Time", DragonEggProperties.get(entity.getType()).getHatchTime());
+        nbt.putInt("hatch_time", DragonEggProperties.get(entity.getType()).getHatchTime());
         stack.setTag(nbt);
 
         player.displayClientMessage(getName(stack), true);
