@@ -263,7 +263,6 @@ public class EntityOverworldDrake extends WRDragonEntity
 
     @Override
     public void travel(Vec3 vec3d) {
-        //ToDo: OWD drake - ground riding + accelerate
         if (this.isVehicle() && this.canBeControlledByRider()) {
             if (!this.isAlive()) {
                 return;
