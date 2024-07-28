@@ -1,9 +1,13 @@
 package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
 
+import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 
 public class WRSleepGoal extends AnimatedGoal{
 
@@ -21,6 +25,30 @@ public class WRSleepGoal extends AnimatedGoal{
         if (entity.speciesCanSwim() && (!entity.isUnderWater() && !entity.isOnGround())) {
             return false;
         }
+        //If BFL, only sleep in deep water
+        if (entity instanceof EntityButterflyLeviathan) {
+            double yWaterPos = (entity.position().y);
+            // Iterate downwards from the entity's Y position to find the top water level
+            while (yWaterPos <= entity.level.getMaxBuildHeight()) {
+                BlockPos checkPos = new BlockPos(entity.getX(), yWaterPos, entity.getZ());
+                BlockState state = entity.level.getBlockState(checkPos);
+
+                if (state.getBlock() == Blocks.WATER) {
+                    yWaterPos = yWaterPos + 1.0; // Top of the water block
+                }
+                yWaterPos++;
+            }
+            if (yWaterPos != entity.level.getMaxBuildHeight()){
+                if (yWaterPos-entity.getY() < 10){
+                    return false;
+                }
+                else {
+                    return false;
+                }
+            }
+        }
+
+
         //If it cannot swim, only sleep on ground
         if (!entity.speciesCanSwim() && !entity.isOnGround()) {
             return false;
