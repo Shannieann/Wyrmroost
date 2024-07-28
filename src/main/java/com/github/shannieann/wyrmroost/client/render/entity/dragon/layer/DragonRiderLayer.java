@@ -17,7 +17,7 @@ import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
-// MAJOR inspiration from Ice and Fire's rendering for this class. Thanks alex!
+// MAJOR inspiration from Ice and Fire's rendering for this class. Thanks Alex!
 
 public class DragonRiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
     protected final GeoModelProvider provider;
@@ -31,7 +31,9 @@ public class DragonRiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer
     // The "real" player is hidden in ClientEvents#hidePlayerWhenOnDragon
     @Override
     public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T dragon, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        if (dragon.isBaby() || provider == null) return;
+        if (dragon.isBaby() || provider == null){
+            return;
+        }
         matrixStackIn.pushPose();
         model = provider.getModel(provider.getModelLocation(dragon));
 
@@ -41,11 +43,12 @@ public class DragonRiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer
             for (Entity passenger : dragon.getPassengers()) {
                 // To be honest I kind of forget why we remove the passenger before doing everything else but I know it's important to do.
                 ClientEvents.dragonRiders.remove(passenger.getUUID());
-                float riderRot = passenger.yRotO + (passenger.getYRot() - passenger.yRotO) * partialTicks;
+                //float riderYaw = passenger.yRotO + (passenger.getYRot() - passenger.yRotO) * partialTicks;
+                float riderYaw = dragon.getYRot();
                 translateToBody(matrixStackIn, model, passengerIndex, dragon, passenger); // TODO maybe make this only activate on needed frames? EDIT: Probably not, each animation is different and it wouldn't be worth it
                 matrixStackIn.translate(0.0, -0.6f, 0.0);
                 matrixStackIn.pushPose();
-                matrixStackIn.mulPose(new Quaternion(Vector3f.YP, riderRot + 180, true));
+                matrixStackIn.mulPose(new Quaternion(Vector3f.YP, riderYaw + 180, true));
                 renderEntity(passenger, partialTicks, matrixStackIn, bufferIn, packedLightIn);
                 matrixStackIn.popPose();
                 passengerIndex++;
@@ -55,13 +58,12 @@ public class DragonRiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer
         matrixStackIn.popPose();
     }
 
-    // TODO there's a known bug where the second passenger is flying above randomly... is it due to rider placement in the model or something here?
-    // TODO ALSO the body randomly starting swaying back and forth and now im confused.
-
+    //ToDo: Verify rider2 bones on each dragon
     protected void translateToBody(PoseStack stack, GeoModel model, int passengerIndex, T dragon, Entity passenger) {
         if (model.getBone("rider" + passengerIndex).isEmpty()) {
             throw new ReportedException(CrashReport.forThrowable(new Throwable(), "Dragon should have a bone named 'rider" + passengerIndex + "' to have a rider layer!"));
         }
+
         // Get the rider bone, which should be present if the passenger is able to get to this spot.
         GeoBone bone = model.getBone("rider" + passengerIndex).get();
         Vector3d modelPos = bone.getModelPosition();
@@ -69,13 +71,18 @@ public class DragonRiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer
         modelPos.scale(0.0625f);
         // Translate the player accordingly
         stack.translate(modelPos.x, modelPos.y, modelPos.z);
+
+
+
         Matrix4f rot = bone.getModelRotationMat();
         // Get the bone's rotation and scale accordingly.
         stack.mulPoseMatrix(rot);
 
+
         if (model.getBone("cameraPos"+passengerIndex).isEmpty()){
             throw new ReportedException(CrashReport.forThrowable(new Throwable(), "Dragon should have a bone named 'cameraPos" + passengerIndex + "' to have a rider layer!"));
         }
+
         // Get the camera position placeholder bone for this passenger
         bone = model.getBone("cameraPos" + passengerIndex).get();
         // Store it in the dragon so ClientEvents can use it in the camera event.
@@ -88,8 +95,6 @@ public class DragonRiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer
 
         // Minus one because one is the default value of the vector if there was no rotation.
         dragon.cameraRotVector.set(vec.x() - 1f +  dragon.getDragonXRotation(), vec.y() - 1f, vec.z() - 1f);
-
-
     }
 
 
