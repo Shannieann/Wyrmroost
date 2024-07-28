@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import ca.weblite.objc.Client;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
@@ -323,18 +324,10 @@ public class EntityOverworldDrake extends WRDragonEntity
 
     @Override
     public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event) {
-        if (backView)
+        if (backView) {
             event.getCamera().move(ClientEvents.getViewCollisionDistance(-0.5, this), 0.75, 0);
-        else {
-            //ToDo: Camera clips partially into ground, but does not rtr collide
-            //Need to update getViewCollisionDistance
-            double viewCollisionDistance = 0.5;
-            double viewCollision = ClientEvents.getViewCollisionDistance(viewCollisionDistance, this);
-            if (viewCollision >= viewCollisionDistance){
-                event.getCamera().move(-2.5, 0.3, 0);
-            } else {
-                event.getCamera().move(viewCollision, 0.3, 0);
-            }
+        } else {
+            event.getCamera().move(-ClientEvents.getViewCollisionDistance(4.0D,this), 0.0D, 0.0D);
         }
     }
 
