@@ -279,9 +279,9 @@ public class DragonFruitDrakeEntity extends WRDragonEntity implements IForgeShea
     public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
         if (backView)
-            event.getInfo().move(ClientEvents.getViewCollision(-0.25, this), 0.5, 0);
+            event.getInfo().move(ClientEvents.getViewCollisionDistance(-0.25, this), 0.5, 0);
         else
-            event.getInfo().move(ClientEvents.getViewCollision(-1.5, this), 0.15, 0);
+            event.getInfo().move(ClientEvents.getViewCollisionDistance(-1.5, this), 0.15, 0);
     }
 
     @Override

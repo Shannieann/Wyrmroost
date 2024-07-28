@@ -180,9 +180,9 @@ public class AlpineEntity extends WRDragonEntity
     public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
         if (backView)
-            event.getInfo().move(ClientEvents.getViewCollision(-5d, this), 0.75d, 0);
+            event.getInfo().move(ClientEvents.getViewCollisionDistance(-5d, this), 0.75d, 0);
         else
-            event.getInfo().move(ClientEvents.getViewCollision(-3, this), 0.3, 0);
+            event.getInfo().move(ClientEvents.getViewCollisionDistance(-3, this), 0.3, 0);
     }
 
     @Override
