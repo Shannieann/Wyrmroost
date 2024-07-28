@@ -79,13 +79,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Builders
 // Breeding methods
 
-//ToDo: Other fixes:
-// BFLSitGoal - test logic
-// BFLSitGoal - discuss animations (sitting down)
-// BFLSleepGoal - test logic
-// BFLSleepGoal - discuss animations (going to sleep)
-// Retest water lightning strike animation
-
 //ToDo: Age
 // Assets: Child texture + model
 // Implement code to swap from child texture + model to adult texture + model
