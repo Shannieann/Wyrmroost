@@ -69,6 +69,9 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Showcase movement
 // BFL attack - fix look distance + head rot
 
+//ToDo:
+// Riding - BFL and aquatics
+
 //ToDo: Eggs
 // DragonEggItem
 // GeckoLib
