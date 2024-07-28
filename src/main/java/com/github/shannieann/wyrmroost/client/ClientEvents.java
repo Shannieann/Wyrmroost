@@ -33,6 +33,8 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.vehicle.Boat;
+import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ClipContext;
@@ -262,9 +264,9 @@ public class ClientEvents
 
 
     public static double getViewCollisionDistance(double minimumCollisionDistance, Entity entity) {
-        Camera info = getClient().gameRenderer.getMainCamera();
-        Vec3 position = info.getPosition();
-        Vector3f forwards = info.getLookVector();
+        Camera camera = getClient().gameRenderer.getMainCamera();
+        Vec3 cameraPosition = camera.getPosition();
+        Vector3f cameraLookVector = camera.getLookVector();
 
         // Array of Vectors defining a Cube
         Vec3[] offsets = {
@@ -277,26 +279,19 @@ public class ClientEvents
                 new Vec3( 0.1F, -0.1F,  0.1F),
                 new Vec3(-0.1F,  0.1F,  0.1F),
                 new Vec3( 0.1F,  0.1F,  0.1F),
-                // Centers of the faces of the cube
-                new Vec3( 0.0F,  0.0F, -0.1F),
-                new Vec3( 0.0F,  0.0F,  0.1F),
-                new Vec3( 0.0F, -0.1F,  0.0F),
-                new Vec3( 0.0F,  0.1F,  0.0F),
-                new Vec3(-0.1F,  0.0F,  0.0F),
-                new Vec3( 0.1F,  0.0F,  0.0F)
         };
 
         // Checks a cube of positions around the camera position
         for (Vec3 offset : offsets) {
-            Vec3 vector3d = position.add(offset.x, offset.y, offset.z);
+            Vec3 vector3d = cameraPosition.add(offset.x, offset.y, offset.z);
             Vec3 vector3d1 = new Vec3(
-                    position.x - forwards.x() * minimumCollisionDistance + offset.x + offset.z,
-                    position.y - forwards.y() * minimumCollisionDistance + offset.y,
-                    position.z - forwards.z() * minimumCollisionDistance + offset.z
+                    cameraPosition.x - cameraLookVector.x() * minimumCollisionDistance + offset.x +offset.z,
+                    cameraPosition.y - cameraLookVector.y() * minimumCollisionDistance + offset.y,
+                    cameraPosition.z - cameraLookVector.z() * minimumCollisionDistance + offset.z
             );
             HitResult rtr = entity.level.clip(new ClipContext(vector3d, vector3d1, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
             if (rtr.getType() != HitResult.Type.MISS) {
-                double distance = rtr.getLocation().distanceTo(position);
+                double distance = rtr.getLocation().distanceTo(cameraPosition);
                 // If hit, update the minimum collision distance
                 if (distance < minimumCollisionDistance)
                     minimumCollisionDistance = distance;
