@@ -65,19 +65,20 @@ import java.util.function.Predicate;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //2024.05.04
-//ToDo: Showcases
-// Showcase movement
-// BFL attack - fix look distance + head rot
-
-//ToDo:
-// Riding - BFL and aquatics
-
 //ToDo: Eggs
 // DragonEggItem
 // GeckoLib
 // Egg Properties
 // Builders
 // Breeding methods
+
+//ToDo:
+// Riding - BFL and aquatics
+// Riding others
+
+//ToDo: Showcases
+// Showcase movement
+// BFL attack - fix look distance + head rot
 
 //ToDo: Age
 // Assets: Child texture + model
@@ -91,11 +92,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Conduit
 // Armor
 // DragonStaff: Home, follow, defend...
-
-//ToDo: Riding
-// Ground riding... acceleration can be handled by setDeltaMovement(getDeltaMovement().add(accel))
-// Split logic...
-// Allow some creatures to spin unlock, some not to
 
 //TODO: CLASS:
 // Tidy up
