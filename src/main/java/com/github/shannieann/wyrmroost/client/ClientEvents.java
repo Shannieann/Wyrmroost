@@ -33,10 +33,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.vehicle.Boat;
-import net.minecraft.world.item.BoatItem;
 import net.minecraft.world.item.DyeableLeatherItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
@@ -151,17 +148,20 @@ public class ClientEvents
     private static void cancelIfRidingDragon(RenderLivingEvent event){
         Entity entity = event.getEntity().getVehicle();
         if (entity instanceof WRDragonEntity) {
-            if (dragonRiders.contains(event.getEntity().getUUID())) event.setCanceled(true); // Don't render the real player if they're riding a dragon
+            // Do not render the real player if they're riding a dragon
+            if (dragonRiders.contains(event.getEntity().getUUID())){
+                event.setCanceled(true);
+            }
             CameraType camera = getClient().options.getCameraType();
-            if (getClient().player == event.getEntity() && camera == CameraType.FIRST_PERSON) event.setCanceled(true); // Don't render the "fake" player if the player is in 1st person
+            // Do not render the "fake" player if the player is in 1st person
+            if (getClient().player == event.getEntity() && camera == CameraType.FIRST_PERSON){
+                event.setCanceled(true);
+            }
         }
     }
     private static void preLivingRender(RenderLivingEvent.Pre event){
         cancelIfRidingDragon(event);
     }
-
-
-
 
 
     private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event) {
@@ -203,66 +203,6 @@ public class ClientEvents
         }
     }
 
-    public static double calcCameraDistance(double startingDistance, Entity vehicle) {
-        Camera info = Minecraft.getInstance().gameRenderer.getMainCamera();
-        Vec3 position = info.getPosition().add(0, 1, 0);
-        Vector3f view = info.getLookVector();
-
-        for (int i = 0; i < 8; ++i) {
-            float f = (float) ((i & 1) * 2 - 1);
-            float f1 = (float) ((i >> 1 & 1) * 2 - 1);
-            float f2 = (float) ((i >> 2 & 1) * 2 - 1);
-            f = f * 0.1F;
-            f1 = f1 * 0.1F;
-            f2 = f2 * 0.1F;
-            Vec3 vector3d = position.add(f, f1, f2);
-            Vec3 vector3d1 = new Vec3(position.x - (double) view.x() * startingDistance + (double) f + (double) f2, position.y - (double) view.y() * startingDistance + (double) f1, position.z - (double) view.z() * startingDistance + (double) f2);
-            HitResult raytraceresult = vehicle.level.clip(new ClipContext(vector3d, vector3d1, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, vehicle));
-            if (raytraceresult.getType() != HitResult.Type.MISS) {
-                double d0 = raytraceresult.getLocation().distanceTo(position);
-                if (d0 < startingDistance) {
-                    //Note: These values, which prevent camera clipping, may need some tweaks.
-                    if (d0<0.2){
-                        startingDistance = d0-3.0F;
-                    } else {
-                        startingDistance = d0-1.5F;
-                    }
-                }
-            }
-        }
-        return startingDistance;
-    }
-
-
-    // =====================
-
-    // for class loading issues
-    public static Minecraft getClient()
-    {
-        return Minecraft.getInstance();
-    }
-
-    public static ClientLevel getLevel()
-    {
-        return getClient().level;
-    }
-
-    public static Player getPlayer()
-    {
-        return getClient().player;
-    }
-
-    public static Vec3 getProjectedView()
-    {
-        return getClient().gameRenderer.getMainCamera().getPosition();
-    }
-
-    public static float getPartialTicks()
-    {
-        return getClient().getFrameTime();
-    }
-
-
     public static double getViewCollisionDistance(double minimumCollisionDistance, Entity entity) {
         Camera camera = getClient().gameRenderer.getMainCamera();
         Vec3 cameraPosition = camera.getPosition();
@@ -302,6 +242,37 @@ public class ClientEvents
     }
 
 
+    // =====================
+
+    // for class loading issues
+    public static Minecraft getClient()
+    {
+        return Minecraft.getInstance();
+    }
+
+    public static ClientLevel getLevel()
+    {
+        return getClient().level;
+    }
+
+    public static Player getPlayer()
+    {
+        return getClient().player;
+    }
+
+    public static Vec3 getProjectedView()
+    {
+        return getClient().gameRenderer.getMainCamera().getPosition();
+    }
+
+    public static float getPartialTicks()
+    {
+        return getClient().getFrameTime();
+    }
+
+
+
+
     public static void onKeyInput(TickEvent.ClientTickEvent event) {
         Minecraft game = Minecraft.getInstance();
         if (game.player != null) {
@@ -310,6 +281,8 @@ public class ClientEvents
                 }
         }
     }
+
+    //Render BFL attack Box
     public static void onRenderWorldLast(RenderLevelStageEvent event) {
 
         if (WRConfig.DEBUG_MODE.get()) {

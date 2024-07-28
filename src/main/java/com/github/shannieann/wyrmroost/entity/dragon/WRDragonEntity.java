@@ -1175,7 +1175,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //Handles travel methods for the DragonEntity. If needed, can be overriden in specific subclasses.
     @Override
     public void travel(Vec3 vec3d){
-        double setForwardAcceleration = 0;
         if (this.isVehicle() && this.canBeControlledByRider()) {
             if (!this.isAlive()){
                 return;
