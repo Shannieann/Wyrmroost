@@ -39,13 +39,6 @@ public abstract class WRDragonRender<T extends WRDragonEntity> extends GeoEntity
         poseStack.popPose();
     }
 
-    @Override
-    public void renderLate(T animatable, PoseStack poseStack, float partialTick, MultiBufferSource bufferSource, VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
-        float scale = animatable.getScale();
-        poseStack.scale(scale, scale, scale);
-        super.renderLate(animatable, poseStack, partialTick, bufferSource, buffer, packedLight, packedOverlay, red, green, blue, alpha);
-    }
-
     private void handleXRotation(GeoModel model, T animatable){
         // Sets the default rotation that the dragon should be at.
         // For example, the Royal Red's main bone is at 6 degrees by default, so without this it would always be slightly tilted downward.
@@ -57,7 +50,10 @@ public abstract class WRDragonRender<T extends WRDragonEntity> extends GeoEntity
         // For flying
         if (model.getBone(mainBoneName).isPresent()) {
             GeoBone bone = model.getBone(mainBoneName).get();
-            bone.setRotationX(defaultXRot + (animatable.getDragonXRotation()/57));
+
+            final float newRot = defaultXRot + (animatable.getDragonXRotation()/57);
+            bone.setRotationX(newRot);
+
         }
     }
 }
