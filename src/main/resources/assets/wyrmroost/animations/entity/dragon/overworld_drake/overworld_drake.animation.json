@@ -6067,6 +6067,16 @@
 				}
 			}
 		},
+		"chest_opened": {
+			"loop": "hold_on_last_frame",
+			"bones": {
+				"lid": {
+					"rotation": {
+						"vector": [-102.5, 0, 0]
+					}
+				}
+			}
+		},
 		"chest_close": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.375,

@@ -1829,12 +1829,22 @@
 				{
 					"name": "rider1",
 					"parent": "body1",
-					"pivot": [0, 76.5, -31]
+					"pivot": [0, 55.5, -31]
+				},
+				{
+					"name": "cameraPos1",
+					"parent": "body1",
+					"pivot": [0, 81.5, -20]
 				},
 				{
 					"name": "rider2",
 					"parent": "body1",
-					"pivot": [0, 76.5, -10]
+					"pivot": [0, 54.5, -10]
+				},
+				{
+					"name": "cameraPos2",
+					"parent": "body1",
+					"pivot": [0, 80.5, 4]
 				},
 				{
 					"name": "leg1Left",
