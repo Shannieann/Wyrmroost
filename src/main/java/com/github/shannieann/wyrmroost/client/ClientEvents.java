@@ -26,14 +26,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.color.item.ItemColor;
 import net.minecraft.client.color.item.ItemColors;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.core.Rotations;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeableLeatherItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
@@ -45,6 +48,7 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.lwjgl.glfw.GLFW;
+import org.spongepowered.asm.mixin.injection.modify.LocalVariableDiscriminator;
 
 import java.util.*;
 
@@ -53,7 +57,8 @@ public class ClientEvents
     public static Set<UUID> dragonRiders = new HashSet<>();
     public static boolean keybindFlight = true;
 
-    public static void init() {
+    public static void init()
+    {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 
@@ -72,6 +77,7 @@ public class ClientEvents
         forgeBus.addListener(ClientEvents::preLivingRender);
         forgeBus.addListener(ClientEvents::onRenderWorldLast);
         //forgeBus.addListener(ClientEvents::postLivingRender);
+        forgeBus.addListener(ClientEvents::dragonRidingFOV);
         forgeBus.addListener(ClientEvents::onKeyInput);
 
         //WRDimensionRenderInfo.init();
@@ -148,15 +154,9 @@ public class ClientEvents
     private static void cancelIfRidingDragon(RenderLivingEvent event){
         Entity entity = event.getEntity().getVehicle();
         if (entity instanceof WRDragonEntity) {
-            // Do not render the real player if they're riding a dragon
-            if (dragonRiders.contains(event.getEntity().getUUID())){
-                event.setCanceled(true);
-            }
+            if (dragonRiders.contains(event.getEntity().getUUID())) event.setCanceled(true); // Don't render the real player if they're riding a dragon
             CameraType camera = getClient().options.getCameraType();
-            // Do not render the "fake" player if the player is in 1st person
-            if (getClient().player == event.getEntity() && camera == CameraType.FIRST_PERSON){
-                event.setCanceled(true);
-            }
+            if (getClient().player == event.getEntity() && camera == CameraType.FIRST_PERSON) event.setCanceled(true); // Don't render the "fake" player if the player is in 1st person
         }
     }
     private static void preLivingRender(RenderLivingEvent.Pre event){
@@ -164,12 +164,16 @@ public class ClientEvents
     }
 
 
-    private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event) {
+
+
+
+    private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event)
+    {
         Minecraft mc = getClient();
         Entity entity = mc.player.getVehicle();
         if (!(entity instanceof WRDragonEntity dragon)) return;
         CameraType view = mc.options.getCameraType();
-        // Third person camera views, both
+        // Third person camera views
         if (view != CameraType.FIRST_PERSON)
             dragon.setThirdPersonMountCameraAngles(view == CameraType.THIRD_PERSON_BACK, event);
         else{ // 1st person
@@ -201,6 +205,17 @@ public class ClientEvents
             event.setYaw(yRot + event.getYaw());
             event.setRoll(zRot + event.getRoll());
         }
+    }
+
+    // TODO maybe change FOV during flight, like if a dragon is diving for example?
+    // Remove the sprint fov change when you're on a dragon, it doesn't do anything in the first place.
+    // Also, this opens the door for us to change fov in certain circumstances (see above)
+    // This would probably be a client config option, along with camera rotations.
+    private static void dragonRidingFOV(EntityViewRenderEvent.FieldOfView event){
+        LocalPlayer player = getClient().player;
+        if (player == null || !(player.getVehicle() instanceof WRDragonEntity)) return;
+        double fov = event.getFOV();
+        event.setFOV(fov);
     }
 
     public static double getViewCollisionDistance(double minimumCollisionDistance, Entity entity) {
@@ -237,7 +252,6 @@ public class ClientEvents
                     minimumCollisionDistance = distance;
             }
         }
-        //Return the minimum distance (offset) that will not cause a collision
         return minimumCollisionDistance;
     }
 
@@ -271,7 +285,32 @@ public class ClientEvents
     }
 
 
+    public static double getViewCollision(double wanted, Entity entity)
+    {
 
+        Camera info = getClient().gameRenderer.getMainCamera();
+        Vec3 position = info.getPosition();
+        Vector3f forwards = info.getLookVector();
+        for (int i = 0; i < 8; ++i)
+        {
+            float f = (float) ((i & 1) * 2 - 1);
+            float f1 = (float) ((i >> 1 & 1) * 2 - 1);
+            float f2 = (float) ((i >> 2 & 1) * 2 - 1);
+            f = f * 0.1F;
+            f1 = f1 * 0.1F;
+            f2 = f2 * 0.1F;
+            Vec3 vector3d = position.add(f, f1, f2);
+            Vec3 vector3d1 = new Vec3(position.x - forwards.x() * wanted + f + f2, position.y - forwards.y() * wanted + f1, position.z - forwards.z() * wanted + f2);
+            HitResult rtr = entity.level.clip(new ClipContext(vector3d, vector3d1, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
+            if (rtr.getType() != HitResult.Type.MISS)
+            {
+                double distance = rtr.getLocation().distanceTo(position);
+                if (distance < wanted) wanted = distance;
+            }
+        }
+
+        return wanted;
+    }
 
     public static void onKeyInput(TickEvent.ClientTickEvent event) {
         Minecraft game = Minecraft.getInstance();
@@ -281,8 +320,6 @@ public class ClientEvents
                 }
         }
     }
-
-    //Render BFL attack Box
     public static void onRenderWorldLast(RenderLevelStageEvent event) {
 
         if (WRConfig.DEBUG_MODE.get()) {

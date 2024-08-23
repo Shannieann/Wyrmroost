@@ -1,6 +1,5 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-import ca.weblite.objc.Client;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
@@ -22,6 +21,8 @@ import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
@@ -46,6 +47,7 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.Tags;
+import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
@@ -96,7 +98,7 @@ public class EntityOverworldDrake extends WRDragonEntity
     public LivingEntity thrownPassenger;
     public boolean shouldRoar = false, shouldBuck = false;
 
-    // TODO move to superclass maybe... this is a test for now.
+    // TODO this is clientside I believe, as all movement is. So we could pretty easily do a momentum bar at the bottom of the screen.
     public float momentum = 0.0f;
 
     public EntityOverworldDrake(EntityType<? extends EntityOverworldDrake> drake, Level level)
@@ -111,9 +113,11 @@ public class EntityOverworldDrake extends WRDragonEntity
     // TODO remove bc its temporary! Just so the animations look cool in my riding tests for now.
     @Override
     public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
-        if (getDeltaMovement().length() >= 0.2f){
-            if (momentum > 0.1f)
+        if (getDeltaMovement().length() >= 0.1f){
+            if (getDeltaMovement().y <= -0.1f) return PlayState.CONTINUE; // If we're falling we want to just continue what animation we were playing before (removes stuttering when going down hills)
+            if (riderIsSprinting || getDeltaMovement().length() >= 0.25f) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
+            }
             else
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
             return PlayState.CONTINUE;
@@ -124,15 +128,24 @@ public class EntityOverworldDrake extends WRDragonEntity
 
     // Chest handling
     // Create a new predicate b/c this should be able to run even when other animations are running as well
+    private boolean chestOpened = false;
     public <E extends IAnimatable> PlayState predicateChest(AnimationEvent<E> event){
         // If the main rider is a player
         if (isControlledByLocalInstance()){
             // If they enter their inventory
-            // TODO this doesn't really work. It opens, but then resets after the animation is done.
             if (ClientEvents.getClient().screen instanceof EffectRenderingInventoryScreen){
-                event.getController().setAnimation(new AnimationBuilder().addAnimation("chest_open", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
+                if (chestOpened) {
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation("chest_opened", ILoopType.EDefaultLoopTypes.LOOP));
+                }
+                 else {
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation("chest_open", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+                    if (event.getController().getAnimationState().equals(AnimationState.Stopped)) // When this animation finishes stay on the chest_opened animation
+                        chestOpened = true;
+                }
+
             } else {
-                event.getController().setAnimation(new AnimationBuilder().addAnimation("chest_close", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("chest_close", ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+                chestOpened = false;
             }
         }
         return PlayState.CONTINUE;
@@ -224,19 +237,6 @@ public class EntityOverworldDrake extends WRDragonEntity
             ((ServerChunkCache) level.getChunkSource()).broadcastAndSend(thrownPassenger, new ClientboundSetEntityMotionPacket(thrownPassenger)); // notify client
             thrownPassenger = null;
         }
-
-        // =====================
-        // Momentum Logic
-        // =====================
-        if (canBeControlledByRider()) {
-            // If we're not moving, decrease momentum
-            if (getDeltaMovement().length() <= 0.2f) {
-                if (momentum > 0) momentum -= 0.01f;;
-            } else { // Otherwise, increase it if you're sprinting (up to 0.3f)
-                if (momentum < 0.2f) momentum += 0.001f;
-            }
-        }
-
     }
 
     // ====================================
@@ -260,13 +260,16 @@ public class EntityOverworldDrake extends WRDragonEntity
     //      C) Navigation and Control
     // ====================================
 
-
+    Float oldSpeed;
+    boolean riderIsSprinting = false;
     @Override
     public void travel(Vec3 vec3d) {
-        if (this.isVehicle() && this.canBeControlledByRider()) {
+        if (isControlledByLocalInstance()){
+
             if (!this.isAlive()) {
                 return;
             }
+
             LivingEntity rider = (LivingEntity) this.getControllingPassenger();
             //Store previous yaw value
             this.yRotO = this.getYRot();
@@ -293,16 +296,42 @@ public class EntityOverworldDrake extends WRDragonEntity
             }
 
 
+            riderIsSprinting = ClientEvents.getClient().options.keySprint.isDown(); // Set if we're sprinting
+
+            float speed = lerpSpeed(getTravelSpeed()) * 0.8f; // Trying out a lower riding speed for OWDs (to try to give horses some spotlight too)
+            // Handle momentum
+
+            //System.out.println(momentum);
+            if (riderIsSprinting){
+                if (momentum <= 0.12f) momentum += 0.001f;
+            }
+            else if (momentum > 0.0f) momentum -= 0.005f;
+
+
+
             if (forwardMotion < 0.0F) { // Huh? Ig I'll keep it here because it works
                 forwardMotion *= 0.25F; // Ohhh its like if you're going backward you're slower I guess.
             }
             if (this.isControlledByLocalInstance()){
-                float speed = getTravelSpeed();
+
                 handleGroundRiding(speed, sideMotion, forwardMotion, vec3d, rider);
             }
         }
+
     }
 
+    // Smooth transition between speeds. Maybe extract to superclass if needed?
+
+    private float lerpSpeed(float newSpeed){
+        float toReturn;
+
+        if (oldSpeed == null) toReturn = newSpeed;
+        else toReturn = Mth.lerp(0.02f, oldSpeed, newSpeed);
+
+        if (toReturn != 0.0f) oldSpeed = toReturn;
+
+        return toReturn;
+    }
     @Override
     public float getTravelSpeed()
     {
@@ -322,12 +351,12 @@ public class EntityOverworldDrake extends WRDragonEntity
     }
 
     @Override
-    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event) {
-        if (backView) {
-            event.getCamera().move(ClientEvents.getViewCollisionDistance(-0.5, this), 0.75, 0);
-        } else {
-            event.getCamera().move(-ClientEvents.getViewCollisionDistance(4.0D,this), 0.0D, 0.0D);
-        }
+    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
+    {
+        if (backView)
+            event.getCamera().move(ClientEvents.getViewCollision(-0.5, this), 0.75, 0);
+        else
+            event.getCamera().move(ClientEvents.getViewCollision(-3, this), 0.3, 0);
     }
 
     @Override
@@ -383,7 +412,10 @@ public class EntityOverworldDrake extends WRDragonEntity
                 double rng = getRandom().nextDouble();
 
 
-                if (rng < 0.005) tame(player);
+                if (rng < 0.005) {
+                    tame(player);
+                    level.broadcastEntityEvent(this, (byte) 7); // heart particles
+                }
 
                 else if (rng <= 0.1)
                 {
@@ -532,9 +564,9 @@ public class EntityOverworldDrake extends WRDragonEntity
     protected <E extends WRDragonEntity> void locomotionSoundEvent(SoundKeyframeEvent<E> event, LocalPlayer player, String anim) {
         super.locomotionSoundEvent(event, player, anim);
         if ("buck".equals(anim)){
-            player.playSound(WRSounds.ENTITY_OWDRAKE_HURT.get(), 1.0f, 1.0f);
+            player.clientLevel.playLocalSound(event.getEntity().getOnPos(), WRSounds.ENTITY_OWDRAKE_HURT.get(), SoundSource.NEUTRAL, 1.0f, 1.0f, false);
         } else if ("walk".equals(anim) || "walk_fast".equals(anim)){
-            player.playSound(SoundEvents.COW_STEP, 0.3f, 1.0f);
+            player.clientLevel.playLocalSound(event.getEntity().getOnPos(), SoundEvents.COW_STEP, SoundSource.NEUTRAL, 0.3f, 1.0f, false);
         }
     }
 
@@ -746,6 +778,11 @@ public class EntityOverworldDrake extends WRDragonEntity
         {
             entity.clearAI();
             entity.getNavigation().stop();
+        }
+
+        @Override
+        public void stop() {
+            super.stop();
             shouldBuck = false;
         }
 
@@ -769,7 +806,7 @@ public class EntityOverworldDrake extends WRDragonEntity
 
         @Override
         public boolean canContinueToUse() {
-            return hasExactlyOnePlayerPassenger() && !isTame() && super.canContinueToUse();
+            return hasExactlyOnePlayerPassenger() && super.canContinueToUse();
         }
     }
 
