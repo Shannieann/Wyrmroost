@@ -1,7 +1,7 @@
 {
   "parent": "item/generated",
   "textures": {
-    "layer0": "wyrmroost:item/dragon_egg_wr"
+    "layer0": "wyrmroost:item/dragon_egg"
   },
   "overrides": [
     {
@@ -15,12 +15,6 @@
         "wyrmroost:contained_dragon": 2.0
       },
       "model": "wyrmroost:item/royal_red_egg"
-    },
-    {
-      "predicate": {
-        "wyrmroost:contained_dragon": 3.0
-      },
-      "model": "wyrmroost:item/canari_wyvern_egg"
     },
     {
       "predicate": {
