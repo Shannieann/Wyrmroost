@@ -4,6 +4,47 @@
     "layer0": "wyrmroost:item/dragon_egg_wr"
   },
   "overrides": [
-    { "predicate": { "wyrmroost:contained_dragon": 1.0 }, "model": "wyrmroost:item/butterfly_leviathan_egg" }
+    {
+      "predicate": {
+        "wyrmroost:contained_dragon": 1.0
+      },
+      "model": "wyrmroost:item/butterfly_leviathan_egg"
+    },
+    {
+      "predicate": {
+        "wyrmroost:contained_dragon": 2.0
+      },
+      "model": "wyrmroost:item/royal_red_egg"
+    },
+    {
+      "predicate": {
+        "wyrmroost:contained_dragon": 3.0
+      },
+      "model": "wyrmroost:item/canari_wyvern_egg"
+    },
+    {
+      "predicate": {
+        "wyrmroost:contained_dragon": 3.0
+      },
+      "model": "wyrmroost:item/canari_wyvern_egg"
+    },
+    {
+      "predicate": {
+        "wyrmroost:contained_dragon": 4.0
+      },
+      "model": "wyrmroost:item/overworld_drake_egg"
+    },
+    {
+      "predicate": {
+        "wyrmroost:contained_dragon": 5.0
+      },
+      "model": "wyrmroost:item/rooststalker_egg"
+    },
+    {
+      "predicate": {
+        "wyrmroost:contained_dragon": 6.0
+      },
+      "model": "wyrmroost:item/silver_glider_egg"
+    }
   ]
 }

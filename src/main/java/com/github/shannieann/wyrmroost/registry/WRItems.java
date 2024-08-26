@@ -184,12 +184,12 @@ public class WRItems
                     if (stack.hasTag() && stack.getTag().contains("contained_dragon")) {
                         String containedDragon = stack.getTag().getString("contained_dragon");
                         switch (containedDragon) {
-                            case "wyrmroost:butterfly_leviathan":
-                                return 1.0F;
-                            case "dragon_type_2":
-                                return 2.0F;
-                            case "dragon_type_3":
-                                return 3.0F;
+                            case "wyrmroost:butterfly_leviathan":     return 1.0F;
+                            case "wyrmroost:royal_red":               return 2.0F;
+                            case "wyrmroost:canari_wyvern":           return 3.0F;
+                            case "wyrmroost:overworld_drake":         return 4.0F;
+                            case "wyrmroost:rooststalker":            return 5.0F;
+                            case "wyrmroost:silver_glider":           return 6.0F;
                             default:
                                 return 0.0F;
                         }

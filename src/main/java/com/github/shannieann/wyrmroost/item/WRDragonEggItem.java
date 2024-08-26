@@ -90,6 +90,7 @@ public class WRDragonEggItem extends Item {
         return InteractionResult.FAIL;
     }
 
+    //Used to create a DragonEgg, in creative mode, from left clicking a dragon
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         if (!player.isCreative()) {
