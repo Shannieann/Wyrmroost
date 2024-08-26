@@ -4,6 +4,7 @@ import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.WRBodyControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundMoveControl;
@@ -25,7 +26,6 @@ import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
-import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -37,10 +37,8 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.stats.Stats;
 import net.minecraft.util.Mth;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.InteractionHand;
@@ -64,7 +62,6 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -76,11 +73,9 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.event.entity.living.BabyEntitySpawnEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -106,7 +101,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     double travelY0;
     double travelZ0;
     public int sleepCooldown;
-    public int breedCount;
     //Only for swimmers:
     public float prevYRot;
     public float deltaYRot;
@@ -158,6 +152,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> YAW_UNLOCK = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
+
     /**
      * GENDER:
      * 0 --> FEMALE
@@ -171,6 +166,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> EATING_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
+
+    public static final EntityDataAccessor<Integer> BREEDING_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
+
+    public static final EntityDataAccessor<Integer> BREEDING_COUNT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
 
 
@@ -374,6 +373,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         entityData.define(EATING_COOLDOWN, 0);
 
+        entityData.define(BREEDING_COOLDOWN, 0);
+        entityData.define(BREEDING_COUNT, 0);
 
         entityData.define(HOME_POS, BlockPos.ZERO);
         entityData.define(AGE_PROGRESS, 0f);
@@ -383,7 +384,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "ConstantConditions"})
+    @SuppressWarnings({"ConstantConditions"})
     public void addAdditionalSaveData(CompoundTag nbt)
     {
         //ToDo: Add missing SaveData
@@ -395,6 +396,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         nbt.putBoolean("Sitting",getSitting());
 
         nbt.putInt("Eating Cooldown",getEatingCooldown());
+
+        nbt.putInt("Breeding Cooldown",getBreedingCooldown());
+        nbt.putInt("Breeding Count",getBreedingCount());
+
 
         nbt.putFloat("Age Progress",getAgeProgress());
 
@@ -418,6 +423,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         setSitting(nbt.getBoolean("Sitting"));
 
         setEatingCooldown(nbt.getInt("Eating Cooldown"));
+
+        setBreedingCooldown(nbt.getInt("Breeding Cooldown"));
+        setBreedingCount(nbt.getInt("Breeding Count"));
 
         setAgeProgress(nbt.getFloat("Age Progress"));
         /*
@@ -861,6 +869,27 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(EATING_COOLDOWN, cooldown);
     }
 
+    public int getBreedingCount() {
+        return entityData.get(BREEDING_COUNT);
+
+    }
+
+    public void setBreedingCount(int count) {
+        entityData.set(BREEDING_COUNT, count);
+    }
+
+    public int getBreedingCooldown() {
+        return entityData.get(BREEDING_COOLDOWN);
+
+    }
+
+    public void setBreedingCooldown(int cooldown) {
+        entityData.set(BREEDING_COOLDOWN, cooldown);
+    }
+
+    public int getBreedingLimit(){
+        return 10;
+    }
 
     // ====================================
     //      B) Tick and AI
@@ -869,6 +898,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void tick() {
         super.tick();
         setEatingCooldown(Math.max(getEatingCooldown()-1,0));
+        setBreedingCooldown(Math.max(getBreedingCooldown()-1,0));
 
         if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0); // Shouldn't be rotated on ground or water
         if (getDragonXRotation() != 0 && (getDeltaMovement().length() <= 0.25)){ // Every tick, slowly orient the dragon back to normal if its barely moving so it isn't just awkwardly pointing down or up. Also if the player is upside down.
@@ -1707,10 +1737,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return false;
     }
 
+    //ToDo: Could be extracted to an interface with tameLogic methods, then only call the method if instance of interface
     //tameLogic is specific to each creature, it contains the conditions for taming
     public abstract InteractionResult tameLogic (Player tamer, ItemStack stack);
 
-    //attemptTame is ran when the taming conditions are met
+    //attemptTame is run when the taming conditions are met
     public boolean attemptTame(float tameSucceedChance, @Nullable Player tamer, ItemStack stack) {
         if (level.isClientSide) {
             return false;
@@ -1787,12 +1818,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return tameLogic(player,stack);
         }
 
+        if (this instanceof IBreedable && getBreedingCooldown() <= 0 && getBreedingCount() < getBreedingLimit()) {
+            IBreedable thisIBreedable = (IBreedable) this;
+            return thisIBreedable.breedLogic(player,stack);
+        }
+
         if (isOwnedBy(player) && isFood(stack)) {
             if (getEatingCooldown() <= 0) {
                 eat(this.level, stack);
                 setEatingCooldown(500);
                 return InteractionResult.sidedSuccess(level.isClientSide);
             }
+
         }
 
         if (isOwnedBy(player) && getPassengers().isEmpty() && canAddPassenger(player)) {
@@ -1913,18 +1950,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      D.2) Taming: Breeding and Food
     // ====================================
 
-    public int getBreedCount()
-    {
-        return breedCount;
-    }
-
-    public void setBreedCount(int i)
-    {
-        this.breedCount = i;
-    }
-
-    public boolean isBreedingItem(ItemStack stack)
-    {
+    public boolean isBreedingItem(ItemStack stack) {
         return isFood(stack);
     }
 
@@ -1980,50 +2006,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return (AgeableMob) getType().create(level);
     }
 
-    @Override
-    public void spawnChildFromBreeding(ServerLevel level, Animal mate)
-    {
-        final BabyEntitySpawnEvent event = new BabyEntitySpawnEvent(this, mate, null);
-        if (MinecraftForge.EVENT_BUS.post(event)) return; // cancelled
-
-        final AgeableMob child = event.getChild();
-        if (child == null)
-        {
-            ItemStack eggStack = DragonEggItem.getStack(getType());
-            ItemEntity eggItem = new ItemEntity(level, getX(), getY(), getZ(), eggStack);
-            eggItem.setDeltaMovement(0, getBbHeight() / 3, 0);
-            level.addFreshEntity(eggItem);
-        }
-        else
-        {
-            child.setBaby(true);
-            child.moveTo(getX(), getY(), getZ(), 0, 0);
-            level.addFreshEntityWithPassengers(child);
-        }
-
-        breedCount++;
-        ((WRDragonEntity) mate).breedCount++;
-
-        ServerPlayer serverPlayer = getLoveCause();
-
-        if (serverPlayer == null && mate.getLoveCause() != null)
-            serverPlayer = mate.getLoveCause();
-
-        if (serverPlayer != null)
-        {
-            serverPlayer.awardStat(Stats.ANIMALS_BRED);
-            CriteriaTriggers.BRED_ANIMALS.trigger(serverPlayer, this, mate, child);
-        }
-
-        setAge(6000);
-        mate.setAge(6000);
-        resetLove();
-        mate.resetLove();
-        level.broadcastEntityEvent(this, (byte) 18);
-        if (level.getGameRules().getBoolean(GameRules.RULE_DOMOBLOOT))
-            level.addFreshEntity(new ExperienceOrb(level, getX(), getY(), getZ(), getRandom().nextInt(7) + 1));
+    public void spawnDragonEgg(WRDragonEntity dragonEntity, int hatchTime) {
+        DragonEggItem dragonEgg = new DragonEggItem();
+        ItemStack dragonEggItemStack = dragonEgg.getItemStack(dragonEntity, hatchTime);
+        ItemEntity eggItem = new ItemEntity(level, getX(), getY(), getZ(), dragonEggItemStack);
+        eggItem.setDeltaMovement(0, getBbHeight() / 3, 0);
+        level.addFreshEntity(eggItem);
     }
-
 
     @Override
     public boolean canMate(Animal mate)
