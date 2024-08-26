@@ -871,7 +871,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         setEatingCooldown(Math.max(getEatingCooldown()-1,0));
 
         if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0); // Shouldn't be rotated on ground or water
-        if (getDragonXRotation() != 0 && getDeltaMovement().length() <= 0.25){ // Every tick, slowly orient the dragon back to normal if its barely moving so it isn't just awkwardly pointing down or up
+        if (getDragonXRotation() != 0 && (getDeltaMovement().length() <= 0.25)){ // Every tick, slowly orient the dragon back to normal if its barely moving so it isn't just awkwardly pointing down or up. Also if the player is upside down.
             setDragonXRotation(Mth.approachDegrees(getDragonXRotation(), 0.0f, 1.0f));
         }
         NavigationType properNavigator = getProperNavigator();
@@ -1256,9 +1256,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             // Set direction to travel
         Vec3 lookVec = Vec3.directionFromRotation(-getDragonXRotation(), livingentity.getYRot());
         Vec3 moveVec = new Vec3(xxa, lookVec.y, zza);
+        if (moveVec.y!=0) moveVec.multiply(1, 0.5f, 1); // Half upward movement
 
             // Acceleration for diving speed boost
-        // TODO Figure out a better method for diving. As is, its way too much and goes at weird angles
         // (Also this just looks ugly)
         bonusAcc = 0; //Mth.approach(bonusAcc, getFlyingAcceleration(), isFlyingUpward()? 0.06f : (bonusAcc < getFlyingAcceleration())? 0.03f : 0.025f);
             // Speed needs to be multiplied to make the values not seemingly unreasonably large in attributes

@@ -89,7 +89,7 @@ public class DragonRiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer
         dragon.cameraBonePos.put(passenger.getUUID(), bone.getLocalPosition());
 
         // Create a 4d vector, then transform it with the camera's rotation matrix.
-        // This gives us a close-enough estimation of how the camera should be rotating.
+        // This gives us a close-enough estimation of how the camera should be rotating/moving.
         Vector4f vec = new Vector4f(1f, 1f, 1f, 1f);
         vec.transform(bone.getModelRotationMat());
 

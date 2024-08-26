@@ -65,9 +65,7 @@ public class EntityRoyalRed extends WRDragonEntity {
     public int idleAnimationVariants(){
         return 0;
     }
-    public InteractionResult tameLogic (Player tamer, ItemStack stack) {
-        return InteractionResult.PASS;
-    };
+
     public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
 
@@ -507,6 +505,30 @@ public class EntityRoyalRed extends WRDragonEntity {
     }
 
      */
+
+    public InteractionResult tameLogic (Player tamer, ItemStack stack) {
+        if (!isFood(stack)) return InteractionResult.PASS;
+
+        if (isHatchling() || tamer.isCreative()) {
+            eat(tamer.level, stack);
+            attemptTame(0.1f, tamer, stack);
+            setKnockedOut(false);
+            return InteractionResult.sidedSuccess(level.isClientSide);
+        }
+
+        if (isKnockedOut() && knockOutTime <= MAX_KNOCKOUT_TIME / 2) {
+            if (!level.isClientSide) {
+                if (attemptTame((float) knockOutTime/MAX_KNOCKOUT_TIME * 0.2f, tamer, stack)) {
+                    setKnockedOut(false);
+                    //AnimationPacket.send(this, ROAR_ANIMATION);
+                } else knockOutTime += 600; // add 30 seconds to knockout time
+                eat(tamer.level, stack);
+                return InteractionResult.SUCCESS;
+            } else return InteractionResult.CONSUME;
+        }
+        return InteractionResult.PASS;
+    }
+
     // ====================================
     //      D.1) Taming: Inventory
     // ====================================

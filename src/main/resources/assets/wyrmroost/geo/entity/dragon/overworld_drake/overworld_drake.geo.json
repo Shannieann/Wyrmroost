@@ -12,11 +12,6 @@
 			},
 			"bones": [
 				{
-					"name": "rider1",
-					"pivot": [0, 32, -3],
-					"rotation": [-7.5, 0, 0]
-				},
-				{
 					"name": "ibody2",
 					"pivot": [0, 26, 0],
 					"rotation": [2.5, 0, 0]
@@ -602,6 +597,12 @@
 					"name": "cameraPos1",
 					"parent": "sChest",
 					"pivot": [0, 57, -3],
+					"rotation": [-7.5, 0, 0]
+				},
+				{
+					"name": "rider1",
+					"parent": "sChest",
+					"pivot": [0, 35, -3],
 					"rotation": [-7.5, 0, 0]
 				},
 				{
