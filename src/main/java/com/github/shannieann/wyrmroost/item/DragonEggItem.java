@@ -7,6 +7,7 @@ import com.github.shannieann.wyrmroost.entity.dragonegg.WRDragonEggEntity;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.NonNullList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -14,6 +15,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -23,6 +25,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,10 +34,6 @@ public class DragonEggItem extends Item {
     public int hatchTime;
 
     public DragonEggItem(Properties pProperties) {
-        super(WRItems.builder().stacksTo(1));
-    }
-
-    public DragonEggItem() {
         super(WRItems.builder().stacksTo(1));
     }
 
@@ -125,5 +124,26 @@ public class DragonEggItem extends Item {
         Player player = ClientEvents.getPlayer();
         if (player != null && player.isCreative())
             tooltip.add(new TranslatableComponent("item.wyrmroost.egg.creativetooltip").withStyle(ChatFormatting.GRAY));
+    }
+
+    @Override
+    public void fillItemCategory(CreativeModeTab tab, NonNullList<ItemStack> items) {
+        if (this.allowdedIn(tab)) {
+            // Add default item
+            super.fillItemCategory(tab, items);
+            // Add items with custom NBT data
+            for (String nbtValue : getCustomNBTValues()) {
+                ItemStack stack = new ItemStack(this);
+                CompoundTag nbt = new CompoundTag();
+                nbt.putString("contained_dragon", nbtValue);
+                nbt.putInt("hatch_time", 500);
+                stack.setTag(nbt);
+                items.add(stack);
+            }
+        }
+    }
+
+    private List<String> getCustomNBTValues() {
+        return Arrays.asList("wyrmroost:butterfly_leviathan", "wyrmroost:royal_red", "wyrmroost:canari_wyvern","wyrmroost:overworld_drake","wyrmroost:roost_stalker","wyrmroost:silver_glider","wyrmroost:alpine");
     }
 }

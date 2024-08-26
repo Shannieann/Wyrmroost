@@ -18,6 +18,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimming
 import com.github.shannieann.wyrmroost.item.DragonArmorItem;
 import com.github.shannieann.wyrmroost.item.DragonEggItem;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
+import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.registry.WRKeybind;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
@@ -2007,8 +2008,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     public void spawnDragonEgg(WRDragonEntity dragonEntity, int hatchTime) {
-        DragonEggItem dragonEgg = new DragonEggItem();
-        ItemStack dragonEggItemStack = dragonEgg.getItemStack(dragonEntity, hatchTime);
+        ItemStack dragonEggItemStack = WRItems.DRAGON_EGG.get().getItemStack(dragonEntity, hatchTime);
         ItemEntity eggItem = new ItemEntity(level, getX(), getY(), getZ(), dragonEggItemStack);
         eggItem.setDeltaMovement(0, getBbHeight() / 3, 0);
         level.addFreshEntity(eggItem);

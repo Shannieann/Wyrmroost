@@ -1,0 +1,6 @@
+{
+  "parent": "item/generated",
+  "textures": {
+    "layer0": "wyrmroost:item/roost_stalker_egg"
+  }
+}

@@ -32,13 +32,19 @@
       "predicate": {
         "wyrmroost:contained_dragon": 5.0
       },
-      "model": "wyrmroost:item/rooststalker_egg"
+      "model": "wyrmroost:item/roost_stalker_egg"
     },
     {
       "predicate": {
         "wyrmroost:contained_dragon": 6.0
       },
       "model": "wyrmroost:item/silver_glider_egg"
+    },
+    {
+      "predicate": {
+        "wyrmroost:contained_dragon": 7.0
+      },
+      "model": "wyrmroost:item/alpine_egg"
     }
   ]
 }
