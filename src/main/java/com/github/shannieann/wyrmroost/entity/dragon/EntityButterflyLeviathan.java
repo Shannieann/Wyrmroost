@@ -67,6 +67,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //2024.08.26
 //ToDo: Eggs
+// Verify Egg items work correctly, roost stalker
 // GeckoLib
 // Egg Properties
 // Builders
