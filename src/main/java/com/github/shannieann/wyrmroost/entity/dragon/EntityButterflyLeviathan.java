@@ -3,6 +3,7 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
@@ -107,7 +108,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Datagen
 // Registry, tidy
 
-public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity {
+public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity, IBreedable {
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> LIGHTNING_COOLDOWN = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.INT);
     public static final int CONDUIT_SLOT = 0;
@@ -703,7 +704,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         goalSelector.addGoal(0, new WRSitGoal(this));
 //        goalSelector.addGoal(1, new MoveToHomeGoal(this));
 //        goalSelector.addGoal(2, new WRFollowOwnerGoal(this));
-//        goalSelector.addGoal(3, new DragonBreedGoal(this));
+        goalSelector.addGoal(3, new DragonBreedGoal(this));
 
         goalSelector.addGoal(4, new BFLAttackGoal(this));
         goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,12,3));
@@ -730,6 +731,28 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         //If we are in water, only target entities in water...
         return (!this.isInWater() || entity.isInWater());
     };
+
+    @Override
+    public InteractionResult breedLogic(Player breeder, ItemStack stack) {
+        if (level.isClientSide) {
+            return InteractionResult.CONSUME;
+        }
+
+        if (((this.isOnGround() && !this.isUnderWater()) && this.isAdult()) && isFood(stack)) {
+            eat(this.level, stack);
+            setBreedingCooldown(6000);
+            setBreedingCount(getBreedingCount()+1);
+            setInLove(breeder);
+            return InteractionResult.SUCCESS;
+        }
+        return InteractionResult.PASS;
+
+    }
+
+    @Override
+    public int hatchTime() {
+        return 300;
+    }
 
     public class BFLAttackGoal extends AnimatedGoal {
         private int navRecalculationTicks;
