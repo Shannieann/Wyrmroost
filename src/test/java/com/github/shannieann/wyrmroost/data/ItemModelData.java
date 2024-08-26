@@ -43,17 +43,6 @@ class ItemModelData extends ItemModelProvider
         getBuilder("desert_wyrm_alive").parent(itemGenerated).texture("layer0", resource("desert_wyrm_alive"));
         //item(WRItems.LDWYRM.get()).override().predicate(Wyrmroost.id("is_alive"), 1f).model(uncheckedModel(resource("desert_wyrm_alive")));
 
-        getBuilderFor(WRItems.DRAGON_EGG.get())
-                .parent(ister)
-                .guiLight(BlockModel.GuiLight.FRONT)
-                .transforms()
-                .transform(ItemTransforms.TransformType.GUI).rotation(160, 8, 30).translation(21, 6, 0).scale(1.5f).end()
-                .transform(ItemTransforms.TransformType.FIRST_PERSON_LEFT_HAND).rotation(180, 10, 4).translation(13, 10, -10).scale(1).end()
-                .transform(ItemTransforms.TransformType.FIRST_PERSON_RIGHT_HAND).rotation(180, 10, 4).translation(-2, 11, -12).scale(1).end()
-                .transform(ItemTransforms.TransformType.THIRD_PERSON_RIGHT_HAND).rotation(253, 65, 0).translation(8, 2, 10).scale(0.75f).end()
-                .transform(ItemTransforms.TransformType.THIRD_PERSON_LEFT_HAND).rotation(253, 65, 0).translation(3, 13, 7).scale(0.75f).end()
-                .transform(ItemTransforms.TransformType.GROUND).rotation(180, 0, 0).translation(4, 8, -5).scale(0.55f).end();
-
         //getBuilderFor(WRItems.TARRAGON_TOME.get()).parent(ister).guiLight(BlockModel.GuiLight.FRONT);
         //item(WRBlocks.HOARFROST.get(), modLoc("block/hoarfrost_spines"));
         //final ItemModelBuilder cdBuilder = item(WRItems.COIN_DRAGON.get());
