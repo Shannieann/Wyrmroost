@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class DragonEggRenderer extends EntityRenderer<DragonEggEntity>
 {
-    public static final ResourceLocation DEFAULT_TEXTURE = Wyrmroost.id("textures/entity/dragon/dragon_egg_wr.png");
+    public static final ResourceLocation DEFAULT_TEXTURE = Wyrmroost.id("textures/entity/dragon/dragon_egg.png");
     public static final Model MODEL = new Model();
 
     private static final Map<EntityType<?>, ResourceLocation> TEXTURE_MAP = new HashMap<>();
