@@ -120,7 +120,7 @@ public class DragonEggItem extends Item {
         CompoundTag tag = stack.getTag();
 
         if (tag != null && tag.contains("contained_dragon"))
-            tooltip.add(new TranslatableComponent("item.wyrmroost.egg.tooltip", tag.getInt("Hatch Time") / 1200).withStyle(ChatFormatting.AQUA));
+            tooltip.add(new TranslatableComponent("item.wyrmroost.egg.tooltip", tag.getInt("hatch_time") / 1200).withStyle(ChatFormatting.AQUA));
         Player player = ClientEvents.getPlayer();
         if (player != null && player.isCreative())
             tooltip.add(new TranslatableComponent("item.wyrmroost.egg.creativetooltip").withStyle(ChatFormatting.GRAY));

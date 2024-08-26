@@ -116,7 +116,7 @@
   "item.wyrmroost.cooked_behemoth_meat": "Cooked Behemoth Meat",
 
   "item.wyrmroost.dragon_egg": "Egg",
-  "item.wyrmroost.egg.tooltip": "Hatching in: %smin",
+  "item.wyrmroost.egg.tooltip": "Hatching in: %s minutes",
   "item.wyrmroost.egg.creativetooltip": "You are in Creative Mode: You can convert this egg's type by left-clicking a dragon",
 
   "item.wyrmroost.soul_crystal": "Dragon Soul Crystal",
