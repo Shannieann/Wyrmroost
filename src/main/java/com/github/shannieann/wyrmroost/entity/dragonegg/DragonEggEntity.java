@@ -1,6 +1,7 @@
 package com.github.shannieann.wyrmroost.entity.dragonegg;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
+import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.item.DragonEggItem;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
@@ -23,6 +24,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Containers;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
@@ -270,9 +272,12 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
     }
 
     public boolean hurt(DamageSource source, float amount) {
-        ItemStack stack = DragonEggItem.getStack(containedDragon, hatchTime);
+        //ToDo: Pending
+        /*ItemStack stack = DragonEggItem.getStack(containedDragon, hatchTime);
         Containers.dropItemStack(level, getX(), getY(), getZ(), stack);
         remove(RemovalReason.KILLED);
+
+         */
         return true;
     }
 
@@ -283,10 +288,14 @@ public class DragonEggEntity extends Entity implements IEntityAdditionalSpawnDat
         return properties;
     }
 
+    /*
     @Override
     public ItemStack getPickedResult(HitResult target) {
-        return DragonEggItem.getStack(containedDragon);
+        //ToDo: Pending
+        return new DragonEggItem().getItemStack(new EntityButterflyLeviathan(), 10);
     }
+
+     */
 
     @Override
     public EntityDimensions getDimensions(Pose poseIn) {
