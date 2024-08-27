@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entity.dragonegg;
+package com.github.shannieann.wyrmroost.entity.dragon_egg;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
@@ -9,16 +9,19 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.MobSpawnType;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class WRDragonEggEntity extends Entity implements IAnimatable {
+public class WRDragonEggEntity extends LivingEntity implements IAnimatable {
+
+    public WRDragonEggEntity(EntityType<? extends LivingEntity> entityType, Level level) {
+        super(entityType, level);
+    }
 
     //Constructor called by DragonEggItem
     public WRDragonEggEntity(Level level, WRDragonEntity containedDragon, int hatchTime) {
@@ -26,9 +29,11 @@ public class WRDragonEggEntity extends Entity implements IAnimatable {
         setHatchTime(hatchTime);
         setContainedDragon(EntityType.getKey(containedDragon.getType()).toString());
     }
+    
+    public static final EntityDataAccessor<String> CONTAINED_DRAGON = SynchedEntityData.defineId(WRDragonEggEntity.class, EntityDataSerializers.STRING);
+    public static final EntityDataAccessor<Integer> HATCH_TIME = SynchedEntityData.defineId(WRDragonEggEntity.class,EntityDataSerializers.INT);
 
-    public static final EntityDataAccessor<String> CONTAINED_DRAGON = SynchedEntityData.defineId(DragonEggEntity.class, EntityDataSerializers.STRING);
-    public static final EntityDataAccessor<Integer> HATCH_TIME = SynchedEntityData.defineId(DragonEggEntity.class,EntityDataSerializers.INT);
+
 
 
     // ================================
@@ -44,6 +49,21 @@ public class WRDragonEggEntity extends Entity implements IAnimatable {
     public void readAdditionalSaveData(CompoundTag nbt) {
         setHatchTime(nbt.getInt("hatch_time"));
         setContainedDragon(nbt.getString("contained_dragon"));
+
+    }
+
+    @Override
+    public Iterable<ItemStack> getArmorSlots() {
+        return null;
+    }
+
+    @Override
+    public ItemStack getItemBySlot(EquipmentSlot pSlot) {
+        return null;
+    }
+
+    @Override
+    public void setItemSlot(EquipmentSlot pSlot, ItemStack pStack) {
 
     }
 
@@ -92,6 +112,11 @@ public class WRDragonEggEntity extends Entity implements IAnimatable {
                     hatch();
                 }
             }
+    }
+
+    @Override
+    public HumanoidArm getMainArm() {
+        return null;
     }
 
     public void hatch() {
