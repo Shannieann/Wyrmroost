@@ -1,7 +1,7 @@
 
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.DragonBreedGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDragonBreedGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRAvoidEntityGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRFollowOwnerGoal;
@@ -95,7 +95,7 @@ public class EntitySilverGlider extends WRDragonEntity
 
         goalSelector.addGoal(3, temptGoal = new TemptGoal(this, 0.8d,  Ingredient.of(ItemTags.FISHES), true));
         goalSelector.addGoal(4, new WRAvoidEntityGoal<>(this, Player.class, 10f, 0.8));
-        goalSelector.addGoal(5, new DragonBreedGoal(this));
+        goalSelector.addGoal(5, new WRDragonBreedGoal(this));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new SwoopGoal());
         goalSelector.addGoal(8, new FlyerWanderGoal(this, 1));

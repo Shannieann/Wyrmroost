@@ -1,13 +1,8 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRRunWhenLosingGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.DefendHomeGoal;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.DragonBreedGoal;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.MoveToHomeGoal;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRFollowOwnerGoal;
-import com.github.shannieann.wyrmroost.network.packets.AddPassengerPacket;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDragonBreedGoal;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import net.minecraft.core.BlockPos;
@@ -18,7 +13,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.Container;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
@@ -394,7 +388,7 @@ public class EntityRoostStalker extends WRDragonEntity
         goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.1d, true));
         goalSelector.addGoal(5, new MoveToHomeGoal(this));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
-        goalSelector.addGoal(7, new DragonBreedGoal(this));
+        goalSelector.addGoal(7, new WRDragonBreedGoal(this));
         goalSelector.addGoal(8, new AvoidEntityGoal<>(this, Player.class, 7f, 1.15f, 1f)
         {
             @Override

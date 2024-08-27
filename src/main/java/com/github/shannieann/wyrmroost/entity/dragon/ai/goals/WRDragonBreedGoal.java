@@ -1,9 +1,7 @@
 package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
 
-import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 
@@ -11,7 +9,7 @@ import javax.annotation.Nullable;
 import java.util.Comparator;
 import java.util.EnumSet;
 
-public class DragonBreedGoal<T extends WRDragonEntity & IBreedable> extends Goal {
+public class WRDragonBreedGoal<T extends WRDragonEntity & IBreedable> extends Goal {
     private static final TargetingConditions PARTNER_TARGETING = TargetingConditions.forNonCombat().range(8.0D).ignoreLineOfSight();
     protected final WRDragonEntity dragon;
     protected final IBreedable breedable;
@@ -19,7 +17,7 @@ public class DragonBreedGoal<T extends WRDragonEntity & IBreedable> extends Goal
     protected WRDragonEntity targetMate;
     protected int spawnBabyDelay;
 
-    public DragonBreedGoal(T dragon) {
+    public WRDragonBreedGoal(T dragon) {
         setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         this.dragon = dragon;
         this.breedable = dragon;

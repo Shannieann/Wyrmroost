@@ -2,7 +2,6 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
@@ -638,7 +637,7 @@ public class EntityRoyalRed extends WRDragonEntity {
         //goalSelector.addGoal(4, new WRRunWhenLosingGoal(this, 0.1f, 40, 0.95f, 0.99f ));
         goalSelector.addGoal(5, new RRAttackGoal(this));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
-        goalSelector.addGoal(7, new DragonBreedGoal(this));
+        goalSelector.addGoal(7, new WRDragonBreedGoal(this));
         goalSelector.addGoal(9, new FlyerWanderGoal(this, 1));
         goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
         goalSelector.addGoal(11, new RandomLookAroundGoal(this));

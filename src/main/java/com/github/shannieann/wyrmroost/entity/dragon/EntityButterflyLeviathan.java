@@ -67,10 +67,8 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //2024.08.26
 //ToDo: Eggs
-// Verify Egg items work correctly, roost stalker
-// GeckoLib
-// Egg Properties
 // Builders
+// Egg Entity
 
 //ToDo:
 // Riding - BFL and aquatics
@@ -703,7 +701,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         goalSelector.addGoal(0, new WRSitGoal(this));
 //        goalSelector.addGoal(1, new MoveToHomeGoal(this));
 //        goalSelector.addGoal(2, new WRFollowOwnerGoal(this));
-        goalSelector.addGoal(3, new DragonBreedGoal(this));
+        goalSelector.addGoal(3, new WRDragonBreedGoal(this));
 
         goalSelector.addGoal(4, new BFLAttackGoal(this));
         goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,12,3));
