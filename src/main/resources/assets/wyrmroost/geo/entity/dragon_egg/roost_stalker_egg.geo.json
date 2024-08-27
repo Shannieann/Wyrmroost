@@ -1,0 +1,69 @@
+{
+	"format_version": "1.12.0",
+	"minecraft:geometry": [
+		{
+			"description": {
+				"identifier": "geometry.unknown",
+				"texture_width": 32,
+				"texture_height": 32,
+				"visible_bounds_width": 2,
+				"visible_bounds_height": 1.5,
+				"visible_bounds_offset": [0, 0.25, 0]
+			},
+			"bones": [
+				{
+					"name": "eggs",
+					"pivot": [0, 0, 0]
+				},
+				{
+					"name": "egg1",
+					"parent": "eggs",
+					"pivot": [-2, 0, -2.5],
+					"cubes": [
+						{"origin": [-4.1, -0.5, -4.6], "size": [4, 4, 4], "uv": [15, 18]}
+					]
+				},
+				{
+					"name": "egg2",
+					"parent": "eggs",
+					"pivot": [2, 0, -3],
+					"cubes": [
+						{"origin": [0, -0.5, -5.1], "size": [4, 4, 4], "uv": [0, 13]}
+					]
+				},
+				{
+					"name": "egg3",
+					"parent": "eggs",
+					"pivot": [0, 0, 1],
+					"cubes": [
+						{"origin": [-2, 0, -3], "size": [4, 5, 4], "uv": [1, 1]}
+					]
+				},
+				{
+					"name": "egg4",
+					"parent": "eggs",
+					"pivot": [-4, 0, 1],
+					"cubes": [
+						{"origin": [-6.1, 0, -1], "size": [4, 4, 4], "uv": [1, 23]}
+					]
+				},
+				{
+					"name": "egg5",
+					"parent": "eggs",
+					"pivot": [4, 0, 1],
+					"cubes": [
+						{"origin": [2.1, 0, -1], "size": [4, 4, 4], "uv": [15, 18], "mirror": true}
+					]
+				},
+				{
+					"name": "egg6",
+					"parent": "eggs",
+					"pivot": [0, 0, 3],
+					"cubes": [
+						{"origin": [-2, -0.5, 1], "size": [4, 4, 4], "uv": [16, 7]}
+					]
+				}
+			]
+		}
+	]
+}
