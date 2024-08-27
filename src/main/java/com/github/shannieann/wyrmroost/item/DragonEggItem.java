@@ -118,9 +118,9 @@ public class DragonEggItem extends Item {
     @Override
     public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         CompoundTag tag = stack.getTag();
-
         if (tag != null && tag.contains("contained_dragon"))
             tooltip.add(new TranslatableComponent("item.wyrmroost.egg.tooltip", tag.getInt("hatch_time") / 1200).withStyle(ChatFormatting.AQUA));
+
         Player player = ClientEvents.getPlayer();
         if (player != null && player.isCreative())
             tooltip.add(new TranslatableComponent("item.wyrmroost.egg.creativetooltip").withStyle(ChatFormatting.GRAY));
@@ -136,7 +136,7 @@ public class DragonEggItem extends Item {
                 ItemStack stack = new ItemStack(this);
                 CompoundTag nbt = new CompoundTag();
                 nbt.putString("contained_dragon", nbtValue);
-                nbt.putInt("hatch_time", 500);
+                nbt.putInt("hatch_time", 3600);
                 stack.setTag(nbt);
                 items.add(stack);
             }
