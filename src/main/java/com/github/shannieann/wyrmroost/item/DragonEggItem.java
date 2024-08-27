@@ -30,8 +30,6 @@ import java.util.List;
 import java.util.Optional;
 
 public class DragonEggItem extends Item {
-    public WRDragonEntity containedDragon;
-    public int hatchTime;
 
     public DragonEggItem(Properties pProperties) {
         super(WRItems.builder().stacksTo(1));
@@ -42,8 +40,6 @@ public class DragonEggItem extends Item {
         ItemStack stack = new ItemStack(WRItems.DRAGON_EGG.get());
         CompoundTag nbt = new CompoundTag();
         nbt.putString("contained_dragon", EntityType.getKey(dragonEntity.getType()).toString());
-        this.containedDragon = dragonEntity;
-        this.hatchTime = hatchTime;
         nbt.putInt("hatch_time", hatchTime);
         stack.setTag(nbt);
         return stack;
@@ -71,29 +67,41 @@ public class DragonEggItem extends Item {
         Level level = context.getLevel();
         BlockPos pos = context.getClickedPos();
         BlockState state = level.getBlockState(pos);
+        ItemStack stack = player.getItemInHand(context.getHand());
+
         if (!state.getCollisionShape(level, pos).isEmpty()) {
             pos = pos.relative(context.getClickedFace());
         }
 
+        CompoundTag tag = stack.getTag();
+
+
+
         //Creates a WRDragonEggEntity with a previously defined containedDragon and hatchTime
-        if (containedDragon != null) {
-            WRDragonEggEntity dragonEggEntity = new WRDragonEggEntity(level, containedDragon,hatchTime);
-            dragonEggEntity.absMoveTo(pos.getX(), pos.getY() + 0.5d, pos.getZ());
+        if (tag != null && tag.contains("contained_dragon") && tag.contains("hatch_time")) {
+            Optional<EntityType<?>> optionalDragon = EntityType.byString(tag.getString("contained_dragon"));
+            EntityType<?> dragon = optionalDragon.orElseThrow(() -> new IllegalArgumentException("EntityType not present"));
+            Entity entity = dragon.create(level);
+            int hatchTime = tag.getInt("hatch_time");
 
-            if (!level.isClientSide) {
-                level.addFreshEntity(dragonEggEntity);
+            if (entity !=null ) {
+                WRDragonEggEntity dragonEggEntity = new WRDragonEggEntity(level, ((WRDragonEntity) entity),hatchTime);
+                dragonEggEntity.absMoveTo(pos.getX(), pos.getY() + 0.5d, pos.getZ());
+                if (!level.isClientSide) {
+                    level.addFreshEntity(dragonEggEntity);
+
+                }
+                if (!player.isCreative()) {
+                    player.getItemInHand(context.getHand()).shrink(1);
+                }
+
+                return InteractionResult.SUCCESS;
             }
-
-            if (!player.isCreative()) {
-                player.getItemInHand(context.getHand()).shrink(1);
-            }
-            return InteractionResult.SUCCESS;
-
-        }
+                    }
         return InteractionResult.FAIL;
     }
 
-    //Used to create a DragonEgg, in creative mode, from left-clicking a dragon
+    //Used to create a DragonEggItem, in creative mode, from left-clicking a dragon
     @Override
     public boolean onLeftClickEntity(ItemStack stack, Player player, Entity entity) {
         if (!player.isCreative()) {
