@@ -14,9 +14,11 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.manager.AnimationData;
+import software.bernie.geckolib3.core.manager.AnimationFactory;
 
-public class WRDragonEggEntity extends Entity {
-    private static final int UPDATE_CONDITIONS_INTERVAL = 50;
+public class WRDragonEggEntity extends Entity implements IAnimatable {
 
     //Constructor called by DragonEggItem
     public WRDragonEggEntity(Level level, WRDragonEntity containedDragon, int hatchTime) {
@@ -108,4 +110,13 @@ public class WRDragonEggEntity extends Entity {
         remove(RemovalReason.DISCARDED);
     }
 
+    @Override
+    public void registerControllers(AnimationData data) {
+
+    }
+
+    @Override
+    public AnimationFactory getFactory() {
+        return null;
+    }
 }
