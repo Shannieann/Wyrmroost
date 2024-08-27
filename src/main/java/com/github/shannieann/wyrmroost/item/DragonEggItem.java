@@ -2,8 +2,8 @@ package com.github.shannieann.wyrmroost.item;
 
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.entity.dragonegg.DragonEggProperties;
-import com.github.shannieann.wyrmroost.entity.dragonegg.WRDragonEggEntity;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
+import com.github.shannieann.wyrmroost.entity.dragon_egg.WRDragonEggEntity;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -102,13 +102,13 @@ public class DragonEggItem extends Item {
         if (!entity.isAlive()) {
             return false;
         }
-        if (!(entity instanceof WRDragonEntity)) {
+        if (!(entity instanceof WRDragonEntity) || !(entity instanceof IBreedable)) {
             return false;
         }
 
         CompoundTag nbt = new CompoundTag();
         nbt.putString("contained_dragon", EntityType.getKey(entity.getType()).toString());
-        nbt.putInt("hatch_time", DragonEggProperties.get(entity.getType()).getHatchTime());
+        nbt.putInt("hatch_time", ((IBreedable) entity).hatchTime());
         stack.setTag(nbt);
 
         player.displayClientMessage(getName(stack), true);
