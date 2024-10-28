@@ -4,6 +4,7 @@ import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon_egg.WRDragonEggEntity;
+import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -85,7 +86,10 @@ public class DragonEggItem extends Item {
             int hatchTime = tag.getInt("hatch_time");
 
             if (entity !=null ) {
-                WRDragonEggEntity dragonEggEntity = new WRDragonEggEntity(level, ((WRDragonEntity) entity),hatchTime);
+                //WRDragonEggEntity dragonEggEntity = new WRDragonEggEntity(level, ((WRDragonEntity) entity),hatchTime);
+                WRDragonEggEntity dragonEggEntity = new WRDragonEggEntity(WREntityTypes.DRAGON_EGG.get(),level);
+                dragonEggEntity.setContainedDragon(EntityType.getKey(entity.getType()).toString());
+                dragonEggEntity.setHatchTime(hatchTime);
                 dragonEggEntity.absMoveTo(pos.getX(), pos.getY() + 0.5d, pos.getZ());
                 if (!level.isClientSide) {
                     level.addFreshEntity(dragonEggEntity);

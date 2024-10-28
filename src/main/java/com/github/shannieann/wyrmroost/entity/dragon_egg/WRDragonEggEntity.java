@@ -41,15 +41,22 @@ public class WRDragonEggEntity extends LivingEntity implements IAnimatable {
     // ================================
     @Override
     protected void defineSynchedData() {
+        super.defineSynchedData();
         entityData.define(CONTAINED_DRAGON, "none");
         entityData.define(HATCH_TIME, 0);
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag nbt) {
+        super.readAdditionalSaveData(nbt);
         setHatchTime(nbt.getInt("hatch_time"));
         setContainedDragon(nbt.getString("contained_dragon"));
+    }
 
+    @Override
+    public void addAdditionalSaveData(CompoundTag nbt) {
+        nbt.putInt("hatch_time",getHatchTime());
+        nbt.putString("contained_dragon",getContainedDragon());
     }
 
     @Override
@@ -67,13 +74,6 @@ public class WRDragonEggEntity extends LivingEntity implements IAnimatable {
 
     }
 
-    @Override
-    public void addAdditionalSaveData(CompoundTag nbt) {
-        nbt.putInt("hatch_time",getHatchTime());
-        nbt.putString("contained_dragon",getContainedDragon());
-
-    }
-
     public String getContainedDragon(){
         return entityData.get(CONTAINED_DRAGON);
     }
@@ -88,11 +88,6 @@ public class WRDragonEggEntity extends LivingEntity implements IAnimatable {
 
     public void setHatchTime(int hatchTime){
         entityData.set(HATCH_TIME,hatchTime);
-    }
-
-    @Override
-    public Packet<?> getAddEntityPacket() {
-        return null;
     }
 
     // ====================================
@@ -146,8 +141,8 @@ public class WRDragonEggEntity extends LivingEntity implements IAnimatable {
     }
 
     public static AttributeSupplier.Builder getAttributeSupplier() {
-        // base male attributes
         return Mob.createMobAttributes()
-                .add(MAX_HEALTH, 20);
+                .add(MAX_HEALTH, 20)
+                .add(MOVEMENT_SPEED,0);
     }
 }
