@@ -9,20 +9,22 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-public class WRDragonEggEntity extends LivingEntity implements IAnimatable {
+public class WRDragonEggEntity extends TamableAnimal implements IAnimatable {
 
-    public WRDragonEggEntity(EntityType<? extends LivingEntity> entityType, Level level) {
+    public WRDragonEggEntity(EntityType<? extends TamableAnimal> entityType, Level level) {
         super(entityType, level);
     }
 
@@ -35,6 +37,12 @@ public class WRDragonEggEntity extends LivingEntity implements IAnimatable {
     
     public static final EntityDataAccessor<String> CONTAINED_DRAGON = SynchedEntityData.defineId(WRDragonEggEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Integer> HATCH_TIME = SynchedEntityData.defineId(WRDragonEggEntity.class,EntityDataSerializers.INT);
+
+    @Nullable
+    @Override
+    public AgeableMob getBreedOffspring(ServerLevel pLevel, AgeableMob pOtherParent) {
+        return (AgeableMob) getType().create(level);
+    }
 
     // ================================
     //           Entity NBT
@@ -59,20 +67,7 @@ public class WRDragonEggEntity extends LivingEntity implements IAnimatable {
         nbt.putString("contained_dragon",getContainedDragon());
     }
 
-    @Override
-    public Iterable<ItemStack> getArmorSlots() {
-        return null;
-    }
 
-    @Override
-    public ItemStack getItemBySlot(EquipmentSlot pSlot) {
-        return null;
-    }
-
-    @Override
-    public void setItemSlot(EquipmentSlot pSlot, ItemStack pStack) {
-
-    }
 
     public String getContainedDragon(){
         return entityData.get(CONTAINED_DRAGON);
@@ -99,19 +94,15 @@ public class WRDragonEggEntity extends LivingEntity implements IAnimatable {
             return;
         }
 
-        super.tick();
-
         if (!level.isClientSide) {
             setHatchTime(getHatchTime()-1);
-                if (getHatchTime() <= 0) {
-                    hatch();
-                }
+            if (getHatchTime() <= 0) {
+                hatch();
             }
-    }
 
-    @Override
-    public HumanoidArm getMainArm() {
-        return null;
+        }
+        super.tick();
+
     }
 
     public void hatch() {
