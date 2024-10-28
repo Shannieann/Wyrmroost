@@ -136,6 +136,7 @@ public class WREntityTypes<E extends Entity> extends EntityType<E> {
     public static final RegistryObject<EntityType<WRDragonEggEntity>> DRAGON_EGG =
         WREntityTypes.<WRDragonEggEntity>buildMob("dragon_egg", WRDragonEggEntity::new, MobCategory.MISC)
                 .size(1.0F,1.0F)
+                .attributes(WRDragonEggEntity::getAttributeSupplier)
                 .noSummon()
                 .fireImmune()
                 .trackingRange(4)

@@ -10,12 +10,15 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
+
+import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class WRDragonEggEntity extends LivingEntity implements IAnimatable {
 
@@ -32,9 +35,6 @@ public class WRDragonEggEntity extends LivingEntity implements IAnimatable {
     
     public static final EntityDataAccessor<String> CONTAINED_DRAGON = SynchedEntityData.defineId(WRDragonEggEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Integer> HATCH_TIME = SynchedEntityData.defineId(WRDragonEggEntity.class,EntityDataSerializers.INT);
-
-
-
 
     // ================================
     //           Entity NBT
@@ -143,5 +143,11 @@ public class WRDragonEggEntity extends LivingEntity implements IAnimatable {
     @Override
     public AnimationFactory getFactory() {
         return null;
+    }
+
+    public static AttributeSupplier.Builder getAttributeSupplier() {
+        // base male attributes
+        return Mob.createMobAttributes()
+                .add(MAX_HEALTH, 20);
     }
 }
