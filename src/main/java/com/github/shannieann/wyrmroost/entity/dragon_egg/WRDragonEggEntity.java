@@ -19,6 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import software.bernie.geckolib3.core.manager.AnimationFactory;
+import software.bernie.geckolib3.util.GeckoLibUtil;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
@@ -128,8 +129,10 @@ public class WRDragonEggEntity extends TamableAnimal implements IAnimatable {
 
     @Override
     public AnimationFactory getFactory() {
-        return null;
+        return this.factory;
     }
+
+    private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return Mob.createMobAttributes()
