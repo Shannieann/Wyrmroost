@@ -86,22 +86,19 @@ public class DragonEggItem extends Item {
             int hatchTime = tag.getInt("hatch_time");
 
             if (entity !=null ) {
-                //WRDragonEggEntity dragonEggEntity = new WRDragonEggEntity(level, ((WRDragonEntity) entity),hatchTime);
-                WRDragonEggEntity dragonEggEntity = new WRDragonEggEntity(WREntityTypes.DRAGON_EGG.get(),level);
+                WRDragonEggEntity dragonEggEntity = new WRDragonEggEntity(level, ((WRDragonEntity) entity),hatchTime);
                 dragonEggEntity.setContainedDragon(EntityType.getKey(entity.getType()).toString());
                 dragonEggEntity.setHatchTime(hatchTime);
                 dragonEggEntity.absMoveTo(pos.getX(), pos.getY() + 0.5d, pos.getZ());
                 if (!level.isClientSide) {
                     level.addFreshEntity(dragonEggEntity);
-
+                    if (!player.isCreative()) {
+                        player.getItemInHand(context.getHand()).shrink(1);
+                    }
                 }
-                if (!player.isCreative()) {
-                    player.getItemInHand(context.getHand()).shrink(1);
-                }
-
                 return InteractionResult.SUCCESS;
             }
-                    }
+        }
         return InteractionResult.FAIL;
     }
 
