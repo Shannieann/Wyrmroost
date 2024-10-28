@@ -8,6 +8,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRWaterLeapGoal;
+import com.github.shannieann.wyrmroost.entity.dragon_egg.WRDragonEggEntity;
 import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
@@ -32,10 +33,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
-import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.*;
 import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
@@ -711,17 +709,32 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
         goalSelector.addGoal(9, new WRRandomLookAroundGoal(this,45));
 
-        targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
-        targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
-        targetSelector.addGoal(3, new HurtByTargetGoal(this));
+        //targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
+        //targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
+        //targetSelector.addGoal(3, new HurtByTargetGoal(this));
         //targetSelector.addGoal(4, new DefendHomeGoal(this));
-        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false, aquaticRandomTargetPredicate));
-        //Todo: Exclude other BFLs, exclude fish
+        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false,
+                entity -> {
+                    System.out.println("Evaluating entity: " + entity.getName().getString() + " | Class: " + entity.getClass().getName());
+                    //Avoid targeting fish, to avoid creating lag
+                    //Avoid targeting self
+                    if (entity instanceof AbstractFish || entity.getClass() == this.getClass() || entity instanceof WRDragonEggEntity) {
+                        return false;
+                    }
+                    //If we are not in water, we can target entities in water and out of water...
+                    //If we are in water, only target entities in water...
+                    return (!this.isInWater() || entity.isInWater());}));
     }
 
-    public Predicate<LivingEntity> aquaticRandomTargetPredicate = entity -> {
+
+
+
+    public Predicate<LivingEntity> aquaticRandomTargetPredicate =
+            entity -> {
+        System.out.println("Evaluating entity: " + entity.getName().getString() + " | Class: " + entity.getClass().getName());
         //Avoid targeting fish, to avoid creating lag
-        if (entity instanceof AbstractFish || entity instanceof EntityButterflyLeviathan) {
+        //Avoid targeting self
+        if (entity instanceof AbstractFish || entity.getClass() == this.getClass()) {
             return false;
         }
         //If we are not in water, we can target entities in water and out of water...
