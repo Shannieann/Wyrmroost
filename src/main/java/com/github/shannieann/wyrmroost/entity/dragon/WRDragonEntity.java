@@ -1325,76 +1325,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         super.travel(new Vec3(groundX, vec3d.y, groundZ));
     }
 
-    /**
-     For use in individual dragon classes if you override the handle___Riding methods.
-     Honestly im not sure if this is the best way to do this...
-     */
-    protected void superTravel(Vec3 pTravelVector){
-        super.travel(pTravelVector);
-    }
-
-
-
-    // TODO dragon flapping wings sound
-    // I feel like this is super messy rn, but I just wanted to get this working. TODO clean this up
-    /*@Override
-    public void travel(Vec3 vec3d){
-        if (this.isAlive()) {
-            if (this.isVehicle() && this.canBeControlledByRider()) {
-                LivingEntity livingentity = (LivingEntity)this.getControllingPassenger();
-                this.setYRot(livingentity.getYRot());
-                this.yRotO = this.getYRot();
-                this.setXRot(livingentity.getXRot() * 0.5F);
-                this.setRot(this.getYRot(), this.getXRot());
-                this.yBodyRot = this.getYRot();
-                this.yHeadRot = this.yBodyRot;
-                float groundX = livingentity.xxa * 0.5F;
-                float groundZ = livingentity.zza;
-                if (groundZ <= 0.0F) {
-                    groundZ *= 0.25F;
-                }
-
-                // TODO add water control
-                this.flyingSpeed = this.getSpeed() * 0.1F;
-                if (this.isControlledByLocalInstance()) {
-                    // handle flying movement
-                    float speed = getTravelSpeed();
-                    if (isUsingFlyingNavigator())
-                    {
-                        if (getAltitude() <= getFlightThreshold()) setNavigator(NavigationType.GROUND);
-                        this.setSpeed(speed * (25.0f/3.0f));
-                        double moveX = livingentity.xxa;
-                        double moveZ = livingentity.zza;
-                        double moveY;
-                        if (ClientEvents.keybindFlight)
-                            moveY = ClientEvents.getClient().options.keyJump.isDown()? 2.5f : WRKeybind.FLIGHT_DESCENT.isDown()? -3f : 0;
-                        else moveY = -livingentity.getXRot() * (Math.PI / 180);
-                        super.travel(new Vec3(moveX, moveY, moveZ));
-                    }
-                    else
-                    {
-                        //speed *= 0.225f;
-                        // normal movement
-                        if (ClientEvents.getClient().options.keyJump.isDown()) jumpFromGround();
-                        else {
-                            this.setSpeed(speed);
-                            super.travel(new Vec3(groundX, vec3d.y, groundZ));
-                        }
-                    }
-                } else if (livingentity instanceof Player) {
-                    this.setDeltaMovement(Vec3.ZERO);
-                }
-
-                this.calculateEntityAnimation(this, isUsingFlyingNavigator());
-                this.tryCheckInsideBlocks();
-            } else {
-                this.flyingSpeed = getTravelSpeed();
-                super.travel(vec3d);
-            }
-        }
-
-    }*/
-
     // ====================================
     @Override
     public boolean isNoGravity() {
@@ -1556,8 +1486,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     //ToDo: How does this interact with travel?
-    public void rideTick()
-    {
+    public void rideTick() {
         super.rideTick();
         Entity entity = getVehicle();
 
@@ -1941,8 +1870,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public abstract boolean isFood(ItemStack stack);
 
-    //ToDo: Work on eat logic
-    // ToDo: Eat cooldown?
     @Override
     @SuppressWarnings("ConstantConditions")
     public ItemStack eat(Level level, ItemStack stack) {
