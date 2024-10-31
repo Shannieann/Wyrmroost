@@ -64,6 +64,7 @@ import java.util.function.Predicate;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //2024.08.26
+
 //ToDo:
 // Riding - BFL and aquatics
 // Riding - BFL abilities
@@ -72,10 +73,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //ToDo: Showcases
 // Showcase movement
 // BFL attack - fix look distance + head rot
-
-//ToDo: Age
-// Assets: Child texture + model
-// Implement code to swap from child texture + model to adult texture + model
 
 //ToDo: Taming
 // Taming Logic, confirm no debug code is leftover...
@@ -431,6 +428,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     //      C) Navigation and Control
     // ====================================
 
+/*
     @Override
     public void travel(Vec3 vec3d) {
         if (isInWater()) {
@@ -466,9 +464,11 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             /*
             if (vec3d.z == 0 && getTarget() == null && !isInSittingPose())
                 setDeltaMovement(getDeltaMovement().add(0, -0.003d, 0));
-             */
+
         } else super.travel(vec3d);
     }
+
+           */
 
     @Override
     public float getTravelSpeed() {
@@ -478,13 +478,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         //@formatter:on
     }
 
-
     @Override
-    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event) {
+    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
+    {
         if (backView)
-            event.getCamera().move(ClientEvents.getViewCollisionDistance(-10, this), 1, 0);
+            event.getCamera().move(ClientEvents.getViewCollisionDistance(-0.5, this), 0.75, 0);
         else
-            event.getCamera().move(ClientEvents.getViewCollisionDistance(-5, this), -0.75, 0);
+            event.getCamera().move(ClientEvents.getViewCollisionDistance(-0.5, this), 0.3, 0);
     }
 
     @Override
@@ -542,7 +542,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     @Override
     public Vec3 getPassengerPosOffset(Entity entity, int index) {
-        return new Vec3(0, this.getType().getDimensions().height*1.2D, index == 1 ? -2 : 0);
+        return new Vec3(0, this.getType().getDimensions().height*0.95D, index == 1 ? -2 : 0);
     }
 
     @Override
