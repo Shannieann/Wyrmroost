@@ -65,8 +65,8 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //2024.08.26
 //ToDo: Eggs
-// Builders
-// Egg Entity
+// Test Egg Entities for other dragons
+// Test egg correctly spawns
 
 //ToDo:
 // Riding - BFL and aquatics

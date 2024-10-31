@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDragonBreedGoal;
@@ -46,7 +47,7 @@ import java.util.function.Predicate;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 
-public class EntityRoostStalker extends WRDragonEntity
+public class EntityRoostStalker extends WRDragonEntity implements IBreedable
 {
 
     public static final int ITEM_SLOT = 0;
@@ -97,6 +98,7 @@ public class EntityRoostStalker extends WRDragonEntity
     {
         return getType().getDimensions().scale(getScale());
     }
+
 
     public boolean isScavenging()
     {
@@ -408,6 +410,16 @@ public class EntityRoostStalker extends WRDragonEntity
         targetSelector.addGoal(3, new DefendHomeGoal(this));
         targetSelector.addGoal(4, new HurtByTargetGoal(this).setAlertOthers());
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, true, target -> target instanceof Chicken || target instanceof Rabbit || target instanceof Turtle));
+    }
+
+    @Override
+    public InteractionResult breedLogic(Player tamer, ItemStack stack) {
+        return null;
+    }
+
+    @Override
+    public int hatchTime() {
+        return 300;
     }
 
 
