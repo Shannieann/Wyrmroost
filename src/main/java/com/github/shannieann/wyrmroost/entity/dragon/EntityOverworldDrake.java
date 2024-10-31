@@ -3,6 +3,7 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
@@ -71,7 +72,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 */
 
-public class EntityOverworldDrake extends WRDragonEntity
+public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
 {
     /*
     private static final EntitySerializer<EntityOverworldDrake> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
@@ -608,6 +609,15 @@ public class EntityOverworldDrake extends WRDragonEntity
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Player.class, true, EntitySelector.ENTITY_STILL_ALIVE::test));
     }
 
+    @Override
+    public InteractionResult breedLogic(Player tamer, ItemStack stack) {
+        return null;
+    }
+
+    @Override
+    public int hatchTime() {
+        return 500;
+    }
 
 
     // ====================================
