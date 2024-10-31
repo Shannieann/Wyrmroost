@@ -1661,7 +1661,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return passenger instanceof Player? (Player) passenger : null;
     }
 
-    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
+    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event, Player player)
     {
     }
 
