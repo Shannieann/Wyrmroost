@@ -312,7 +312,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         //Basic Locomotion: Riding Cases
         if (this.canBeControlledByRider() && getDeltaMovement().length() >= 0.1f) {
-            predicateRiding(event);
+            return predicateRiding(event);
         }
 
         //Basic Locomotion: Default cases
