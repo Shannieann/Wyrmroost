@@ -284,29 +284,43 @@ public class ClientEvents {
         }
     }
     public static void onRenderWorldLast(RenderLevelStageEvent event) {
-        if (WRConfig.DEBUG_MODE.get()) {
-            RenderLevelStageEvent.Stage stage = event.getStage();
-            if (stage == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
-                Minecraft mc = Minecraft.getInstance();
-                Camera camera = mc.gameRenderer.getMainCamera();
-                Vec3 viewPosition = camera.getPosition();
-                PoseStack matrix_stack = event.getPoseStack();
-                matrix_stack.pushPose();
-                matrix_stack.translate(-viewPosition.x, -viewPosition.y, -viewPosition.z);
-                List<EntityButterflyLeviathan> entityList = mc.level.getEntitiesOfClass(EntityButterflyLeviathan.class, new AABB(mc.player.getOnPos()).inflate(20));
-                if (!entityList.isEmpty()) {
-                    for (int i = 0; i<entityList.size(); i++) {
-                        List<AABB> attackBoxes = entityList.get(i).generateAttackBoxes();
-                        LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(0), 1,0,0,1);
-                        LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(1), 0,1,0,1);
-                        LevelRenderer.renderLineBox(matrix_stack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(2), 0,0,1,1);
-                    }
-                    matrix_stack.popPose();
-                    mc.renderBuffers().bufferSource().endBatch();
-                }
-            }
+        // Check if debug mode is enabled
+        if (!WRConfig.DEBUG_MODE.get()) return;
+
+        // Check if the current stage is AFTER_SOLID_BLOCKS
+        if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) return;
+
+        Minecraft mc = Minecraft.getInstance();
+        Camera camera = mc.gameRenderer.getMainCamera();
+        Vec3 viewPosition = camera.getPosition();
+        PoseStack matrixStack = event.getPoseStack();
+
+        // Prepare the pose stack for rendering
+        matrixStack.pushPose();
+        matrixStack.translate(-viewPosition.x, -viewPosition.y, -viewPosition.z);
+
+        // Retrieve nearby EntityButterflyLeviathan entities
+        List<EntityButterflyLeviathan> entityList = mc.level.getEntitiesOfClass(EntityButterflyLeviathan.class, new AABB(mc.player.getOnPos()).inflate(20));
+
+        // Render attack boxes for each butterfly leviathan entity
+        if (!entityList.isEmpty()) {
+            renderAttackBoxes(entityList, matrixStack, mc);
         }
+
+        // Clean up the pose stack and buffer
+        matrixStack.popPose();
+        mc.renderBuffers().bufferSource().endBatch();
     }
 
+    private static void renderAttackBoxes(List<EntityButterflyLeviathan> entityList, PoseStack matrixStack, Minecraft mc) {
+        for (EntityButterflyLeviathan entity : entityList) {
+            List<AABB> attackBoxes = entity.generateAttackBoxes();
+
+            // Render each attack box with distinct colors
+            LevelRenderer.renderLineBox(matrixStack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(0), 1, 0, 0, 1); // Red
+            LevelRenderer.renderLineBox(matrixStack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(1), 0, 1, 0, 1); // Green
+            LevelRenderer.renderLineBox(matrixStack, mc.renderBuffers().bufferSource().getBuffer(RenderType.lines()), attackBoxes.get(2), 0, 0, 1, 1); // Blue
+        }
+    }
     public static final KeyMapping KEY_TEST = new KeyMapping("key.test",  GLFW.GLFW_KEY_J, "key.wyrmroost.category");
 }
