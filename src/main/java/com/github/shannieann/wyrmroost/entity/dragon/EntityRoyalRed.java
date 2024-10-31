@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.client.ClientEvents;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
@@ -46,7 +47,7 @@ import java.util.EnumSet;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-public class EntityRoyalRed extends WRDragonEntity {
+public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
     //TODO: Breath + Nether Portals
     //TODO: Further breath optimizations + evaluator
     //TODO: Sleeping logic
@@ -652,6 +653,15 @@ public class EntityRoyalRed extends WRDragonEntity {
                 e -> e.getType() == EntityType.PLAYER || e instanceof Animal || e instanceof AbstractVillager));
     }
 
+    @Override
+    public InteractionResult breedLogic(Player tamer, ItemStack stack) {
+        return null;
+    }
+
+    @Override
+    public int hatchTime() {
+        return 500;
+    }
 
 
     // ====================================
