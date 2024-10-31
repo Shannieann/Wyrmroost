@@ -93,7 +93,6 @@ public class WRDragonEggEntity extends TamableAnimal implements IAnimatable {
             return;
         }
 
-        float hatchTime = getHatchTime();
         if (!level.isClientSide) {
             setHatchTime(getHatchTime()-1);
             if (getHatchTime() <= 0) {
