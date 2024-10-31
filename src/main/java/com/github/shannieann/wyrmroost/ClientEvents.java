@@ -1,7 +1,6 @@
-package com.github.shannieann.wyrmroost.client;
+package com.github.shannieann.wyrmroost;
 
-import com.github.shannieann.wyrmroost.WRConfig;
-import com.github.shannieann.wyrmroost.Wyrmroost;
+import com.github.shannieann.wyrmroost.client.PacketKey;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.*;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.CanariWyvernRenderer;
@@ -49,13 +48,11 @@ import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 
-public class ClientEvents
-{
+public class ClientEvents {
     public static Set<UUID> dragonRiders = new HashSet<>();
     public static boolean keybindFlight = true;
 
-    public static void init()
-    {
+    public static void init() {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 
@@ -70,7 +67,7 @@ public class ClientEvents
         forgeBus.addListener(RenderHelper::renderWorld);
         forgeBus.addListener(RenderHelper::renderOverlay);
         forgeBus.addListener(RenderHelper::renderEntities);
-        forgeBus.addListener(ClientEvents::cameraPerspective);
+        forgeBus.addListener(ClientEvents::setupCameraPerspective);
         forgeBus.addListener(ClientEvents::preLivingRender);
         forgeBus.addListener(ClientEvents::onRenderWorldLast);
         //forgeBus.addListener(ClientEvents::postLivingRender);
@@ -79,10 +76,6 @@ public class ClientEvents
 
         //WRDimensionRenderInfo.init();
     }
-
-    // ====================
-    //       Mod Bus
-    // ====================
 
     private static void clientSetup(final FMLClientSetupEvent event)
     {
@@ -144,9 +137,6 @@ public class ClientEvents
         event.registerEntityRenderer(WREntityTypes.FIRE_BREATH.get(), BreathWeaponRenderer::new);
         event.registerEntityRenderer(WREntityTypes.LIGHTNING_NOVA.get(), RenderLightningNova::new);
     }
-    // =====================
-    //      Forge Bus
-    // =====================
 
     private static void cancelIfRidingDragon(RenderLivingEvent event){
         Entity entity = event.getEntity().getVehicle();
@@ -161,61 +151,54 @@ public class ClientEvents
     }
 
 
-
-
-
-    private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event) {
+    private static void setupCameraPerspective(EntityViewRenderEvent.CameraSetup event) {
         Minecraft mc = getClient();
         Entity entity = mc.player.getVehicle();
+
+        // Return early if the entity is not a WRDragonEntity
         if (!(entity instanceof WRDragonEntity dragon)) return;
+
         CameraType view = mc.options.getCameraType();
-        // Third person camera views
-        if (view != CameraType.FIRST_PERSON)
-            dragon.setThirdPersonMountCameraAngles(view == CameraType.THIRD_PERSON_BACK, event, mc.player);
-        else{ // 1st person
-            // Set camera rotations based on bone values set in dragon renderer
-            UUID uuid = mc.player.getUUID();
-            float xRot = -dragon.cameraRotVector.x();
-            float yRot = dragon.cameraRotVector.y();
-            float zRot = dragon.cameraRotVector.z();
-            //System.out.println(xRot + ", " + yRot +", " + zRot);
-            Vector3d bonePos = dragon.cameraBonePos.get(uuid);
-            if (bonePos != null) {
-                Vec3 vecBonePos = new Vec3(bonePos.x, bonePos.y+dragon.getMountCameraYOffset(), bonePos.z);
-                // Set camera position
-                //Sniffity: Previous method was forcing the camera position to update to the Dragon's position.
-                //This essentially caused the camera to no longer transition smoothly from position A to B if the dragon was moving
-                //It would instead jump from position A to B..
-                //Getting the camera position and adding an offset on top of that is a safer way of doing things.
-                //On vecBonePos, we adjust the Y offset, which will always compensate for the camera being too high up...
-                //Last thing to do is properly moving the camera slightly backwards alongside the player-aligned x-axis
-                //This prevents the camera from being too far "ahead" of the dragon...
-                Vec3 cameraPos = event.getCamera().getPosition();
-                event.getCamera().setPosition(cameraPos.add(vecBonePos)); // Not using move() here because it does weird stuff when you look around... (center of rotation messed up)
-                //event.getCamera().move(-calcCameraDistance(1.0, dragon), 0, 0);
 
-            }
-
-            // Allows for complete alteration of camera rotations for some sick clips
-            event.setPitch(xRot + event.getPitch());
-            event.setYaw(yRot + event.getYaw());
-            event.setRoll(zRot + event.getRoll());
+        // Handle camera setup based on view type
+        if (view != CameraType.FIRST_PERSON) {
+            // Third person camera setup
+            //These methods belong to the dragon class
+            dragon.setupThirdPersonCamera(view == CameraType.THIRD_PERSON_BACK, event, mc.player);
+        } else {
+            // First person camera setup
+            setupFirstPersonCamera(event, dragon, mc.player);
         }
     }
 
-    // TODO maybe change FOV during flight, like if a dragon is diving for example?
-    // Remove the sprint fov change when you're on a dragon, it doesn't do anything in the first place.
-    // Also, this opens the door for us to change fov in certain circumstances (see above)
-    // This would probably be a client config option, along with camera rotations.
-    private static void dragonRidingFOV(EntityViewRenderEvent.FieldOfView event){
-        LocalPlayer player = getClient().player;
-        if (player == null || !(player.getVehicle() instanceof WRDragonEntity)) return;
-        double fov = event.getFOV();
-        event.setFOV(fov);
-    }
+    private static void setupFirstPersonCamera(EntityViewRenderEvent.CameraSetup event, WRDragonEntity dragon, Player player) {
+        UUID playerUUID = player.getUUID();
 
-    public static double getViewCollisionDistance(double cameraDistance, Entity entity, Player player) {
+        // Get camera rotation from dragon's bone values
+        float xRot = -dragon.cameraRotVector.x();
+        float yRot = dragon.cameraRotVector.y();
+        float zRot = dragon.cameraRotVector.z();
+
+        // Get bone position for the player
+        Vector3d bonePos = dragon.cameraBonePos.get(playerUUID);
+        if (bonePos != null) {
+            // Adjust bone position for the camera Y offset
+            Vec3 adjustedBonePos = new Vec3(bonePos.x, bonePos.y + dragon.getMountCameraYOffset(), bonePos.z);
+
+            // Set camera position based on adjusted bone position
+            Vec3 cameraPos = event.getCamera().getPosition();
+            event.getCamera().setPosition(cameraPos.add(adjustedBonePos)); // Avoid using move() for consistent behavior
+        }
+
+        // Set camera rotations based on dragon's bone rotation values
+        event.setPitch(xRot + event.getPitch());
+        event.setYaw(yRot + event.getYaw());
+        event.setRoll(zRot + event.getRoll());
+    }
+    
+    public static double performCollisionCalculations(double cameraDistance, Entity entity, Player player) {
         Camera camera = getClient().gameRenderer.getMainCamera();
+        //The camera must begin at a position behind the player, and then be pushed forward...
         Vec3 cameraPosition = player.position().subtract(0, 0, cameraDistance);
         Vector3f cameraLookVector = camera.getLookVector();
 
@@ -239,11 +222,11 @@ public class ClientEvents
             //Define the endpoint
             Vec3 viewEndPoint = cameraPosition.add(new Vec3(cameraLookVector).scale(cameraDistance));
 
-
+            //Perform the rt, from start to end, checking for collisions
             HitResult rtr = entity.level.clip(new ClipContext(startPoint, viewEndPoint, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
             if (rtr.getType() != HitResult.Type.MISS) {
                 double collisionDistance = rtr.getLocation().distanceTo(cameraPosition);
-                // If hit, update the minimum collision distance
+                // If hit, update the minimum collision distance - this will push the camera forward to ensure no collisions.
                 if (collisionDistance < cameraDistance)
                     cameraDistance = collisionDistance;
             }
@@ -251,7 +234,19 @@ public class ClientEvents
         return cameraDistance;
     }
 
+    
+    // TODO maybe change FOV during flight, like if a dragon is diving for example?
+    // Remove the sprint fov change when you're on a dragon, it doesn't do anything in the first place.
+    // Also, this opens the door for us to change fov in certain circumstances (see above)
+    // This would probably be a client config option, along with camera rotations.
+    private static void dragonRidingFOV(EntityViewRenderEvent.FieldOfView event){
+        LocalPlayer player = getClient().player;
+        if (player == null || !(player.getVehicle() instanceof WRDragonEntity)) return;
+        double fov = event.getFOV();
+        event.setFOV(fov);
+    }
 
+    
     // =====================
 
     // for class loading issues
@@ -289,7 +284,6 @@ public class ClientEvents
         }
     }
     public static void onRenderWorldLast(RenderLevelStageEvent event) {
-
         if (WRConfig.DEBUG_MODE.get()) {
             RenderLevelStageEvent.Stage stage = event.getStage();
             if (stage == RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) {
@@ -315,5 +309,4 @@ public class ClientEvents
     }
 
     public static final KeyMapping KEY_TEST = new KeyMapping("key.test",  GLFW.GLFW_KEY_J, "key.wyrmroost.category");
-
 }
