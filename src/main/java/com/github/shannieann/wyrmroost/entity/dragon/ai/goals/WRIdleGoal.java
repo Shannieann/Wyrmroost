@@ -3,7 +3,6 @@ package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 
 public class WRIdleGoal extends AnimatedGoal{
-    //ToDo: Test transition to base
     private final int idleAnimationVariants;
     private final int idleAnimation1Time;
     private int idleAnimation2Time;
