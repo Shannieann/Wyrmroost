@@ -56,7 +56,6 @@ public class CommonEvents {
         forgeBus.addListener(CommonEvents::loadLoot);
         forgeBus.addListener(CommonEvents::onBiomeLoading);
         forgeBus.addListener(CommonEvents::onEntityMountEvent);
-        forgeBus.addListener(CommonEvents::onPlayerTick);
 
         //forgeBus.addListener(VillagerHelper::addWandererTrades);
         //forgeBus.addListener(CommonEvents::preCropGrowth);
@@ -167,7 +166,9 @@ public class CommonEvents {
             }
         }
     }
+}
 
+    /*
     public static void onPlayerTick(LivingEvent.LivingUpdateEvent event) {
         if (event.getEntityLiving() instanceof Player) {
             Player player = (Player) event.getEntityLiving();
@@ -184,7 +185,5 @@ public class CommonEvents {
                 player.yRot = yaw;
             }
         }
-    }
 
-
-}
+     */
