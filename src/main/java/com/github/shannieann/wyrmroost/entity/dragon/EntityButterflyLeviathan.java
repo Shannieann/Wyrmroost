@@ -70,8 +70,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Riding - BFL abilities
 // Riding others
 
-//ToDo: Showcases
-// Showcase movement
+//ToDo:
 // BFL attack - fix look distance + head rot
 
 //ToDo: Taming
