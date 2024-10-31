@@ -1,6 +1,5 @@
 package com.github.shannieann.wyrmroost;
 
-import com.github.shannieann.wyrmroost.client.ClientEvents;
 import com.github.shannieann.wyrmroost.client.PacketKey;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.network.packets.*;

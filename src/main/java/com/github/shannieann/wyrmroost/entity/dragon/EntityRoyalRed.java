@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.WRConfig;
-import com.github.shannieann.wyrmroost.client.ClientEvents;
+import com.github.shannieann.wyrmroost.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
@@ -422,11 +422,11 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
     }
 
     @Override
-    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event, Player player) {
+    public void setupThirdPersonCamera(boolean backView, EntityViewRenderEvent.CameraSetup event, Player player) {
         if (backView)
-            event.getCamera().move(ClientEvents.getViewCollisionDistance(-8.5, this, player), 0, 0);
+            event.getCamera().move(ClientEvents.performCollisionCalculations(-8.5, this, player), 0, 0);
         //else
-            //event.getCamera().move(ClientEvents.getViewCollisionDistance(-5, this), -0.75, 0);
+            //event.getCamera().move(ClientEvents.performCollisionCalculations(-5, this), -0.75, 0);
     }
 
     @Override
