@@ -28,10 +28,8 @@ import java.util.function.Supplier;
 
 //import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
 
-public class WRItems
-{
-    static final CreativeModeTab MAIN_ITEM_GROUP = new CreativeModeTab("wyrmroost")
-    {
+public class WRItems {
+    static final CreativeModeTab MAIN_ITEM_GROUP = new CreativeModeTab("wyrmroost") {
         @Override
         public ItemStack makeIcon()
         {
@@ -183,7 +181,7 @@ public class WRItems
                             case "wyrmroost:royal_red":               return 2.0F;
                             case "wyrmroost:canari_wyvern":           return 3.0F;
                             case "wyrmroost:overworld_drake":         return 4.0F;
-                            case "wyrmroost:roost_stalker":            return 5.0F;
+                            case "wyrmroost:roost_stalker":           return 5.0F;
                             case "wyrmroost:silver_glider":           return 6.0F;
                             case "wyrmroost:alpine":                  return 7.0F;
                             default:                                  return 0.0F;

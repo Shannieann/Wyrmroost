@@ -64,10 +64,6 @@ import java.util.function.Predicate;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 //2024.08.26
-//ToDo: Eggs
-// Test Egg Entities for other dragons
-// Test egg correctly spawns
-
 //ToDo:
 // Riding - BFL and aquatics
 // Riding - BFL abilities
@@ -759,9 +755,10 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     }
 
+    //ToDo: ConfigHatchTimes
     @Override
     public int hatchTime() {
-        return 300;
+        return 100;
     }
 
     public class BFLAttackGoal extends AnimatedGoal {

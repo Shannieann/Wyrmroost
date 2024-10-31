@@ -7,6 +7,7 @@ import com.github.shannieann.wyrmroost.entity.dragon_egg.WRDragonEggEntity;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -143,11 +144,13 @@ public class DragonEggItem extends Item {
             // Add default item
             super.fillItemCategory(tab, items);
             // Add items with custom NBT data
+            int i = 0;
             for (String nbtValue : getCustomNBTValues()) {
                 ItemStack stack = new ItemStack(this);
                 CompoundTag nbt = new CompoundTag();
                 nbt.putString("contained_dragon", nbtValue);
-                nbt.putInt("hatch_time", 3600);
+                nbt.putInt("hatch_time", getHatchTimes().get(i));
+                i++;
                 stack.setTag(nbt);
                 items.add(stack);
             }
@@ -155,6 +158,26 @@ public class DragonEggItem extends Item {
     }
 
     private List<String> getCustomNBTValues() {
-        return Arrays.asList("wyrmroost:butterfly_leviathan", "wyrmroost:royal_red", "wyrmroost:canari_wyvern","wyrmroost:overworld_drake","wyrmroost:roost_stalker","wyrmroost:silver_glider","wyrmroost:alpine");
+        return Arrays.asList(
+                "wyrmroost:butterfly_leviathan",
+                "wyrmroost:royal_red",
+                "wyrmroost:canari_wyvern",
+                "wyrmroost:overworld_drake",
+                "wyrmroost:roost_stalker",
+                "wyrmroost:silver_glider",
+                "wyrmroost:alpine");
+    }
+
+    //ToDo: ConfigHatchTimes
+    private List<Integer> getHatchTimes() {
+        return Arrays.asList(
+                100,
+                100,
+                100,
+                100,
+                100,
+                100,
+                100
+        );
     }
 }

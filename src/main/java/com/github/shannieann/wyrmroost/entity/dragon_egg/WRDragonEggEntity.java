@@ -93,6 +93,7 @@ public class WRDragonEggEntity extends TamableAnimal implements IAnimatable {
             return;
         }
 
+        float hatchTime = getHatchTime();
         if (!level.isClientSide) {
             setHatchTime(getHatchTime()-1);
             if (getHatchTime() <= 0) {
@@ -114,6 +115,7 @@ public class WRDragonEggEntity extends TamableAnimal implements IAnimatable {
             }
             newDragon.moveTo(getX(), getY(), getZ(), 0, 0);
             newDragon.setAge(0);
+            newDragon.setAgeProgress(0);
             newDragon.finalizeSpawn((ServerLevelAccessor) level, level.getCurrentDifficultyAt(blockPosition()), MobSpawnType.BREEDING, null, null);
             level.addFreshEntity(newDragon);
         }
