@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.client.particle;
 
-import com.github.shannieann.wyrmroost.client.ClientEvents;
+import com.github.shannieann.wyrmroost.ClientEvents;
 import com.github.shannieann.wyrmroost.client.particle.data.ColoredParticleData;
 import com.github.shannieann.wyrmroost.registry.WRParticles;
 import net.minecraft.client.multiplayer.ClientLevel;

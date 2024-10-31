@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon.layer;
 
-import com.github.shannieann.wyrmroost.client.ClientEvents;
+import com.github.shannieann.wyrmroost.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.*;

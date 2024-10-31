@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.client.screen;
 
-import com.github.shannieann.wyrmroost.client.ClientEvents;
+import com.github.shannieann.wyrmroost.ClientEvents;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.TranslatableComponent;
 
