@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
@@ -31,7 +32,7 @@ import java.util.EnumSet;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 
-public class EntityCanariWyvern extends WRDragonEntity
+public class EntityCanariWyvern extends WRDragonEntity implements IBreedable
 {
     /*
     private static final EntitySerializer<EntityCanariWyvern> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
@@ -253,6 +254,16 @@ public class EntityCanariWyvern extends WRDragonEntity
                 .add(MOVEMENT_SPEED, 0.2)
                 .add(FLYING_SPEED, 0.1)
                 .add(ATTACK_DAMAGE, 3);
+    }
+
+    @Override
+    public InteractionResult breedLogic(Player tamer, ItemStack stack) {
+        return null;
+    }
+
+    @Override
+    public int hatchTime() {
+        return 300;
     }
 
 
