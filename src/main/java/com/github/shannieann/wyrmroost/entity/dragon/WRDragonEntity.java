@@ -409,7 +409,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         nbt.putInt("Breeding Cooldown",getBreedingCooldown());
         nbt.putInt("Breeding Count",getBreedingCount());
 
-
         nbt.putFloat("Age Progress",getAgeProgress());
 
         /*
@@ -594,7 +593,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      * 1 --> ADULT
      */
 
-    //ToDo: Cleanup old, commented code, remove
     public boolean isHatchling() {
         return getAgeProgress() < 0.5f;
     }
@@ -1196,52 +1194,56 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     //Handles travel methods for the DragonEntity. If needed, can be overriden in specific subclasses.
     @Override
-    public void travel(Vec3 vec3d){
-
+    public void travel(Vec3 vec3d) {
+        // Check if the entity is a vehicle and can be controlled by the rider
         if (this.isVehicle() && this.canBeControlledByRider()) {
-            if (!this.isAlive()){
-                return;
-            }
-            LivingEntity rider = (LivingEntity)this.getControllingPassenger();
-            //Store previous yaw value
+            // Return early if the entity is not alive
+            if (!this.isAlive()) return;
+
+            LivingEntity rider = (LivingEntity) this.getControllingPassenger();
+
+            // Store previous yaw value
             this.yRotO = this.getYRot();
-            //While being ridden, entity's pitch = 0.5 of rider's pitch
-            //ToDo: Is this needed? Can't we just set the entity's pitch to the rider's pitch?
+
+            // While being ridden, entity's pitch = 0.5 of rider's pitch
+            // ToDo: Is this needed? Can't we just set the entity's pitch to the rider's pitch?
             this.setXRot(rider.getXRot() * 0.5F);
-            //While being ridden, entity's yaw = rider's yaw
+
+            // While being ridden, entity's yaw = rider's yaw
             this.setYRot(rider.getYRot());
 
-            //Client (rendering): Align body to entity direction
+            // Client (rendering): Align body to entity direction
             this.yBodyRot = this.getYRot();
-            //Client (rendering): Align head to body
+
+            // Client (rendering): Align head to body
             this.yHeadRot = this.yBodyRot;
-            //This should allow for strafing
+
+            // This should allow for strafing
             float sideMotion = rider.xxa * 0.5F;
-            //This allows for moving forward
+
+            // This allows for moving forward
             float forwardMotion = rider.zza;
 
             if (forwardMotion < 0.0F) { // Huh? Ig I'll keep it here because it works
-                forwardMotion *= 0.25F; // Ohhh its like if you're going backward you're slower I guess.
+                forwardMotion *= 0.25F; // Ohhh it's like if you're going backward you're slower I guess.
             }
 
-            //ToDo: What is this flying speed case?
+            // ToDo: What is this flying speed case?
             this.flyingSpeed = this.getSpeed() * 0.1F;
 
+            // Handle movement based on navigator type
             if (this.isControlledByLocalInstance()) {
                 float speed = getTravelSpeed();
                 if (isUsingFlyingNavigator()) {
                     handleFreeFlyingRiding(speed, rider); // Free Flying (Diving, 180s, etc.)
-
-                    //else handleCombatFlyingMovement(speed, livingentity); // Combat flying (More controlled flight)
-                }
-                else if (isUsingSwimmingNavigator()) {
-                    handleWaterRiding(speed, sideMotion, forwardMotion,vec3d,rider);
-                }
-                else {
+                    // else handleCombatFlyingMovement(speed, livingentity); // Combat flying (More controlled flight)
+                } else if (isUsingSwimmingNavigator()) {
+                    handleWaterRiding(speed, sideMotion, forwardMotion, vec3d, rider);
+                } else {
                     handleGroundRiding(speed, sideMotion, forwardMotion, vec3d, rider);
                 }
             }
-            //ToDo when do we reach this?
+            // ToDo: When do we reach this?
             else if (rider instanceof Player) {
                 this.setDeltaMovement(Vec3.ZERO);
             }
@@ -1249,10 +1251,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             this.calculateEntityAnimation(this, isUsingFlyingNavigator());
             this.tryCheckInsideBlocks();
         } else {
+            // For non-vehicle entities, use default travel behavior
             this.flyingSpeed = getTravelSpeed();
             super.travel(vec3d);
         }
     }
+
 
     // Separated these methods to make it look cleaner. Also allows for subclasses to possibly override them if need be.
     protected void handleFreeFlyingRiding(float speed, LivingEntity livingentity) {
@@ -1484,13 +1488,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    //ToDo: How does this interact with travel?
     public void rideTick() {
+        //Method only gets called when the dragon is riding something; not when something is riding the dragon
         super.rideTick();
         Entity entity = getVehicle();
 
-        if (entity == null || !entity.isAlive())
-        {
+        if (entity == null || !entity.isAlive()) {
             stopRiding();
             return;
         }
@@ -1498,12 +1501,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         setDeltaMovement(Vec3.ZERO);
         clearAI();
 
-        if (entity instanceof Player player)
-        {
-
+        if (entity instanceof Player player) {
             int index = player.getPassengers().indexOf(this);
-            if ((player.isShiftKeyDown() && !player.getAbilities().flying) || isInWater() || index > 2)
-            {
+            if ((player.isShiftKeyDown() && !player.getAbilities().flying) || isInWater() || index > 2) {
                 stopRiding();
                 setOrderedToSit(false);
                 return;
@@ -1534,8 +1534,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @SuppressWarnings("ConstantConditions")
-    public Vec3 getRidingPosOffset(int passengerIndex)
-    {
+    public Vec3 getRidingPosOffset(int passengerIndex) {
         double x = getBbWidth() * 0.5d + getVehicle().getBbWidth() * 0.5d;
         switch (passengerIndex)
         {
@@ -1548,8 +1547,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    public void positionRider(Entity passenger)
-    {
+    public void positionRider(Entity passenger) {
         Vec3 offset = getPassengerPosOffset(passenger, getPassengers().indexOf(passenger));
         //We have an offset, for the passenger, from the entity it is riding...
         //i.e: A vector that points from the entity to the passenger...
@@ -1560,31 +1558,24 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         passenger.setPos(pos.x, pos.y, pos.z);
     }
 
-    public Vec3 getPassengerPosOffset(Entity entity, int index)
-    {
+    public Vec3 getPassengerPosOffset(Entity entity, int index) {
         //Note: Method will, probably, be Overriden in child classes
         return new Vec3(0, getPassengersRidingOffset(), 0);
     }
 
     @Override
-    protected void addPassenger(Entity passenger)
-    {
+    protected void addPassenger(Entity passenger) {
         super.addPassenger(passenger);
-        if (getControllingPassenger() == passenger && isOwnedBy((LivingEntity) passenger))
-        {
+        if (getControllingPassenger() == passenger && isOwnedBy((LivingEntity) passenger)) {
             clearAI();
             setOrderedToSit(false);
             clearHome();
             if (isLeashed()) dropLeash(true, true);
         }
     }
-    /**
-     * Get the player potentially controlling this dragon
-     * {@code null} if its not a player or no controller at all.
-     */
+
     @Nullable
-    public Player getControllingPlayer()
-    {
+    public Player getControllingPlayer() {
         Entity passenger = getControllingPassenger();
         return passenger instanceof Player? (Player) passenger : null;
     }
@@ -1600,36 +1591,32 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      * @param mods    the modifiers that is pressed when this key was pressed (e.g. shift was held, ctrl etc {@link org.lwjgl.glfw.GLFW})
      * @param pressed true if pressed, false if released. pretty straight forward idk why ur fucking asking.
      */
-    public void recievePassengerKeybind(int key, int mods, boolean pressed)
-    {
+    public void recievePassengerKeybind(int key, int mods, boolean pressed) {
     }
 
     @Override
-    public boolean canBeRiddenInWater(Entity rider)
-    {
+    public boolean canBeRiddenInWater(Entity rider) {
         return false;
     }
 
     //Do not perform AI actions while entity is being ridden
     // Do *NOT* check for Sleeping, as this is now a Goal and entity's AI must still work while asleep
     @Override
-    public boolean isImmobile()
-    {
+    public boolean isImmobile() {
         return super.isImmobile() || isRiding();
     }
 
 
     @Override
-    public boolean canBeControlledByRider() // Only OWNERS can control their pets
-    {
+    // Only OWNERS can control their pets
+    public boolean canBeControlledByRider() {
         Entity entity = getControllingPassenger();
         return entity instanceof Player && isOwnedBy(((Player) entity));
     }
 
     @Nullable
     @Override
-    public Entity getControllingPassenger()
-    {
+    public Entity getControllingPassenger() {
         List<Entity> passengers = getPassengers();
         return passengers.isEmpty()? null : passengers.get(0);
     }
@@ -1638,6 +1625,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     protected boolean canAddPassenger(Entity passenger) {
         return isTame() && speciesCanBeRidden() && getPassengers().size() < getMaxPassengers();
     }
+
     // ====================================
     //      D) Taming
     // ====================================
