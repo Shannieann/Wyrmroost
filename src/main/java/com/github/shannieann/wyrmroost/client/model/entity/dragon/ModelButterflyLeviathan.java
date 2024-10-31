@@ -106,12 +106,22 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<EntityButterflyLev
             int variant = entityIn.getVariant();
             String variantString;
             if (entityIn.canPerformLightningAttack()) {
-                switch (variant) {
-                    case -1 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_special_activated.png";
-                    case 0 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base0_activated.png";
-                    case 1 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base1_activated.png";
-                    default -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base0_activated.png";
+                if (entityIn.isHatchling()){
+                    switch (variant) {
+                        case -1 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_special_baby.png";
+                        case 0 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base_baby.png";
+                        case 1 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base_baby.png";
+                        default -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base0_activated.png";
+                    }
+                } else {
+                    switch (variant) {
+                        case -1 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_special_activated.png";
+                        case 0 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base0_activated.png";
+                        case 1 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base1_activated.png";
+                        default -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base0_activated.png";
+                    }
                 }
+
                 return new ResourceLocation(Wyrmroost.MOD_ID,variantString);
             }
             return BLANK_TEXTURE;

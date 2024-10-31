@@ -412,8 +412,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     @SuppressWarnings({"unchecked", "ConstantConditions"})
-    public void readAdditionalSaveData(CompoundTag nbt)
-    {
+    public void readAdditionalSaveData(CompoundTag nbt) {
         //ToDo: Read missing SaveData
 
         super.readAdditionalSaveData(nbt);
@@ -460,14 +459,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setVariant(determineVariant());
         }
 
-
         if (reason == MobSpawnType.SPAWN_EGG || reason == MobSpawnType.COMMAND) {
             setAgeProgress(1);
-        } else {
-            setAgeProgress(1);
         }
-
-
 
         return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
     }
@@ -593,18 +587,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      */
 
     //ToDo: Cleanup old, commented code, remove
-    public boolean isHatchling()
-    {
+    public boolean isHatchling() {
         return getAgeProgress() < 0.5f;
     }
 
-    public boolean isJuvenile()
-    {
+    public boolean isJuvenile() {
         return getAgeProgress() > 0.5f;
     }
 
-    public boolean isAdult()
-    {
+    public boolean isAdult() {
         return getAgeProgress() >= 1f;
     }
 
@@ -632,8 +623,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //Overrides method in living entity
     //This allows for WRDragonEntity's dimensions to be correctly refreshed when refreshDimensions is called
     @Override
-    public float getScale()
-    {
+    public float getScale() {
         return initialBabyScale() + ((1 - initialBabyScale()) * getAgeProgress());
     }
 
