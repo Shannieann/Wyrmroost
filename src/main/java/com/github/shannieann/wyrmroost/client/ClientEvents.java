@@ -164,14 +164,15 @@ public class ClientEvents
 
 
 
-    private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event) {
+    private static void cameraPerspective(EntityViewRenderEvent.CameraSetup event)
+    {
         Minecraft mc = getClient();
         Entity entity = mc.player.getVehicle();
         if (!(entity instanceof WRDragonEntity dragon)) return;
         CameraType view = mc.options.getCameraType();
         // Third person camera views
         if (view != CameraType.FIRST_PERSON)
-            dragon.setThirdPersonMountCameraAngles(view == CameraType.THIRD_PERSON_BACK, event, mc.player);
+            dragon.setThirdPersonMountCameraAngles(view == CameraType.THIRD_PERSON_BACK, event);
         else{ // 1st person
             // Set camera rotations based on bone values set in dragon renderer
             UUID uuid = mc.player.getUUID();
@@ -214,9 +215,9 @@ public class ClientEvents
         event.setFOV(fov);
     }
 
-    public static double getViewCollisionDistance(double cameraDistance, Entity entity, Player player) {
+    public static double getViewCollisionDistance(double minimumCollisionDistance, Entity entity) {
         Camera camera = getClient().gameRenderer.getMainCamera();
-        Vec3 cameraPosition = player.position().subtract(0, 0, cameraDistance);
+        Vec3 cameraPosition = camera.getPosition();
         Vector3f cameraLookVector = camera.getLookVector();
 
         // Array of Vectors defining a Cube
@@ -234,21 +235,21 @@ public class ClientEvents
 
         // Checks a cube of positions around the camera position
         for (Vec3 offset : offsets) {
-            //Offset the start position to set the cube
-            Vec3 startPoint = cameraPosition.add(offset.x, offset.y, offset.z);
-            //Define the endpoint
-            Vec3 viewEndPoint = cameraPosition.add(new Vec3(cameraLookVector).scale(cameraDistance));
-
-
-            HitResult rtr = entity.level.clip(new ClipContext(startPoint, viewEndPoint, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
+            Vec3 vector3d = cameraPosition.add(offset.x, offset.y, offset.z);
+            Vec3 vector3d1 = new Vec3(
+                    cameraPosition.x - cameraLookVector.x() * minimumCollisionDistance + offset.x,
+                    cameraPosition.y - cameraLookVector.y() * minimumCollisionDistance + offset.y,
+                    cameraPosition.z - cameraLookVector.z() * minimumCollisionDistance + offset.z
+            );
+            HitResult rtr = entity.level.clip(new ClipContext(vector3d, vector3d1, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
             if (rtr.getType() != HitResult.Type.MISS) {
-                double collisionDistance = rtr.getLocation().distanceTo(cameraPosition);
+                double distance = rtr.getLocation().distanceTo(cameraPosition);
                 // If hit, update the minimum collision distance
-                if (collisionDistance < cameraDistance)
-                    cameraDistance = collisionDistance;
+                if (distance < minimumCollisionDistance)
+                    minimumCollisionDistance = distance;
             }
         }
-        return cameraDistance;
+        return minimumCollisionDistance;
     }
 
 

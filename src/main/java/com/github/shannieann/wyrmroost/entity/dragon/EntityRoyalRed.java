@@ -422,9 +422,9 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
     }
 
     @Override
-    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event, Player player) {
+    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event) {
         if (backView)
-            event.getCamera().move(ClientEvents.getViewCollisionDistance(-8.5, this, player), 0, 0);
+            event.getCamera().move(ClientEvents.getViewCollisionDistance(-8.5, this), 0, 0);
         //else
             //event.getCamera().move(ClientEvents.getViewCollisionDistance(-5, this), -0.75, 0);
     }
