@@ -6,6 +6,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon_egg.WRDragonEggEntity;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRItems;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
@@ -75,9 +76,6 @@ public class DragonEggItem extends Item {
         }
 
         CompoundTag tag = stack.getTag();
-
-
-
         //Creates a WRDragonEggEntity with a previously defined containedDragon and hatchTime
         if (tag != null && tag.contains("contained_dragon") && tag.contains("hatch_time")) {
             Optional<EntityType<?>> optionalDragon = EntityType.byString(tag.getString("contained_dragon"));
@@ -89,6 +87,10 @@ public class DragonEggItem extends Item {
                 WRDragonEggEntity dragonEggEntity = new WRDragonEggEntity(level, ((WRDragonEntity) entity),hatchTime);
                 dragonEggEntity.setContainedDragon(EntityType.getKey(entity.getType()).toString());
                 dragonEggEntity.setHatchTime(hatchTime);
+                float angle = WRMathsUtility.generateRandomDegAngle();
+                dragonEggEntity.setYBodyRot(angle);
+                dragonEggEntity.setYRot(angle);
+                dragonEggEntity.setYHeadRot(angle);
                 dragonEggEntity.absMoveTo(pos.getX(), pos.getY() + 0.5d, pos.getZ());
                 if (!level.isClientSide) {
                     level.addFreshEntity(dragonEggEntity);

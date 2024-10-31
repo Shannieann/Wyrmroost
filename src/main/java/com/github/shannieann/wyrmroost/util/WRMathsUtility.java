@@ -30,8 +30,7 @@ public final class WRMathsUtility
     /**
      * Returns a new pseudo random double value constrained to the values of {@code (-1.0d)} and {@code (1.0d)}
      */
-    public static double nextDouble(Random rand)
-    {
+    public static double nextDouble(Random rand) {
         return 2 * rand.nextDouble() - 1;
     }
 
@@ -39,10 +38,17 @@ public final class WRMathsUtility
      * Returns a new pseudo random inteeger value constrained to the values of the negation of {@code bounds}
      * and postive {@code bounds}
      */
-    public static int nextInt(Random rand, int bounds)
-    {
+    public static int nextInt(Random rand, int bounds) {
         bounds = bounds * 2 - 1;
         return rand.nextInt(bounds) - (bounds / 2);
+    }
+
+    /**
+     * Returns a new pseudo random degree angle value constrained to the values of the negation of -180 and + 180
+     */
+    public static int generateRandomDegAngle() {
+        Random random = new Random();
+        return random.nextInt(361) - 180; // Generates a number between -180 and +180
     }
 
     /**
