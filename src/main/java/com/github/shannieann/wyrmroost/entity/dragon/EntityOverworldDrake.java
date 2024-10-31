@@ -111,9 +111,8 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
     //      Animation Logic
     // =====================
 
-    // TODO remove bc its temporary! Just so the animations look cool in my riding tests for now.
     @Override
-    public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
+    public <E extends IAnimatable> PlayState predicateRiding(AnimationEvent<E> event) {
         if (getDeltaMovement().length() >= 0.1f){
             if (getDeltaMovement().y <= -0.1f) return PlayState.CONTINUE; // If we're falling we want to just continue what animation we were playing before (removes stuttering when going down hills)
             if (riderIsSprinting || getDeltaMovement().length() >= 0.25f) {
@@ -355,9 +354,9 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
     public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
         if (backView)
-            event.getCamera().move(ClientEvents.getViewCollision(-0.5, this), 0.75, 0);
+            event.getCamera().move(ClientEvents.getViewCollisionDistance(-0.5, this), 0.75, 0);
         else
-            event.getCamera().move(ClientEvents.getViewCollision(-3, this), 0.3, 0);
+            event.getCamera().move(ClientEvents.getViewCollisionDistance(-0.5, this), 0.3, 0);
     }
 
     @Override

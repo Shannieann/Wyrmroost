@@ -16,7 +16,6 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimming
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingMoveControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingNavigator;
 import com.github.shannieann.wyrmroost.item.DragonArmorItem;
-import com.github.shannieann.wyrmroost.item.DragonEggItem;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.registry.WRKeybind;
@@ -77,6 +76,7 @@ import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.event.world.NoteBlockEvent;
 import net.minecraftforge.items.CapabilityItemHandler;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib3.core.IAnimatable;
@@ -172,22 +172,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public static final EntityDataAccessor<Integer> BREEDING_COUNT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
-
-
-    //TODO: What is this?
-    private static final UUID SCALE_MOD_UUID = UUID.fromString("81a0addd-edad-47f1-9aa7-4d76774e055a");
-
-
-
-    //TODO: The value below could also be set in an abstract method
-    //ToDo: Return to regular value of 1200
-    private static final int AGE_UPDATE_INTERVAL = 10;
-
-
+    private static final int AGE_UPDATE_INTERVAL = 1200;
 
     protected static int IDLE_ANIMATION_VARIANTS;
-    protected static int ATTACK_ANIMATION_VARIANTS;
 
+    protected static int ATTACK_ANIMATION_VARIANTS;
 
     //ToDo: SittING / SleepING animations are not implemented for BFL. Once we implement for land creatures, they should not interfere with sleep goal.
     protected static int SITTING_ANIMATION_TIME;
@@ -321,6 +310,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return PlayState.CONTINUE;
         }
 
+        //Basic Locomotion: Riding Cases
+        if (this.canBeControlledByRider() && getDeltaMovement().length() >= 0.1f) {
+            predicateRiding(event);
+        }
+
         //Basic Locomotion: Default cases
         //If the entity is swimming, and it is not doing anything else that warrants an animation, it will just swim in place.
         if (!this.getSleeping()) {
@@ -345,7 +339,22 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return PlayState.CONTINUE;
     }
 
-    public abstract int idleAnimationVariants();
+
+    //Riding Predicate>
+    //Can be overriden in subclasses to generate custom locomotion animations
+    public <E extends IAnimatable> PlayState predicateRiding(AnimationEvent<E> event) {
+        NavigationType navigationType = this.getNavigationType();
+        switch (navigationType) {
+            case GROUND -> event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
+            case FLYING -> event.getController().setAnimation(new AnimationBuilder().addAnimation("fly_fast", ILoopType.EDefaultLoopTypes.LOOP));
+            case SWIMMING-> event.getController().setAnimation(new AnimationBuilder().addAnimation("swim_fast", ILoopType.EDefaultLoopTypes.LOOP));
+        }
+        return PlayState.CONTINUE;
+    }
+
+
+
+        public abstract int idleAnimationVariants();
 
     // ====================================
     //      A) Entity Data
@@ -1179,22 +1188,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    protected BodyRotationControl createBodyControl()
-    {
+    protected BodyRotationControl createBodyControl() {
         return new WRBodyControl(this);
     }
-
-
 
     private float sinceLastUpdate = 1.0f;
     private float bonusAcc = 0.0f;
 
-
-
-
     //Handles travel methods for the DragonEntity. If needed, can be overriden in specific subclasses.
     @Override
     public void travel(Vec3 vec3d){
+
         if (this.isVehicle() && this.canBeControlledByRider()) {
             if (!this.isAlive()){
                 return;
@@ -1205,6 +1209,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             //While being ridden, entity's pitch = 0.5 of rider's pitch
             //ToDo: Is this needed? Can't we just set the entity's pitch to the rider's pitch?
             this.setXRot(rider.getXRot() * 0.5F);
+            //While being ridden, entity's yaw = rider's yaw
+            this.setYRot(rider.getYRot());
 
             //Client (rendering): Align body to entity direction
             this.yBodyRot = this.getYRot();
@@ -1224,19 +1230,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
             if (this.isControlledByLocalInstance()) {
                 float speed = getTravelSpeed();
-                if (isUsingFlyingNavigator())
-                {
+                if (isUsingFlyingNavigator()) {
                     handleFreeFlyingRiding(speed, rider); // Free Flying (Diving, 180s, etc.)
 
                     //else handleCombatFlyingMovement(speed, livingentity); // Combat flying (More controlled flight)
                 }
-                else if (isUsingSwimmingNavigator())
-                {
-                    //System.out.println("hello!!");
-                    handleWaterRiding(speed, vec3d, rider);
+                else if (isUsingSwimmingNavigator()) {
+                    handleWaterRiding(speed, sideMotion, forwardMotion,vec3d,rider);
                 }
-                else
-                {
+                else {
                     handleGroundRiding(speed, sideMotion, forwardMotion, vec3d, rider);
                 }
             }
@@ -1302,8 +1304,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return getEntityData().get(DRAGON_X_ROTATION);
     }
 
-
-
     protected void handleGroundRiding(float speed, float groundX, float groundZ, Vec3 vec3d, LivingEntity livingentity) {
         // normal movement
         if (ClientEvents.getClient().options.keyJump.isDown() && getBlockStateOn().getMaterial().isSolid() && speciesCanFly()) {
@@ -1313,24 +1313,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setNavigator(NavigationType.FLYING);
         }
         else {
-            this.setSpeed(speed);
+            setSpeed(speed);
             super.travel(new Vec3(groundX, vec3d.y, groundZ));
         }
     }
 
 
     // Will be used for BFL, etc.
-    protected void handleWaterRiding(float speed, Vec3 vec3d,  LivingEntity livingentity){
-        double moveY = vec3d.y;
-
-        yHeadRot = livingentity.yHeadRot;
-
-        double lookY = livingentity.getLookAngle().y;
-        if (livingentity.zza != 0 && (isUnderWater() || lookY < 0)) moveY = lookY;
-
+    protected void handleWaterRiding(float speed, float groundX, float groundZ, Vec3 vec3d,  LivingEntity livingentity){
         setSpeed(speed);
-        vec3d = new Vec3(livingentity.xxa, moveY, livingentity.zza);
-        super.travel(vec3d);
+        super.travel(new Vec3(groundX, vec3d.y, groundZ));
     }
 
     /**
@@ -1715,8 +1707,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    protected boolean canAddPassenger(Entity entityIn)
-    {
+    protected boolean canAddPassenger(Entity passenger) {
         return isTame() && speciesCanBeRidden() && getPassengers().size() < getMaxPassengers();
     }
     // ====================================
@@ -1811,7 +1802,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         if (this instanceof IBreedable && getBreedingCooldown() <= 0 && getBreedingCount() < getBreedingLimit()) {
             IBreedable thisIBreedable = (IBreedable) this;
-            return thisIBreedable.breedLogic(player,stack);
+            if(thisIBreedable.breedLogic(player,stack) == InteractionResult.SUCCESS){
+                return thisIBreedable.breedLogic(player,stack);
+            }
         }
 
         if (isOwnedBy(player) && isFood(stack)) {

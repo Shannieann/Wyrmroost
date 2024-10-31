@@ -237,7 +237,7 @@ public class ClientEvents
         for (Vec3 offset : offsets) {
             Vec3 vector3d = cameraPosition.add(offset.x, offset.y, offset.z);
             Vec3 vector3d1 = new Vec3(
-                    cameraPosition.x - cameraLookVector.x() * minimumCollisionDistance + offset.x +offset.z,
+                    cameraPosition.x - cameraLookVector.x() * minimumCollisionDistance + offset.x,
                     cameraPosition.y - cameraLookVector.y() * minimumCollisionDistance + offset.y,
                     cameraPosition.z - cameraLookVector.z() * minimumCollisionDistance + offset.z
             );
@@ -279,34 +279,6 @@ public class ClientEvents
     public static float getPartialTicks()
     {
         return getClient().getFrameTime();
-    }
-
-
-    public static double getViewCollision(double wanted, Entity entity)
-    {
-
-        Camera info = getClient().gameRenderer.getMainCamera();
-        Vec3 position = info.getPosition();
-        Vector3f forwards = info.getLookVector();
-        for (int i = 0; i < 8; ++i)
-        {
-            float f = (float) ((i & 1) * 2 - 1);
-            float f1 = (float) ((i >> 1 & 1) * 2 - 1);
-            float f2 = (float) ((i >> 2 & 1) * 2 - 1);
-            f = f * 0.1F;
-            f1 = f1 * 0.1F;
-            f2 = f2 * 0.1F;
-            Vec3 vector3d = position.add(f, f1, f2);
-            Vec3 vector3d1 = new Vec3(position.x - forwards.x() * wanted + f + f2, position.y - forwards.y() * wanted + f1, position.z - forwards.z() * wanted + f2);
-            HitResult rtr = entity.level.clip(new ClipContext(vector3d, vector3d1, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
-            if (rtr.getType() != HitResult.Type.MISS)
-            {
-                double distance = rtr.getLocation().distanceTo(position);
-                if (distance < wanted) wanted = distance;
-            }
-        }
-
-        return wanted;
     }
 
     public static void onKeyInput(TickEvent.ClientTickEvent event) {
