@@ -98,12 +98,6 @@ public class CommonEvents {
     //     event.registerLayerDefinition(RoostStalkerModel.LAYER_LOCATION, RoostStalkerModel::createBodyLayer);
     // }
 
-    /*@Deprecated  todo: remove in 1.17
-   public static void remap(RegistryEvent.MissingMappings<Item> event) {
-        for (RegistryEvent.MissingMappings.Mapping<Item> mapping : event.getMappings(Wyrmroost.MOD_ID)) {
-            if (mapping.key.equals(Wyrmroost.id("tarragon_tome"))) mapping.remap(WRItems.TARRAGON_TOME.get());
-        }
-    }*/
 
     // =====================
     //      Forge Bus
