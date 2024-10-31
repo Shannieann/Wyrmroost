@@ -1,6 +1,7 @@
 
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDragonBreedGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRAvoidEntityGoal;
@@ -41,7 +42,7 @@ import java.util.Random;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 
-public class EntitySilverGlider extends WRDragonEntity
+public class EntitySilverGlider extends WRDragonEntity implements IBreedable
 {
     //TODO: BOIDS
     /*
@@ -340,6 +341,16 @@ public class EntitySilverGlider extends WRDragonEntity
                 .add(MAX_HEALTH, 20)
                 .add(MOVEMENT_SPEED, 0.23)
                 .add(FLYING_SPEED, 0.12);
+    }
+
+    @Override
+    public InteractionResult breedLogic(Player tamer, ItemStack stack) {
+        return null;
+    }
+
+    @Override
+    public int hatchTime() {
+        return 50;
     }
 
 
