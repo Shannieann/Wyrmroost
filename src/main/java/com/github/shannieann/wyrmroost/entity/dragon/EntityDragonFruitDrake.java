@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-/*import com.github.shannieann.wyrmroost.client.ClientEvents;
+/*import com.github.shannieann.wyrmroost.ClientEvents;
 import com.github.shannieann.wyrmroost.client.model.entity.DragonFruitDrakeModel;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DragonBreedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.MoveToHomeGoal;
@@ -279,9 +279,9 @@ public class DragonFruitDrakeEntity extends WRDragonEntity implements IForgeShea
     public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
         if (backView)
-            event.getInfo().move(ClientEvents.getViewCollisionDistance(-0.25, this), 0.5, 0);
+            event.getInfo().move(ClientEvents.performCollisionCalculations(-0.25, this), 0.5, 0);
         else
-            event.getInfo().move(ClientEvents.getViewCollisionDistance(-1.5, this), 0.15, 0);
+            event.getInfo().move(ClientEvents.performCollisionCalculations(-1.5, this), 0.15, 0);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-/*import com.github.shannieann.wyrmroost.client.ClientEvents;
+/*import com.github.shannieann.wyrmroost.ClientEvents;
 import com.github.shannieann.wyrmroost.client.model.entity.AlpineModel;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DragonBreedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.FlyerWanderGoal;
@@ -180,9 +180,9 @@ public class AlpineEntity extends WRDragonEntity
     public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event)
     {
         if (backView)
-            event.getInfo().move(ClientEvents.getViewCollisionDistance(-5d, this), 0.75d, 0);
+            event.getInfo().move(ClientEvents.performCollisionCalculations(-5d, this), 0.75d, 0);
         else
-            event.getInfo().move(ClientEvents.getViewCollisionDistance(-3, this), 0.3, 0);
+            event.getInfo().move(ClientEvents.performCollisionCalculations(-3, this), 0.3, 0);
     }
 
     @Override

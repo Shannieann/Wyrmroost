@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.WRConfig;
-import com.github.shannieann.wyrmroost.client.ClientEvents;
+import com.github.shannieann.wyrmroost.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
@@ -479,11 +479,11 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     }
 
     @Override
-    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event, Player player) {
+    public void setupThirdPersonCamera(boolean backView, EntityViewRenderEvent.CameraSetup event, Player player) {
         if (backView)
-            event.getCamera().move(ClientEvents.getViewCollisionDistance(-20, this, player), 0.75, 0);
+            event.getCamera().move(ClientEvents.performCollisionCalculations(-20, this, player), 0.75, 0);
         else
-            event.getCamera().move(ClientEvents.getViewCollisionDistance(-0.5, this, player), 0.3, 0);
+            event.getCamera().move(ClientEvents.performCollisionCalculations(-0.5, this, player), 0.3, 0);
     }
 
     @Override

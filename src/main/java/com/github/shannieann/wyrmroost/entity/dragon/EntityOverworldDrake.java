@@ -1,7 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-import com.github.shannieann.wyrmroost.client.ClientEvents;
-import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
+import com.github.shannieann.wyrmroost.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
@@ -9,17 +8,11 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGround
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
-import com.google.common.collect.ImmutableList;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
-import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerChunkCache;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -43,7 +36,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
@@ -57,7 +49,6 @@ import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.SoundKeyframeEvent;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
-import software.bernie.shadowed.eliotlash.mclib.utils.MathHelper;
 
 import javax.annotation.Nullable;
 
@@ -351,11 +342,11 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
     }
 
     @Override
-    public void setThirdPersonMountCameraAngles(boolean backView, EntityViewRenderEvent.CameraSetup event, Player player) {
+    public void setupThirdPersonCamera(boolean backView, EntityViewRenderEvent.CameraSetup event, Player player) {
         if (backView)
-            event.getCamera().move(ClientEvents.getViewCollisionDistance(-0.5, this, player), 0.75, 0);
+            event.getCamera().move(ClientEvents.performCollisionCalculations(-0.5, this, player), 0.75, 0);
         else
-            event.getCamera().move(ClientEvents.getViewCollisionDistance(-0.5, this, player), 0.3, 0);
+            event.getCamera().move(ClientEvents.performCollisionCalculations(-0.5, this, player), 0.3, 0);
     }
 
     @Override
