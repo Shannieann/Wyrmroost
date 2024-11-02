@@ -195,16 +195,22 @@ public class ClientEvents {
         event.setYaw(yRot + event.getYaw());
         event.setRoll(zRot + event.getRoll());
     }
-    
-    public static double performCollisionCalculations(double cameraDistance, Entity entity, Player player) {
-        Camera camera = getClient().gameRenderer.getMainCamera();
-        //The camera must begin at a position behind the player, and then be pushed forward...
-        Vec3 cameraPosition = player.position().subtract(0, 0, cameraDistance);
-        Vector3f cameraLookVector = camera.getLookVector();
 
-        // Array of Vectors defining a Cube
+
+
+    public static double performCollisionCalculations(double maximumInitialDistance, Entity entity, Player player) {
+        Camera camera = getClient().gameRenderer.getMainCamera();
+        Vector3f lookVector = camera.getLookVector();
+        double cameraDistance = maximumInitialDistance;
+        Vec3 startingCameraPosition = camera.getPosition().add(
+                lookVector.x() * cameraDistance,
+                lookVector.y() * cameraDistance,
+                lookVector.z() * cameraDistance
+        );;
+
+
+        // Array of vectors defining a cube for offset positions
         Vec3[] offsets = {
-                // Corners of the cube
                 new Vec3(-0.1F, -0.1F, -0.1F),
                 new Vec3( 0.1F, -0.1F, -0.1F),
                 new Vec3(-0.1F,  0.1F, -0.1F),
@@ -215,25 +221,42 @@ public class ClientEvents {
                 new Vec3( 0.1F,  0.1F,  0.1F),
         };
 
-        // Checks a cube of positions around the camera position
         for (Vec3 offset : offsets) {
-            //Offset the start position to set the cube
-            Vec3 startPoint = cameraPosition.add(offset.x, offset.y, offset.z);
-            //Define the endpoint
-            Vec3 viewEndPoint = cameraPosition.add(new Vec3(cameraLookVector).scale(cameraDistance));
+            // Offset the start position for each cube corner around the camera
+            Vec3 startPoint = startingCameraPosition.add(offset);
 
-            //Perform the rt, from start to end, checking for collisions
-            HitResult rtr = entity.level.clip(new ClipContext(startPoint, viewEndPoint, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
+            // Calculate the endPoint based on the view direction and maximum distance
+            Vec3 endPoint = camera.getPosition().add(
+                    lookVector.x() * -cameraDistance,
+                    lookVector.y() * -cameraDistance,
+                    lookVector.z() * -cameraDistance
+            );;
+
+            // Clip context from startPoint to endPoint
+            HitResult rtr = entity.level.clip(new ClipContext(startPoint, endPoint, ClipContext.Block.VISUAL, ClipContext.Fluid.NONE, entity));
+
+            // Debug prints for startPoint, endPoint, and hit result
+            if (rtr.getType() == HitResult.Type.MISS) {
+            }
+            if (rtr.getType() == HitResult.Type.BLOCK) {
+            }
+            if (rtr.getType() == HitResult.Type.ENTITY) {
+            }
+
+
             if (rtr.getType() != HitResult.Type.MISS) {
-                double collisionDistance = rtr.getLocation().distanceTo(cameraPosition);
-                // If hit, update the minimum collision distance - this will push the camera forward to ensure no collisions.
-                if (collisionDistance < cameraDistance)
-                    cameraDistance = collisionDistance;
+                // Update cameraDistance if a closer collision is detected
+                double collisionDistance=rtr.getLocation().distanceTo(startPoint);
+
+                if (collisionDistance <-cameraDistance && collisionDistance <1.0) {
+                    cameraDistance = -collisionDistance;
+                } else if (collisionDistance <Math.abs(cameraDistance)) {
+                    cameraDistance = -collisionDistance;
+                }
             }
         }
         return cameraDistance;
     }
-
     
     // TODO maybe change FOV during flight, like if a dragon is diving for example?
     // Remove the sprint fov change when you're on a dragon, it doesn't do anything in the first place.
