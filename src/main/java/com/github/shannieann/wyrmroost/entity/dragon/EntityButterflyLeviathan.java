@@ -73,9 +73,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //ToDo:
 // BFL attack - fix look distance + head rot
 
-//ToDo: Taming
-// Taming Logic, confirm no debug code is leftover...
-
 //ToDo: Other tamed stuff
 // Conduit
 // Armor
@@ -588,22 +585,35 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     //((beached && lightningCooldown > 60 && level.isRainingAt(blockPosition())) || player.isCreative() || isHatchling()) && isFood(stack)) {
 
     public InteractionResult tameLogic(Player tamer, ItemStack stack) {
+        // Return early if the code is running on the client side
         if (level.isClientSide) {
             return InteractionResult.CONSUME;
         }
 
-        if (((this.isOnGround() && !this.isUnderWater() && getLightningAttackCooldown() > 50) || tamer.isCreative() || this.isHatchling()) && isFood(stack) && getEatingCooldown() <= 0) {
+        // Check if the conditions for taming are met
+        boolean isTamingConditionsMet = (this.isOnGround() && !this.isUnderWater()
+                && getLightningAttackCooldown() > 50) || tamer.isCreative() || this.isHatchling();
+        boolean isFoodItem = isFood(stack);
+        boolean canEat = getEatingCooldown() <= 0;
+
+        // If all conditions for taming and eating are satisfied
+        if (isTamingConditionsMet && isFoodItem && canEat) {
+            // Consume the food item
             eat(this.level, stack);
-            setEatingCooldown(40);
-            if (tamer.isCreative() || this.isHatchling())  {
-                super.attemptTame(1.0f, tamer, stack);
-            } else {
-                super.attemptTame(0.2f, tamer, stack);
-            }
+            setEatingCooldown(40); // Set the cooldown after eating
+
+            // Attempt to tame the creature based on the player's mode and the creature's state
+            float tameSuccessChance = (tamer.isCreative() || this.isHatchling()) ? 1.0f : 0.2f;
+            super.attemptTame(tameSuccessChance, tamer, stack);
+
+            // Return successful taming interaction result
             return InteractionResult.SUCCESS;
         }
+
+        // Return pass if taming conditions are not met
         return InteractionResult.PASS;
     }
+
 
     // ====================================
     //      D.1) Taming: Inventory
