@@ -72,6 +72,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -569,12 +570,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return new Attribute[]{MAX_HEALTH, ATTACK_DAMAGE};
     }
 
-    public float getTravelSpeed()
-    {
-        //@formatter:off
-        return (isUsingFlyingNavigator() && getAttributes().hasAttribute(FLYING_SPEED))? (float) getAttributeValue(FLYING_SPEED)
-                : (float) getAttributeValue(MOVEMENT_SPEED);
-        //@formatter:on
+    public float getTravelSpeed() {
+        if (isUsingFlyingNavigator() && getAttributes().hasAttribute(FLYING_SPEED)) {
+            return (float) getAttributeValue(FLYING_SPEED);
+        }
+        if (isUsingSwimmingNavigator()) {
+            return 10F;
+        }
+        return (float) getAttributeValue(MOVEMENT_SPEED);
     }
 
     public static boolean canFlyerSpawn(EntityType<? extends WRDragonEntity> entityType, ServerLevelAccessor serverLevelAccessor, MobSpawnType spawnType, BlockPos pos, Random random)
@@ -898,7 +901,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         setBreedingCooldown(Math.max(getBreedingCooldown()-1,0));
 
         if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0); // Shouldn't be rotated on ground or water
-        if (getDragonXRotation() != 0 && (getDeltaMovement().length() <= 0.25)){ // Every tick, slowly orient the dragon back to normal if its barely moving so it isn't just awkwardly pointing down or up. Also if the player is upside down.
+        if (getDragonXRotation() != 0 && (getDeltaMovement().length() <= 0.25)){ // Every tick, slowly orient the dragon back to normal if its barely moving, so it isn't just awkwardly pointing down or up. Also if the player is upside down.
             setDragonXRotation(Mth.approachDegrees(getDragonXRotation(), 0.0f, 1.0f));
         }
         NavigationType properNavigator = getProperNavigator();
@@ -1102,7 +1105,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
     public void setNavigator(NavigationType navigator) {
-        if (navigator == getNavigationType()) return;
+        if (navigator == getNavigationType()) {
+            return;
+        }
         switch (navigator) {
             case GROUND -> {
                 this.moveControl = new WRGroundMoveControl(this, groundMaxYaw);
@@ -1238,14 +1243,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     handleFreeFlyingRiding(speed, rider); // Free Flying (Diving, 180s, etc.)
                     // else handleCombatFlyingMovement(speed, livingentity); // Combat flying (More controlled flight)
                 } else if (isUsingSwimmingNavigator()) {
-                    handleWaterRiding(speed, sideMotion, forwardMotion, vec3d, rider);
+                    handleWaterRiding(5, sideMotion, 5, vec3d, rider);
                 } else {
                     handleGroundRiding(speed, sideMotion, forwardMotion, vec3d, rider);
                 }
-            }
-            // ToDo: When do we reach this?
-            else if (rider instanceof Player) {
-                this.setDeltaMovement(Vec3.ZERO);
             }
 
             this.calculateEntityAnimation(this, isUsingFlyingNavigator());
@@ -1323,9 +1324,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
 
     // Will be used for BFL, etc.
-    protected void handleWaterRiding(float speed, float groundX, float groundZ, Vec3 vec3d,  LivingEntity livingentity){
+    protected void handleWaterRiding(float speed, float waterX, float waterZ, Vec3 vec3d,  LivingEntity livingentity){
         setSpeed(speed);
-        super.travel(new Vec3(groundX, vec3d.y, groundZ));
+        super.travel(new Vec3(5, vec3d.y, 5));
     }
 
     // ====================================

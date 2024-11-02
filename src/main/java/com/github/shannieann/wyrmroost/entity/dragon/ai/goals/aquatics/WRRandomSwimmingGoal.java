@@ -28,7 +28,7 @@ public class WRRandomSwimmingGoal extends Goal {
     @Override
     public boolean canUse()
     {
-        if (this.entity.isVehicle())
+        if (this.entity.canBeControlledByRider())
             return false;
 
         if (this.entity.getTarget() != null)

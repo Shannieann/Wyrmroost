@@ -719,6 +719,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     //If we are not in water, we can target entities in water and out of water...
                     //If we are in water, only target entities in water...
                     return (!this.isInWater() || entity.isInWater());}));
+
     }
 
 

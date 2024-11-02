@@ -69,7 +69,7 @@ public class WRSwimmingMoveControl extends MoveControl {
                 }
 
             }
-        } else {
+        } else if (!this.entity.canBeControlledByRider()) {
             this.entity.setSpeed(0.0F);
             this.entity.setXxa(0.0F);
             this.entity.setYya(0.0F);
