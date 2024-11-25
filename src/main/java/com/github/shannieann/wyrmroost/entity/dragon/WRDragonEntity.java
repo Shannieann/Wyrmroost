@@ -1,6 +1,5 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
@@ -72,7 +71,6 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.common.ForgeMod;
 import net.minecraftforge.common.ForgeSpawnEggItem;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -734,12 +732,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    public float getRestrictRadius()
-    {
-        return WRConfig.HOME_RADIUS.get() * WRConfig.HOME_RADIUS.get();
-    }
-
-    @Override
     public void restrictTo(BlockPos pos, int distance)
     {
         setHomePos(pos);
@@ -888,7 +880,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     public int getBreedingLimit(){
-        return 10;
+        return 0;
     }
 
     // ====================================

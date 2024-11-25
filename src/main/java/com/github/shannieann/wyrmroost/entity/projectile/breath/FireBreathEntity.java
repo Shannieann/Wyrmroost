@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.projectile.breath;
 
-import com.github.shannieann.wyrmroost.WRConfig;
+import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
@@ -66,12 +66,11 @@ public class FireBreathEntity extends BreathWeaponEntity
             return;
         }
 
-        double flammability = WRConfig.BREATH_FIRE_SPREAD.get();
-        if (level.getGameRules().getBoolean(GameRules.RULE_DOFIRETICK) && WRConfig.canGrief(level) && flammability != 0) // respect game rules
+        if (level.getGameRules().getBoolean(GameRules.RULE_DOFIRETICK) && WRServerConfig.SERVER.GRIEFING.fireSpread.get()) // respect game rules
         {
             BlockPos offset = pos.relative(direction);
 
-            if (level.getBlockState(offset).isAir() && (flammability == 1 || random.nextDouble() <= flammability))
+            if (level.getBlockState(offset).isAir())
                 level.setBlock(offset, BaseFireBlock.getState(level, offset), 11);
         }
     }

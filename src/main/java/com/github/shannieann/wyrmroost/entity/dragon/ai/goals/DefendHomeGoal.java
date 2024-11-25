@@ -1,6 +1,5 @@
 package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
 
-import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -44,7 +43,8 @@ public class DefendHomeGoal extends TargetGoal
         super.start();
 
         // alert others!
-        for (Mob mob : defender.level.getEntitiesOfClass(Mob.class, defender.getBoundingBox().inflate(WRConfig.HOME_RADIUS.get()), defender::isAlliedTo))
+        //ToDo: HomeRadius
+        for (Mob mob : defender.level.getEntitiesOfClass(Mob.class, defender.getBoundingBox().inflate(20), defender::isAlliedTo))
             mob.setTarget(targetMob);
     }
 
@@ -68,6 +68,7 @@ public class DefendHomeGoal extends TargetGoal
                 defender.getX(),
                 defender.getEyeY(),
                 defender.getZ(),
-                new AABB(defender.getRestrictCenter()).inflate(WRConfig.HOME_RADIUS.get()));
+                //ToDo: Home Radius
+                new AABB(defender.getRestrictCenter()).inflate(20));
     }
 }

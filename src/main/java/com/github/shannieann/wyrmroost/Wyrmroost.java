@@ -48,8 +48,6 @@ public class Wyrmroost
         WRParticles.REGISTRY.register(bus);
         WREffects.REGISTRY.register(bus);
         //WRFluids.REGISTRY.register(bus);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, WRConfig.COMMON);
-        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, WRConfig.CLIENT);
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, WRServerConfig.SERVER_CONFIG);
     }
 

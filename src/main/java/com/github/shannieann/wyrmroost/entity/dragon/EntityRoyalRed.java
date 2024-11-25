@@ -1,6 +1,5 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
@@ -106,7 +105,6 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
 
     public EntityRoyalRed(EntityType<? extends WRDragonEntity> type, Level worldIn) {
         super(type, worldIn);
-        noCulling = WRConfig.NO_CULLING.get();
         setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0);
         setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0);
     }

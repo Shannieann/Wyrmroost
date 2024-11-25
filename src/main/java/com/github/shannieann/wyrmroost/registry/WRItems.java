@@ -1,6 +1,5 @@
 package com.github.shannieann.wyrmroost.registry;
 
-import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.item.*;
 import com.github.shannieann.wyrmroost.item.base.ArmorBase;
@@ -9,7 +8,6 @@ import com.github.shannieann.wyrmroost.item.base.ToolMaterials;
 import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
@@ -31,17 +29,13 @@ import java.util.function.Supplier;
 public class WRItems {
     static final CreativeModeTab MAIN_ITEM_GROUP = new CreativeModeTab("wyrmroost") {
         @Override
-        public ItemStack makeIcon()
-        {
+        public ItemStack makeIcon() {
             return new ItemStack(PURPLE_GEODE.get());
         }
 
         @Override
-        public void fillItemList(NonNullList<ItemStack> items)
-        {
+        public void fillItemList(NonNullList<ItemStack> items) {
             super.fillItemList(items);
-            if (WRConfig.DEBUG_MODE.get())
-                items.add(new ItemStack(Items.STICK).setHoverName(new TextComponent("Debug Stick")));
         }
     };
 

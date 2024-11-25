@@ -3,6 +3,8 @@ package com.github.shannieann.wyrmroost.config;
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.google.common.collect.ImmutableList;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.common.ForgeMod;
+import org.lwjgl.system.CallbackI;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,13 +13,11 @@ import java.util.function.Predicate;
 
 public final class WRServerConfig {
     //TODO: LANG FILE
-    //TODO: Config attributes
     public static ForgeConfigSpec SERVER_CONFIG;
     private static final ForgeConfigSpec.Builder SERVER_BUILDER = new ForgeConfigSpec.Builder();
     public static final Server SERVER;
     private static final String LANG_PREFIX = "config." + Wyrmroost.MOD_ID + ".";
     private static final Predicate<Object> STRING_PREDICATE = s -> s instanceof String;
-    private static final List<String> BREED_LIMIT_DEFAULTS = ImmutableList.of("butterfly_leviathan:1", "royal_red:2");
 
     static {
         SERVER = new Server(SERVER_BUILDER);
@@ -28,60 +28,29 @@ public final class WRServerConfig {
     public static class Server {
         private Server(final ForgeConfigSpec.Builder builder) {
             WYRMROOST_OPTIONS = new WyrmroostOptionsConfig(builder);
-            DRAGON_OPTIONS = new DragonOptionsConfig(builder);
             GRIEFING = new GriefingConfig(builder);
             ENTITIES = new EntitiesConfig(builder);
         }
         public final WyrmroostOptionsConfig WYRMROOST_OPTIONS;
-        public final DragonOptionsConfig DRAGON_OPTIONS;
         public final GriefingConfig GRIEFING;
         public final EntitiesConfig ENTITIES;
 
     }
+
     public static class WyrmroostOptionsConfig {
         public final ForgeConfigSpec.BooleanValue debugMode;
 
         WyrmroostOptionsConfig(ForgeConfigSpec.Builder builder ) {
-            builder.push("wyrmroost_otions");
+            builder.push("wyrmroost_options");
             this.debugMode = builder
                     .comment("Debug Mode - Do NOT enable unless directed by a Wyrmroost Developer")
                     .translation(LANG_PREFIX+"debug_mode")
                     .define("enable_debug_mode", false);
-        }
-
-    }
-
-    public static class DragonOptionsConfig {
-        public final ForgeConfigSpec.DoubleValue fireSpread;
-        public final ForgeConfigSpec.IntValue homeRadius;
-        public final ForgeConfigSpec.ConfigValue<List<? extends String>> breedLimits;
-
-
-        DragonOptionsConfig(ForgeConfigSpec.Builder builder) {
-            builder.push("dragon_options");
-            this.fireSpread = builder
-                    .comment("Base Flammability or spread of fire from Dragon Fire Breath",
-                            "A value of 0 completely disables fire block damage.")
-                    .translation(LANG_PREFIX + "breath_fire_spread")
-                    .defineInRange("breath_fire_spread", 0.8, 0, 1);
-            this.homeRadius = builder
-                    .comment("The radius (not diameter!) of how far dragons can travel from their home points")
-                    .translation(LANG_PREFIX + "home_radius")
-                    .defineInRange("home_radius", 16, 6, 1024);
-            this.breedLimits = builder
-                    .comment("Breed limit for each dragon. This determines how many times a certain dragon can breed.",
-                            "Leaving this blank ( `[]` ) will disable the functionality.")
-                    .translation(LANG_PREFIX + "breed_limits")
-                    .defineList("breed_limits", () -> BREED_LIMIT_DEFAULTS, e -> e instanceof String);
             builder.pop();
         }
     }
 
     public static class GriefingConfig {
-        public final ForgeConfigSpec.BooleanValue respectMobGriefing;
-        public final ForgeConfigSpec.BooleanValue dragonGriefing;
-
-
         GriefingConfig(ForgeConfigSpec.Builder builder) {
             builder.push("griefing");
             this.respectMobGriefing = builder
@@ -95,40 +64,49 @@ public final class WRServerConfig {
                             "Note: not all dragons destroy blocks and not all are as destructive as the next.")
                     .translation(LANG_PREFIX + "dragon_griefing")
                     .define("dragon_griefing", false);
+            this.fireSpread = builder
+                    .comment("If true dragon fire will spread",
+                            "Note: not all dragons set fire.")
+                    .translation(LANG_PREFIX + "dragon_griefing")
+                    .define("fire_spread", false);
             builder.pop();
         }
+        public final ForgeConfigSpec.BooleanValue respectMobGriefing;
+        public final ForgeConfigSpec.BooleanValue dragonGriefing;
+        public final ForgeConfigSpec.BooleanValue fireSpread;
     }
 
     public static class EntitiesConfig {
         EntitiesConfig(final ForgeConfigSpec.Builder builder) {
             builder.push("entities");
-            ALPINE = new Alpine(builder);
+            //ALPINE = new Alpine(builder);
             BUTTERFLY_LEVIATHAN = new ButterflyLeviathan(builder);
-            CANARI_WYVERN = new CanariWyvern(builder);
-            COIN_DRAGON = new CoinDragon(builder);
-            DRAGONFRUIT_DRAKE = new DragonfruitDrake(builder);
-            LESSER_DESERTWYRM = new LesserDesertwyrm(builder);
-            OVERWORLD_DRAKE = new OverworldDrake(builder);
-            ROOST_STALKER = new RoostStalker(builder);
-            ROYAL_RED = new RoyalRed(builder);
-            SILVER_GLIDER = new SilverGlider(builder);
+            //CANARI_WYVERN = new CanariWyvern(builder);
+            //COIN_DRAGON = new CoinDragon(builder);
+            //DRAGONFRUIT_DRAKE = new DragonfruitDrake(builder);
+            //LESSER_DESERTWYRM = new LesserDesertwyrm(builder);
+            //OVERWORLD_DRAKE = new OverworldDrake(builder);
+            //ROOST_STALKER = new RoostStalker(builder);
+            //ROYAL_RED = new RoyalRed(builder);
+            //SILVER_GLIDER = new SilverGlider(builder);
             builder.pop();
         }
 
-        public final Alpine ALPINE;
+        //public final Alpine ALPINE;
         public final ButterflyLeviathan BUTTERFLY_LEVIATHAN;
-        public final CanariWyvern CANARI_WYVERN;
-        public final CoinDragon COIN_DRAGON;
-        public final DragonfruitDrake DRAGONFRUIT_DRAKE;
-        public final LesserDesertwyrm LESSER_DESERTWYRM;
-        public final OverworldDrake OVERWORLD_DRAKE;
-        public final RoostStalker ROOST_STALKER;
-        public final RoyalRed ROYAL_RED;
-        public final SilverGlider SILVER_GLIDER;
+        //public final CanariWyvern CANARI_WYVERN;
+        //public final CoinDragon COIN_DRAGON;
+        //public final DragonfruitDrake DRAGONFRUIT_DRAKE;
+        //public final LesserDesertwyrm LESSER_DESERTWYRM;
+        //public final OverworldDrake OVERWORLD_DRAKE;
+        //public final RoostStalker ROOST_STALKER;
+        //public final RoyalRed ROYAL_RED;
+        //public final SilverGlider SILVER_GLIDER;
     }
 
     public static class SpawningConfig {
         SpawningConfig(final ForgeConfigSpec.Builder builder, int spawnRate, int minGroupSize, int maxGroupSize, List<? extends String> biomeTypes, List<? extends String> biomeWhitelist) {
+            builder.push("spawning");
             this.spawnRate = builder
                     .comment("Spawn Rates will be proportional to this value. Set to 0 to disable spawning")
                     .translation(LANG_PREFIX + "spawn_rate")
@@ -149,6 +127,7 @@ public final class WRServerConfig {
                     .comment("Allow spawns in these biomes. Ignores the biome types specified above.")
                     .translation(LANG_PREFIX + "biome_whitelist")
                     .defineList("biome_whitelist", biomeWhitelist, STRING_PREDICATE);
+            builder.pop();
         }
 
         public final ForgeConfigSpec.IntValue spawnRate;
@@ -158,6 +137,55 @@ public final class WRServerConfig {
         public final ForgeConfigSpec.ConfigValue<List<? extends String>> biomeWhitelist;
     }
 
+
+    public static class DragonAttributesConfig {
+        DragonAttributesConfig(final ForgeConfigSpec.Builder builder, int maxHealth, int attackDamge, int homeRadius) {
+            builder.push("attributes");
+            this.maxHealth = builder
+                    .comment("The maximum health value of the dragon")
+                    .translation(LANG_PREFIX+"max_health")
+                    .defineInRange("max_health",maxHealth,1, Integer.MAX_VALUE);
+            this.attackDamage = builder
+                    .comment("The base  attack damage value of the dragon")
+                    .translation(LANG_PREFIX+"attack_damage")
+                    .defineInRange("attack_damage",attackDamge,1, Integer.MAX_VALUE);
+            this.homeRadius = builder
+                    .comment("The radius (not diameter!) of how far dragons can travel from their home points")
+                    .translation(LANG_PREFIX + "home_radius")
+                    .defineInRange("home_radius", homeRadius, 6, 1024);
+            builder.pop();
+        }
+        public final ForgeConfigSpec.IntValue maxHealth;
+        public final ForgeConfigSpec.IntValue attackDamage;
+        public final ForgeConfigSpec.IntValue homeRadius;
+    }
+
+
+    public static class DragonBreedingConfig {
+        DragonBreedingConfig(final ForgeConfigSpec.Builder builder, int breedLimit, int hatchTime, int ageProgress) {
+            builder.push("breeding");
+            this.breedLimit = builder
+                    .comment("Breed limit for each dragon. This determines how many times a certain dragon can breed",
+                            "Set to 0 to disable breeding")
+                    .translation(LANG_PREFIX + "breed_limits")
+                    .defineInRange("breed_limits", breedLimit, 0, Integer.MAX_VALUE);
+            this.hatchTime = builder
+                    .comment("Hatch time for the dragon egg, in seconds")
+                    .translation(LANG_PREFIX + "hatch_time")
+                    .defineInRange("hatch_time", hatchTime, 0, Integer.MAX_VALUE);
+            this.ageProgress = builder
+                    .comment("Percentage by which a baby's age will progress towards adult, each minute",
+                            "If set to 10, it will progress by 10% each minute, meaning it will take 10 minutes to reach adult (100%)")
+                    .translation(LANG_PREFIX + "age_progress")
+                    .defineInRange("age_progress", ageProgress, 10, 100);
+            builder.pop();
+        }
+        public final ForgeConfigSpec.IntValue breedLimit;
+
+        public final ForgeConfigSpec.IntValue hatchTime;
+        public final ForgeConfigSpec.IntValue ageProgress;
+
+    }
     public static class Alpine {
         Alpine(final ForgeConfigSpec.Builder builder) {
             builder.push("alpine");
@@ -181,11 +209,22 @@ public final class WRServerConfig {
                     1,
                     3,
                     Collections.singletonList("OCEAN"),
-                    Collections.singletonList("")
+                    Collections.singletonList(""));
+            dragonAttributesConfig = new DragonAttributesConfig(builder,
+                    180,
+                    10,
+                    2
             );
+            dragonBreedingConfig = new DragonBreedingConfig(builder,
+                      2,
+                    2,
+                    10);
             builder.pop();
         }
+
         public final SpawningConfig spawningConfig;
+        public final DragonAttributesConfig dragonAttributesConfig;
+        public final DragonBreedingConfig dragonBreedingConfig;
     }
 
     public static class CanariWyvern {

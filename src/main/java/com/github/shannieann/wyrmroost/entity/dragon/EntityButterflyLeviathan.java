@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.ClientEvents;
+import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
@@ -84,8 +84,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Fix serializer - perhaps remove entirely?
 
 //TODO: FINAL
-// Config spawn
-// Config attributes
 // Tidy up EntityTypeRegistry
 
 //TODO: Others
@@ -122,7 +120,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
         super(entityType, level);
-        noCulling = WRConfig.NO_CULLING.get();
         setPathfindingMalus(BlockPathTypes.WATER, 0);
         setPathfindingMalus(BlockPathTypes.WATER_BORDER, 0);
         setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0);
@@ -148,23 +145,23 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return Mob.createMobAttributes()
-                .add(MAX_HEALTH, 180)
+                .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonAttributesConfig.maxHealth.get())
                 .add(MOVEMENT_SPEED, 0.10F)
                 .add(ForgeMod.SWIM_SPEED.get(), 0.15F)
                 .add(KNOCKBACK_RESISTANCE, 1)
-                .add(ATTACK_DAMAGE, 14)
+                .add(ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonAttributesConfig.attackDamage.get())
                 .add(FOLLOW_RANGE, 50);
     }
+
 
     @Override
     public int idleAnimationVariants(){
         return 1;
     }
 
-    //ToDo: Config
     @Override
     public float ageProgressAmount(){
-        return 0.1F;
+        return WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonBreedingConfig.ageProgress.get()/100F;
     }
 
     @Override
@@ -219,10 +216,16 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     //      A.4) Entity Data: HOME
     // ====================================
 
-    //ToDo: Needed?
     @Override
     public boolean defendsHome() {
         return true;
+    }
+
+    @Override
+    public float getRestrictRadius()
+    {
+        return WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonAttributesConfig.homeRadius.get() *
+                WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonAttributesConfig.homeRadius.get();
     }
     
     // ====================================
@@ -733,21 +736,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     }
 
 
-
-
-    public Predicate<LivingEntity> aquaticRandomTargetPredicate =
-            entity -> {
-        System.out.println("Evaluating entity: " + entity.getName().getString() + " | Class: " + entity.getClass().getName());
-        //Avoid targeting fish, to avoid creating lag
-        //Avoid targeting self
-        if (entity instanceof AbstractFish || entity.getClass() == this.getClass()) {
-            return false;
-        }
-        //If we are not in water, we can target entities in water and out of water...
-        //If we are in water, only target entities in water...
-        return (!this.isInWater() || entity.isInWater());
-    };
-
     @Override
     public InteractionResult breedLogic(Player breeder, ItemStack stack) {
         if (level.isClientSide) {
@@ -765,11 +753,16 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     }
 
-    //ToDo: ConfigHatchTimes
     @Override
     public int hatchTime() {
-        return 100;
+        //Multiply by 20 to convert seconds to ticks
+        return WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonBreedingConfig.hatchTime.get()*20;
     }
+
+    public int getBreedingLimit(){
+        return WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonBreedingConfig.breedLimit.get();
+    }
+
 
     public class BFLAttackGoal extends AnimatedGoal {
         private int navRecalculationTicks;

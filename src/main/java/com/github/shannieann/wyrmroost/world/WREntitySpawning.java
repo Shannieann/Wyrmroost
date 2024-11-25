@@ -26,7 +26,7 @@ public class WREntitySpawning {
         //TODO: Alphabetical Order
         //TODO: Add missing entities once they work
         ResourceKey<Biome> biomeKey = ResourceKey.create(ForgeRegistries.Keys.BIOMES, biomeName);
-        if (WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.biomeWhitelist, biomeKey)) {
+        /*if (WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.LESSER_DESERTWYRM.get(), WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig, MobCategory.CREATURE, event);
         }
         if (WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.spawningConfig.biomeWhitelist, biomeKey)) {
@@ -42,9 +42,19 @@ public class WREntitySpawning {
             registerEntityWorldSpawn(WREntityTypes.CANARI_WYVERN.get(), WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig, MobCategory.CREATURE, event);
         }
         
-         */
+
         if (WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.ROYAL_RED.get(), WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig, MobCategory.CREATURE, event);
+        }
+        */
+
+        if (WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig.spawnRate.get() > 0
+            && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig.biomeTypes,
+            WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig.biomeWhitelist, biomeKey)) {
+
+            registerEntityWorldSpawn(WREntityTypes.BUTTERFLY_LEVIATHAN.get(),
+            WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig,
+            MobCategory.CREATURE, event);
         }
     }
 
