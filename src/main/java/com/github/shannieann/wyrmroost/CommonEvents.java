@@ -104,7 +104,6 @@ public class CommonEvents {
     // =====================
 
     public static void debugStick(PlayerInteractEvent.RightClickItem event) {
-        if (!WRConfig.DEBUG_MODE.get()) return;
         Player player = event.getPlayer();
         ItemStack stack = player.getItemInHand(event.getHand());
         if (stack.getItem() != Items.STICK || !stack.getHoverName().getString().equals("Debug Stick"))
