@@ -24,8 +24,8 @@ import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
 public class ModelRooststalker extends AnimatedGeoModel<EntityRooststalker> {
-    private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/roost_stalker/rooststalker.geo.json");
-    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/roost_stalker/rooststalker.animation.json");
+    private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/rooststalker/rooststalker.geo.json");
+    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/rooststalker/rooststalker.animation.json");
 
 
     @Override
@@ -45,8 +45,8 @@ public class ModelRooststalker extends AnimatedGeoModel<EntityRooststalker> {
 
     public static class RooststalkerEyesLayer<T extends EntityRooststalker> extends DragonEyesLayer<T> {
 
-        private static final ResourceLocation EYES_TEXTURE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/roost_stalker_eyes.png");
-        private static final ResourceLocation EYES_TEXTURE_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/roost_stalker_eyes_sp.png");
+        private static final ResourceLocation EYES_TEXTURE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes.png");
+        private static final ResourceLocation EYES_TEXTURE_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_sp.png");
 
         public RooststalkerEyesLayer(IGeoRenderer<T> entityRendererIn) {
             super(entityRendererIn, ModelRooststalker.MODEL_RESOURCE);
