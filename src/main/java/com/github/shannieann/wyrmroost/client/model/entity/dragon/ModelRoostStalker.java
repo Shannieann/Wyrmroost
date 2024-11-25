@@ -73,7 +73,7 @@ public class ModelRooststalker extends AnimatedGeoModel<EntityRooststalker> {
         @Override
         public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T roostStalker, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
             // First we get the item and itemrenderer
-            ItemStack item = roostStalker.getItem();
+            ItemStack item = roostStalker.getHeldItem();
 
             if (item.isEmpty()) return; // We don't want to even begin rendering if there's no item
             ItemInHandRenderer renderer = Minecraft.getInstance().getItemInHandRenderer();
