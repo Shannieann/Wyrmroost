@@ -566,6 +566,24 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         return stack.isEdible() && stack.getFoodProperties(this).isMeat();
     }
 
+    @Override
+    public InteractionResult breedLogic(Player breeder, ItemStack stack) {
+        if (level.isClientSide) {
+            return InteractionResult.CONSUME;
+        }
+
+        if (((this.isOnGround() && !this.isUnderWater()) && this.isAdult()) && isFood(stack)) {
+            eat(this.level, stack);
+            setBreedingCooldown(6000);
+            setBreedingCount(getBreedingCount()+1);
+            setInLove(breeder);
+            return InteractionResult.SUCCESS;
+        }
+        return InteractionResult.PASS;
+
+    }
+
+
     // ====================================
     //      E) Client
     // ====================================
@@ -641,22 +659,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     }
 
 
-    @Override
-    public InteractionResult breedLogic(Player breeder, ItemStack stack) {
-        if (level.isClientSide) {
-            return InteractionResult.CONSUME;
-        }
-
-        if (((this.isOnGround() && !this.isUnderWater()) && this.isAdult()) && isFood(stack)) {
-            eat(this.level, stack);
-            setBreedingCooldown(6000);
-            setBreedingCount(getBreedingCount()+1);
-            setInLove(breeder);
-            return InteractionResult.SUCCESS;
-        }
-        return InteractionResult.PASS;
-
-    }
 
     @Override
     public int hatchTime() {
