@@ -68,7 +68,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //ToDo:
 // Riding - BFL and aquatics
 // Riding - BFL abilities
-// Riding others
 
 //ToDo:
 // BFL attack - fix look distance + head rot
@@ -76,12 +75,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //ToDo: Other tamed stuff
 // Conduit
 // Armor
-// DragonStaff: Home, follow, defend...
-
-//TODO: CLASS:
-// Tidy up
-// This class: See which methods are needed, which are not
-// Fix serializer - perhaps remove entirely?
 
 //TODO: FINAL
 // Tidy up EntityTypeRegistry
@@ -97,7 +90,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public final float entityDeltaPitchLimit = 1.0F;
     public final float entityYawAdjustment = 0.30F;
     public final float entityExtremityPitchAdjustment = 0.01F;
-    public final LerpedFloat beachedTimer = LerpedFloat.unit();
     public final LerpedFloat swimTimer = LerpedFloat.unit();
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public static final String LIGHTNING_STRIKE_ANIMATION = "lightning_strike";
@@ -280,17 +272,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         setLightningAttackCooldown(Math.max(getLightningAttackCooldown()-1,0));
         //TODO: TAMED LIGHTNING COOLDOWN
 
-        // =====================
-        //       Rotation Logic
-        // =====================
-
-        /*
-        if (isJumpingOutOfWater()) {
-            Vec3 motion = getDeltaMovement();
-            xRot = (float) (Math.signum(-motion.y) * Math.acos(Math.sqrt((motion.x*motion.x+motion.z*motion.z)) / motion.length()) * (double) (180f / Mafs.PI)) * 0.725f;
-        }
-
-         */
 
         // =====================
         //       Conduit Logic
