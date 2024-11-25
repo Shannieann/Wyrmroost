@@ -14,7 +14,6 @@ public class RenderButterflyLeviathan extends WRDragonRender<EntityButterflyLevi
     public RenderButterflyLeviathan(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelButterflyLeviathan());
         this.addLayer(new ModelButterflyLeviathan.ButterflyLeviathanActivatedLayer<>(this));
-        //TODO: Shadow?
     }
 
     @Override

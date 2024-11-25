@@ -23,9 +23,9 @@ import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
-public class ModelRoostStalker extends AnimatedGeoModel<EntityRooststalker> {
-    private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/roost_stalker/roost_stalker.geo.json");
-    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/roost_stalker/roost_stalker.animation.json");
+public class ModelRooststalker extends AnimatedGeoModel<EntityRooststalker> {
+    private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/roost_stalker/rooststalker.geo.json");
+    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/roost_stalker/rooststalker.animation.json");
 
 
     @Override
@@ -35,8 +35,7 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRooststalker> {
 
     @Override
     public ResourceLocation getTextureLocation(EntityRooststalker object) {
-        //System.out.println(object.getVariant());
-        return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/rooststalker_" + object.getVariant() + ".png");
+        return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_" + object.getVariant() + ".png");
     }
 
     @Override
@@ -44,13 +43,13 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRooststalker> {
         return ANIMATION_RESOURCE;
     }
 
-    public static class RoostStalkerEyesLayer<T extends EntityRooststalker> extends DragonEyesLayer<T> {
+    public static class RooststalkerEyesLayer<T extends EntityRooststalker> extends DragonEyesLayer<T> {
 
-        private static final ResourceLocation EYES_TEXTURE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/roost_stalker_eyes.png");
-        private static final ResourceLocation EYES_TEXTURE_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/roost_stalker_eyes_sp.png");
+        private static final ResourceLocation EYES_TEXTURE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/roost_stalker_eyes.png");
+        private static final ResourceLocation EYES_TEXTURE_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/roost_stalker_eyes_sp.png");
 
-        public RoostStalkerEyesLayer(IGeoRenderer<T> entityRendererIn) {
-            super(entityRendererIn, ModelRoostStalker.MODEL_RESOURCE);
+        public RooststalkerEyesLayer(IGeoRenderer<T> entityRendererIn) {
+            super(entityRendererIn, ModelRooststalker.MODEL_RESOURCE);
         }
 
 
@@ -64,10 +63,10 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRooststalker> {
         }
 
     }
-    // TODO: Not sure if other dragons will have items in their mouth. Maybe take this out of this class if so?
-    public static class RoostStalkerMouthItemLayer< T extends EntityRooststalker> extends GeoLayerRenderer<T>{
 
-        public RoostStalkerMouthItemLayer(IGeoRenderer<T> entityRendererIn) {
+    public static class RooststalkerMouthItemLayer< T extends EntityRooststalker> extends GeoLayerRenderer<T>{
+
+        public RooststalkerMouthItemLayer(IGeoRenderer<T> entityRendererIn) {
             super(entityRendererIn);
         }
 
@@ -126,19 +125,3 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRooststalker> {
     }
 
 }
-
-
-    //TODO: EYES
-    /*
-    @Override
-    public void setCustomAnimations(T animatable, int instanceId, AnimationEvent animationEvent) {
-        super.setCustomAnimations(animatable, instanceId, animationEvent);
-        IBone head = this.getAnimationProcessor().getBone("neck");
-
-        EntityModelData extraData = (EntityModelData) animationEvent.getExtraDataOfType(EntityModelData.class).get(0);
-        if (head != null) {
-            head.setRotationX(extraData.headPitch * Mth.DEG_TO_RAD);
-            head.setRotationY(extraData.netHeadYaw * Mth.DEG_TO_RAD);
-        }
-    }
-    */
