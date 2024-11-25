@@ -373,8 +373,20 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     }
 
     @Override
-    public InteractionResult breedLogic(Player tamer, ItemStack stack) {
-        return null;
+    public InteractionResult breedLogic(Player breeder, ItemStack stack) {
+        if (level.isClientSide) {
+            return InteractionResult.CONSUME;
+        }
+
+        if (((this.isOnGround() && !this.isUnderWater()) && this.isAdult()) && isBreedingItem(stack)) {
+            eat(this.level, stack);
+            setBreedingCooldown(6000);
+            setBreedingCount(getBreedingCount()+1);
+            setInLove(breeder);
+            return InteractionResult.SUCCESS;
+        }
+        return InteractionResult.PASS;
+
     }
 
     @Override
