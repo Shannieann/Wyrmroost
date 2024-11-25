@@ -355,7 +355,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         public abstract int idleAnimationVariants();
 
     // ====================================
-    //      A) Entity Data
+    //      A) Entity Data + Attributes
     // ====================================
 
 

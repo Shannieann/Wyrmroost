@@ -75,14 +75,14 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     }
 
     // ====================================
-    //      A) Entity Data
+    //      A) Entity Data + Attributes
     // ====================================
     public static AttributeSupplier.Builder getAttributeSupplier()
     {
         return (Mob.createMobAttributes()
-                .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonAttributesConfig.maxHealth.get()))
+                .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonAttributesConfig.maxHealth.get())
                 .add(Attributes.MOVEMENT_SPEED, 0.285D)
-                .add(Attributes.ATTACK_DAMAGE, 2.0D));
+                .add(Attributes.ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonAttributesConfig.maxHealth.get()));
     }
 
     @Override
@@ -129,7 +129,6 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     // ====================================
 
     /**
-     * (This is a temporary solution to get all the variants in game.)
      A few things to note for Rooststalker here:
      - We can't separate the pattern and the color because the pattern changes depending on the color.
      - The digit in the tens place decides color
@@ -148,15 +147,13 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
      - Koala
      */
     @Override
-    public int determineVariant()
-    {
+    public int determineVariant() {
         // Rare chance for albino. Otherwise, a random choice of the other 4 colors.
         // Since it is the digit in the tens place, we multiply by 10.
         int color = (getRandom().nextDouble() < 0.005)? 40 : getRandom().nextInt(0, 4) * 10;
         // Rare chance for reverse-striped
         // Otherwise a random pattern
         int pattern = (getRandom().nextDouble() < 0.005) ? 5 : getRandom().nextInt(0,5);
-
 
         return color + pattern;
     }
