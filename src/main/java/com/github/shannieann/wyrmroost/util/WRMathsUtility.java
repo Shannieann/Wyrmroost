@@ -10,21 +10,11 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.function.Predicate;
 
-/**
- * Maf utility class to make my life like way easier.
- * <p>
- * Half of this shit is just me throwing numbers in and hoping it works,
- * seems to be going well so far!
- */
-public final class WRMathsUtility
-{
+
+public final class WRMathsUtility {
     private WRMathsUtility()
     {/* good try */}
 
-    /**
-     * Float Version of PI.
-     * Why? so we don't have to cast the fucking official one 314159265358979323846 (heh) times
-     */
     public static final float PI = (float) Math.PI;
 
     /**
