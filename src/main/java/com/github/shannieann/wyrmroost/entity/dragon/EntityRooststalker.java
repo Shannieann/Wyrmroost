@@ -158,9 +158,6 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     public void aiStep() {
         super.aiStep();
 
-        //TODO: Could this logic be extracted to the super class?
-        sleepTimer.add(getSleeping() ? 0.08f : -0.15f);
-
         if (!level.isClientSide) {
             ItemStack item = getStackInSlot(ITEM_SLOT);
             if (isFood(item) && getHealth() < getMaxHealth() && getRandom().nextDouble() <= 0.0075)
