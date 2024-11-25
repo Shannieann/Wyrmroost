@@ -497,5 +497,4 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
             chest.getLevel().blockEvent(chest.getBlockPos(), chest.getBlockState().getBlock(), 1, chest.openersCounter.getOpenerCount());
         }
     }
-
 }
