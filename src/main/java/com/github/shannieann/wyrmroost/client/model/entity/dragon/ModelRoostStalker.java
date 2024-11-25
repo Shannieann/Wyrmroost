@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.client.model.entity.dragon;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.layer.DragonEyesLayer;
-import com.github.shannieann.wyrmroost.entity.dragon.EntityRoostStalker;
+import com.github.shannieann.wyrmroost.entity.dragon.EntityRooststalker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3d;
 import com.mojang.math.Vector3f;
@@ -23,28 +23,28 @@ import software.bernie.geckolib3.model.provider.GeoModelProvider;
 import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
-public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
+public class ModelRoostStalker extends AnimatedGeoModel<EntityRooststalker> {
     private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/roost_stalker/roost_stalker.geo.json");
     private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/roost_stalker/roost_stalker.animation.json");
 
 
     @Override
-    public ResourceLocation getModelLocation(EntityRoostStalker object) {
+    public ResourceLocation getModelLocation(EntityRooststalker object) {
         return MODEL_RESOURCE;
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityRoostStalker object) {
+    public ResourceLocation getTextureLocation(EntityRooststalker object) {
         //System.out.println(object.getVariant());
         return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/rooststalker_" + object.getVariant() + ".png");
     }
 
     @Override
-    public ResourceLocation getAnimationFileLocation(EntityRoostStalker animatable) {
+    public ResourceLocation getAnimationFileLocation(EntityRooststalker animatable) {
         return ANIMATION_RESOURCE;
     }
 
-    public static class RoostStalkerEyesLayer<T extends EntityRoostStalker> extends DragonEyesLayer<T> {
+    public static class RoostStalkerEyesLayer<T extends EntityRooststalker> extends DragonEyesLayer<T> {
 
         private static final ResourceLocation EYES_TEXTURE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/roost_stalker_eyes.png");
         private static final ResourceLocation EYES_TEXTURE_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/roost_stalker/roost_stalker_eyes_sp.png");
@@ -65,7 +65,7 @@ public class ModelRoostStalker extends AnimatedGeoModel<EntityRoostStalker> {
 
     }
     // TODO: Not sure if other dragons will have items in their mouth. Maybe take this out of this class if so?
-    public static class RoostStalkerMouthItemLayer< T extends EntityRoostStalker> extends GeoLayerRenderer<T>{
+    public static class RoostStalkerMouthItemLayer< T extends EntityRooststalker> extends GeoLayerRenderer<T>{
 
         public RoostStalkerMouthItemLayer(IGeoRenderer<T> entityRendererIn) {
             super(entityRendererIn);

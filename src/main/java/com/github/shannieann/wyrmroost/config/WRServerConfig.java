@@ -86,7 +86,7 @@ public final class WRServerConfig {
             //DRAGONFRUIT_DRAKE = new DragonfruitDrake(builder);
             //LESSER_DESERTWYRM = new LesserDesertwyrm(builder);
             //OVERWORLD_DRAKE = new OverworldDrake(builder);
-            //ROOST_STALKER = new RoostStalker(builder);
+            ROOSTSTALKER = new Rooststalker(builder);
             //ROYAL_RED = new RoyalRed(builder);
             //SILVER_GLIDER = new SilverGlider(builder);
             builder.pop();
@@ -99,7 +99,7 @@ public final class WRServerConfig {
         //public final DragonfruitDrake DRAGONFRUIT_DRAKE;
         //public final LesserDesertwyrm LESSER_DESERTWYRM;
         //public final OverworldDrake OVERWORLD_DRAKE;
-        //public final RoostStalker ROOST_STALKER;
+        public final Rooststalker ROOSTSTALKER;
         //public final RoyalRed ROYAL_RED;
         //public final SilverGlider SILVER_GLIDER;
     }
@@ -217,7 +217,7 @@ public final class WRServerConfig {
             );
             dragonBreedingConfig = new DragonBreedingConfig(builder,
                       2,
-                    2,
+                    1600,
                     10);
             builder.pop();
         }
@@ -301,19 +301,30 @@ public final class WRServerConfig {
         public final SpawningConfig spawningConfig;
     }
 
-    public static class RoostStalker {
-        RoostStalker(final ForgeConfigSpec.Builder builder) {
-            builder.push("roost_stalker");
+    public static class Rooststalker {
+        Rooststalker(final ForgeConfigSpec.Builder builder) {
+            builder.push("rooststalker");
             spawningConfig = new SpawningConfig(builder,
-                    7,
-                    1,
-                    4,
-                    Arrays.asList("FOREST", "PLAINS"),
-                    Collections.singletonList("")
+                    5,
+                    2,
+                    10,
+                    Collections.singletonList(""),
+                    Collections.singletonList("minecraft:plains"));
+            dragonAttributesConfig = new DragonAttributesConfig(builder,
+                    16,
+                    2,
+                    2
             );
+            dragonBreedingConfig = new DragonBreedingConfig(builder,
+                    5,
+                    600,
+                    20);
             builder.pop();
         }
+
         public final SpawningConfig spawningConfig;
+        public final DragonAttributesConfig dragonAttributesConfig;
+        public final DragonBreedingConfig dragonBreedingConfig;
     }
 
     public static class RoyalRed {

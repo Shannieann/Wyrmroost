@@ -72,10 +72,10 @@ public class WREntityTypes<E extends Entity> extends EntityType<E> {
                     .spawnEgg(0xC8C8C8, 0xC4C4C4)
                     .trackingRange(8)
                     .build();
-    public static final RegistryObject<EntityType<EntityRoostStalker>> ROOST_STALKER =
-            buildCreature("roost_stalker", EntityRoostStalker::new)
+    public static final RegistryObject<EntityType<EntityRooststalker>> ROOST_STALKER =
+            buildCreature("roost_stalker", EntityRooststalker::new)
                     .size(0.65f, 0.5f)
-                    .attributes(EntityRoostStalker::getAttributeSupplier)
+                    .attributes(EntityRooststalker::getAttributeSupplier)
                     .spawnPlacement()
                     .spawnEgg(0x52100D, 0x959595)
                     .build();

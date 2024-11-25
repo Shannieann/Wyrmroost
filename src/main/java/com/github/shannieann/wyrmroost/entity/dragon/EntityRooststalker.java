@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
@@ -47,20 +48,19 @@ import java.util.function.Predicate;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 
-public class EntityRoostStalker extends WRDragonEntity implements IBreedable
-{
+public class EntityRooststalker extends WRDragonEntity implements IBreedable {
 
     public static final int ITEM_SLOT = 0;
     //TODO: What are we using this serializer for?
     //public static final EntitySerializer<EntityRoostStalker> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
     //        .track(EntitySerializer.BOOL, "Sleeping", WRDragonEntity::getSleeping, WRDragonEntity::setSleeping)
     //        .track(EntitySerializer.STRING, "Variant", WRDragonEntity::getVariant, WRDragonEntity::setVariant));
-    private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(EntityRoostStalker.class, EntityDataSerializers.ITEM_STACK);
-    private static final EntityDataAccessor<Boolean> SCAVENGING = SynchedEntityData.defineId(EntityRoostStalker.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<ItemStack> ITEM = SynchedEntityData.defineId(EntityRooststalker.class, EntityDataSerializers.ITEM_STACK);
+    private static final EntityDataAccessor<Boolean> SCAVENGING = SynchedEntityData.defineId(EntityRooststalker.class, EntityDataSerializers.BOOLEAN);
 
 
 
-    public EntityRoostStalker(EntityType<? extends EntityRoostStalker> stalker, Level level)
+    public EntityRooststalker(EntityType<? extends EntityRooststalker> stalker, Level level)
     {
         super(stalker, level);
     }
@@ -80,7 +80,7 @@ public class EntityRoostStalker extends WRDragonEntity implements IBreedable
     public static AttributeSupplier.Builder getAttributeSupplier()
     {
         return (Mob.createMobAttributes()
-                .add(MAX_HEALTH, 16.0D)
+                .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonAttributesConfig.maxHealth.get()))
                 .add(Attributes.MOVEMENT_SPEED, 0.285D)
                 .add(Attributes.ATTACK_DAMAGE, 2.0D));
     }
@@ -430,7 +430,7 @@ public class EntityRoostStalker extends WRDragonEntity implements IBreedable
 
         public ScavengeGoal(double speed)
         {
-            super(EntityRoostStalker.this, speed, 16);
+            super(EntityRooststalker.this, speed, 16);
         }
 
         //TODO: START?

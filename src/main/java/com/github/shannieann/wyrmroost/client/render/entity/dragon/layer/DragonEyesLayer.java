@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon.layer;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entity.dragon.EntityRoostStalker;
+import com.github.shannieann.wyrmroost.entity.dragon.EntityRooststalker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -10,7 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
-public abstract class DragonEyesLayer<T extends EntityRoostStalker> extends GeoLayerRenderer<T> {
+public abstract class DragonEyesLayer<T extends EntityRooststalker> extends GeoLayerRenderer<T> {
 
     // TODO make blinking/closing eyes not use this... instead use offset eyes in the model (might need to ask modelers for this)
     protected static final ResourceLocation BLANK_EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png");

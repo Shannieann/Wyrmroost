@@ -1,13 +1,13 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon;
 
 import com.github.shannieann.wyrmroost.client.model.entity.dragon.ModelRoostStalker;
-import com.github.shannieann.wyrmroost.entity.dragon.EntityRoostStalker;
+import com.github.shannieann.wyrmroost.entity.dragon.EntityRooststalker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 
-public class RenderRoostStalker extends WRDragonRender<EntityRoostStalker> {
+public class RenderRoostStalker extends WRDragonRender<EntityRooststalker> {
         public RenderRoostStalker(EntityRendererProvider.Context renderManager) {
             super(renderManager, new ModelRoostStalker());
             // TODO readd glowing eyes. Will need to create textures separating the eyes for this.
@@ -23,7 +23,7 @@ public class RenderRoostStalker extends WRDragonRender<EntityRoostStalker> {
         }
 
     @Override
-    public void renderLate(EntityRoostStalker animatable, PoseStack poseStack, float partialTick, MultiBufferSource bufferSource,
+    public void renderLate(EntityRooststalker animatable, PoseStack poseStack, float partialTick, MultiBufferSource bufferSource,
                            VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue,
                            float alpha) {
         poseStack.scale(0.625f, 0.625f, 0.625f);
