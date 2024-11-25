@@ -130,10 +130,14 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         this.groundMaxYaw = 5;
         this.setNavigator(NavigationType.SWIMMING);
     }
+    @Override
+    public int idleAnimationVariants(){
+        return 1;
+    }
 
 
     // ====================================
-    //      A) Entity Data
+    //      A) Entity Data + Attributes
     // ====================================
 
     @Override
@@ -153,11 +157,15 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                 .add(FOLLOW_RANGE, 50);
     }
 
-
     @Override
-    public int idleAnimationVariants(){
-        return 1;
+    public boolean canBreatheUnderwater() {
+        return true;
     }
+
+
+    // ====================================
+    //      A.1) Entity Data: AGE
+    // ====================================
 
     @Override
     public float ageProgressAmount(){
@@ -168,15 +176,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public float initialBabyScale() {
         return 0.1F;
     }
+
+
     @Override
     public boolean checkSpawnRules(LevelAccessor pLevel, MobSpawnType pReason) {
         return true;
     }
 
-    @Override
-    public boolean canBreatheUnderwater() {
-        return true;
-    }
 
     public static <F extends Mob> boolean getSpawnPlacement(EntityType<F> fEntityType, ServerLevelAccessor level, MobSpawnType reason, BlockPos pos, Random random) {
         if (reason == MobSpawnType.SPAWNER) return true;
@@ -272,8 +278,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         swimTimer.add(isUnderWater() ? -0.1f : 0.1f);
         sitTimer.add(isInSittingPose() ? 0.1f : -0.1f);
         setLightningAttackCooldown(Math.max(getLightningAttackCooldown()-1,0));
-
-
         //TODO: TAMED LIGHTNING COOLDOWN
 
         // =====================
@@ -331,46 +335,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     //      B.1) Tick and AI: Attack and Hurt
     // ====================================
 
-
-    /*
-    //TODO: Extract logic
-    public void lightningAnimation(int time) {
-        lightningCooldown += 6;
-        if (time == 10) playSound(WRSounds.ENTITY_BFLY_ROAR.get(), 3f, 1f, true);
-        if (!level.isClientSide && isInWaterRainOrBubble() && time >= 10) {
-            LivingEntity target = getTarget();
-            if (target != null) {
-                if (hasConduit()) {
-                    if (time % 10 == 0) {
-                        Vec3 vec3d = target.position().add(Mafs.nextDouble(getRandom()) * 2.333, 0, Mafs.nextDouble(getRandom()) * 2.333);
-                        createLightning(level, vec3d, false);
-                    }
-                } else if (time == 10) createLightning(level, target.position(), false);
-            }
-        }
-    }
-     */
-    //TODO: REMOVE
-    /*
-    public void conduitAnimation(int time) {
-        if (getLookControl() instanceof WRGroundLookControl) ((WRGroundLookControl) getLookControl()).stopLooking();
-        if (time == 0) playSound(WRSounds.ENTITY_BFLY_ROAR.get(), 5f, 1, true);
-        else if (time == 15) {
-            playSound(SoundEvents.BEACON_ACTIVATE, 1, 1);
-            if (!level.isClientSide) createLightning(level, getConduitPos().add(0, 1, 0), true);
-            else {
-                Vec3 conduitPos = getConduitPos();
-                for (int i = 0; i < 26; ++i) {
-                    double velX = Math.cos(i);
-                    double velZ = Math.sin(i);
-                    level.addParticle(ParticleTypes.CLOUD, conduitPos.x, conduitPos.y + 0.8, conduitPos.z, velX, 0, velZ);
-                }
-            }
-        }
-    }
-
-
-     */
     @Override
     public boolean isImmuneToArrows() {
         return true;
@@ -387,16 +351,12 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     }
 
 
-    public boolean tamedLightningCheck() {
-        //if (lightningCooldown <= 0) {
-            if (isInWaterRainOrBubble()) {
-                return true;
-            }
-            if (this.level.getBlockState(new BlockPos(position()).below()).is(Blocks.GOLD_BLOCK)) {
-                return true;
-            }
-        //}
-        return false;
+    public List<AABB> generateAttackBoxes(){
+        List<AABB> attackBoxList = new ArrayList<>();
+        attackBoxList.add(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(1.0F)).inflate(1.2));
+        attackBoxList.add(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(5.0F)).inflate(0.67,2.5,0.67));
+        attackBoxList.add(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(7.0F)).inflate(0.67));
+        return attackBoxList;
     }
 
     public boolean canPerformLightningAttack() {
@@ -414,60 +374,22 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         }
         return false;
     }
-
-    public List<AABB> generateAttackBoxes(){
-        List<AABB> attackBoxList = new ArrayList<>();
-        attackBoxList.add(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(1.0F)).inflate(1.2));
-        attackBoxList.add(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(5.0F)).inflate(0.67,2.5,0.67));
-        attackBoxList.add(getBoundingBox().move(Vec3.directionFromRotation(isUsingSwimmingNavigator()? getXRot() : 0,yHeadRot).scale(7.0F)).inflate(0.67));
-        return attackBoxList;
-    }
-
     // ====================================
     //      C) Navigation and Control
     // ====================================
 
-/*
-    @Override
-    public void travel(Vec3 vec3d) {
-        if (isInWater()) {
-            // TODO this isn't completely functional yet
-            if (canBeControlledByRider()) {
-                LivingEntity entity = (LivingEntity) getControllingPassenger();
 
-                if (!isJumpingOutOfWater()) xRot = entity.xRot * 0.5f;
-                //handleWaterRiding(getTravelSpeed(), vec3d, entity);
-            }
-
-            //ToDo: Remove this
-            // add motion if were coming out of water fast; jump out of water like a dolphin
-            if (getDeltaMovement().y > 0.25 && level.getBlockState(new BlockPos(getEyePosition(1)).above()).getFluidState().isEmpty())
-                setDeltaMovement(getDeltaMovement().multiply(1.2, 1.5f, 1.2d));
-
-            moveRelative(getSpeed(), vec3d);
-            move(MoverType.SELF, getDeltaMovement());
-            setDeltaMovement(getDeltaMovement().scale(0.9d));
-
-            /*
-            animationSpeedOld = animationSpeed;
-            double xDiff = getX() - xo;
-            double yDiff = getY() - yo;
-            double zDiff = getZ() - zo;
-            if (yDiff < 0.2) yDiff = 0;
-            float amount = Mth.sqrt((float)(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff))* 4f;
-            if (amount > 1f) amount = 1f;
-
-            animationSpeed += (amount - animationSpeed) * 0.4f;
-            animationPosition += animationSpeed;
-            */
-            /*
-            if (vec3d.z == 0 && getTarget() == null && !isInSittingPose())
-                setDeltaMovement(getDeltaMovement().add(0, -0.003d, 0));
-
-        } else super.travel(vec3d);
+    public boolean tamedLightningCheck() {
+        //if (lightningCooldown <= 0) {
+        if (isInWaterRainOrBubble()) {
+            return true;
+        }
+        if (this.level.getBlockState(new BlockPos(position()).below()).is(Blocks.GOLD_BLOCK)) {
+            return true;
+        }
+        //}
+        return false;
     }
-
-           */
 
     @Override
     public float getTravelSpeed() {
@@ -566,26 +488,9 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         }
     }
 
-    public boolean isJumpingOutOfWater() {
-        return !isInWater();
-    }
-
-
-
     // ====================================
     //      D) Taming
     // ====================================
-
-    /*@Override
-    public void applyStaffInfo(BookContainer container) {
-        super.applyStaffInfo(container);
-
-        container.slot(BookContainer.accessorySlot(getInventory(), CONDUIT_SLOT, 0, -65, -75, DragonControlScreen.CONDUIT_UV).only(Items.CONDUIT).limit(1))
-                .addAction(BookActions.TARGET);
-    }*/
-
-    //ToDo: Hatchling?
-    //((beached && lightningCooldown > 60 && level.isRainingAt(blockPosition())) || player.isCreative() || isHatchling()) && isFood(stack)) {
 
     public InteractionResult tameLogic(Player tamer, ItemStack stack) {
         // Return early if the code is running on the client side
