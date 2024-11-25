@@ -307,8 +307,6 @@ public class ClientEvents {
         }
     }
     public static void onRenderWorldLast(RenderLevelStageEvent event) {
-        // Check if debug mode is enabled
-        if (!WRConfig.DEBUG_MODE.get()) return;
 
         // Check if the current stage is AFTER_SOLID_BLOCKS
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_SOLID_BLOCKS) return;

@@ -1,6 +1,5 @@
 package com.github.shannieann.wyrmroost.client.render;
 
-import com.github.shannieann.wyrmroost.WRConfig;
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
@@ -258,13 +257,6 @@ public class RenderHelper extends RenderType
         WRDragonEntity dragon = TarragonTomeItem.getBoundDragon(mc.level, stack);
         TarragonTomeItem.getAction(stack).render(dragon, ms, partialTicks);
         if (dragon == null) return;
-
-        if (WRConfig.RENDER_OUTLINES.get())
-        {
-            renderEntityOutline(dragon, 0, 255, 255, (int) (Mth.cos((dragon.tickCount + partialTicks) * 0.2f) * 35 + 45));
-            LivingEntity target = dragon.getTarget();
-            if (target != null) renderEntityOutline(target, 255, 0, 0, 100);
-        }
         BlockPos pos = dragon.getHomePos();
         if (pos != null)
             RenderHelper.drawBlockPos(ms, pos, 4, 0xff0000ff, false);
