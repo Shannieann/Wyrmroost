@@ -120,6 +120,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float adjustExtremityPitch;
     public float adjustmentExtremityPitch;
     public float groundMaxYaw;
+    // X rot for the entire body. These are client-side only
+    public float dragonXRotation;
 
     public Vec3 debugTarget;
     public int WAKE_UP_ANIMATION_TIME;
@@ -128,6 +130,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // Used in setting 1st person camera positions when flying but set in DragonRiderLayer & WRDragonRender
     public Vector3f cameraRotVector = new Vector3f();
     public Map<UUID, Vector3d> cameraBonePos = new HashMap<>();
+
 
     //TODO: CANCEL DAMAGE FROM CACTUS AND BERRY BUSHES AND OTHERS
 
@@ -151,7 +154,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> YAW_UNLOCK = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
-    public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
+    //public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
 
     /**
      * GENDER:
@@ -388,7 +391,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(HOME_POS, BlockPos.ZERO);
         entityData.define(AGE_PROGRESS, 0f);
 
-        entityData.define(DRAGON_X_ROTATION, 0f);
         super.defineSynchedData();
     }
 
@@ -902,6 +904,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setNavigator(properNavigator);
         }
 
+
         // UPDATE AGE:
         // The entity's is updated once every minute (AGE_UPDATE_INTERVAL == 1200)
         // Abstract method ageProgressAmount() sets the float amount by which to update age every minute
@@ -914,9 +917,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             sleepCooldown = Math.max(sleepCooldown-1,0);
         }
 
-        //YAW OPERATIONS:
-        //The following lines of code handle the dynamic yaw animations for entities...
-        if (isUsingSwimmingNavigator() && level.isClientSide){
+            //YAW OPERATIONS:
+            //The following lines of code handle the dynamic yaw animations for entities...
+        if (isUsingSwimmingNavigator() && level.isClientSide) {
             //Grab the change in the entity's Yaw, deltaYRot...
             //deltaYaw will tell us in which direction the entity is rotating...
             deltaYRot = this.yRot - prevYRot;
@@ -983,10 +986,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
                 //EXTREMITY PITCH OPERATIONS:
                 prevSetExtremityPitch = setExtremityPitch;
-                if (adjustExtremityPitch  > deltaPitch) {
+                if (adjustExtremityPitch > deltaPitch) {
                     adjustExtremityPitch = adjustExtremityPitch - adjustmentExtremityPitch;
                     adjustExtremityPitch = Math.max(adjustExtremityPitch, deltaPitch);
-                } else if (adjustExtremityPitch  < deltaPitch) {
+                } else if (adjustExtremityPitch < deltaPitch) {
                     adjustExtremityPitch = adjustExtremityPitch + adjustmentExtremityPitch;
                     adjustExtremityPitch = Math.min(adjustExtremityPitch, deltaPitch);
                 }
@@ -998,7 +1001,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 currentPitchRadians = targetPitchRadians;
             }
         }
+
     }
+
 
     public void clearAI() {
         jumping = false;
@@ -1250,7 +1255,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
 
-    private static final float SPEED_COEFFICIENT = 15f/7f;
+    private static final float SPEED_COEFFICIENT = 75f/7f;
     private float currentSpeed = 0f;
     // Separated these methods to make it look cleaner. Also allows for subclasses to possibly override them if need be.
     protected void handleFreeFlyingRiding(float speed, LivingEntity livingentity) {
@@ -1282,13 +1287,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         super.travel(moveVec);
     }
 
+
+    // This is here so we can lerp the x rotation -- as minecraft does internally for pos and rot so rotation is smooth.
     public void setDragonXRotation(float rotation, boolean wrapDegrees){
-        getEntityData().set(DRAGON_X_ROTATION, (wrapDegrees)?
-                (float) (rotation + Math.ceil(-rotation / 360) * 360) //  Basically normalizes the rotation to a value between 0 and 360
-                : rotation);
+        float rot = (wrapDegrees)?
+                (float) (rotation + Math.ceil(-rotation / 360) * 360)
+                : rotation;
+        dragonXRotation = rot;
     }
     public float getDragonXRotation(){
-        return getEntityData().get(DRAGON_X_ROTATION);
+        return dragonXRotation;
     }
 
     protected void handleGroundRiding(float speed, float groundX, float groundZ, Vec3 vec3d, LivingEntity livingentity) {
