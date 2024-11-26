@@ -138,7 +138,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
                 .add(FOLLOW_RANGE, 60)
                 .add(ATTACK_KNOCKBACK, 4)
                 .add(ATTACK_DAMAGE, 12)
-                .add(FLYING_SPEED, 0.1)
+                .add(FLYING_SPEED, 0.4)
                 .add(WREntityTypes.Attributes.PROJECTILE_DAMAGE.get(), 4);
     }
 
