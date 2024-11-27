@@ -40,6 +40,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec2;
+import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
@@ -345,23 +346,25 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.4F));
-        goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.1d, true));
-        goalSelector.addGoal(5, new MoveToHomeGoal(this));
-        goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
-        goalSelector.addGoal(7, new WRDragonBreedGoal(this));
-        goalSelector.addGoal(8, new AvoidEntityGoal<>(this, Player.class, 7f, 1.15f, 1f) {
+        //goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.4F));
+        //goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.1d, true));
+        //goalSelector.addGoal(5, new MoveToHomeGoal(this));
+        //goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
+        //goalSelector.addGoal(7, new WRDragonBreedGoal(this));
+        /*goalSelector.addGoal(8, new AvoidEntityGoal<>(this, Player.class, 7f, 1.15f, 1f) {
             @Override
             public boolean canUse() {
                 return !isTame() && !getHeldItem().isEmpty() && super.canUse();
             }
         });
 
-        goalSelector.addGoal(9, new RSScavengeGoal(1.1d));
-        goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
-        goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
-        goalSelector.addGoal(12, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.2f, 1.0f, 16.0f));
+         */
+
+        goalSelector.addGoal(9, new RSScavengeGoal(this));
+        //goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
+        //goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
+        //goalSelector.addGoal(12, new RandomLookAroundGoal(this));
+        //goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.2f, 1.0f, 16.0f));
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));
@@ -392,57 +395,85 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     }
 
 
-    class RSScavengeGoal extends MoveToBlockGoal {
-        private Container chest;
-        private int searchDelay = 20 + getRandom().nextInt(40) + 5;
+    class RSScavengeGoal extends AnimatedGoal {
+        private Container container;
+        private  BlockPos blockPos;
+        private boolean animationPlaying;
 
-        public RSScavengeGoal(double speed) {
-            super(EntityRooststalker.this, speed, 16);
+        public RSScavengeGoal(EntityRooststalker rooststalker) {
+            super(rooststalker);
         }
 
 
         @Override
         public boolean canUse() {
-            if (!isTame() && !hasItem() && super.canUse()) {
-                chest = getInventoryAtPosition();
-                if (chest != null && !chest.isEmpty()) {
-                    return true;
-
+            if (!isTame() && !hasItem()) {
+                BlockPos pos = findNearestContainer(blockPosition(),12,5);
+                if (pos != BlockPos.ZERO && pos != null){
+                    container = getInventoryAtPosition(pos);
+                    if (container !=null && !container.isEmpty()) {
+                        blockPos = pos;
+                        return true;
+                    }
                 }
             }
             return false;
         }
 
-        public void start() {
+        public BlockPos findNearestContainer(BlockPos mobPos, int searchRadius, int heightRange) {
+            BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
 
+            for (int dy = -heightRange; dy <= heightRange; dy++) { // Height difference
+                for (int dx = -searchRadius; dx <= searchRadius; dx++) { // X range
+                    for (int dz = -searchRadius; dz <= searchRadius; dz++) { // Z range
+                        mutablePos.setWithOffset(mobPos, dx, dy, dz);
+                        // Check if this position is valid
+                        if (isWithinRestriction(mutablePos) && level.getBlockEntity(mutablePos) instanceof Container) {
+                            return mutablePos.immutable();
+                        }
+                    }
+                }
+            }
+
+            return BlockPos.ZERO;
+        }
+
+
+        public void start() {
+            getNavigation().moveTo((double)((float)blockPos.getX()) + 0.5D, (double)blockPos.getY(), (double)((float)blockPos.getZ()) + 0.5D, 1.0F);
         }
 
         @Override
         public boolean canContinueToUse() {
-            return !hasItem() && chest != null && super.canContinueToUse();
+            if (container !=null){
+                if (animationPlaying) {
+                    return super.canContinueToUse();
+                }
+            }
+            return false;
         }
 
         @Override
         public void tick() {
             super.tick();
-
-            if (isReachedTarget()) {
-                if (hasItem()) return;
-                //TODO: MISSING ANIMATION
-                setAnimation("scavenging");
+            //If animation playing, scavenging has started, let it play out, then stop
+            if (animationPlaying){
+                if (super.canContinueToUse()) {
+                    super.tick();
+                } else {
+                    super.stop();
+                    stop();
+                }
+                //Else, continue searching if chest is close
+            } else if (blockPos.closerToCenterThan(position(), 1.0)) {
+                getNavigation().stop();
+                setDeltaMovement(Vec3.ZERO);
+                super.start("scavenge", 2, 20);
                 setScavenging(true);
+                animationPlaying = true;
+                if (container !=null && container instanceof ChestBlockEntity && ((ChestBlockEntity) container).openersCounter.getOpenerCount() == 0){
+                    interactChest(container, true);
 
-                if (chest == null) return;
-                if (chest instanceof ChestBlockEntity && ((ChestBlockEntity) chest).openersCounter.getOpenerCount() == 0)
-                    interactChest(chest, true);
-                if (!chest.isEmpty() && --searchDelay <= 0) {
-                    int index = getRandom().nextInt(chest.getContainerSize());
-                    ItemStack stack = chest.getItem(index);
-
-                    if (!stack.isEmpty()) {
-                        stack = chest.removeItemNoUpdate(index);
-                        getInventory().insertItem(ITEM_SLOT, stack, false);
-                    }
                 }
             }
         }
@@ -451,47 +482,51 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
         @Override
         public void stop() {
             super.stop();
-            interactChest(chest, false);
-            searchDelay = 20 + getRandom().nextInt(40) + 5;
+            interactChest(container, false);
             setScavenging(false);
+            animationPlaying = false;
         }
 
         /**
          * Returns the IInventory (if applicable) of the TileEntity at the specified position
          */
         @Nullable
-        public Container getInventoryAtPosition() {
+        public Container getInventoryAtPosition(BlockPos pos) {
             Container inv = null;
-            BlockState blockstate = level.getBlockState(blockPos);
+
+            BlockState blockstate = level.getBlockState(pos);
             Block block = blockstate.getBlock();
             if (blockstate.hasBlockEntity()) {
-                BlockEntity tileentity = level.getBlockEntity(blockPos);
+                BlockEntity tileentity = level.getBlockEntity(pos);
                 if (tileentity instanceof Container) {
                     inv = (Container) tileentity;
                     if (inv instanceof ChestBlockEntity && block instanceof ChestBlock)
-                        inv = ChestBlock.getContainer((ChestBlock) block, blockstate, level, blockPos, true);
+                        inv = ChestBlock.getContainer((ChestBlock) block, blockstate, level, pos, true);
                 }
             }
 
             return inv;
         }
 
-        /**
-         * Return true to set given position as destination
-         */
-        @Override
-        protected boolean isValidTarget(LevelReader world, BlockPos pos) {
-            return level.getBlockEntity(pos) instanceof Container;
-        }
 
         /**
          * Used to handle the chest opening animation when being used by the scavenger
          */
         private void interactChest(Container inventory, boolean open) {
-            if (!(inventory instanceof ChestBlockEntity chest)) return; // not a chest, ignore it
-
+            if (!(inventory instanceof ChestBlockEntity chest)) {
+                return;
+            }
             chest.openersCounter.openCount = open ? 1 : 0;
             chest.getLevel().blockEvent(chest.getBlockPos(), chest.getBlockState().getBlock(), 1, chest.openersCounter.getOpenerCount());
+            if (!chest.isEmpty() && open) {
+                int index = getRandom().nextInt(chest.getContainerSize());
+                ItemStack stack = chest.getItem(index);
+
+                if (!stack.isEmpty()) {
+                    stack = chest.removeItemNoUpdate(index);
+                    getInventory().insertItem(ITEM_SLOT, stack, false);
+                }
+            }
         }
     }
 }
