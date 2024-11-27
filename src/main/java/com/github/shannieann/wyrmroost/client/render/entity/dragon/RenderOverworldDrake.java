@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder;
+package com.github.shannieann.wyrmroost.client.render.entity.dragon;
 
 import com.github.shannieann.wyrmroost.client.model.entity.dragon.ModelOverworldDrake;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.layer.DragonArmorAndSaddleLayer;
@@ -15,8 +15,8 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
-public class OWDrakeRenderer<T extends EntityOverworldDrake> extends GeoEntityRenderer<T> {
-    public OWDrakeRenderer(EntityRendererProvider.Context renderManager) {
+public class RenderOverworldDrake<T extends EntityOverworldDrake> extends GeoEntityRenderer<T> {
+    public RenderOverworldDrake(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelOverworldDrake<>());
         this.addLayer(new DragonArmorAndSaddleLayer<>(this, true));
         this.addLayer(new DragonChestLayer<>(this));

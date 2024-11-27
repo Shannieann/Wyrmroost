@@ -206,10 +206,10 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
 
 
     @Override
-    public int determineVariant()
+    public String determineVariant()
     {
 
-        return getRandom().nextInt(5);
+        return String.valueOf(getRandom().nextInt(5));
     }
 
     @Override

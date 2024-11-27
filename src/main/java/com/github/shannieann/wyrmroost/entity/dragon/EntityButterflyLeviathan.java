@@ -232,8 +232,13 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
 
     @Override
-    public int determineVariant() {
-        return getRandom().nextDouble() < 0.02 ? -1 : 0 + getRandom().nextInt(2);
+    public String determineVariant() {
+        if (getRandom().nextDouble() < 0.02) return "special";
+        return switch (getRandom().nextInt(2)) {
+            case 1 -> "purple";
+            default -> "blue";
+        };
+
     }
 
     // ====================================
@@ -527,7 +532,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     @Override
     public Vec2 getTomeDepictionOffset() {
         return switch (getVariant()) {
-            case -1 -> new Vec2(1,4);
+            case "special" -> new Vec2(1,4);
             default -> new Vec2(0,4);
         };
     }
@@ -571,7 +576,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
     @Override
     public void doSpecialEffects() {
-        if (getVariant() == -1 && tickCount % 25 == 0) {
+        if (getVariant().equals("special") && tickCount % 25 == 0) {
             double x = getX() + (WRMathsUtility.nextDouble(getRandom()) * getBbWidth() + 1);
             double y = getY() + (getRandom().nextDouble() * getBbHeight() + 1);
             double z = getZ() + (WRMathsUtility.nextDouble(getRandom()) * getBbWidth() + 1);

@@ -28,16 +28,18 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<EntityButterflyLev
 
     @Override
     public ResourceLocation getTextureLocation(EntityButterflyLeviathan object) {
-        int variant = object.getVariant();
-        String variantString;
-        switch (variant) {
-            case -1 -> variantString = "base_special";
-            case 0 -> variantString = "base0";
-            case 1 -> variantString = "base1";
-            default -> variantString = "base0";
-        }
-        String textureLocation = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_"+variantString+".png";
+        String variantString = object.getVariant();
+        String textureLocation = getBFLTextureLocation(object) + ".png";
         return new ResourceLocation(Wyrmroost.MOD_ID, textureLocation);
+    }
+    public static String getBFLTextureLocation(EntityButterflyLeviathan object){
+        String variantString = object.getVariant();
+        if (object.isBaby()){
+            if (variantString.equals("special")) variantString = "special_baby";
+            else variantString = "baby";
+        }
+
+        return "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_"+variantString;
     }
 
     @Override
@@ -103,23 +105,12 @@ public class ModelButterflyLeviathan extends AnimatedGeoModel<EntityButterflyLev
 
         @Override
         protected ResourceLocation getEntityTexture(T entityIn) {
-            int variant = entityIn.getVariant();
             String variantString;
             if (entityIn.canPerformLightningAttack()) {
                 if (entityIn.isHatchling()){
-                    switch (variant) {
-                        case -1 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_special_baby.png";
-                        case 0 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base_baby.png";
-                        case 1 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base_baby.png";
-                        default -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base0_activated.png";
-                    }
+                    variantString = getBFLTextureLocation(entityIn) + ".png";
                 } else {
-                    switch (variant) {
-                        case -1 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_special_activated.png";
-                        case 0 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base0_activated.png";
-                        case 1 -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base1_activated.png";
-                        default -> variantString = "textures/entity/dragon/butterfly_leviathan/butterfly_leviathan_base0_activated.png";
-                    }
+                    variantString = getBFLTextureLocation(entityIn) + "_activated.png";
                 }
 
                 return new ResourceLocation(Wyrmroost.MOD_ID,variantString);

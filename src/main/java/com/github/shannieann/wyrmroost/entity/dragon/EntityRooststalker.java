@@ -137,7 +137,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
      * - Koala
      */
     @Override
-    public int determineVariant() {
+    public String determineVariant() {
         // Rare chance for albino. Otherwise, a random choice of the other 4 colors.
         // Since it is the digit in the tens place, we multiply by 10.
         int color = (getRandom().nextDouble() < 0.005) ? 40 : getRandom().nextInt(0, 4) * 10;
@@ -145,10 +145,11 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
         // Otherwise a random pattern
         int pattern = (getRandom().nextDouble() < 0.005) ? 5 : getRandom().nextInt(0, 5);
 
-        return color + pattern;
+        // TODO change this... im too lazy to rename the files lol
+        return String.valueOf(color + pattern);
     }
     public boolean isAlbino(){
-        return getVariant() >= 40;
+        return Integer.getInteger(getVariant()) >= 40;
     }
 
     // ====================================
@@ -298,7 +299,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     // ====================================
     @Override
     public void doSpecialEffects() {
-        if (getVariant() == -1 && tickCount % 25 == 0) {
+        if (isAlbino() && tickCount % 25 == 0) {
             double x = getX() + (WRMathsUtility.nextDouble(getRandom()) * 0.7d);
             double y = getY() + (getRandom().nextDouble() * 0.5d);
             double z = getZ() + (WRMathsUtility.nextDouble(getRandom()) * 0.7d);
@@ -308,10 +309,8 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
 
     @Override
     public Vec2 getTomeDepictionOffset() {
-        return switch (getVariant()) {
-            case -1 -> new Vec2(1, 0);
-            default -> new Vec2(0, 0);
-        };
+        return isAlbino()? new Vec2(1, 0) : new Vec2(0, 0);
+
     }
 
     // ====================================
