@@ -120,6 +120,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float adjustExtremityPitch;
     public float adjustmentExtremityPitch;
     public float groundMaxYaw;
+    // X rot for the entire body. These are client-side only
+    public float dragonXRotation;
 
     public Vec3 debugTarget;
     public int WAKE_UP_ANIMATION_TIME;
@@ -128,6 +130,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // Used in setting 1st person camera positions when flying but set in DragonRiderLayer & WRDragonRender
     public Vector3f cameraRotVector = new Vector3f();
     public Map<UUID, Vector3d> cameraBonePos = new HashMap<>();
+
 
     //TODO: CANCEL DAMAGE FROM CACTUS AND BERRY BUSHES AND OTHERS
 
@@ -150,7 +153,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<Boolean> CHESTED = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> YAW_UNLOCK = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
+
+    //public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
 
     /**
      * GENDER:
@@ -387,7 +391,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(HOME_POS, BlockPos.ZERO);
         entityData.define(AGE_PROGRESS, 0f);
 
-        entityData.define(DRAGON_X_ROTATION, 0f);
         super.defineSynchedData();
     }
 
@@ -892,14 +895,15 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         setEatingCooldown(Math.max(getEatingCooldown()-1,0));
         setBreedingCooldown(Math.max(getBreedingCooldown()-1,0));
 
-        if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0); // Shouldn't be rotated on ground or water
+        if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0, false); // Shouldn't be rotated on ground or water
         if (getDragonXRotation() != 0 && (getDeltaMovement().length() <= 0.25)){ // Every tick, slowly orient the dragon back to normal if its barely moving, so it isn't just awkwardly pointing down or up. Also if the player is upside down.
-            setDragonXRotation(Mth.approachDegrees(getDragonXRotation(), 0.0f, 1.0f));
+            setDragonXRotation(Mth.approachDegrees(getDragonXRotation(), 0.0f, 1.0f), false);
         }
         NavigationType properNavigator = getProperNavigator();
         if (properNavigator != this.getNavigationType()) {
             setNavigator(properNavigator);
         }
+
 
         // UPDATE AGE:
         // The entity's is updated once every minute (AGE_UPDATE_INTERVAL == 1200)
@@ -913,9 +917,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             sleepCooldown = Math.max(sleepCooldown-1,0);
         }
 
-        //YAW OPERATIONS:
-        //The following lines of code handle the dynamic yaw animations for entities...
-        if (isUsingSwimmingNavigator() && level.isClientSide){
+            //YAW OPERATIONS:
+            //The following lines of code handle the dynamic yaw animations for entities...
+        if (isUsingSwimmingNavigator() && level.isClientSide) {
             //Grab the change in the entity's Yaw, deltaYRot...
             //deltaYaw will tell us in which direction the entity is rotating...
             deltaYRot = this.yRot - prevYRot;
@@ -982,10 +986,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
                 //EXTREMITY PITCH OPERATIONS:
                 prevSetExtremityPitch = setExtremityPitch;
-                if (adjustExtremityPitch  > deltaPitch) {
+                if (adjustExtremityPitch > deltaPitch) {
                     adjustExtremityPitch = adjustExtremityPitch - adjustmentExtremityPitch;
                     adjustExtremityPitch = Math.max(adjustExtremityPitch, deltaPitch);
-                } else if (adjustExtremityPitch  < deltaPitch) {
+                } else if (adjustExtremityPitch < deltaPitch) {
                     adjustExtremityPitch = adjustExtremityPitch + adjustmentExtremityPitch;
                     adjustExtremityPitch = Math.min(adjustExtremityPitch, deltaPitch);
                 }
@@ -997,7 +1001,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 currentPitchRadians = targetPitchRadians;
             }
         }
+
     }
+
 
     public void clearAI() {
         jumping = false;
@@ -1186,8 +1192,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return new WRBodyControl(this);
     }
 
-    private float sinceLastUpdate = 1.0f;
-    private float bonusAcc = 0.0f;
 
     //Handles travel methods for the DragonEntity. If needed, can be overriden in specific subclasses.
     @Override
@@ -1251,6 +1255,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
 
+    private static final float SPEED_COEFFICIENT = 75f/7f;
+    private float currentSpeed = 0f;
     // Separated these methods to make it look cleaner. Also allows for subclasses to possibly override them if need be.
     protected void handleFreeFlyingRiding(float speed, LivingEntity livingentity) {
         // Convert to ground nav if applicable
@@ -1261,43 +1267,36 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
             //Set rotation based on input
         if (getDeltaMovement().length() >= 0.25) { // Don't allow them to rotate unless they're moving a lot!
-            float rotationChange;
-            if (ClientEvents.keybindFlight)
-                    // TODO maybe make these rotation values different for every dragon?
-                    // Bigger dragons would definitely be slower at rotating than smaller, more agile ones
-                rotationChange = ClientEvents.getClient().options.keyJump.isDown() ? 2.0f : WRKeybind.FLIGHT_DESCENT.isDown() ? -3.0f : 0;
-            else rotationChange = 0;
-                // Convert to real degrees (ex. 361 = 1)
+            float rotationChange = ClientEvents.getClient().options.keyJump.isDown() ? 2.0f : WRKeybind.FLIGHT_DESCENT.isDown() ? -3.0f : 0;
             float newRotation = getDragonXRotation() + rotationChange;
-                // Set dragon's body rotation (rendering handled in dragon entity renderer superclass)
-            setDragonXRotation(newRotation);
+            setDragonXRotation(newRotation, true);
         }
+
+        // Acceleration
+        float acceleration = ClientEvents.getClient().options.keyUp.isDown()? 0.01f : -0.01f; // TODO accelerate faster depending on dragon?
+        currentSpeed = Mth.clamp(currentSpeed + acceleration, 0f, speed*SPEED_COEFFICIENT);
+
+
+
             // Set direction to travel
         Vec3 lookVec = Vec3.directionFromRotation(-getDragonXRotation(), livingentity.getYRot());
         Vec3 moveVec = new Vec3(xxa, lookVec.y, zza);
-        if (moveVec.y!=0) moveVec.multiply(1, 0.5f, 1); // Half upward movement
+        //if (moveVec.y!=0) moveVec.multiply(1, 0.5f, 1); // Half upward movement
 
-            // Acceleration for diving speed boost
-        // (Also this just looks ugly)
-        bonusAcc = 0; //Mth.approach(bonusAcc, getFlyingAcceleration(), isFlyingUpward()? 0.06f : (bonusAcc < getFlyingAcceleration())? 0.03f : 0.025f);
-            // Speed needs to be multiplied to make the values not seemingly unreasonably large in attributes
-        this.setSpeed((speed) * (25.0f/3.0f) + bonusAcc);
-
-        if (ClientEvents.getClient().options.keyUp.isDown()) {
-                // update for "sliding" speed
-            sinceLastUpdate = 1.0f;
-            super.travel(moveVec);
-        } else { // If not moving, still update the slide before going to a stop. Sudden stopping looks kinda weird
-            sinceLastUpdate = Mth.clamp(sinceLastUpdate - 0.03f, 0.0f, 1.0f);
-            super.travel(moveVec.scale(sinceLastUpdate));
-        }
+        this.setSpeed(currentSpeed);
+        super.travel(moveVec);
     }
 
-    public void setDragonXRotation(float rotation){
-        getEntityData().set(DRAGON_X_ROTATION, (float) (rotation + Math.ceil(-rotation / 360) * 360)); //  Basically normalizes the rotation to a value between 0 and 360
+
+    // This is here so we can lerp the x rotation -- as minecraft does internally for pos and rot so rotation is smooth.
+    public void setDragonXRotation(float rotation, boolean wrapDegrees){
+        float rot = (wrapDegrees)?
+                (float) (rotation + Math.ceil(-rotation / 360) * 360)
+                : rotation;
+        dragonXRotation = rot;
     }
     public float getDragonXRotation(){
-        return getEntityData().get(DRAGON_X_ROTATION);
+        return dragonXRotation;
     }
 
     protected void handleGroundRiding(float speed, float groundX, float groundZ, Vec3 vec3d, LivingEntity livingentity) {
