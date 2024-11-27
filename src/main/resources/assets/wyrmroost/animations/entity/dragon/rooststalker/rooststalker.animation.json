@@ -5102,7 +5102,7 @@
 				}
 			}
 		},
-		"scavange ": {
+		"scavenge ": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2,
 			"bones": {
