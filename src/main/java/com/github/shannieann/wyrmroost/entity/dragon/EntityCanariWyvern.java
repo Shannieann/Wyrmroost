@@ -32,8 +32,7 @@ import java.util.EnumSet;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 
-public class EntityCanariWyvern extends WRDragonEntity implements IBreedable
-{
+public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
     /*
     private static final EntitySerializer<EntityCanariWyvern> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
