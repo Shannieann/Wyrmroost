@@ -641,7 +641,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
         goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
         goalSelector.addGoal(11, new RandomLookAroundGoal(this));
         // TODO Replace this goal with a different WRFlyAwayWhenLosingGoal. Pretty sure RRs would just walk away and not use their wings which... isn't that smart.
-        goalSelector.addGoal(3, new WRRunWhenLosingGoal(this, 0.2f, 0.1f, 20f, 1.15f, 1f));
+        //goalSelector.addGoal(3, new WRRunWhenLosingGoal(this, 0.2f, 0.1f, 20f, 1.15f, 1f));
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));

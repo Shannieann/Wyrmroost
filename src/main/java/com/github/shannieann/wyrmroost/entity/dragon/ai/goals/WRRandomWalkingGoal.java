@@ -17,8 +17,7 @@ public class WRRandomWalkingGoal extends Goal {
     protected int radius;
     protected int verticalDistance;
 
-    public WRRandomWalkingGoal(WRDragonEntity entity, double speedIn, int radius, int verticalDistance)
-    {
+    public WRRandomWalkingGoal(WRDragonEntity entity, double speedIn, int radius, int verticalDistance) {
         this.entity = entity;
         this.speed = speedIn;
         this.setFlags(EnumSet.of(Flag.MOVE));

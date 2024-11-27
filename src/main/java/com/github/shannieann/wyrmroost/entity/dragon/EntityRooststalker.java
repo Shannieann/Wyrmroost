@@ -361,7 +361,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
         goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
         goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
         goalSelector.addGoal(12, new RandomLookAroundGoal(this));
-        goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.2f, 1.0f, 16.0f, 1.5f, 1.5f));
+        goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.2f, 1.0f, 16.0f));
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
         targetSelector.addGoal(3, new DefendHomeGoal(this));
@@ -429,7 +429,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
             if (isReachedTarget()) {
                 if (hasItem()) return;
                 //TODO: MISSING ANIMATION
-                //setAnimation("scavenging");
+                setAnimation("scavenging");
                 setScavenging(true);
 
                 if (chest == null) return;
