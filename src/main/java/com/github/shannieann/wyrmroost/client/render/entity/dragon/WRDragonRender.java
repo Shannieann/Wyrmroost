@@ -34,7 +34,8 @@ public abstract class WRDragonRender<T extends WRDragonEntity> extends GeoEntity
     public void render(GeoModel model, T animatable, float partialTick, RenderType type, PoseStack poseStack, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
 
         poseStack.pushPose();
-        handleXRotation(model, animatable);
+        if (animatable.dragonCanFly())
+            handleXRotation(model, animatable);
         super.render(model, animatable, partialTick, type, poseStack, bufferSource, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         poseStack.popPose();
     }

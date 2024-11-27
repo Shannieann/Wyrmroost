@@ -43,26 +43,6 @@ public class ModelRooststalker extends AnimatedGeoModel<EntityRooststalker> {
         return ANIMATION_RESOURCE;
     }
 
-    public static class RooststalkerEyesLayer<T extends EntityRooststalker> extends DragonEyesLayer<T> {
-
-        private static final ResourceLocation EYES_TEXTURE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes.png");
-        private static final ResourceLocation EYES_TEXTURE_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_sp.png");
-
-        public RooststalkerEyesLayer(IGeoRenderer<T> entityRendererIn) {
-            super(entityRendererIn, ModelRooststalker.MODEL_RESOURCE);
-        }
-
-
-        @Override
-        protected ResourceLocation getEntityTexture(T entityIn) {
-            if (entityIn.getSleeping()) return BLANK_EYES;
-            switch (entityIn.getVariant()){
-                case -1 -> {return EYES_TEXTURE_SPECIAL;}
-                default -> {return EYES_TEXTURE;}
-            }
-        }
-
-    }
 
     public static class RooststalkerMouthItemLayer< T extends EntityRooststalker> extends GeoLayerRenderer<T>{
 

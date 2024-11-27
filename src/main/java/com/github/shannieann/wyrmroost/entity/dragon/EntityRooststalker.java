@@ -119,7 +119,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     // ====================================
 
     /**
-     * A few things to note for Rooststalker here:
+     * A few things to note for Rooststalkers here:
      * - We can't separate the pattern and the color because the pattern changes depending on the color.
      * - The digit in the tens place decides color
      * - 0 is the default red-brown color
@@ -146,6 +146,9 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
         int pattern = (getRandom().nextDouble() < 0.005) ? 5 : getRandom().nextInt(0, 5);
 
         return color + pattern;
+    }
+    public boolean isAlbino(){
+        return getVariant() >= 40;
     }
 
     // ====================================

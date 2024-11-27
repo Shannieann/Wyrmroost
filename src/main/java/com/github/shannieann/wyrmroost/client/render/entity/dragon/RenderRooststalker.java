@@ -1,19 +1,32 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon;
 
+import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.model.entity.dragon.ModelRooststalker;
+import com.github.shannieann.wyrmroost.client.render.entity.dragon.layer.DragonEyesLayer;
 import com.github.shannieann.wyrmroost.entity.dragon.EntityRooststalker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.resources.ResourceLocation;
+import software.bernie.geckolib3.renderers.geo.layer.LayerGlowingAreasGeo;
 
 public class RenderRooststalker extends WRDragonRender<EntityRooststalker> {
-        public RenderRooststalker(EntityRendererProvider.Context renderManager) {
-            super(renderManager, new ModelRooststalker());
-            this.addLayer(new ModelRooststalker.RooststalkerMouthItemLayer<>(this));
-            this.addLayer(new ModelRooststalker.RooststalkerEyesLayer<>(this));
+    private static final ResourceLocation EYES_TEXTURE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes.png");
+    private static final ResourceLocation EYES_TEXTURE_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_sp.png");
 
-        }
+
+    public RenderRooststalker(EntityRendererProvider.Context renderManager) {
+        super(renderManager, new ModelRooststalker());
+        this.addLayer(new DragonEyesLayer<>(this,
+                this::getTextureLocation,
+                getGeoModelProvider()::getModelLocation,
+                (entity) -> entity.isAlbino()? EYES_TEXTURE_SPECIAL : EYES_TEXTURE));
+        this.addLayer(new ModelRooststalker.RooststalkerMouthItemLayer<>(this));
+
+
+    }
 
     @Override
     public void renderLate(EntityRooststalker animatable, PoseStack poseStack, float partialTick, MultiBufferSource bufferSource,
