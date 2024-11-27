@@ -121,8 +121,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float adjustmentExtremityPitch;
     public float groundMaxYaw;
     // X rot for the entire body. These are client-side only
-    public float dragonXRotation;
-
     public Vec3 debugTarget;
     public int WAKE_UP_ANIMATION_TIME;
     public int WAKE_UP_WATER_ANIMATION_TIME;
@@ -154,8 +152,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> YAW_UNLOCK = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
-    //public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
-
     /**
      * GENDER:
      * 0 --> FEMALE
@@ -174,6 +170,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public static final EntityDataAccessor<Integer> BREEDING_COUNT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
+    public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     private static final int AGE_UPDATE_INTERVAL = 1200;
 
     protected static int IDLE_ANIMATION_VARIANTS;
@@ -378,6 +375,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         entityData.define(SLEEPING, false);
         entityData.define(SITTING, false);
+
+        entityData.define(DRAGON_X_ROTATION, 0f);
 
         entityData.define(ARMOR, ItemStack.EMPTY);
         entityData.define(SADDLED, false);
@@ -710,14 +709,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return pos == null? BlockPos.ZERO : pos;
     }
 
-    @javax.annotation.Nullable
+    @Nullable
     public BlockPos getHomePos()
     {
         BlockPos pos = entityData.get(HOME_POS);
         return pos == BlockPos.ZERO? null : pos;
     }
 
-    public void setHomePos(@javax.annotation.Nullable BlockPos pos)
+    public void setHomePos(@Nullable BlockPos pos)
     {
         entityData.set(HOME_POS, pos == null? BlockPos.ZERO : pos);
     }
@@ -1273,10 +1272,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
         // Acceleration
-        float acceleration = ClientEvents.getClient().options.keyUp.isDown()? 0.01f : -0.01f; // TODO accelerate faster depending on dragon?
+        float acceleration = ClientEvents.getClient().options.keyUp.isDown()? 0.02f : -0.01f; // TODO accelerate faster depending on dragon?
         currentSpeed = Mth.clamp(currentSpeed + acceleration, 0f, speed*SPEED_COEFFICIENT);
-
-
 
             // Set direction to travel
         Vec3 lookVec = Vec3.directionFromRotation(-getDragonXRotation(), livingentity.getYRot());
@@ -1288,15 +1285,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
 
-    // This is here so we can lerp the x rotation -- as minecraft does internally for pos and rot so rotation is smooth.
     public void setDragonXRotation(float rotation, boolean wrapDegrees){
         float rot = (wrapDegrees)?
                 (float) (rotation + Math.ceil(-rotation / 360) * 360)
                 : rotation;
-        dragonXRotation = rot;
+        getEntityData().set(DRAGON_X_ROTATION, rot);
     }
+
+
     public float getDragonXRotation(){
-        return dragonXRotation;
+        return getEntityData().get(DRAGON_X_ROTATION);
+
     }
 
     protected void handleGroundRiding(float speed, float groundX, float groundZ, Vec3 vec3d, LivingEntity livingentity) {
