@@ -18,9 +18,8 @@ public class RenderRooststalker extends WRDragonRender<EntityRooststalker> {
     public RenderRooststalker(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelRooststalker());
         this.addLayer(new DragonEyesLayer<>(this,
-                this::getTextureLocation,
-                getGeoModelProvider()::getModelLocation,
-                (entity) -> entity.isAlbino()? EYES_TEXTURE_SPECIAL : EYES_TEXTURE));
+                (entity) -> entity.isAlbino()? EYES_TEXTURE_SPECIAL : EYES_TEXTURE,
+                getGeoModelProvider()::getModelLocation));
         this.addLayer(new ModelRooststalker.RooststalkerMouthItemLayer<>(this));
 
 

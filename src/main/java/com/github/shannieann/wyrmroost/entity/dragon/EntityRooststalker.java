@@ -149,7 +149,9 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
         return String.valueOf(color + pattern);
     }
     public boolean isAlbino(){
-        return Integer.getInteger(getVariant()) >= 40;
+        Integer i = Integer.getInteger(getVariant());
+        if (i == null) return false;
+        return i >= 40;
     }
 
     // ====================================

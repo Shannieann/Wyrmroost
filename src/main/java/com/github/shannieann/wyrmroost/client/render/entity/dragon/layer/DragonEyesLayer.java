@@ -18,8 +18,7 @@ import java.util.function.Function;
 public class DragonEyesLayer<T extends WRDragonEntity> extends AbstractLayerGeo<T> {
 
     // TODO make blinking/closing eyes not use this... instead use offset eyes in the model (might need to ask modelers for this)
-    protected static final ResourceLocation BLANK_EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png");
-    protected final Function<T, ResourceLocation> renderType;
+    public static final ResourceLocation BLANK_EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png");
 
     @Override
     public RenderType getRenderType(ResourceLocation textureLocation) {
@@ -28,10 +27,8 @@ public class DragonEyesLayer<T extends WRDragonEntity> extends AbstractLayerGeo<
 
     public DragonEyesLayer(GeoEntityRenderer<T> entityRendererIn,
                            Function<T, ResourceLocation> modelResource,
-                           Function<T, ResourceLocation> textureResource,
-                           Function<T, ResourceLocation> renderTypeTexture) {
+                           Function<T, ResourceLocation> textureResource) {
         super(entityRendererIn, modelResource, textureResource);
-        this.renderType= renderTypeTexture;
     }
 
     @Override
@@ -39,7 +36,7 @@ public class DragonEyesLayer<T extends WRDragonEntity> extends AbstractLayerGeo<
         ResourceLocation location;
         if (entityLivingBaseIn.isSleeping()){
             location = BLANK_EYES;
-        } else location = renderType.apply(entityLivingBaseIn);
+        } else location = funcGetCurrentTexture.apply(entityLivingBaseIn);
 
         reRenderCurrentModelInRenderer(entityLivingBaseIn, partialTicks, matrixStackIn, bufferIn, packedLightIn,
                 RenderType.eyes(location));
