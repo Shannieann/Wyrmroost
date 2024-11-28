@@ -12,8 +12,7 @@ import java.util.function.Predicate;
 
 
 public final class WRMathsUtility {
-    private WRMathsUtility()
-    {/* good try */}
+    private WRMathsUtility() {}
 
     public static final float PI = (float) Math.PI;
 
