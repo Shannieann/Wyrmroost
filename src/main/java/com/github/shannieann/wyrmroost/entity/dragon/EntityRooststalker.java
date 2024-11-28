@@ -5,6 +5,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDragonBreedGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundMoveControl;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import net.minecraft.core.BlockPos;
@@ -59,8 +60,9 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     private static final EntityDataAccessor<Boolean> SCAVENGING = SynchedEntityData.defineId(EntityRooststalker.class, EntityDataSerializers.BOOLEAN);
 
 
-    public EntityRooststalker(EntityType<? extends EntityRooststalker> stalker, Level level) {
-        super(stalker, level);
+    public EntityRooststalker(EntityType<? extends EntityRooststalker> rooststalker, Level level) {
+        super(rooststalker, level);
+        this.setNavigator(NavigationType.GROUND);
     }
 
 
@@ -191,7 +193,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
 
     @Override
     public float getStepHeight() {
-        return 0;
+        return 1;
     }
 
     @Override
@@ -356,7 +358,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
         super.registerGoals();
         //goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.4F));
         //goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.1d, true));
-        //goalSelector.addGoal(5, new MoveToHomeGoal(this));
+        goalSelector.addGoal(5, new MoveToHomeGoal(this));
         //goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         //goalSelector.addGoal(7, new WRDragonBreedGoal(this));
         /*goalSelector.addGoal(8, new AvoidEntityGoal<>(this, Player.class, 7f, 1.15f, 1f) {
@@ -406,6 +408,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     class RSScavengeGoal extends AnimatedGoal {
         private Container container;
         private  BlockPos openPos;
+        private BlockPos chestPos;
         private Direction facingDirection;
         private boolean animationPlaying;
 
@@ -417,11 +420,10 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
         @Override
         public boolean canUse() {
             if (!isTame() && !hasItem()) {
-                BlockPos pos = findNearestChest(blockPosition(),12,5);
-                if (pos != BlockPos.ZERO && pos != null && facingDirection !=null){
-                    container = getInventoryAtPosition(pos);
+                BlockPos chestPos = findNearestChest(blockPosition(),12,5);
+                if (chestPos != BlockPos.ZERO && chestPos != null && facingDirection !=null){
+                    container = getInventoryAtPosition(chestPos);
                     if (container !=null && !container.isEmpty()) {
-                        openPos = pos;
                         return true;
                     }
                 }
@@ -443,11 +445,14 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
                             if (type != ChestType.SINGLE) {
                                 facing = adjustFacingForDoubleChest(blockState, mutablePos, facing);
                             }
+                            BlockPos blockPos = mutablePos.immutable();
                             //Offset the position, so we get the correct blockPos where the chest would open...
-                            mutablePos.relative(facing);
+                            blockPos = blockPos.relative(facing,1);
                             //Check if the position is valid to walk to
-                            if (level.getBlockState(mutablePos).isAir()) {
+                            if (level.getBlockState(blockPos).isAir()) {
                                 facingDirection = facing;
+                                openPos = blockPos;
+                                //Return the actual chest position
                                 return mutablePos.immutable();
                             }
                         }
@@ -471,7 +476,11 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
 
 
         public void start() {
-            getNavigation().moveTo((double)((float)openPos.getX()) + 0.5D, (double)openPos.getY(), (double)((float)openPos.getZ()) + 0.5D, 1.0F);
+            System.out.println("MOVING TO:"+openPos);
+            if (getMoveControl() instanceof WRGroundMoveControl){
+                System.out.println("WR MOVE CONTROL");
+            }
+            getNavigation().moveTo(openPos.getX()+0.5, openPos.getY()-1, openPos.getZ()+0.5, 1.0F);
         }
 
         @Override
@@ -496,7 +505,8 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
                     stop();
                 }
                 //Else, continue searching if chest is close
-            } else if (openPos.closerToCenterThan(position(), 1.0)) {
+            }
+            /*else if (openPos.closerToCenterThan(position(), 0.2)) {
                 getNavigation().stop();
                 setDeltaMovement(Vec3.ZERO);
                 //Rotate entity to face chest
@@ -509,6 +519,8 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
 
                 }
             }
+
+             */
         }
 
 
