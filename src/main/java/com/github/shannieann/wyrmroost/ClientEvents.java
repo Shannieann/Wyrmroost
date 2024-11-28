@@ -196,8 +196,6 @@ public class ClientEvents {
         event.setRoll(zRot + event.getRoll());
     }
 
-
-
     public static double performCollisionCalculations(double maximumInitialDistance, Entity entity, Player player) {
         Camera camera = getClient().gameRenderer.getMainCamera();
         Vector3f lookVector = camera.getLookVector();
@@ -206,8 +204,7 @@ public class ClientEvents {
                 lookVector.x() * cameraDistance,
                 lookVector.y() * cameraDistance,
                 lookVector.z() * cameraDistance
-        );;
-
+        );
 
         // Array of vectors defining a cube for offset positions
         Vec3[] offsets = {
@@ -269,32 +266,24 @@ public class ClientEvents {
         event.setFOV(fov);
     }
 
-    
-    // =====================
 
-    // for class loading issues
-    public static Minecraft getClient()
-    {
+    public static Minecraft getClient() {
         return Minecraft.getInstance();
     }
 
-    public static ClientLevel getLevel()
-    {
+    public static ClientLevel getLevel() {
         return getClient().level;
     }
 
-    public static Player getPlayer()
-    {
+    public static Player getPlayer() {
         return getClient().player;
     }
 
-    public static Vec3 getProjectedView()
-    {
+    public static Vec3 getProjectedView() {
         return getClient().gameRenderer.getMainCamera().getPosition();
     }
 
-    public static float getPartialTicks()
-    {
+    public static float getPartialTicks() {
         return getClient().getFrameTime();
     }
 
