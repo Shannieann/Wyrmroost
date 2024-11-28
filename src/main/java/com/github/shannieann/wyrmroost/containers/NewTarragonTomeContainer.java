@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.containers;
 
-import com.github.shannieann.wyrmroost.ClientEvents;
+import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.containers.util.DynamicSlot;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.item.DragonArmorItem;
