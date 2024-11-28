@@ -107,14 +107,15 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     //      A.1) Entity Data: AGE
     // ====================================
 
+
     @Override
     public float ageProgressAmount() {
-        return 0;
+        return WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonBreedingConfig.ageProgress.get()/100F;
     }
 
     @Override
     public float initialBabyScale() {
-        return 0;
+        return 0.2F;
     }
 
     // ====================================
