@@ -404,7 +404,8 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
 
     class RSScavengeGoal extends AnimatedGoal {
         private Container container;
-        private  BlockPos blockPos;
+        private  BlockPos openPos;
+        private Direction facingDirection;
         private boolean animationPlaying;
 
         public RSScavengeGoal(EntityRooststalker rooststalker) {
@@ -416,10 +417,10 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
         public boolean canUse() {
             if (!isTame() && !hasItem()) {
                 BlockPos pos = findNearestChest(blockPosition(),12,5);
-                if (pos != BlockPos.ZERO && pos != null){
+                if (pos != BlockPos.ZERO && pos != null && facingDirection !=null){
                     container = getInventoryAtPosition(pos);
                     if (container !=null && !container.isEmpty()) {
-                        blockPos = pos;
+                        openPos = pos;
                         return true;
                     }
                 }
@@ -445,6 +446,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
                             mutablePos.relative(facing);
                             //Check if the position is valid to walk to
                             if (level.getBlockState(mutablePos).isAir()) {
+                                facingDirection = facing;
                                 return mutablePos.immutable();
                             }
                         }
@@ -468,7 +470,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
 
 
         public void start() {
-            getNavigation().moveTo((double)((float)blockPos.getX()) + 0.5D, (double)blockPos.getY(), (double)((float)blockPos.getZ()) + 0.5D, 1.0F);
+            getNavigation().moveTo((double)((float)openPos.getX()) + 0.5D, (double)openPos.getY(), (double)((float)openPos.getZ()) + 0.5D, 1.0F);
         }
 
         @Override
@@ -493,9 +495,11 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
                     stop();
                 }
                 //Else, continue searching if chest is close
-            } else if (blockPos.closerToCenterThan(position(), 1.0)) {
+            } else if (openPos.closerToCenterThan(position(), 1.0)) {
                 getNavigation().stop();
                 setDeltaMovement(Vec3.ZERO);
+                //Rotate entity to face chest
+                setYRot(facingDirection.toYRot());
                 super.start("scavenge", 2, 20);
                 setScavenging(true);
                 animationPlaying = true;
