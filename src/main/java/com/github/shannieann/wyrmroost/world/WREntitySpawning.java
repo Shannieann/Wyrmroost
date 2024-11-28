@@ -24,7 +24,6 @@ public class WREntitySpawning {
         ResourceLocation biomeName = event.getName();
         if (biomeName == null) return;
         //TODO: Alphabetical Order
-        //TODO: Add missing entities once they work
         ResourceKey<Biome> biomeKey = ResourceKey.create(ForgeRegistries.Keys.BIOMES, biomeName);
         /*if (WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.LESSER_DESERTWYRM.get(), WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig, MobCategory.CREATURE, event);
@@ -35,9 +34,7 @@ public class WREntitySpawning {
         if (WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.SILVER_GLIDER.get(), WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig, MobCategory.CREATURE, event);
         }
-        if (WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.spawningConfig.biomeWhitelist, biomeKey)) {
-            registerEntityWorldSpawn(WREntityTypes.ROOSTSTALKER.get(), WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.spawningConfig, MobCategory.CREATURE, event);
-        }
+
         /*if (WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.CANARI_WYVERN.get(), WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig, MobCategory.CREATURE, event);
         }
