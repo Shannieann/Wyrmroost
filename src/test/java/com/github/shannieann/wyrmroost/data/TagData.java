@@ -220,7 +220,7 @@ public class TagData
             // wyrmroost
             builder.add(OVERWORLD_DRAKE.get(),
                     SILVER_GLIDER.get(),
-                    ROOST_STALKER.get(),
+                    ROOSTSTALKER.get(),
                     //BUTTERFLY_LEVIATHAN.get(),
                     //DRAGON_FRUIT_DRAKE.get(),
                     //CANARI_WYVERN.get(),

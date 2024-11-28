@@ -124,9 +124,9 @@ public class ClientEvents {
         event.registerEntityRenderer(WREntityTypes.BUTTERFLY_LEVIATHAN.get(), RenderButterflyLeviathan::new);
 
         event.registerEntityRenderer(WREntityTypes.LESSER_DESERTWYRM.get(), RenderLesserDesertwyrm::new);
-        event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RenderRooststalker::new);
+        event.registerEntityRenderer(WREntityTypes.ROOSTSTALKER.get(), RenderRooststalker::new);
 
-        //event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RoostStalkerRenderer2::new);
+        //event.registerEntityRenderer(WREntityTypes.ROOSTSTALKER.get(), RoostStalkerRenderer2::new);
         event.registerEntityRenderer(WREntityTypes.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
         event.registerEntityRenderer(WREntityTypes.SILVER_GLIDER.get(), SilverGliderRenderer::new);
         event.registerEntityRenderer(WREntityTypes.OVERWORLD_DRAKE.get(), RenderOverworldDrake::new);

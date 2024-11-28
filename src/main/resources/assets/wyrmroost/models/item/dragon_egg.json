@@ -32,7 +32,7 @@
       "predicate": {
         "wyrmroost:contained_dragon": 5.0
       },
-      "model": "wyrmroost:item/roost_stalker_egg"
+      "model": "wyrmroost:item/rooststalker_egg"
     },
     {
       "predicate": {

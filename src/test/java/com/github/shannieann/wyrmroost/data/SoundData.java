@@ -64,7 +64,7 @@ public class SoundData implements DataProvider
         add(WRSounds.ENTITY_OWDRAKE_DEATH.get());
         add(WRSounds.ENTITY_OWDRAKE_ROAR.get());
 
-        add(WRSounds.ENTITY_STALKER_IDLE.get(), array("wyrmroost:entity/roost_stalker/%s", "idle1", "idle2", "idle3"));
+        add(WRSounds.ENTITY_STALKER_IDLE.get(), array("wyrmroost:entity/ROOSTSTALKER/%s", "idle1", "idle2", "idle3"));
         add(WRSounds.ENTITY_STALKER_HURT.get());
         add(WRSounds.ENTITY_STALKER_DEATH.get());
 

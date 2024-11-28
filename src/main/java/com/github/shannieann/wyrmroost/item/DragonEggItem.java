@@ -161,7 +161,7 @@ public class DragonEggItem extends Item {
                 "wyrmroost:royal_red",
                 "wyrmroost:canari_wyvern",
                 "wyrmroost:overworld_drake",
-                "wyrmroost:roost_stalker",
+                "wyrmroost:rooststalker",
                 "wyrmroost:silver_glider",
                 "wyrmroost:alpine");
     }
