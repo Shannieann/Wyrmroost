@@ -47,33 +47,44 @@ public class KeybindHandler
         return process(context.get().getSender());
     }
 
-    public boolean process(Player player)
-    {
-
-        switch (key)
-        {
+    public boolean process(Player player) {
+        switch (key) {
             case MOUNT_KEY:
             case ALT_MOUNT_KEY:
-                Entity vehicle = player.getVehicle();
-                if (vehicle instanceof WRDragonEntity)
-                {
-                    WRDragonEntity dragon = ((WRDragonEntity) vehicle);
-                    if (dragon.isTame() && dragon.getControllingPlayer() == player)
-                        dragon.recievePassengerKeybind(key, mods, pressed);
-                }
+                handleMountKey(player);
                 break;
+
             case SWITCH_FLIGHT:
-                if (!pressed)
-                {
-                    boolean b = ClientEvents.keybindFlight = !ClientEvents.keybindFlight;
-                    String translate = "entity.wyrmroost.dragons.flight." + (b? "controlled" : "free");
-                    ClientEvents.getPlayer().displayClientMessage(new TranslatableComponent(translate), true);
-                }
+                handleSwitchFlight();
                 break;
+
             default:
-                Wyrmroost.LOG.warn(String.format("Recieved invalid keybind code: %s How tf did u break this", key));
+                logInvalidKeybind();
                 return false;
         }
         return true;
+    }
+
+    private void handleMountKey(Player player) {
+        Entity vehicle = player.getVehicle();
+        if (vehicle instanceof WRDragonEntity dragon) {
+            if (dragon.isTame() && dragon.getControllingPlayer() == player) {
+                dragon.recievePassengerKeybind(key, mods, pressed);
+            }
+        }
+    }
+
+    private void handleSwitchFlight() {
+        if (pressed) return;  // Only toggle flight state when the key is released
+
+        ClientEvents.keybindFlight = !ClientEvents.keybindFlight;
+        String flightState = ClientEvents.keybindFlight ? "controlled" : "free";
+        String translationKey = "entity.wyrmroost.dragons.flight." + flightState;
+
+        ClientEvents.getPlayer().displayClientMessage(new TranslatableComponent(translationKey), true);
+    }
+
+    private void logInvalidKeybind() {
+        Wyrmroost.LOG.warn(String.format("Received invalid keybind code: %s", key));
     }
 }
