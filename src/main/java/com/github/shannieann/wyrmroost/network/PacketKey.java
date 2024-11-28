@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.client;
+package com.github.shannieann.wyrmroost.network;
 
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DebuggingTool;
 import net.minecraft.network.FriendlyByteBuf;
