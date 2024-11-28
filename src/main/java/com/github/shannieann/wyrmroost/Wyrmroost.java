@@ -56,8 +56,7 @@ public class Wyrmroost
         return new ResourceLocation(MOD_ID, path);
     }
 
-    static
-    {
+    static {
         final String PROTOCOL_VERSION = "1.0";
         final SimpleChannel network = NetworkRegistry.ChannelBuilder
                 .named(id("network"))
