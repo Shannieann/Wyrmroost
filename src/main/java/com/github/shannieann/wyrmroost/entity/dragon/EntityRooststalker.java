@@ -8,6 +8,8 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDragonBreedGoal;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.core.Holder;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
@@ -39,6 +41,7 @@ import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.ChestType;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags;
@@ -408,7 +411,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
         @Override
         public boolean canUse() {
             if (!isTame() && !hasItem()) {
-                BlockPos pos = findNearestContainer(blockPosition(),12,5);
+                BlockPos pos = findNearestChest(blockPosition(),12,5);
                 if (pos != BlockPos.ZERO && pos != null){
                     container = getInventoryAtPosition(pos);
                     if (container !=null && !container.isEmpty()) {
@@ -420,22 +423,43 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
             return false;
         }
 
-        public BlockPos findNearestContainer(BlockPos mobPos, int searchRadius, int heightRange) {
+        public BlockPos findNearestChest(BlockPos mobPos, int searchRadius, int heightRange) {
             BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
-
             for (int dy = -heightRange; dy <= heightRange; dy++) { // Height difference
                 for (int dx = -searchRadius; dx <= searchRadius; dx++) { // X range
                     for (int dz = -searchRadius; dz <= searchRadius; dz++) { // Z range
                         mutablePos.setWithOffset(mobPos, dx, dy, dz);
-                        // Check if this position is valid
-                        if (isWithinRestriction(mutablePos) && level.getBlockEntity(mutablePos) instanceof Container) {
-                            return mutablePos.immutable();
+                        // Check if this position is valid and if we're dealing with a chest
+                        if (isWithinRestriction(mutablePos) && level.getBlockEntity(mutablePos) instanceof ChestBlockEntity) {
+                            BlockState blockState = level.getBlockState(mutablePos);
+                            Direction facing = blockState.getValue(ChestBlock.FACING);
+                            ChestType type = blockState.getValue(ChestBlock.TYPE);
+                            if (type != ChestType.SINGLE) {
+                                facing = adjustFacingForDoubleChest(blockState, mutablePos, facing);
+                            }
+                            //Offset the position, so we get the correct blockPos where the chest would open...
+                            mutablePos.relative(facing);
+                            //Check if the position is valid to walk to
+                            if (level.getBlockState(mutablePos).isAir()) {
+                                return mutablePos.immutable();
+                            }
                         }
                     }
                 }
             }
 
             return BlockPos.ZERO;
+        }
+
+        private Direction adjustFacingForDoubleChest(BlockState blockState, BlockPos pos, Direction facing) {
+            // Adjust the direction based on chest type
+            ChestType type = blockState.getValue(ChestBlock.TYPE);
+            if (type == ChestType.LEFT) {
+                return facing.getCounterClockWise(); // Adjust for left half of double chest
+            } else if (type == ChestType.RIGHT) {
+                return facing.getClockWise(); // Adjust for right half of double chest
+            }
+            return facing; // No adjustment needed for SINGLE
         }
 
 
