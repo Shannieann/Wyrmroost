@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.ClientEvents;
+import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
 import com.github.shannieann.wyrmroost.registry.WRItems;

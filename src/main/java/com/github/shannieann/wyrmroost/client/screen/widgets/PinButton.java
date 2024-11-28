@@ -1,6 +1,6 @@
 /*package com.github.shannieann.wyrmroost.client.screen.widgets;
 
-import com.github.shannieann.wyrmroost.ClientEvents;
+import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;

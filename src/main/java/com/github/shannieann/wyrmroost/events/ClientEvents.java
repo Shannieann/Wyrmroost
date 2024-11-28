@@ -1,5 +1,6 @@
-package com.github.shannieann.wyrmroost;
+package com.github.shannieann.wyrmroost.events;
 
+import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.PacketKey;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.*;

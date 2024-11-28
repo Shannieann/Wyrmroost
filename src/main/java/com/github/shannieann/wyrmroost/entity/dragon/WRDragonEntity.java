@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-import com.github.shannieann.wyrmroost.ClientEvents;
+import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;

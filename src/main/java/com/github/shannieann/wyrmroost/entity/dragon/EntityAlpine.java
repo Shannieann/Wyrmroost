@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-/*import com.github.shannieann.wyrmroost.ClientEvents;
+/*import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.client.model.entity.AlpineModel;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DragonBreedGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.FlyerWanderGoal;
