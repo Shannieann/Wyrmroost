@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.item;
 
+import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
@@ -169,12 +170,19 @@ public class DragonEggItem extends Item {
     //ToDo: ConfigHatchTimes
     private List<Integer> getHatchTimes() {
         return Arrays.asList(
+                //BFL
+                WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonBreedingConfig.hatchTime.get()*20,
+                //RR
                 100,
+                //CW
                 100,
+                //OWD
                 100,
+                //RS
+                WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonBreedingConfig.hatchTime.get()*20,
+                //SG
                 100,
-                100,
-                100,
+                //Al
                 100
         );
     }
