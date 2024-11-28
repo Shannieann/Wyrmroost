@@ -47,7 +47,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
     public InteractionResult tameLogic (Player tamer, ItemStack stack) {
         return InteractionResult.PASS;
     };
-    public Player pissedOffTarget;
+    public Player threatenTarget;
 
     public EntityCanariWyvern(EntityType<? extends WRDragonEntity> dragon, Level level)
     {
@@ -206,10 +206,10 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
 
 
     @Override
-    public int determineVariant()
+    public String determineVariant()
     {
 
-        return getRandom().nextInt(5);
+        return String.valueOf(getRandom().nextInt(5));
     }
 
     @Override
@@ -242,7 +242,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
 
     public boolean isPissed()
     {
-        return pissedOffTarget != null;
+        return threatenTarget != null;
     }
 
 
@@ -310,7 +310,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
                 getLookControl().setLookAt(target, 90, 90);
                 if (!isPissed())
                 {
-                    pissedOffTarget = target;
+                    threatenTarget = target;
                     clearAI();
                 }
 
@@ -322,7 +322,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
         public void stop()
         {
             target = null;
-            pissedOffTarget = null;
+            threatenTarget = null;
         }
     }
 

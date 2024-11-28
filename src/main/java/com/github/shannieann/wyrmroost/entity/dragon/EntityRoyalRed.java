@@ -173,15 +173,13 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
     // ====================================
 
     @Override
-    public int determineVariant() {
+    public String determineVariant() {
         LocalDate currentDate = LocalDate.now();
         if (currentDate.getMonth().equals(Month.APRIL) && currentDate.getDayOfMonth() == 1) // April fools RR
-            return -2;
-        if (!this.isNoAi()) { // For normal generation: Chance for melanistic variants
-            return getRandom().nextDouble() < 0.03 ? -1 : 0;
-        } else {  // TODO why tho?
-            return 0;
-        }
+            return "april";
+
+        return getRandom().nextDouble() < 0.03 ? "special" : "base";
+
     }
 
 
@@ -544,7 +542,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
     @Override
     public Vec2 getTomeDepictionOffset() {
         return switch (getVariant()) {
-            case -1 -> new Vec2(1, 5);
+            case "special" -> new Vec2(1, 5);
             default -> new Vec2(0, 5);
         };
     }

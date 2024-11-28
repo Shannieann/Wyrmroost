@@ -41,7 +41,6 @@ public class DragonRiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer
             int passengerIndex = 1;
             // Go through all the passengers.
             for (Entity passenger : dragon.getPassengers()) {
-                // To be honest I kind of forget why we remove the passenger before doing everything else but I know it's important to do.
                 ClientEvents.dragonRiders.remove(passenger.getUUID());
                 //float riderYaw = passenger.yRotO + (passenger.getYRot() - passenger.yRotO) * partialTicks;
                 float riderYaw = dragon.getYRot();
@@ -63,6 +62,7 @@ public class DragonRiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer
         if (model.getBone("rider" + passengerIndex).isEmpty()) {
             throw new ReportedException(CrashReport.forThrowable(new Throwable(), "Dragon should have a bone named 'rider" + passengerIndex + "' to have a rider layer!"));
         }
+
 
         // Get the rider bone, which should be present if the passenger is able to get to this spot.
         GeoBone bone = model.getBone("rider" + passengerIndex).get();

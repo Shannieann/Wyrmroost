@@ -216,7 +216,7 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable
     @Override
     public void doSpecialEffects()
     {
-        if (getVariant() == -1 && tickCount % 5 == 0)
+        if (getVariant().equals("special") && tickCount % 5 == 0)
         {
             double x = getX() + getRandom().nextGaussian();
             double y = getY() + getRandom().nextDouble();
@@ -234,12 +234,16 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable
     }
 
     @Override
-    public int  determineVariant()
+    public String determineVariant()
     {
         if (getRandom().nextDouble() < 0.002) {
-            return -1;
+            return "special";
         }
-        return getRandom().nextInt(3);
+        return switch (getRandom().nextInt(3)){
+            case 1 -> "green";
+            case 2 -> "blue";
+            default -> "yellow";
+        };
     }
 
     @Nullable
@@ -307,7 +311,7 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable
     @Override
     public Vec2 getTomeDepictionOffset() {
         return switch (getVariant()) {
-            case -1 -> new Vec2(1, 1);
+            case "special" -> new Vec2(1, 1);
             default -> new Vec2(0, 1);
         };
     }

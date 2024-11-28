@@ -33,6 +33,8 @@ public class NewTarragonTomeScreen extends AbstractContainerScreen<NewTarragonTo
         this.menu = container;
     }
 
+    private Vec2 offsetCache;
+
     @Override
     protected void renderBg(PoseStack pPoseStack, float pPartialTick, int pMouseX, int pMouseY) {
         // First we create the base of the ui
@@ -67,7 +69,8 @@ public class NewTarragonTomeScreen extends AbstractContainerScreen<NewTarragonTo
         final int xPixelsBetweenDepictions = 130, yPixelsBetweenDepictions = 56;
 
         // Then add the depiction based on the dragon.
-        Vec2 pos = dragon.getTomeDepictionOffset();
+
+        Vec2 pos = (offsetCache == null)? offsetCache = dragon.getTomeDepictionOffset(): offsetCache;
         blit(pPoseStack, this.leftPos + 25, this.topPos + 17, pos.x * xPixelsBetweenDepictions, pos.y * yPixelsBetweenDepictions, 126, 54, 256, 512);
     }
 

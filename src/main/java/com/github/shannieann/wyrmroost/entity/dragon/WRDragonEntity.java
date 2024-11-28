@@ -120,9 +120,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public float adjustExtremityPitch;
     public float adjustmentExtremityPitch;
     public float groundMaxYaw;
+    public float targetXRotation;
+    private int xRotLerpSteps;
     // X rot for the entire body. These are client-side only
-    public float dragonXRotation;
-
     public Vec3 debugTarget;
     public int WAKE_UP_ANIMATION_TIME;
     public int WAKE_UP_WATER_ANIMATION_TIME;
@@ -130,6 +130,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // Used in setting 1st person camera positions when flying but set in DragonRiderLayer & WRDragonRender
     public Vector3f cameraRotVector = new Vector3f();
     public Map<UUID, Vector3d> cameraBonePos = new HashMap<>();
+
 
 
     //TODO: CANCEL DAMAGE FROM CACTUS AND BERRY BUSHES AND OTHERS
@@ -154,8 +155,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> YAW_UNLOCK = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
-    //public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
-
     /**
      * GENDER:
      * 0 --> FEMALE
@@ -167,13 +166,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> SITTING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
-    public static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<String> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
     public static final EntityDataAccessor<Integer> EATING_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Integer> BREEDING_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Integer> BREEDING_COUNT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
+    public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     private static final int AGE_UPDATE_INTERVAL = 1200;
 
     protected static int IDLE_ANIMATION_VARIANTS;
@@ -374,10 +374,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(YAW_UNLOCK, false);
 
         entityData.define(GENDER, 0);
-        entityData.define(VARIANT, 0);
+        entityData.define(VARIANT, "");
 
         entityData.define(SLEEPING, false);
         entityData.define(SITTING, false);
+
+        entityData.define(DRAGON_X_ROTATION, 0f);
 
         entityData.define(ARMOR, ItemStack.EMPTY);
         entityData.define(SADDLED, false);
@@ -401,7 +403,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //ToDo: Add missing SaveData
         super.addAdditionalSaveData(nbt);
         nbt.putInt("Gender",getGender());
-        nbt.putInt("Variant",getVariant());
+        nbt.putString("Variant",getVariant());
 
         nbt.putBoolean("Sleeping",getSleeping());
         nbt.putBoolean("Sitting",getSitting());
@@ -426,7 +428,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         super.readAdditionalSaveData(nbt);
         setGender(nbt.getInt("Gender"));
-        setVariant(nbt.getInt("Variant"));
+        setVariant(nbt.getString("Variant"));
 
         setSleeping(nbt.getBoolean("Sleeping"));
         setSitting(nbt.getBoolean("Sitting"));
@@ -710,14 +712,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return pos == null? BlockPos.ZERO : pos;
     }
 
-    @javax.annotation.Nullable
+    @Nullable
     public BlockPos getHomePos()
     {
         BlockPos pos = entityData.get(HOME_POS);
         return pos == BlockPos.ZERO? null : pos;
     }
 
-    public void setHomePos(@javax.annotation.Nullable BlockPos pos)
+    public void setHomePos(@Nullable BlockPos pos)
     {
         entityData.set(HOME_POS, pos == null? BlockPos.ZERO : pos);
     }
@@ -805,18 +807,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      A.7) Entity Data: VARIANT
     // ====================================
 
-    public int determineVariant()
+    public String determineVariant()
     {
-        return 0;
+        return "";
     }
 
-    public int getVariant()
+    public String getVariant()
     {
-        return hasEntityDataAccessor(VARIANT) ? entityData.get(VARIANT) : 0;
+        return hasEntityDataAccessor(VARIANT) ? entityData.get(VARIANT) : "";
 
     }
 
-    public void setVariant(int variant)
+    public void setVariant(String variant)
     {
         entityData.set(VARIANT, variant);
     }
@@ -891,14 +893,27 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     @Override
     public void tick() {
+
+
         super.tick();
         setEatingCooldown(Math.max(getEatingCooldown()-1,0));
         setBreedingCooldown(Math.max(getBreedingCooldown()-1,0));
 
-        if (this.getNavigationType() != NavigationType.FLYING) setDragonXRotation(0, false); // Shouldn't be rotated on ground or water
-        if (getDragonXRotation() != 0 && (getDeltaMovement().length() <= 0.25)){ // Every tick, slowly orient the dragon back to normal if its barely moving, so it isn't just awkwardly pointing down or up. Also if the player is upside down.
-            setDragonXRotation(Mth.approachDegrees(getDragonXRotation(), 0.0f, 1.0f), false);
+        // X ROTATION
+        if (speciesCanFly()) {
+            if (this.getNavigationType() != NavigationType.FLYING)
+                setDragonXRotation(0, false); // Shouldn't be rotated on ground or water
+            if (getDragonXRotation() != 0 && (getDeltaMovement().length() <= 0.25)) { // Every tick, slowly orient the dragon back to normal if its barely moving, so it isn't just awkwardly pointing down or up. Also if the player is upside down.
+                setXRotationAndLerp(Mth.approachDegrees(getDragonXRotation(), 0.0f, 1.0f));
+            }
+            if (xRotLerpSteps > 0){ // Lerp X values so they're smooth! (LivingEntity does this too)
+                float oldX = getDragonXRotation();
+                float xRot = Mth.wrapDegrees(targetXRotation - oldX);
+                setDragonXRotation(oldX + xRot / this.xRotLerpSteps, true);
+                xRotLerpSteps--;
+            }
         }
+
         NavigationType properNavigator = getProperNavigator();
         if (properNavigator != this.getNavigationType()) {
             setNavigator(properNavigator);
@@ -1268,15 +1283,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             //Set rotation based on input
         if (getDeltaMovement().length() >= 0.25) { // Don't allow them to rotate unless they're moving a lot!
             float rotationChange = ClientEvents.getClient().options.keyJump.isDown() ? 2.0f : WRKeybind.FLIGHT_DESCENT.isDown() ? -3.0f : 0;
-            float newRotation = getDragonXRotation() + rotationChange;
-            setDragonXRotation(newRotation, true);
+            setXRotationAndLerp(targetXRotation + rotationChange);
         }
 
         // Acceleration
-        float acceleration = ClientEvents.getClient().options.keyUp.isDown()? 0.01f : -0.01f; // TODO accelerate faster depending on dragon?
+        float acceleration = ClientEvents.getClient().options.keyUp.isDown()? 0.02f : -0.01f; // TODO accelerate faster depending on dragon?
         currentSpeed = Mth.clamp(currentSpeed + acceleration, 0f, speed*SPEED_COEFFICIENT);
-
-
 
             // Set direction to travel
         Vec3 lookVec = Vec3.directionFromRotation(-getDragonXRotation(), livingentity.getYRot());
@@ -1288,15 +1300,22 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
 
-    // This is here so we can lerp the x rotation -- as minecraft does internally for pos and rot so rotation is smooth.
     public void setDragonXRotation(float rotation, boolean wrapDegrees){
         float rot = (wrapDegrees)?
                 (float) (rotation + Math.ceil(-rotation / 360) * 360)
                 : rotation;
-        dragonXRotation = rot;
+        getEntityData().set(DRAGON_X_ROTATION, rot);
     }
+    public void setXRotationAndLerp(float targetXRotation){
+        this.targetXRotation = targetXRotation;
+        xRotLerpSteps = 3;
+    }
+
+
+
     public float getDragonXRotation(){
-        return dragonXRotation;
+        return getEntityData().get(DRAGON_X_ROTATION);
+
     }
 
     protected void handleGroundRiding(float speed, float groundX, float groundZ, Vec3 vec3d, LivingEntity livingentity) {

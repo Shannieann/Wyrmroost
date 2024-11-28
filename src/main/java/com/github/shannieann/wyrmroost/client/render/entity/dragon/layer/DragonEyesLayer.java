@@ -8,31 +8,38 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
+import software.bernie.geckolib3.renderers.geo.layer.AbstractLayerGeo;
 
-public abstract class DragonEyesLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
+import java.util.function.Function;
+
+public class DragonEyesLayer<T extends WRDragonEntity> extends AbstractLayerGeo<T> {
 
     // TODO make blinking/closing eyes not use this... instead use offset eyes in the model (might need to ask modelers for this)
-    protected static final ResourceLocation BLANK_EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png");
-    protected final ResourceLocation MODEL_RESOURCE;
+    public static final ResourceLocation BLANK_EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png");
 
     @Override
     public RenderType getRenderType(ResourceLocation textureLocation) {
         return RenderType.eyes(textureLocation);
     }
 
-    public DragonEyesLayer(IGeoRenderer<T> entityRendererIn, ResourceLocation resource) {
-        super(entityRendererIn);
-        this.MODEL_RESOURCE = resource;
+    public DragonEyesLayer(GeoEntityRenderer<T> entityRendererIn,
+                           Function<T, ResourceLocation> modelResource,
+                           Function<T, ResourceLocation> textureResource) {
+        super(entityRendererIn, modelResource, textureResource);
     }
 
     @Override
     public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        RenderType cameo = getRenderType(getEntityTexture(entityLivingBaseIn));
-        matrixStackIn.pushPose();
-        this.getRenderer().render(this.getEntityModel().getModel(MODEL_RESOURCE), entityLivingBaseIn, partialTicks, cameo, matrixStackIn, bufferIn,
-                bufferIn.getBuffer(cameo), packedLightIn, OverlayTexture.NO_OVERLAY, 1f, 1f, 1f, 1f);
-        matrixStackIn.popPose();
+        ResourceLocation location;
+        if (entityLivingBaseIn.isSleeping()){
+            location = BLANK_EYES;
+        } else location = funcGetCurrentTexture.apply(entityLivingBaseIn);
+
+        reRenderCurrentModelInRenderer(entityLivingBaseIn, partialTicks, matrixStackIn, bufferIn, packedLightIn,
+                RenderType.eyes(location));
     }
+
 }

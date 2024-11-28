@@ -4,7 +4,7 @@ import com.github.shannieann.wyrmroost.client.PacketKey;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.*;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.CanariWyvernRenderer;
-import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.OWDrakeRenderer;
+import com.github.shannieann.wyrmroost.client.render.entity.dragon.RenderOverworldDrake;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.SilverGliderRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon_egg.RenderDragonEgg;
 import com.github.shannieann.wyrmroost.client.render.entity.effect.RenderLightningNova;
@@ -128,7 +128,7 @@ public class ClientEvents {
         //event.registerEntityRenderer(WREntityTypes.ROOST_STALKER.get(), RoostStalkerRenderer2::new);
         event.registerEntityRenderer(WREntityTypes.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
         event.registerEntityRenderer(WREntityTypes.SILVER_GLIDER.get(), SilverGliderRenderer::new);
-        event.registerEntityRenderer(WREntityTypes.OVERWORLD_DRAKE.get(), OWDrakeRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.OVERWORLD_DRAKE.get(), RenderOverworldDrake::new);
 
 
         event.registerEntityRenderer(WREntityTypes.SOUL_CRYSTAL.get(), ThrownItemRenderer::new);

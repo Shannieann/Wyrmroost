@@ -177,12 +177,12 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
     // ====================================
 
     @Override
-    public int determineVariant()
+    public String determineVariant()
     {
-        if (getRandom().nextDouble() < 0.008) return -1;
+        if (getRandom().nextDouble() < 0.008) return "special";
 
-        if (Biome.getBiomeCategory(level.getBiome(blockPosition())) == Biome.BiomeCategory.SAVANNA) return 1;
-        return 0;
+        if (Biome.getBiomeCategory(level.getBiome(blockPosition())) == Biome.BiomeCategory.SAVANNA) return "savanna";
+        return "plains";
     }
 
     // ====================================
@@ -486,7 +486,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
     @Override
     public Vec2 getTomeDepictionOffset() {
         return switch (getVariant()) {
-            case -1 -> new Vec2(1,3);
+            case "special" -> new Vec2(1,3);
             default -> new Vec2(0,3);
         };
     }
