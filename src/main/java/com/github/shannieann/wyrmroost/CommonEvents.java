@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost;
 
+import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.item.LazySpawnEggItem;
 import com.github.shannieann.wyrmroost.item.base.ArmorBase;
@@ -106,27 +107,31 @@ public class CommonEvents {
     public static void debugStick(PlayerInteractEvent.RightClickItem event) {
         Player player = event.getPlayer();
         ItemStack stack = player.getItemInHand(event.getHand());
-        if (stack.getItem() != Items.STICK || !stack.getHoverName().getString().equals("Debug Stick"))
+
+        if (stack.getItem() != Items.STICK || !stack.getHoverName().getString().equals("Debug Stick")) {
             return;
-        EntityHitResult ertr = WRMathsUtility.clipEntities(event.getPlayer(), 50, 1, null);
-        if (ertr != null) {
-            event.setCanceled(true);
-            event.setCancellationResult(InteractionResult.SUCCESS);
+        }
 
-            Entity entity = ertr.getEntity();
-            entity.refreshDimensions();
+        // Clip entities in range and get the hit result
+        EntityHitResult entityHitResult = WRMathsUtility.clipEntities(player, 50, 1, null);
+        if (entityHitResult == null) {
+            return;
+        }
 
-            if (!(entity instanceof WRDragonEntity)) return;
-            WRDragonEntity dragon = (WRDragonEntity) entity;
+        // Cancel the event and mark as successful interaction
+        event.setCanceled(true);
+        event.setCancellationResult(InteractionResult.SUCCESS);
 
-            /*
-            if (player.isShiftKeyDown()) dragon.tame(true, player);
-            else
-            {
-                if (dragon.level.isClientSide) DebugScreen.open(dragon); AnimateScreen.open(dragon);
+        Entity entity = entityHitResult.getEntity();
+        entity.refreshDimensions();
+
+        // Handle dragon-specific logic
+        if (entity instanceof WRDragonEntity dragon) {
+            if (dragon instanceof EntityButterflyLeviathan) {
+
             }
-            
-             */
+
+            // Future dragon-related actions can go here
         }
     }
 
@@ -160,23 +165,3 @@ public class CommonEvents {
         }
     }
 }
-
-    /*
-    public static void onPlayerTick(LivingEvent.LivingUpdateEvent event) {
-        if (event.getEntityLiving() instanceof Player) {
-            Player player = (Player) event.getEntityLiving();
-            Entity vehicle = player.getVehicle();
-            if (vehicle instanceof WRDragonEntity) {
-                float vehicleYaw = ((WRDragonEntity)vehicle).getYRot();
-                float yaw = player.yRot;
-                float maxDifference = 1;
-                if (yaw > vehicleYaw+maxDifference) {
-                    yaw = vehicleYaw+maxDifference;
-                } else if (yaw < vehicleYaw-maxDifference) {
-                    yaw = vehicleYaw-maxDifference;
-                }
-                player.yRot = yaw;
-            }
-        }
-
-     */
