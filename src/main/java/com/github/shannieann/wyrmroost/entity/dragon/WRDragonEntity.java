@@ -363,6 +363,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
 
 
+    // TODO reduce the amount of shared entity data... this amount could be burdensome on the server
     @Override
     protected void defineSynchedData()
     {
@@ -370,11 +371,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(ANIMATION_TYPE, 1);
         entityData.define(ANIMATION_TIME, 0);
 
+        entityData.define(AGE_PROGRESS, 1f);
+        entityData.define(VARIANT, getDefaultVariant());
+        entityData.define(GENDER, 0);
+
         entityData.define(BREACHING, false);
         entityData.define(YAW_UNLOCK, false);
-
-        entityData.define(GENDER, 0);
-        entityData.define(VARIANT, "");
 
         entityData.define(SLEEPING, false);
         entityData.define(SITTING, false);
@@ -391,13 +393,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(BREEDING_COUNT, 0);
 
         entityData.define(HOME_POS, BlockPos.ZERO);
-        entityData.define(AGE_PROGRESS, 0f);
+
 
         super.defineSynchedData();
     }
 
     @Override
-    @SuppressWarnings({"ConstantConditions"})
     public void addAdditionalSaveData(CompoundTag nbt)
     {
         //ToDo: Add missing SaveData
@@ -408,12 +409,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         nbt.putBoolean("Sleeping",getSleeping());
         nbt.putBoolean("Sitting",getSitting());
 
-        nbt.putInt("Eating Cooldown",getEatingCooldown());
+        nbt.putInt("EatingCooldown",getEatingCooldown());
 
-        nbt.putInt("Breeding Cooldown",getBreedingCooldown());
-        nbt.putInt("Breeding Count",getBreedingCount());
+        nbt.putInt("BreedingCooldown",getBreedingCooldown());
+        nbt.putInt("BreedingCount",getBreedingCount());
 
-        nbt.putFloat("Age Progress",getAgeProgress());
+        nbt.putFloat("AgeProgress",getAgeProgress());
 
         /*
         if (inventory.isPresent()) nbt.put("Inv", inventory.orElse(null).serializeNBT());
@@ -422,23 +423,27 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "ConstantConditions"})
     public void readAdditionalSaveData(CompoundTag nbt) {
         //ToDo: Read missing SaveData
 
         super.readAdditionalSaveData(nbt);
         setGender(nbt.getInt("Gender"));
-        setVariant(nbt.getString("Variant"));
+
+        String variant = nbt.contains("Variant")? nbt.getString("Variant") : getDefaultVariant();
+        // Default variant if variant is not set in the NBT
+        setVariant(variant);
 
         setSleeping(nbt.getBoolean("Sleeping"));
         setSitting(nbt.getBoolean("Sitting"));
 
-        setEatingCooldown(nbt.getInt("Eating Cooldown"));
+        setEatingCooldown(nbt.getInt("EatingCooldown"));
 
-        setBreedingCooldown(nbt.getInt("Breeding Cooldown"));
-        setBreedingCount(nbt.getInt("Breeding Count"));
+        setBreedingCooldown(nbt.getInt("BreedingCooldown"));
+        setBreedingCount(nbt.getInt("BreedingCount"));
 
-        setAgeProgress(nbt.getFloat("Age Progress"));
+        float age = nbt.contains("AgeProgress")? nbt.getFloat("AgeProgress") : 1.0f;
+        // Default age is 1 if age is not set in the NBT
+        setAgeProgress(age);
         /*
         if (inventory.isPresent()) inventory.orElse(null).deserializeNBT(nbt.getCompound("Inv"));
          */
@@ -454,25 +459,31 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
          * 1 --> MALE
          * Originally determined via coin flip
          */
-        int gender;
-        if (getRandom().nextBoolean()){
-            gender = 1;
-        } else {
-            gender = 0;
-        }
+
 
         if (hasEntityDataAccessor(GENDER)) {
+            int gender;
+            if (getRandom().nextBoolean()) {
+                gender = 1;
+            } else {
+                gender = 0;
+            }
             setGender(gender);
         }
+
+
+
 
         //determineVariant is a method in each subclass, specific to each creature
         if (hasEntityDataAccessor(VARIANT)) {
             setVariant(determineVariant());
         }
 
-        if (reason == MobSpawnType.SPAWN_EGG || reason == MobSpawnType.COMMAND) {
-            setAgeProgress(1);
+
+        if ((reason == MobSpawnType.COMMAND || reason == MobSpawnType.SPAWN_EGG)){
+            setAgeProgress(1f);
         }
+
 
         return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
     }
@@ -482,8 +493,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         if (key.equals(SLEEPING) || isUsingFlyingNavigator() || key.equals(TamableAnimal.DATA_FLAGS_ID)) {
             refreshDimensions();
-            if (level.isClientSide  && isUsingFlyingNavigator() && canBeControlledByRider())
-                FlyingSound.play(this);
+            //if (level.isClientSide  && isUsingFlyingNavigator() && canBeControlledByRider())
+                //FlyingSound.play(this); TODO add this back, but it was really annoying while testing lol
         } else if (key == ARMOR) {
             if (!level.isClientSide) {
                 AttributeInstance attribute = getAttribute(Attributes.ARMOR);
@@ -502,7 +513,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         }
 
-         */
+
         /*else if (key == AGE) {
             setAge(entityData.get(AGE));
             updateAgeProgress();
@@ -712,6 +723,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return pos == null? BlockPos.ZERO : pos;
     }
 
+
     @Nullable
     public BlockPos getHomePos()
     {
@@ -807,9 +819,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      A.7) Entity Data: VARIANT
     // ====================================
 
+    public String getDefaultVariant(){
+        return "base";
+    }
+
     public String determineVariant()
     {
-        return "";
+        return getDefaultVariant();
     }
 
     public String getVariant()

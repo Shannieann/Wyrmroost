@@ -232,11 +232,16 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
 
     @Override
+    public String getDefaultVariant() {
+        return "blue";
+    }
+
+    @Override
     public String determineVariant() {
         if (getRandom().nextDouble() < 0.02) return "special";
         return switch (getRandom().nextInt(2)) {
             case 1 -> "purple";
-            default -> "blue";
+            default -> getDefaultVariant();
         };
 
     }

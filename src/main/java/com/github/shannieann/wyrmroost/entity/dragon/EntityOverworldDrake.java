@@ -176,13 +176,19 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
     //      A.6) Entity Data: VARIANT
     // ====================================
 
+
+    @Override
+    public String getDefaultVariant() {
+        return "plains";
+    }
+
     @Override
     public String determineVariant()
     {
         if (getRandom().nextDouble() < 0.008) return "special";
 
         if (Biome.getBiomeCategory(level.getBiome(blockPosition())) == Biome.BiomeCategory.SAVANNA) return "savanna";
-        return "plains";
+        return getDefaultVariant();
     }
 
     // ====================================

@@ -234,6 +234,11 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable
     }
 
     @Override
+    public String getDefaultVariant() {
+        return "yellow";
+    }
+
+    @Override
     public String determineVariant()
     {
         if (getRandom().nextDouble() < 0.002) {
@@ -242,7 +247,7 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable
         return switch (getRandom().nextInt(3)){
             case 1 -> "green";
             case 2 -> "blue";
-            default -> "yellow";
+            default -> getDefaultVariant();
         };
     }
 

@@ -172,13 +172,15 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
     //      A.6) Entity Data: VARIANT
     // ====================================
 
+
+
     @Override
     public String determineVariant() {
         LocalDate currentDate = LocalDate.now();
         if (currentDate.getMonth().equals(Month.APRIL) && currentDate.getDayOfMonth() == 1) // April fools RR
             return "april";
 
-        return getRandom().nextDouble() < 0.03 ? "special" : "base";
+        return getRandom().nextDouble() < 0.03 ? "special" : getDefaultVariant();
 
     }
 
@@ -214,7 +216,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
 
     @Override
     public float initialBabyScale() {
-        return 0;
+        return 0.2f;
     }
 
     @Override

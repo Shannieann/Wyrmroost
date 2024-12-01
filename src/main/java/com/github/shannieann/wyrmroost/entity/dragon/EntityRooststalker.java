@@ -124,6 +124,13 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     //      A.7) Entity Data: VARIANT
     // ====================================
 
+
+    @Override
+    public String getDefaultVariant() {
+        return "0";
+    }
+
+    // TODO just delete all of this and rename the files now that variants use strings lmao
     /**
      * A few things to note for Rooststalkers here:
      * - We can't separate the pattern and the color because the pattern changes depending on the color.
