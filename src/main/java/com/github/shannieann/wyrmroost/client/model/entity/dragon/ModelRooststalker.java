@@ -12,6 +12,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.client.renderer.entity.ItemRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
@@ -100,7 +101,7 @@ public class ModelRooststalker extends AnimatedGeoModel<EntityRooststalker> {
             // Correctly scale
             matrixStackIn.scale(1.5f, 1.5f, 1.5f);
             // Finally, render the item
-            renderer.renderItem(roostStalker, item, ItemTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, packedLightIn);
+            renderer.renderItem(roostStalker, item, ItemTransforms.TransformType.FIXED, false, matrixStackIn, bufferIn, packedLightIn);
         }
     }
 

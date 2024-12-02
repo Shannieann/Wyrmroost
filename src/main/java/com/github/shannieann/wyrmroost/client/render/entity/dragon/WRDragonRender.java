@@ -28,16 +28,30 @@ public abstract class WRDragonRender<T extends WRDragonEntity> extends GeoEntity
         //if (mainBoneName != null) defaultXRot = modelProvider.getBone(mainBoneName).getRotationX(); This isn't possible to do in constructor because GeckoLib only collects bones on first render
     }
 
+    public static float getRenderScale(WRDragonEntity animatable){
+        float ageProgress = animatable.getScale();
+        float scale = animatable.baseRenderScale() * ageProgress;
+        if (animatable.isHatchling()) scale *= animatable.childToAdultScale();
+        return scale;
+    }
 
     @Override
     public void render(GeoModel model, T animatable, float partialTick, RenderType type, PoseStack poseStack, @Nullable MultiBufferSource bufferSource, @Nullable VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue, float alpha) {
 
         poseStack.pushPose();
-        if (animatable.dragonCanFly())
+        if (animatable.dragonCanFly() && !mainBoneName.isEmpty())
             handleXRotation(model, animatable);
+
+        // age scale
+        float scale = getRenderScale(animatable);
+
+        poseStack.scale(scale, scale, scale);
+
         super.render(model, animatable, partialTick, type, poseStack, bufferSource, buffer, packedLight, packedOverlay, red, green, blue, alpha);
         poseStack.popPose();
     }
+
+
 
     private void handleXRotation(GeoModel model, T animatable){
         // Sets the default rotation that the dragon should be at.

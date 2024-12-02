@@ -26,7 +26,6 @@ public class LazySpawnEggItem<T extends Entity> extends ForgeSpawnEggItem
 
     public final Lazy<EntityType<T>> type;
 
-    @SuppressWarnings("ConstantConditions")
     public LazySpawnEggItem(Supplier<EntityType<T>> type, int primaryColor, int secondaryColor)
     {
         super(null, primaryColor, secondaryColor, WRItems.builder());

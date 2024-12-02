@@ -117,7 +117,11 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
 
     @Override
     public float initialBabyScale() {
-        return 0.2F;
+        return 0.45F;
+    }
+    @Override
+    public float baseRenderScale() {
+        return 0.625f;
     }
 
     // ====================================

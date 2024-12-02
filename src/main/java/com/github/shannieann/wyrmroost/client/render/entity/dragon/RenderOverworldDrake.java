@@ -15,7 +15,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
-public class RenderOverworldDrake<T extends EntityOverworldDrake> extends GeoEntityRenderer<T> {
+public class RenderOverworldDrake<T extends EntityOverworldDrake> extends WRDragonRender<T> {
     public RenderOverworldDrake(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelOverworldDrake<>());
         this.addLayer(new DragonArmorAndSaddleLayer<>(this, true));
@@ -37,7 +37,7 @@ public class RenderOverworldDrake<T extends EntityOverworldDrake> extends GeoEnt
                 red, green, blue, partialTicks);
         //ToDO: Update all other creatures based on age progress, with the same or similar methods
         //ToDo: Test model and texture swap
-        float ageProgressScale = animatable.getScale();
+        //float ageProgressScale = animatable.getScale();
         /*
         if (!animatable.isAdult()) {
             //scale factor 1, for baby model
@@ -46,6 +46,6 @@ public class RenderOverworldDrake<T extends EntityOverworldDrake> extends GeoEnt
         }
 
          */
-        stackIn.scale(ageProgressScale,ageProgressScale,ageProgressScale);
+        //stackIn.scale(ageProgressScale,ageProgressScale,ageProgressScale);
     }
 }

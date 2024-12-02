@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost.client.render.entity.dragon;
 
 import com.github.shannieann.wyrmroost.client.model.entity.dragon.ModelButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
+import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -29,7 +30,7 @@ public class RenderButterflyLeviathan extends WRDragonRender<EntityButterflyLevi
                 red, green, blue, partialTicks);
         //ToDO: Update all other creatures based on age progress, with the same or similar methods
         //ToDo: Test model and texture swap
-        float ageProgressScale = animatable.getScale();
+        //float ageProgressScale = animatable.getScale();
         /*
         if (!animatable.isAdult()) {
             //scale factor 1, for baby model
@@ -38,6 +39,7 @@ public class RenderButterflyLeviathan extends WRDragonRender<EntityButterflyLevi
         }
 
          */
-        stackIn.scale(2.4F * ageProgressScale, 2.4F * ageProgressScale, 2.4F * ageProgressScale);
+        //stackIn.scale(2.4F * ageProgressScale, 2.4F * ageProgressScale, 2.4F * ageProgressScale);
     }
+
 }

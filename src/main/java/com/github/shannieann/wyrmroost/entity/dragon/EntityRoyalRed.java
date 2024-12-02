@@ -211,12 +211,16 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
 
     @Override
     public float ageProgressAmount() {
-        return 0;
+        return 0.1f;
     }
 
     @Override
     public float initialBabyScale() {
         return 0.2f;
+    }
+    @Override
+    public float childToAdultScale() {
+        return 3.0f;
     }
 
     @Override

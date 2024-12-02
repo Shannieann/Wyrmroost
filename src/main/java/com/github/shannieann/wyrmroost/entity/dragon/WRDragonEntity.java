@@ -615,7 +615,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     public boolean isJuvenile() {
-        return getAgeProgress() > 0.5f;
+        return getAgeProgress() >= 0.5f;
     }
 
     public boolean isAdult() {
@@ -642,6 +642,20 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //This corresponds to the ratio babyEntitySize / adultEntitySize
     //For example, if initialBabyScale is 0.2, then the entity as a baby starts out at 20% of its adult size
     public abstract float initialBabyScale();
+
+
+    public float baseRenderScale(){
+        return 1.0f;
+    }
+
+    /** This is here because usually the child models are smaller than the adult models in block bench
+     * However, we want them to be around the same so we can apply the same scale to them.
+     * @return the scale that makes the child model the same size as the adult model.
+     */
+    public float childToAdultScale(){
+        return 1.0f;
+    }
+
 
     //Overrides method in living entity
     //This allows for WRDragonEntity's dimensions to be correctly refreshed when refreshDimensions is called
@@ -687,7 +701,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         return entityData.get(GENDER);
     }
-    // To make file names look nicer
+    // To make files look nicer
     public String getGenderString(){
         return (getGender() == 0)? "female" : "male";
     }
@@ -1324,7 +1338,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
     public void setXRotationAndLerp(float targetXRotation){
         this.targetXRotation = targetXRotation;
-        xRotLerpSteps = 3;
+        xRotLerpSteps = 6;
     }
 
 

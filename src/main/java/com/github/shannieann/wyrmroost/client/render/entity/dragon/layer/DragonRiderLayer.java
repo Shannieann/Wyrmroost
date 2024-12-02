@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon.layer;
 
+import com.github.shannieann.wyrmroost.client.render.entity.dragon.WRDragonRender;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -44,10 +45,12 @@ public class DragonRiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer
                 ClientEvents.dragonRiders.remove(passenger.getUUID());
                 //float riderYaw = passenger.yRotO + (passenger.getYRot() - passenger.yRotO) * partialTicks;
                 float riderYaw = dragon.getYRot();
-                translateToBody(matrixStackIn, model, passengerIndex, dragon, passenger); // TODO maybe make this only activate on needed frames? EDIT: Probably not, each animation is different and it wouldn't be worth it
-                matrixStackIn.translate(0.0, -0.6f, 0.0);
                 matrixStackIn.pushPose();
+                translateToBody(matrixStackIn, model, passengerIndex, dragon, passenger); // TODO maybe make this only activate on needed frames? EDIT: Probably not, each animation is different and it wouldn't be worth it
+                //matrixStackIn.translate(0.0, -0.6f, 0.0);
                 matrixStackIn.mulPose(new Quaternion(Vector3f.YP, riderYaw + 180, true));
+                //float scale = 1/WRDragonRender.getRenderScale(dragon);
+                //matrixStackIn.scale(scale,scale,scale);
                 renderEntity(passenger, partialTicks, matrixStackIn, bufferIn, packedLightIn);
                 matrixStackIn.popPose();
                 passengerIndex++;
@@ -69,8 +72,10 @@ public class DragonRiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer
         Vector3d modelPos = bone.getModelPosition();
         // Scale by 1/16 to get from block bench coordinates to minecraft coordinates.
         modelPos.scale(0.0625f);
+
+
         // Translate the player accordingly
-        stack.translate(modelPos.x, modelPos.y, modelPos.z);
+        stack.translate(modelPos.x, modelPos.y - 0.6f, modelPos.z);
 
 
 

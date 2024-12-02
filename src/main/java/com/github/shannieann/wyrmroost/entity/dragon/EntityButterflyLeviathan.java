@@ -169,6 +169,10 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         return 0.1F;
     }
 
+    @Override
+    public float baseRenderScale() {
+        return 2.4f;
+    }
 
     @Override
     public boolean checkSpawnRules(LevelAccessor pLevel, MobSpawnType pReason) {

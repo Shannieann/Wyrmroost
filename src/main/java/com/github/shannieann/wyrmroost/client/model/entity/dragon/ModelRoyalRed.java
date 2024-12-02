@@ -15,15 +15,17 @@ public class ModelRoyalRed extends AnimatedGeoModel<EntityRoyalRed>
 
     @Override
     public ResourceLocation getModelLocation(EntityRoyalRed object) {
-        String modelLocation = "geo/entity/dragon/royal_red/royal_red_" + ((object.isAdult() ? "adult" : "child") + ".geo.json");
+        String modelLocation = "geo/entity/dragon/royal_red/royal_red_" + ((object.isHatchling() ? "child" : "adult") + ".geo.json");
         return new ResourceLocation(Wyrmroost.MOD_ID, modelLocation);
     }
-    //TODO: Different set of textures for babies
+
     @Override
     public ResourceLocation getTextureLocation(EntityRoyalRed object) {
-        String textureLocation = "textures/entity/dragon/royal_red/royal_red_" + object.getVariant() + "_" + object.getGenderString() + "_" + (object.isUsingFlyingNavigator() && !object.isDiving()? "fly" : "land") + ".png";
+        String gender = object.isHatchling()? "child" : object.getGenderString();
+        String textureLocation = "textures/entity/dragon/royal_red/royal_red_" + object.getVariant() + "_" + gender + "_" + (object.isUsingFlyingNavigator() && !object.isDiving()? "fly" : "land") + ".png";
         return new ResourceLocation(Wyrmroost.MOD_ID, textureLocation);
     }
+
 
     @Override
     public ResourceLocation getAnimationFileLocation(EntityRoyalRed animatable) {

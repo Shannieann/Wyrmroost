@@ -20,6 +20,7 @@ public class DragonEyesLayer<T extends WRDragonEntity> extends AbstractLayerGeo<
     // TODO make blinking/closing eyes not use this... instead use offset eyes in the model (might need to ask modelers for this)
     public static final ResourceLocation BLANK_EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png");
 
+    private final Function<T, Boolean> shouldRender;
     @Override
     public RenderType getRenderType(ResourceLocation textureLocation) {
         return RenderType.eyes(textureLocation);
@@ -27,12 +28,16 @@ public class DragonEyesLayer<T extends WRDragonEntity> extends AbstractLayerGeo<
 
     public DragonEyesLayer(GeoEntityRenderer<T> entityRendererIn,
                            Function<T, ResourceLocation> modelResource,
-                           Function<T, ResourceLocation> textureResource) {
+                           Function<T, ResourceLocation> textureResource,
+                            Function<T, Boolean> shouldRender) {
         super(entityRendererIn, modelResource, textureResource);
+        this.shouldRender = shouldRender;
     }
 
     @Override
     public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
+        if (!shouldRender.apply(entityLivingBaseIn)) return;
+
         ResourceLocation location;
         if (entityLivingBaseIn.isSleeping()){
             location = BLANK_EYES;

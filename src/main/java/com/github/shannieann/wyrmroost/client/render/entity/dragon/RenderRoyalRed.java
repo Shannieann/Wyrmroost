@@ -23,9 +23,11 @@ public class RenderRoyalRed extends WRDragonRender<EntityRoyalRed> {
         this.addLayer(new DragonRiderLayer<>(this));
         this.addLayer(new DragonEyesLayer<>(this,
                 (entity) -> entity.getVariant().equals("special")? SPEYES_TEXTURE : EYES_TEXTURE,
-                getGeoModelProvider()::getModelLocation));
+                getGeoModelProvider()::getModelLocation,
+                (entity) -> !entity.isHatchling()));
         //TODO: Shadow?
     }
+
 
     // TODO may be a better idea to instead just texture the inside of the nail.
     // NoCull might lag the game more?

@@ -20,7 +20,8 @@ public class RenderRooststalker extends WRDragonRender<EntityRooststalker> {
         super(renderManager, new ModelRooststalker());
         this.addLayer(new DragonEyesLayer<>(this,
                 (entity) -> entity.isAlbino()? EYES_TEXTURE_SPECIAL : EYES_TEXTURE,
-                getGeoModelProvider()::getModelLocation));
+                getGeoModelProvider()::getModelLocation,
+                (entity) -> true));
         this.addLayer(new ModelRooststalker.RooststalkerMouthItemLayer<>(this));
 
 
@@ -31,13 +32,15 @@ public class RenderRooststalker extends WRDragonRender<EntityRooststalker> {
     public void renderLate(EntityRooststalker animatable, PoseStack poseStack, float partialTick, MultiBufferSource bufferSource,
                            VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue,
                            float alpha) {
-        float ageProgressScale = animatable.getScale();
+        //float ageProgressScale = animatable.getScale();
 
-        poseStack.scale(0.625f*ageProgressScale, 0.625f*ageProgressScale, 0.625f*ageProgressScale);
+        //poseStack.scale(0.625f*ageProgressScale, 0.625f*ageProgressScale, 0.625f*ageProgressScale);
         super.renderLate(animatable, poseStack, partialTick, bufferSource,
                 buffer, packedLight, packedOverlay, red, green, blue,
         alpha);
     }
+
+
 }
 
 

@@ -22,7 +22,7 @@ public class ModelOverworldDrake<T extends EntityOverworldDrake> extends Animate
 	public ResourceLocation getTextureLocation(EntityOverworldDrake object) {
 
 		String variant = object.getVariant();
-		String gender = (object.isBaby())? "baby" : object.getGenderString();
+		String gender = (object.isHatchling())? "baby" : object.getGenderString();
 		return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/overworld_drake/" + gender + "_" + variant + ".png");
 	}
 
