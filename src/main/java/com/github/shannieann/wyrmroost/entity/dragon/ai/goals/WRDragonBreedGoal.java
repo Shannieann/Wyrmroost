@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
 
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 

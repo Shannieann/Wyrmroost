@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entity.dragon.ai;
+package com.github.shannieann.wyrmroost.entity.dragon.interfaces;
 
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
@@ -8,4 +8,6 @@ public interface IBreedable {
     InteractionResult breedLogic (Player tamer, ItemStack stack);
 
     int hatchTime();
+
+    int getBreedingLimit();
 }

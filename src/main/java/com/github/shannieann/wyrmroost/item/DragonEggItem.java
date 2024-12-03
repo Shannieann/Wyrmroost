@@ -3,7 +3,7 @@ package com.github.shannieann.wyrmroost.item;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon_egg.WRDragonEggEntity;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;

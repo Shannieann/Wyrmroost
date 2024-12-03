@@ -1,9 +1,10 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
@@ -75,7 +76,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Datagen
 // Registry, tidy
 
-public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity, IBreedable {
+public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity, IBreedable, ITameable {
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> LIGHTNING_COOLDOWN = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.INT);
     public static final int CONDUIT_SLOT = 0;

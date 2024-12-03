@@ -1,9 +1,10 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
@@ -18,7 +19,6 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -64,8 +64,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 */
 
-public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
-{
+public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, ITameable {
     /*
     private static final EntitySerializer<EntityOverworldDrake> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
@@ -585,14 +584,31 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
     }
 
     @Override
-    public InteractionResult breedLogic(Player tamer, ItemStack stack) {
-        return null;
+    public InteractionResult breedLogic(Player breeder, ItemStack stack) {
+        if (level.isClientSide) {
+            return InteractionResult.CONSUME;
+        }
+
+        if (((this.isOnGround() && !this.isUnderWater()) && this.isAdult()) && isFood(stack)) {
+            eat(this.level, stack);
+            setBreedingCooldown(6000);
+            setBreedingCount(getBreedingCount()+1);
+            setInLove(breeder);
+            return InteractionResult.SUCCESS;
+        }
+        return InteractionResult.PASS;
+
     }
 
     @Override
     public int hatchTime() {
         //Multiply by 20 to convert seconds to ticks
         return WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonBreedingConfig.hatchTime.get()*20;
+    }
+
+    @Override
+    public int getBreedingLimit() {
+        return WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonBreedingConfig.breedLimit.get();
     }
 
     // ====================================
@@ -669,30 +685,26 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
 
     class OWDRoarGoal extends AnimatedGoal{
 
-        public OWDRoarGoal(EntityOverworldDrake entity)
-        {
+        public OWDRoarGoal(EntityOverworldDrake entity) {
             super(entity);
             this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK, Goal.Flag.JUMP));
         }
 
         @Override
-        public boolean canUse()
-        {
+        public boolean canUse() {
             // This is set to true whenever the OWD gets a new target.
             return shouldRoar;
         }
 
         @Override
-        public void start()
-        {
+        public void start() {
             entity.clearAI();
             entity.getNavigation().stop();
             shouldRoar = false;
         }
 
         @Override
-        public void tick()
-        {
+        public void tick() {
             if (lookControl instanceof WRGroundLookControl) {
                 ((WRGroundLookControl) lookControl).stopLooking();
             }
@@ -709,8 +721,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
         }
 
         @Override
-        public boolean canContinueToUse()
-        {
+        public boolean canContinueToUse() {
             if (getSleeping())
                 return false;
             return super.canContinueToUse();
@@ -718,8 +729,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
 
 
         // This method is taken from the old code
-        private void applyWeakness()
-        {
+        private void applyWeakness() {
             for (LivingEntity entity : getEntitiesNearby(15, e -> !isAlliedTo(e))) // Dont get too close now ;)
             {
                 entity.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 200));

@@ -1,6 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
@@ -263,6 +263,11 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
     @Override
     public int hatchTime() {
         return 300;
+    }
+
+    @Override
+    public int getBreedingLimit() {
+        return 0;
     }
 
 

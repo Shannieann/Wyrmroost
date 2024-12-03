@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.events.ClientEvents;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
@@ -663,6 +663,11 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
     @Override
     public int hatchTime() {
         return 500;
+    }
+
+    @Override
+    public int getBreedingLimit() {
+        return 0;
     }
 
 

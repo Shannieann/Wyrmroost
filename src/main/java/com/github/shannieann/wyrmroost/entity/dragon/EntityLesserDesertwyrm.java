@@ -345,8 +345,7 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
      */
     //Burrow Goal:
     //TODO: Extend Animated Goal
-    class WRBurrowGoal extends Goal
-    {
+    class WRBurrowGoal extends Goal {
         public WRBurrowGoal()
         {
             setFlags(EnumSet.of(Flag.MOVE, Flag.JUMP, Flag.LOOK));
@@ -360,8 +359,7 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
 
         @Override
         //continue trying to burrow so long as below is sand, we are burrowed and we still have burrow time remaining
-        public boolean canContinueToUse()
-        {
+        public boolean canContinueToUse() {
             return belowIsSand() && (getBurrowed()) || burrowTicks > 0;
 
         }

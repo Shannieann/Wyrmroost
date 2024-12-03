@@ -1,9 +1,9 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
-import com.github.shannieann.wyrmroost.client.sound.FlyingSound;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.WRBodyControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundMoveControl;
@@ -362,8 +362,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     // TODO reduce the amount of shared entity data... this amount could be burdensome on the server
     @Override
-    protected void defineSynchedData()
-    {
+    protected void defineSynchedData() {
         entityData.define(ANIMATION, "base");
         entityData.define(ANIMATION_TYPE, 1);
         entityData.define(ANIMATION_TIME, 0);
@@ -390,7 +389,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(BREEDING_COUNT, 0);
 
         entityData.define(HOME_POS, BlockPos.ZERO);
-
 
         super.defineSynchedData();
     }
@@ -467,7 +465,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    //ToDo, correct
     public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
         if (key.equals(SLEEPING) || isUsingFlyingNavigator() || key.equals(TamableAnimal.DATA_FLAGS_ID)) {
             refreshDimensions();
@@ -887,9 +884,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(BREEDING_COOLDOWN, cooldown);
     }
 
-    public int getBreedingLimit(){
-        return 0;
-    }
 
     // ====================================
     //      B) Tick and AI
@@ -1647,11 +1641,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return false;
     }
 
-    //ToDo: Could be extracted to an interface with tameLogic methods, then only call the method if instance of interface
-    //tameLogic is specific to each creature, it contains the conditions for taming
-    public abstract InteractionResult tameLogic (Player tamer, ItemStack stack);
-
-    //attemptTame is run when the taming conditions are met
+    //attemptTame is run when the taming conditions are met, only for tameables
     public boolean attemptTame(float tameSucceedChance, @Nullable Player tamer, ItemStack stack) {
         if (level.isClientSide) {
             return false;
@@ -1724,11 +1714,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
-        if (!isTame()){
-            return tameLogic(player,stack);
+        if (this instanceof  ITameable && !isTame()){
+            return ((ITameable)this).tameLogic(player,stack);
         }
 
-        if (this instanceof IBreedable && getBreedingCooldown() <= 0 && getBreedingCount() < getBreedingLimit()) {
+        if (this instanceof IBreedable && getBreedingCooldown() <= 0 && getBreedingCount() < ((IBreedable)this).getBreedingLimit()) {
             IBreedable thisIBreedable = (IBreedable) this;
             if(thisIBreedable.breedLogic(player,stack) == InteractionResult.SUCCESS){
                 return thisIBreedable.breedLogic(player,stack);
@@ -1971,7 +1961,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     {
         return getScale();
     }
-    //ToDo: What is this?
     /*
     @Override
     public float getVoicePitch()

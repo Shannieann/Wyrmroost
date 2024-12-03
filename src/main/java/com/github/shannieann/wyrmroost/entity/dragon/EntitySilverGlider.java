@@ -1,7 +1,7 @@
 
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDragonBreedGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRAvoidEntityGoal;
@@ -360,6 +360,11 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable
     @Override
     public int hatchTime() {
         return 50;
+    }
+
+    @Override
+    public int getBreedingLimit() {
+        return 0;
     }
 
 
