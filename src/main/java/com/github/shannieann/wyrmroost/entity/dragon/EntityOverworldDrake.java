@@ -80,12 +80,6 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
     }
     // Dragon Entity Data
     // Dragon Entity Animations
-    // NOT USED ANYMORE -- Keeping for reference but will prolly delete later
-    //public static final Animation GRAZE_ANIMATION = LogicalAnimation.create(35, EntityOverworldDrake::grazeAnimation, () -> OverworldDrakeModel::grazeAnimation);
-    //public static final Animation HORN_ATTACK_ANIMATION = LogicalAnimation.create(15, EntityOverworldDrake::hornAttackAnimation, () -> OverworldDrakeModel::hornAttackAnimation);
-    //public static final Animation ROAR_ANIMATION = LogicalAnimation.create(86, EntityOverworldDrake::hornAttackAnimation, () -> OverworldDrakeModel::roarAnimation);
-    //public static final Animation[] ANIMATIONS = new Animation[]{GRAZE_ANIMATION, HORN_ATTACK_ANIMATION, ROAR_ANIMATION};
-
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public LivingEntity thrownPassenger;
     public boolean shouldRoar = false, shouldBuck = false;
