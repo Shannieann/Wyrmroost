@@ -49,11 +49,20 @@ public class WREntitySpawning {
         if (WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig.spawnRate.get() > 0
             && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig.biomeTypes,
             WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig.biomeWhitelist, biomeKey)) {
-
             registerEntityWorldSpawn(WREntityTypes.BUTTERFLY_LEVIATHAN.get(),
             WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig,
             MobCategory.CREATURE, event);
         }
+
+        //Overworld Drake
+        if (WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.spawningConfig.spawnRate.get() > 0
+                && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.spawningConfig.biomeTypes,
+                WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.spawningConfig.biomeWhitelist, biomeKey)) {
+            registerEntityWorldSpawn(WREntityTypes.OVERWORLD_DRAKE.get(),
+                    WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.spawningConfig,
+                    MobCategory.CREATURE, event);
+        }
+
 
         //Rooststalker
         if (WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.spawningConfig.spawnRate.get() > 0

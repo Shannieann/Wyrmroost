@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.IBreedable;
@@ -92,6 +93,8 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
         super(drake, level);
     }
 
+
+
     // =====================
     //      Animation Logic
     // =====================
@@ -143,19 +146,21 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
         data.addAnimationController(new AnimationController(this, "controllerChest", 0, this::predicateChest));
     }
 
+
+
     // ====================================
-    //      A) Entity Data
+    //      A) Entity Data + Attributes
     // ====================================
 
     public static AttributeSupplier.Builder getAttributeSupplier()
     {
         return Mob.createMobAttributes()
-                .add(MAX_HEALTH, 70)
+                .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonAttributesConfig.maxHealth.get())
                 .add(MOVEMENT_SPEED, 0.2125)
                 .add(KNOCKBACK_RESISTANCE, 0.75)
                 .add(FOLLOW_RANGE, 20)
                 .add(ATTACK_KNOCKBACK, 2.85)
-                .add(ATTACK_DAMAGE, 8);
+                .add(ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonAttributesConfig.attackDamage.get());
     }
     // ====================================
     //      A.4) Entity Data: HOME
@@ -605,12 +610,12 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
 
     @Override
     public int hatchTime() {
-        return 500;
+        //Multiply by 20 to convert seconds to ticks
+        return WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonBreedingConfig.hatchTime.get()*20;
     }
 
-
     // ====================================
-    //      F.n) Goals: OWDGrazeGoal
+    //      F.1) Goals: OWDGrazeGoal
     // ====================================
 
     class OWDGrazeGoal extends AnimatedGoal{

@@ -85,7 +85,7 @@ public final class WRServerConfig {
             //COIN_DRAGON = new CoinDragon(builder);
             //DRAGONFRUIT_DRAKE = new DragonfruitDrake(builder);
             //LESSER_DESERTWYRM = new LesserDesertwyrm(builder);
-            //OVERWORLD_DRAKE = new OverworldDrake(builder);
+            OVERWORLD_DRAKE = new OverworldDrake(builder);
             ROOSTSTALKER = new Rooststalker(builder);
             //ROYAL_RED = new RoyalRed(builder);
             //SILVER_GLIDER = new SilverGlider(builder);
@@ -98,7 +98,7 @@ public final class WRServerConfig {
         //public final CoinDragon COIN_DRAGON;
         //public final DragonfruitDrake DRAGONFRUIT_DRAKE;
         //public final LesserDesertwyrm LESSER_DESERTWYRM;
-        //public final OverworldDrake OVERWORLD_DRAKE;
+        public final OverworldDrake OVERWORLD_DRAKE;
         public final Rooststalker ROOSTSTALKER;
         //public final RoyalRed ROYAL_RED;
         //public final SilverGlider SILVER_GLIDER;
@@ -295,10 +295,23 @@ public final class WRServerConfig {
                     4,
                     Arrays.asList("SAVANNA", "PLAINS"),
                     Collections.singletonList("")
+
+            );
+            dragonAttributesConfig = new DragonAttributesConfig(builder,
+                    16,
+                    2,
+                    2
             );
             builder.pop();
+            dragonBreedingConfig = new DragonBreedingConfig(builder,
+                    4,
+                    1200,
+                    10);
         }
         public final SpawningConfig spawningConfig;
+        public final DragonAttributesConfig dragonAttributesConfig;
+        public final DragonBreedingConfig dragonBreedingConfig;
+
     }
 
     public static class Rooststalker {
@@ -309,7 +322,7 @@ public final class WRServerConfig {
                     2,
                     10,
                     Collections.singletonList(""),
-                    Collections.singletonList("minecraft:plains"));
+                    Collections.singletonList("minecraft:forest"));
             dragonAttributesConfig = new DragonAttributesConfig(builder,
                     16,
                     2,
