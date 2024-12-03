@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 public class RenderLesserDesertwyrm extends WRDragonRender<EntityLesserDesertwyrm> {
     public RenderLesserDesertwyrm(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelLesserDesertwyrm());
-        //TODO: Shadow?
         this.shadowRadius = 0.0F;
     }
 }

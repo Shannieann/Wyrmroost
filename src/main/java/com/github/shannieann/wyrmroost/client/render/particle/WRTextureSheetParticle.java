@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.client.particle;
+package com.github.shannieann.wyrmroost.client.render.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Vector3f;

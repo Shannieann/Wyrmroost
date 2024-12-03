@@ -36,11 +36,9 @@ public class DragonProjectileEntity extends Projectile implements IEntityAdditio
         super(type, level);
     }
 
-    public DragonProjectileEntity(EntityType<? extends DragonProjectileEntity> type, WRDragonEntity shooter, Vec3 position, Vec3 direction)
-    {
+    public DragonProjectileEntity(EntityType<? extends DragonProjectileEntity> type, WRDragonEntity shooter, Vec3 position, Vec3 direction) {
         super(type, shooter.level);
-        //TODO: DEBUG METHODS
-        //direction = (shooter.debugTarget).subtract(position);
+
         direction = direction.add(random.nextGaussian() * getAccelerationOffset(), random.nextGaussian() * getAccelerationOffset(), random.nextGaussian() * getAccelerationOffset());
         double length = direction.length();
         this.acceleration = new Vec3(direction.x / length * getMotionFactor(), direction.y / length * getMotionFactor(), direction.z / length * getMotionFactor());
@@ -55,8 +53,7 @@ public class DragonProjectileEntity extends Projectile implements IEntityAdditio
     }
 
     @Override
-    public void tick()
-    {
+    public void tick() {
         if ((!level.isClientSide && (!shooter.isAlive() || tickCount > life || tickCount > getMaxLife())) || !level.hasChunkAt(blockPosition()))
         {
             remove(RemovalReason.DISCARDED);
@@ -105,8 +102,7 @@ public class DragonProjectileEntity extends Projectile implements IEntityAdditio
         absMoveTo(x, y, z);
     }
 
-    public boolean canImpactEntity(Entity entity)
-    {
+    public boolean canImpactEntity(Entity entity) {
         if (entity == shooter) return false;
         if (!entity.isAlive()) return false;
         if (!(entity instanceof LivingEntity)) return false;
@@ -115,8 +111,7 @@ public class DragonProjectileEntity extends Projectile implements IEntityAdditio
         return shooter != null && !entity.isAlliedTo(shooter);
     }
 
-    public void hit(HitResult result)
-    {
+    public void hit(HitResult result) {
         HitResult.Type type = result.getType();
         if (type == HitResult.Type.BLOCK)
         {
@@ -126,90 +121,75 @@ public class DragonProjectileEntity extends Projectile implements IEntityAdditio
         else if (type == HitResult.Type.ENTITY) onEntityImpact(((EntityHitResult) result).getEntity());
     }
 
-    public void onEntityImpact(Entity entity)
-    {
+    public void onEntityImpact(Entity entity){
     }
 
-    public void onBlockImpact(BlockPos pos, Direction direction)
-    {
+    public void onBlockImpact(BlockPos pos, Direction direction) {
     }
 
     @Override
-    public void setDeltaMovement(Vec3 motionIn)
-    {
+    public void setDeltaMovement(Vec3 motionIn) {
         super.setDeltaMovement(motionIn);
         ProjectileUtil.rotateTowardsMovement(this, 1);
     }
 
     @Override
-    public EntityDimensions getDimensions(Pose poseIn)
-    {
+    public EntityDimensions getDimensions(Pose poseIn) {
         if (growthRate == 1) return getType().getDimensions();
         float size = Math.min(getBbWidth() * growthRate, 2.25f);
         return EntityDimensions.scalable(size, size);
     }
 
     @Override
-    public boolean shouldRenderAtSqrDistance(double distance)
-    {
+    public boolean shouldRenderAtSqrDistance(double distance) {
         double d0 = getBoundingBox().getSize() * 4;
         if (Double.isNaN(d0)) d0 = 4;
         d0 *= 64;
         return distance < d0 * d0;
     }
 
-    public DamageSource getDamageSource(String name)
-    {
+    public DamageSource getDamageSource(String name) {
         return new IndirectEntityDamageSource(name, this, shooter).setProjectile().setScalesWithDifficulty();
     }
 
-    protected EffectType getEffectType()
-    {
+    protected EffectType getEffectType() {
         return EffectType.NONE;
     }
 
-    protected float getMotionFactor()
-    {
+    protected float getMotionFactor() {
         return 0.95f;
     }
 
-    protected double getAccelerationOffset()
-    {
+    protected double getAccelerationOffset() {
         return 0.1;
     }
 
-    protected int getMaxLife()
-    {
+    protected int getMaxLife() {
         return 150;
     }
 
     @Override
-    public boolean isNoGravity()
-    {
+    public boolean isNoGravity() {
         return true;
     }
 
     @Override
-    public float getBrightness()
-    {
+    public float getBrightness() {
         return 1f;
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount)
-    {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 
     @Override
-    public float getPickRadius()
-    {
+    public float getPickRadius() {
         return getBbWidth();
     }
 
     @Override
-    protected void defineSynchedData()
-    {
+    protected void defineSynchedData() {
     }
 
     @Override // Does not Serialize

@@ -424,37 +424,6 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
     //      D) Taming
     // ====================================
 
-    @Override
-    public InteractionResult mobInteract(Player player, InteractionHand hand) {
-
-        if (!isJuvenile())
-            super.mobInteract(player, hand);
-
-        ItemStack stack = player.getItemInHand(hand);
-
-        if (canAddPassenger(player)){
-            player.startRiding(this);
-        }
-        else if (stack.getItem() == Items.SADDLE) {
-            {
-            if (!level.isClientSide) {
-                getInventory().insertItem(SADDLE_SLOT, stack.copy(), false);
-                stack.shrink(1);
-            }
-            return InteractionResult.sidedSuccess(level.isClientSide);
-            }
-        }
-
-
-        //if (!isTame() && isHatchling() && isFood(stack))
-        //{
-            //   tame(getRandom().nextInt(10) == 0, player);
-        //    stack.shrink(1);
-        //    return InteractionResult.sidedSuccess(level.isClientSide);
-        //}
-
-        return super.mobInteract(player, hand);
-    }
 
     // ====================================
     //      D.1) Taming: Inventory
@@ -464,13 +433,26 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
     {
         return new DragonInventory(this, 24);
     }
-    // Does not apply here because we don't feed anything to tame it.
     public InteractionResult tameLogic(Player tamer, ItemStack stack) {
+        if (level.isClientSide) {
+            return InteractionResult.CONSUME;
+        }
+
+        if (!isJuvenile())
+            if (canAddPassenger(tamer)){
+                tamer.startRiding(this);
+            }
+            else if (stack.getItem() == Items.SADDLE) {
+                        getInventory().insertItem(SADDLE_SLOT, stack.copy(), false);
+                        stack.shrink(1);
+                return InteractionResult.SUCCESS;
+
+            }
         return InteractionResult.PASS;
     }
+
     @Override
-    public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad)
-    {
+    public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad) {
         boolean playSound = !stack.isEmpty() && !onLoad;
         switch (slot)
         {
@@ -579,8 +561,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
     //      F) Goals
     // ====================================
     @Override
-    protected void registerGoals()
-    {
+    protected void registerGoals() {
         super.registerGoals();
 
         goalSelector.addGoal(0, new WRSleepGoal(this));
@@ -628,8 +609,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
         }
 
         @Override
-        public boolean canUse()
-        {
+        public boolean canUse() {
             //This should get a blockPos that is positioned correctly relative to the OWD's head.
             grazeBlockPosition = new BlockPos(WRMathsUtility.rotateXZVectorByYawAngle(yBodyRot, 0, getBbWidth() / 2 + 1).add(position())).below();
             if (!level.getBlockState(grazeBlockPosition).is(Blocks.GRASS_BLOCK)){
@@ -646,16 +626,14 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
         }
 
         @Override
-        public void start()
-        {
+        public void start() {
             entity.clearAI();
             entity.setXRot(0);
             entity.getNavigation().stop();
         }
 
         @Override
-        public void tick()
-        {
+        public void tick() {
             if (lookControl instanceof WRGroundLookControl) {
                 ((WRGroundLookControl) lookControl).stopLooking();
             }
@@ -819,7 +797,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable
     // ====================================
 
     /*@Override
-    public void recievePassengerKeybind(int key, int mods, boolean pressed)
+    public void receivePassengerKeybind(int key, int mods, boolean pressed)
     {
         if (key == KeybindHandler.MOUNT_KEY && pressed && noAnimations())
         {

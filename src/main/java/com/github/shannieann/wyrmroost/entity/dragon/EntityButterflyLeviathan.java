@@ -68,18 +68,10 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 //ToDo:
 // Riding - BFL and aquatics
 // Riding - BFL abilities
-
-//ToDo:
 // BFL attack - fix look distance + head rot
-
-//ToDo: Other tamed stuff
 // Conduit
 // Armor
-
-//TODO: FINAL
 // Tidy up EntityTypeRegistry
-
-//TODO: Others
 // Datagen
 // Registry, tidy
 
@@ -467,8 +459,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     }
 
     @Override
-    public void recievePassengerKeybind(int key, int mods, boolean pressed) {
-        //TODO: TYPO
+    public void receivePassengerKeybind(int key, int mods, boolean pressed) {
         //TODO: Lightning strikes when tamed, set of different methods, when compared to regular, wild lightning strike
 
         if (pressed /*&& noAnimations()*/) {
@@ -517,7 +508,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         return InteractionResult.PASS;
     }
 
-
     // ====================================
     //      D.1) Taming: Inventory
     // ====================================
@@ -528,7 +518,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
             boolean flag = stack.getItem() == Items.CONDUIT;
             boolean hadConduit = hasConduit();
             entityData.set(HAS_CONDUIT, flag);
-            //TODO: Set Animation
             //if (!onLoad && flag && !hadConduit) setAnimation(CONDUIT_ANIMATION);
         }
     }
@@ -576,6 +565,16 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         }
         return InteractionResult.PASS;
 
+    }
+
+    public int getBreedingLimit(){
+        return WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonBreedingConfig.breedLimit.get();
+    }
+
+    @Override
+    public int hatchTime() {
+        //Multiply by 20 to convert seconds to ticks
+        return WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonBreedingConfig.hatchTime.get()*20;
     }
 
 
@@ -652,19 +651,6 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
                     return (!this.isInWater() || entity.isInWater());}));
 
     }
-
-
-
-    @Override
-    public int hatchTime() {
-        //Multiply by 20 to convert seconds to ticks
-        return WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonBreedingConfig.hatchTime.get()*20;
-    }
-
-    public int getBreedingLimit(){
-        return WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonBreedingConfig.breedLimit.get();
-    }
-
 
     public class BFLAttackGoal extends AnimatedGoal {
         private int navRecalculationTicks;

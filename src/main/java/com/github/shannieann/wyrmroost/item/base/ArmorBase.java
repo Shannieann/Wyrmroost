@@ -20,8 +20,7 @@ import java.util.List;
 /**
  * Helper class used to help register playerArmor items
  */
-public class ArmorBase extends ArmorItem
-{
+public class ArmorBase extends ArmorItem {
     public ArmorBase(ArmorMaterials material, EquipmentSlot equipType)
     {
         super(material, equipType, WRItems.builder().rarity(material.getRarity()));
@@ -29,15 +28,13 @@ public class ArmorBase extends ArmorItem
 
     @Nullable
     @Override
-    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type)
-    {
+    public String getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, String type) {
         int layer = slot == EquipmentSlot.LEGS? 2 : 1;
         return Wyrmroost.MOD_ID + ":textures/models/armor/" + this.material.getName() + "_layer_" + layer + ".png";
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> lines, TooltipFlag flags)
-    {
+    public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> lines, TooltipFlag flags) {
         super.appendHoverText(stack, level, lines, flags);
         lines.add(new TranslatableComponent("item.wyrmroost.armors.set", new TranslatableComponent("item.wyrmroost.armors." + material.getName()).withStyle(((ArmorMaterials) material).getRarity().color)));
 
@@ -48,17 +45,14 @@ public class ArmorBase extends ArmorItem
         }
     }
 
-    protected boolean hasDescription()
-    {
+    protected boolean hasDescription() {
         return false;
     }
 
-    public void applyFullSetBonus(LivingEntity entity, boolean hasFullSet)
-    {
+    public void applyFullSetBonus(LivingEntity entity, boolean hasFullSet) {
     }
 
-    public static boolean hasFullSet(LivingEntity entity)
-    {
+    public static boolean hasFullSet(LivingEntity entity) {
         ArmorMaterial prev = null;
         for (ItemStack stack : entity.getArmorSlots())
         {

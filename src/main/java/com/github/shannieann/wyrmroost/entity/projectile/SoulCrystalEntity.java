@@ -47,22 +47,19 @@ public class SoulCrystalEntity extends ThrowableItemProjectile
         super(type, world);
     }
 
-    public SoulCrystalEntity(ItemStack stack, LivingEntity thrower, Level world)
-    {
+    public SoulCrystalEntity(ItemStack stack, LivingEntity thrower, Level world) {
         super(WREntityTypes.SOUL_CRYSTAL.get(), thrower, world);
 
         setItem(stack);
     }
 
     @Override
-    protected Item getDefaultItem()
-    {
+    protected Item getDefaultItem() {
         return WRItems.SOUL_CRYSTAL.get();
     }
 
     @Override
-    protected void onHit(HitResult result)
-    {
+    protected void onHit(HitResult result) {
         remove(RemovalReason.DISCARDED);
         Entity thrower = getOwner();
         ItemStack stack = getItem();
@@ -75,8 +72,7 @@ public class SoulCrystalEntity extends ThrowableItemProjectile
     }
 
     @Override
-    protected void onHitEntity(EntityHitResult result)
-    {
+    protected void onHitEntity(EntityHitResult result) {
         super.onHitEntity(result);
         Entity thrower = getOwner();
         ItemStack stack = getItem();
@@ -84,8 +80,7 @@ public class SoulCrystalEntity extends ThrowableItemProjectile
     }
 
     @Override
-    public void handleEntityEvent(byte event)
-    {
+    public void handleEntityEvent(byte event) {
 
         if (event == BREAK_EVENT)
         {
@@ -98,18 +93,15 @@ public class SoulCrystalEntity extends ThrowableItemProjectile
     }
 
     @Override
-    public Packet<?> getAddEntityPacket()
-    {
+    public Packet<?> getAddEntityPacket() {
         return NetworkHooks.getEntitySpawningPacket(this);
     }
 
-    public static boolean containsDragon(ItemStack stack)
-    {
+    public static boolean containsDragon(ItemStack stack) {
         return stack.hasTag() && stack.getTag().contains(DATA_DRAGON);
     }
 
-    public static boolean isSuitableEntity(Entity entity)
-    {
+    public static boolean isSuitableEntity(Entity entity) {
         return entity instanceof WRDragonEntity/* && entity.getType().is(WREntityTypes.Tags.SOUL_BEARERS)*/;
     }
 

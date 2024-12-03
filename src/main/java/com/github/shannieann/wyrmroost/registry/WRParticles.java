@@ -2,8 +2,6 @@ package com.github.shannieann.wyrmroost.registry;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
-import com.github.shannieann.wyrmroost.client.particle.PetalParticle;
-import com.github.shannieann.wyrmroost.client.particle.data.ColoredParticleData;
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
@@ -21,10 +19,8 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class WRParticles<T extends ParticleOptions> extends ParticleType<T>
-{
+public class WRParticles<T extends ParticleOptions> extends ParticleType<T>{
     public static final DeferredRegister<ParticleType<?>> REGISTRY = DeferredRegister.create(ForgeRegistries.PARTICLE_TYPES, Wyrmroost.MOD_ID);
-    public static final RegistryObject<ParticleType<ColoredParticleData>> PETAL = register("petal", false, ColoredParticleData::codec, ColoredParticleData::read, () -> PetalParticle::new);
 
     private final Codec<T> codec;
     private final Supplier<BetterParticleFactory<T>> factory;

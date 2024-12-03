@@ -19,17 +19,14 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Random;
 
-public class TrumpetItem extends Item
-{
+public class TrumpetItem extends Item {
     Random random = new Random();
-    public TrumpetItem()
-    {
+    public TrumpetItem()  {
         super(WRItems.builder());
     }
 
     @Override
-    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand)
-    {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         SoundEvent sound = player.getRandom().nextBoolean()? WRSounds.ENTITY_BFLY_IDLE.get() : WRSounds.ENTITY_BFLY_ROAR.get();
         level.playSound(player, player.blockPosition(), sound, SoundSource.PLAYERS, 0.75f, (random.nextFloat() - random.nextFloat()) * 0.2F + 1.0F);
         player.getCooldowns().addCooldown(this, 50);
@@ -37,8 +34,7 @@ public class TrumpetItem extends Item
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn)
-    {
+    public void appendHoverText(ItemStack stack, @Nullable Level worldIn, List<Component> tooltip, TooltipFlag flagIn) {
         tooltip.add(new TranslatableComponent("item.wyrmroost.trumpet.desc").withStyle(ChatFormatting.GRAY));
     }
 }

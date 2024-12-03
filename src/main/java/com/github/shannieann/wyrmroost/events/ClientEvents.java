@@ -62,8 +62,6 @@ public class ClientEvents {
         modBus.addListener(ClientEvents::itemColors);
         modBus.addListener(ClientEvents::bakeParticles);
         modBus.addListener(ClientEvents::registerRenderers);
-        //bus.addListener(ClientEvents::bakeModels);
-
 
         forgeBus.addListener(RenderHelper::renderWorld);
         forgeBus.addListener(RenderHelper::renderOverlay);
@@ -71,47 +69,26 @@ public class ClientEvents {
         forgeBus.addListener(ClientEvents::setupCameraPerspective);
         forgeBus.addListener(ClientEvents::preLivingRender);
         forgeBus.addListener(ClientEvents::onRenderWorldLast);
-        //forgeBus.addListener(ClientEvents::postLivingRender);
         forgeBus.addListener(ClientEvents::dragonRidingFOV);
         forgeBus.addListener(ClientEvents::onKeyInput);
-
-        //WRDimensionRenderInfo.init();
     }
 
-    private static void clientSetup(final FMLClientSetupEvent event)
-    {
+    private static void clientSetup(final FMLClientSetupEvent event) {
         WRKeybind.registerKeys();
-
-        /*ThinLogBlock.setCutoutRendering(WRBlocks.DYING_CORIN_WOOD);
-        ThinLogBlock.setCutoutRendering(WRBlocks.RED_CORIN_WOOD);
-        ThinLogBlock.setCutoutRendering(WRBlocks.TEAL_CORIN_WOOD);
-        ThinLogBlock.setCutoutRendering(WRBlocks.SILVER_CORIN_WOOD);
-        ThinLogBlock.setCutoutRendering(WRBlocks.PRISMARINE_CORIN_WOOD);*/
         WRIO.screenSetup();
-        event.enqueueWork(() ->
-        {
-
-            //WoodType.values().filter(w -> w.name().contains(Wyrmroost.MOD_ID)).forEach(Atlases::addWoodType);
-
-            //for (TileEntityType<?> entry : ModUtils.getRegistryEntries(WRBlockEntities.REGISTRY))
-                //if (entry instanceof WRBlockEntities<?>) ((WRBlockEntities<?>) entry).callBack();
-        });
     }
 
-    private static void bakeParticles(ParticleFactoryRegisterEvent event)
-    {
+    private static void bakeParticles(ParticleFactoryRegisterEvent event) {
         for (ParticleType<?> entry : WRModUtils.getRegistryEntries(WRParticles.REGISTRY))
             if (entry instanceof WRParticles<?>) ((WRParticles<?>) entry).bake();
     }
 
-    private static void stitchTextures(TextureStitchEvent.Pre evt)
-    {
+    private static void stitchTextures(TextureStitchEvent.Pre evt) {
         if (evt.getAtlas().location() == TextureAtlas.LOCATION_BLOCKS)
             evt.addSprite(BreathWeaponRenderer.BLUE_FIRE);
     }
 
-    private static void itemColors(ColorHandlerEvent.Item evt)
-    {
+    private static void itemColors(ColorHandlerEvent.Item evt) {
         ItemColors handler = evt.getItemColors();
         ItemColor eggFunc = (stack, tintIndex) -> ((LazySpawnEggItem<?>) stack.getItem()).getColor(tintIndex);
         for (LazySpawnEggItem<?> e : LazySpawnEggItem.SPAWN_EGGS) handler.register(eggFunc, e);
@@ -119,18 +96,14 @@ public class ClientEvents {
         handler.register((stack, index) -> ((DyeableLeatherItem) stack.getItem()).getColor(stack), WRItems.LEATHER_DRAGON_ARMOR.get());
     }
 
-    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event){
-        event.registerEntityRenderer(WREntityTypes.ROYAL_RED.get(), RenderRoyalRed::new);
+    public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(WREntityTypes.BUTTERFLY_LEVIATHAN.get(), RenderButterflyLeviathan::new);
-
-        event.registerEntityRenderer(WREntityTypes.LESSER_DESERTWYRM.get(), RenderLesserDesertwyrm::new);
-        event.registerEntityRenderer(WREntityTypes.ROOSTSTALKER.get(), RenderRooststalker::new);
-
-        //event.registerEntityRenderer(WREntityTypes.ROOSTSTALKER.get(), RoostStalkerRenderer2::new);
         event.registerEntityRenderer(WREntityTypes.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
-        event.registerEntityRenderer(WREntityTypes.SILVER_GLIDER.get(), SilverGliderRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.LESSER_DESERTWYRM.get(), RenderLesserDesertwyrm::new);
         event.registerEntityRenderer(WREntityTypes.OVERWORLD_DRAKE.get(), RenderOverworldDrake::new);
-
+        event.registerEntityRenderer(WREntityTypes.ROOSTSTALKER.get(), RenderRooststalker::new);
+        event.registerEntityRenderer(WREntityTypes.ROYAL_RED.get(), RenderRoyalRed::new);
+        event.registerEntityRenderer(WREntityTypes.SILVER_GLIDER.get(), SilverGliderRenderer::new);
 
         event.registerEntityRenderer(WREntityTypes.SOUL_CRYSTAL.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(WREntityTypes.GEODE_TIPPED_ARROW.get(), GeodeTippedArrowRenderer::new);
@@ -139,7 +112,7 @@ public class ClientEvents {
         event.registerEntityRenderer(WREntityTypes.LIGHTNING_NOVA.get(), RenderLightningNova::new);
     }
 
-    private static void cancelIfRidingDragon(RenderLivingEvent event){
+    private static void cancelIfRidingDragon(RenderLivingEvent event) {
         Entity entity = event.getEntity().getVehicle();
         if (entity instanceof WRDragonEntity) {
             if (dragonRiders.contains(event.getEntity().getUUID())) event.setCanceled(true); // Don't render the real player if they're riding a dragon
@@ -147,7 +120,7 @@ public class ClientEvents {
             if (getClient().player == event.getEntity() && camera == CameraType.FIRST_PERSON) event.setCanceled(true); // Don't render the "fake" player if the player is in 1st person
         }
     }
-    private static void preLivingRender(RenderLivingEvent.Pre event){
+    private static void preLivingRender(RenderLivingEvent.Pre event) {
         cancelIfRidingDragon(event);
     }
 

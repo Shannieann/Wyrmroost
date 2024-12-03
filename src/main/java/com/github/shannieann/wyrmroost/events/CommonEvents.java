@@ -31,36 +31,21 @@ import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
-/**
- * Reflection is shit and we shouldn't use it
- * - Some communist coding wyrmroost 2020
- * <p>
- * Manually add listeners
- */
-//ToDo: Correct class, organize
 public class CommonEvents {
 
 
     public static void init() {
-        IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         IEventBus forgeBus = MinecraftForge.EVENT_BUS;
 
-        bus.addListener(CommonEvents::commonSetup);
-        bus.addListener(CommonEvents::bindEntityAttributes);
-        //bus.addListener(CommonEvents::registerLayers);
-        //bus.addListener(WRConfig::loadConfig);
-        //bus.addGenericListener(Item.class, CommonEvents::remap);
+        modBus.addListener(CommonEvents::commonSetup);
+        modBus.addListener(CommonEvents::bindEntityAttributes);
 
         forgeBus.addListener(CommonEvents::debugStick);
         forgeBus.addListener(CommonEvents::onChangeEquipment);
         forgeBus.addListener(CommonEvents::loadLoot);
         forgeBus.addListener(CommonEvents::onBiomeLoading);
         forgeBus.addListener(CommonEvents::onEntityMountEvent);
-
-        //forgeBus.addListener(VillagerHelper::addWandererTrades);
-        //forgeBus.addListener(CommonEvents::preCropGrowth);
-        //forgeBus.addListener(EventPriority.HIGH, WRWorld::onBiomeLoad);
-        //forgeBus.addListener(((ServerAboutToStartEvent e) -> MobSpawnManager.close()));
     }
 
     // ====================
@@ -69,15 +54,8 @@ public class CommonEvents {
 
     public static void commonSetup(final FMLCommonSetupEvent event) {
 
-        event.enqueueWork(() ->
-        {
+        event.enqueueWork(() -> {
             LazySpawnEggItem.addEggsToMap();
-
-            //for (EntityType<?> entry : ModUtils.getRegistryEntries(WREntityTypes.REGISTRY))
-            //   if (entry instanceof WREntityTypes) ((WREntityTypes<?>) entry).callBack();
-
-            //for (WRBlocks.BlockExtension extension : WRBlocks.EXTENSIONS) extension.callBack();
-            //WRBlocks.EXTENSIONS.clear();
             WREntitySpawning.registerSpawnPlacementTypes();
         });
     }
@@ -93,15 +71,6 @@ public class CommonEvents {
             }
         }
     }
-
-    //public static void registerLayers(EntityRenderersEvent.RegisterLayerDefinitions event){
-    //     event.registerLayerDefinition(RoostStalkerModel.LAYER_LOCATION, RoostStalkerModel::createBodyLayer);
-    // }
-
-
-    // =====================
-    //      Forge Bus
-    // =====================
 
     public static void debugStick(PlayerInteractEvent.RightClickItem event) {
         Player player = event.getPlayer();

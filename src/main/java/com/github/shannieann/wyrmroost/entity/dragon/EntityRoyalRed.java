@@ -448,7 +448,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
 
     //TODO: Whole keybind logic
     @Override
-    public void recievePassengerKeybind(int key, int mods, boolean pressed) {
+    public void receivePassengerKeybind(int key, int mods, boolean pressed) {
         //if (!noAnimations()) return;
 
         if (key == KeybindHandler.MOUNT_KEY && pressed && !getBreathingFire()) {

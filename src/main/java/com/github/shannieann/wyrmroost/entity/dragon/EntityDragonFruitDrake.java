@@ -229,7 +229,7 @@ public class DragonFruitDrakeEntity extends WRDragonEntity implements IForgeShea
     }
 
     @Override
-    public void recievePassengerKeybind(int key, int mods, boolean pressed)
+    public void receivePassengerKeybind(int key, int mods, boolean pressed)
     {
         if (key == KeybindHandler.MOUNT_KEY && pressed) setAnimation(BITE_ANIMATION);
     }

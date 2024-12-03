@@ -2,55 +2,45 @@ package com.github.shannieann.wyrmroost.util;
 
 import net.minecraft.util.Mth;
 
-public class LerpedFloat
-{
+public class LerpedFloat {
     protected float current;
     protected float previous;
 
-    public LerpedFloat()
-    {
+    public LerpedFloat() {
         current = previous = 0;
     }
 
-    public LerpedFloat(float start)
-    {
+    public LerpedFloat(float start) {
         current = previous = start;
     }
 
-    public float get(float x)
-    {
+    public float get(float x) {
         return WRMathsUtility.linTerp(previous, current, x);
     }
 
-    public float get()
-    {
+    public float get() {
         return current;
     }
 
-    public void set(float value)
-    {
+    public void set(float value) {
         sync();
         current = value;
     }
 
-    public void add(float value)
-    {
+    public void add(float value) {
         sync();
         current += value;
     }
 
-    public void sync()
-    {
+    public void sync() {
         previous = current;
     }
 
-    public float getPrevious()
-    {
+    public float getPrevious() {
         return previous;
     }
 
-    public static LerpedFloat.Clamped unit()
-    {
+    public static LerpedFloat.Clamped unit() {
         return new Clamped(0, 1);
     }
 
@@ -58,13 +48,11 @@ public class LerpedFloat
      * Clamped Implementation.
      * Basically just ensure that the value stays clamped within the specified {@link Clamped#min}-{@link Clamped#max} bounds.
      */
-    public static class Clamped extends LerpedFloat
-    {
+    public static class Clamped extends LerpedFloat {
         private final float min;
         private final float max;
 
-        public Clamped(float start, float min, float max)
-        {
+        public Clamped(float start, float min, float max) {
             super(Mth.clamp(start, min, max));
             this.min = min;
             this.max = max;
@@ -82,8 +70,7 @@ public class LerpedFloat
         }
 
         @Override
-        public void add(float value)
-        {
+        public void add(float value) {
             super.add(value);
             current = Mth.clamp(current, min, max);
         }

@@ -364,6 +364,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     //      F) Goals
     // ====================================
 
+
     @Override
     protected void registerGoals() {
         super.registerGoals();
@@ -412,11 +413,12 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
 
     @Override
     public int hatchTime() {
-        return 300;
+        return WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonBreedingConfig.hatchTime.get()*20;
     }
 
 
     class RSScavengeGoal extends AnimatedGoal {
+        //ToDo: Ensure this reaches the chest correctly for animation to play
         private Container container;
         private  BlockPos openPos;
         private BlockPos chestPos;

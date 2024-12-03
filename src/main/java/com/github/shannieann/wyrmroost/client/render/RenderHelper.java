@@ -38,8 +38,7 @@ import net.minecraftforge.client.event.RenderLivingEvent;
 
 import java.util.OptionalDouble;
 
-public class RenderHelper extends RenderType
-{
+public class RenderHelper extends RenderType {
     // == [Render Types] ==
 
     private static final RenderType TRANSPARENT = create("transparent_color", DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.QUADS, 256, false, true, RenderType.CompositeState
@@ -80,7 +79,7 @@ public class RenderHelper extends RenderType
                 .createCompositeState(false));
     }
 
-    public static RenderType getThiccLines(double thickness)
+    public static RenderType getThickLines(double thickness)
     {
         return create("thickened_lines", DefaultVertexFormat.POSITION_COLOR, VertexFormat.Mode.LINES, 256, CompositeState.builder()
                 .setLineState(new LineStateShard(OptionalDouble.of(thickness)))
@@ -166,7 +165,7 @@ public class RenderHelper extends RenderType
         Vec3 view = ClientEvents.getProjectedView();
         ClientLevel level = ClientEvents.getLevel();
         drawShape(ms,
-                impl.getBuffer(getThiccLines(lineThickness)),
+                impl.getBuffer(getThickLines(lineThickness)),
                 getShape? level.getBlockState(pos).getShape(level, pos) : Shapes.block(),
                 pos.getX() - view.x, pos.getY() - view.y, pos.getZ() - view.z,
                 argb);

@@ -9,8 +9,7 @@ import net.minecraftforge.common.util.Lazy;
 import java.util.function.Supplier;
 
 
-public enum ToolMaterials implements Tier
-{
+public enum ToolMaterials implements Tier {
     BLUE_GEODE(7.5f, 0.5f, 1732, 3, 20, WRItems.BLUE_GEODE),
     RED_GEODE(8.5f, 0.5f, 2031, 4, 20, WRItems.RED_GEODE),
     PURPLE_GEODE(10f, 0, 4214, 5, 25, WRItems.PURPLE_GEODE),
@@ -20,8 +19,7 @@ public enum ToolMaterials implements Tier
     private final int durability, harvestLevel, enchantibility;
     private final Lazy<Ingredient> repairMaterial;
 
-    ToolMaterials(float efficiency, float attackDmgMod, int durability, int harvestLevel, int enchantibility, Supplier<Item> repairMaterial)
-    {
+    ToolMaterials(float efficiency, float attackDmgMod, int durability, int harvestLevel, int enchantibility, Supplier<Item> repairMaterial)  {
         this.efficiency = efficiency;
         this.attackDamage = attackDmgMod;
         this.durability = durability;
@@ -31,38 +29,32 @@ public enum ToolMaterials implements Tier
     }
 
     @Override
-    public int getUses()
-    {
+    public int getUses() {
         return durability;
     }
 
     @Override
-    public float getSpeed()
-    {
+    public float getSpeed() {
         return efficiency;
     }
 
     @Override
-    public float getAttackDamageBonus()
-    {
+    public float getAttackDamageBonus() {
         return attackDamage;
     }
 
     @Override
-    public int getLevel()
-    {
+    public int getLevel() {
         return harvestLevel;
     }
 
     @Override
-    public int getEnchantmentValue()
-    {
+    public int getEnchantmentValue() {
         return enchantibility;
     }
 
     @Override
-    public Ingredient getRepairIngredient()
-    {
+    public Ingredient getRepairIngredient() {
         return repairMaterial.get();
     }
 }

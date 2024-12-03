@@ -15,8 +15,7 @@ import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
 import net.minecraftforge.network.PlayMessages;
 
-public class GeodeTippedArrowEntity extends AbstractArrow implements IEntityAdditionalSpawnData
-{
+public class GeodeTippedArrowEntity extends AbstractArrow implements IEntityAdditionalSpawnData {
     private final GeodeTippedArrowItem item;
 
     public GeodeTippedArrowEntity(EntityType<? extends AbstractArrow> type, Level level)

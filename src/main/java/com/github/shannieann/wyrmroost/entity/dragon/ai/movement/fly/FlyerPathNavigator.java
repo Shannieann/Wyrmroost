@@ -7,8 +7,7 @@ import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import net.minecraft.world.phys.Vec3;
 
-public class FlyerPathNavigator extends FlyingPathNavigation
-{
+public class FlyerPathNavigator extends FlyingPathNavigation {
     //TODO: DO NOT USE THIS FOR ANYTHING BUT BEHEMOTHS / APEXES
     public FlyerPathNavigator(WRDragonEntity entity)
     {

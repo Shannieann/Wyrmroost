@@ -13,8 +13,7 @@ import net.minecraftforge.common.util.Lazy;
 import java.util.function.Supplier;
 
 
-public enum ArmorMaterials implements ArmorMaterial
-{
+public enum ArmorMaterials implements ArmorMaterial {
     BLUE_GEODE(new int[] {3, 5, 7, 3}, 1f, 31, 25, SoundEvents.ARMOR_EQUIP_DIAMOND, WRItems.BLUE_GEODE),
     RED_GEODE(new int[] {3, 6, 8, 3}, 2.5f, 32, 25, SoundEvents.ARMOR_EQUIP_DIAMOND, WRItems.RED_GEODE),
     PURPLE_GEODE(new int[] {4, 7, 10, 4}, 4f, 45, 28, 0, SoundEvents.ARMOR_EQUIP_DIAMOND, WRItems.RED_GEODE, Rarity.RARE),
@@ -29,13 +28,11 @@ public enum ArmorMaterials implements ArmorMaterial
     private final Lazy<Ingredient> repairMaterial;
     private final Rarity rarity;
 
-    ArmorMaterials(int[] dmgReduction, float toughness, int durability, int enchantability, SoundEvent sound, Supplier<Item> repairMaterial)
-    {
+    ArmorMaterials(int[] dmgReduction, float toughness, int durability, int enchantability, SoundEvent sound, Supplier<Item> repairMaterial) {
         this(dmgReduction, toughness, durability, enchantability, 0, sound, repairMaterial, Rarity.COMMON);
     }
 
-    ArmorMaterials(int[] dmgReduction, float toughness, int durability, int enchantability, int knockbackResistance, SoundEvent sound, Supplier<Item> repairMaterial, Rarity rarity)
-    {
+    ArmorMaterials(int[] dmgReduction, float toughness, int durability, int enchantability, int knockbackResistance, SoundEvent sound, Supplier<Item> repairMaterial, Rarity rarity) {
         this.durability = durability;
         this.defense = dmgReduction;
         this.enchantability = enchantability;
@@ -47,55 +44,46 @@ public enum ArmorMaterials implements ArmorMaterial
     }
 
     @Override
-    public int getDurabilityForSlot(EquipmentSlot slot)
-    {
+    public int getDurabilityForSlot(EquipmentSlot slot) {
         return DURABILITY_ARRAY[slot.getIndex()] * durability;
     }
 
     @Override
-    public int getDefenseForSlot(EquipmentSlot slot)
-    {
+    public int getDefenseForSlot(EquipmentSlot slot) {
         return defense[slot.getIndex()];
     }
 
     @Override
-    public int getEnchantmentValue()
-    {
+    public int getEnchantmentValue() {
         return enchantability;
     }
 
     @Override
-    public SoundEvent getEquipSound()
-    {
+    public SoundEvent getEquipSound() {
         return sound;
     }
 
     @Override
-    public Ingredient getRepairIngredient()
-    {
+    public Ingredient getRepairIngredient() {
         return repairMaterial.get();
     }
 
     @Override
-    public String getName()
-    {
+    public String getName() {
         return toString().toLowerCase();
     }
 
     @Override
-    public float getToughness()
-    {
+    public float getToughness() {
         return toughness;
     }
 
     @Override
-    public float getKnockbackResistance()
-    {
+    public float getKnockbackResistance() {
         return knockbackResistance;
     }
 
-    public Rarity getRarity()
-    {
+    public Rarity getRarity() {
         return rarity;
     }
 }

@@ -69,7 +69,7 @@ public class KeybindHandler
         Entity vehicle = player.getVehicle();
         if (vehicle instanceof WRDragonEntity dragon) {
             if (dragon.isTame() && dragon.getControllingPlayer() == player) {
-                dragon.recievePassengerKeybind(key, mods, pressed);
+                dragon.receivePassengerKeybind(key, mods, pressed);
             }
         }
     }

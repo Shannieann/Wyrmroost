@@ -204,12 +204,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     protected WRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
-        //TODO: CONFIG
         this.noCulling = true;
         DragonInventory inv = createInv();
         inventory = LazyOptional.of(inv == null? null : () -> inv);
-        //TODO: DEFAULT NAVIGATORS
-
     }
 
     // =====================
@@ -401,7 +398,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void addAdditionalSaveData(CompoundTag nbt)
     {
-        //ToDo: Add missing SaveData
         super.addAdditionalSaveData(nbt);
         nbt.putInt("Gender",getGender());
         nbt.putString("Variant",getVariant());
@@ -415,16 +411,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         nbt.putInt("BreedingCount",getBreedingCount());
 
         nbt.putFloat("AgeProgress",getAgeProgress());
-
-        /*
-        if (inventory.isPresent()) nbt.put("Inv", inventory.orElse(null).serializeNBT());
-        ((EntitySerializer<WRDragonEntity>) getSerializer()).serialize(this, nbt);
-        */
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag nbt) {
-        //ToDo: Read missing SaveData
 
         super.readAdditionalSaveData(nbt);
         setGender(nbt.getInt("Gender"));
@@ -444,22 +434,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         float age = nbt.contains("AgeProgress")? nbt.getFloat("AgeProgress") : 1.0f;
         // Default age is 1 if age is not set in the NBT
         setAgeProgress(age);
-        /*
-        if (inventory.isPresent()) inventory.orElse(null).deserializeNBT(nbt.getCompound("Inv"));
-         */
     }
 
     @Override
-    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @javax.annotation.Nullable SpawnGroupData data, @javax.annotation.Nullable CompoundTag dataTag)
-    {
-        //ToDo: Improve finalize spawn
+    public SpawnGroupData finalizeSpawn(@NotNull ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @javax.annotation.Nullable SpawnGroupData data, @javax.annotation.Nullable CompoundTag dataTag) {
         /**
          * GENDER:
          * 0 --> FEMALE
          * 1 --> MALE
          * Originally determined via coin flip
          */
-
 
         if (hasEntityDataAccessor(GENDER)) {
             int gender;
@@ -471,20 +455,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setGender(gender);
         }
 
-
-
-
         //determineVariant is a method in each subclass, specific to each creature
         if (hasEntityDataAccessor(VARIANT)) {
             setVariant(determineVariant());
         }
 
-
         if ((reason == MobSpawnType.COMMAND || reason == MobSpawnType.SPAWN_EGG)){
             setAgeProgress(1f);
         }
-
-
         return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
     }
 
@@ -530,7 +508,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
                */
         else super.onSyncedDataUpdated(key);
-
     }
 
     public String getAnimation()
@@ -579,8 +556,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return entityData.itemsById.containsKey(param.getId());
     }
 
-    public Attribute[] getScaledAttributes()
-    {
+    public Attribute[] getScaledAttributes() {
         return new Attribute[]{MAX_HEALTH, ATTACK_DAMAGE};
     }
 
@@ -594,8 +570,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return (float) getAttributeValue(MOVEMENT_SPEED);
     }
 
-    public static boolean canFlyerSpawn(EntityType<? extends WRDragonEntity> entityType, ServerLevelAccessor serverLevelAccessor, MobSpawnType spawnType, BlockPos pos, Random random)
-    {
+    public static boolean canFlyerSpawn(EntityType<? extends WRDragonEntity> entityType, ServerLevelAccessor serverLevelAccessor, MobSpawnType spawnType, BlockPos pos, Random random) {
         return serverLevelAccessor.getBlockState(pos.below()).getFluidState().isEmpty();
     }
 
@@ -858,10 +833,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      A.8) Entity Data: Miscellaneous
     // ====================================
 
-    //ToDo: What is this for?
     @Override
-    public EntityDimensions getDimensions(Pose pose)
-    {
+    public EntityDimensions getDimensions(Pose pose) {
         EntityDimensions size = getType().getDimensions().scale(getScale());
         if (isInSittingPose() || getSleeping()) size = size.scale(1, 0.5f);
         return size;
@@ -998,7 +971,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             // Reducing rotation multiplier in model class can also reduce choppiness, at the cost of how wide the bone rotation is.
 
             //PITCH OPERATIONS:
-            //TODO: Breaching if checks and model class checks, organize
             if (!this.getBreaching()) {
                 //Calculate deltaPitch, between our target (xRot) and the previous value we applied to the model...
                 deltaPitch = this.xRot - adjustedPitch;
@@ -1252,7 +1224,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             this.yRotO = this.getYRot();
 
             // While being ridden, entity's pitch = 0.5 of rider's pitch
-            // ToDo: Is this needed? Can't we just set the entity's pitch to the rider's pitch?
             this.setXRot(rider.getXRot() * 0.5F);
 
             // While being ridden, entity's yaw = rider's yaw
@@ -1632,7 +1603,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      * @param mods    the modifiers that is pressed when this key was pressed (e.g. shift was held, ctrl etc {@link org.lwjgl.glfw.GLFW})
      * @param pressed true if pressed, false if released. pretty straight forward idk why ur fucking asking.
      */
-    public void recievePassengerKeybind(int key, int mods, boolean pressed) {
+    public void receivePassengerKeybind(int key, int mods, boolean pressed) {
     }
 
     @Override
@@ -1793,15 +1764,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    public void dropLeash(boolean sendPacket, boolean dropLead)
-    {
+    public void dropLeash(boolean sendPacket, boolean dropLead) {
         super.dropLeash(sendPacket, dropLead);
         clearHome();
     }
 
     @Override
-    public Component getDisplayName()
-    {
+    public Component getDisplayName()    {
         return super.getDisplayName();
     }
 
@@ -1809,21 +1778,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      D.1) Taming: Inventory
     // ====================================
 
-    public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad)
-    {
+    public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad) {
 
     }
 
     @Override
-    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing)
-    {
+    public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
         if (isAlive() && capability == CapabilityItemHandler.ITEM_HANDLER_CAPABILITY && inventory.isPresent() && !getInventory().isEmpty())
             return inventory.cast();
         return super.getCapability(capability, facing);
     }
 
-    public ItemStack getStackInSlot(int slot)
-    {
+    public ItemStack getStackInSlot(int slot) {
         return inventory.map(i -> i.getStackInSlot(slot)).orElse(ItemStack.EMPTY);
     }
 
@@ -1832,50 +1798,43 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      * It is VERY sidedness sensitive. If not done correctly, it can result in the loss of items! <P>
      * {@code if (!level.isClient) setStackInSlot(...)}
      */
-    public void setStackInSlot(int slot, ItemStack stack)
-    {
+    public void setStackInSlot(int slot, ItemStack stack) {
         inventory.ifPresent(i -> i.setStackInSlot(slot, stack));
     }
-    public DragonInventory getInventory()
-    {
+    public DragonInventory getInventory() {
         return inventory.orElseThrow(() -> new NoSuchElementException("This boi doesn't have an inventory wtf are u doing"));
     }
 
-    public boolean canEquipSaddle(){
+    public boolean canEquipSaddle() {
         return false;
     }
-    public boolean canEquipArmor(){
+    public boolean canEquipArmor() {
         return false;
     }
-    public boolean canEquipChest(){
+    public boolean canEquipChest() {
         return false;
     }
     @Nullable
-    public Predicate<ItemStack> canEquipSpecialItem(){
+    public Predicate<ItemStack> canEquipSpecialItem() {
         return null;
     }
 
-    public boolean isSaddled()
-    {
+    public boolean isSaddled() {
         return canEquipSaddle() && entityData.get(SADDLED);
     }
-    public boolean isChested()
-    {
+    public boolean isChested() {
         return canEquipChest() && entityData.get(CHESTED);
     }
 
     @Override
-    protected void dropEquipment()
-    {
+    protected void dropEquipment() {
         inventory.ifPresent(i -> i.getContents().forEach(this::spawnAtLocation));
     }
 
-    public void dropStorage()
-    {
+    public void dropStorage() {
     }
 
-    public DragonInventory createInv()
-    {
+    public DragonInventory createInv() {
         return null;
     }
 
@@ -1922,7 +1881,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                     }
             }
 
-            if (item.hasContainerItem(stack))  {
+            if (item.hasContainerItem(stack)) {
                 spawnAtLocation(item.getContainerItem(stack), (float) (mouth.y - getY()));
 
             }
@@ -1932,16 +1891,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    public void heal(float healAmount)
-    {
+    public void heal(float healAmount) {
         super.heal(healAmount);
         level.broadcastEntityEvent(this, HEAL_PARTICLES_EVENT_ID);
     }
 
     @Nullable
     @Override
-    public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob mate)
-    {
+    public AgeableMob getBreedOffspring(ServerLevel level, AgeableMob mate) {
         return (AgeableMob) getType().create(level);
     }
 
@@ -1953,8 +1910,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    public boolean canMate(Animal mate)
-    {
+    public boolean canMate(Animal mate) {
         if (!(mate instanceof WRDragonEntity)) return false;
         WRDragonEntity dragon = (WRDragonEntity) mate;
         if (isInSittingPose() || dragon.isInSittingPose()) return false;
@@ -1973,14 +1929,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      * @returns the location of the depiction in dragon_depictions.png
      */
     public abstract Vec2 getTomeDepictionOffset();
-
-    public void doSpecialEffects()
-    {
-    }
-    
     @Override
-    public void handleEntityEvent(byte id)
-    {
+    public void handleEntityEvent(byte id) {
         if (id == HEAL_PARTICLES_EVENT_ID)
         {
             for (int i = 0; i < getBbWidth() * getBbHeight(); ++i)
@@ -2064,12 +2014,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     //      F) Goals
     // ====================================
-
-    // ====================================
-    //      F.n) Goals: n
-    // ====================================
-
-
 }
 
 

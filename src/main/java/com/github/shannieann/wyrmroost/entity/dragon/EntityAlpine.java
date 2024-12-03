@@ -170,7 +170,7 @@ public class AlpineEntity extends WRDragonEntity
     }
 
     @Override
-    public void recievePassengerKeybind(int key, int mods, boolean pressed)
+    public void receivePassengerKeybind(int key, int mods, boolean pressed)
     {
         if (key == KeybindHandler.ALT_MOUNT_KEY && pressed && noAnimations() && isUsingFlyingNavigator())
             setAnimation(WIND_GUST_ANIMATION);

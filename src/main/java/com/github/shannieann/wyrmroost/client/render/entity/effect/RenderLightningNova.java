@@ -16,7 +16,6 @@ import javax.annotation.Nullable;
 public class RenderLightningNova extends GeoProjectilesRenderer<EffectLightningNova> {
     public RenderLightningNova(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelLightningNova());
-        //TODO: Shadow?
         this.shadowRadius = 0.0F;
     }
 
