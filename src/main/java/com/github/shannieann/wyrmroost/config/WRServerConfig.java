@@ -84,7 +84,7 @@ public final class WRServerConfig {
             //CANARI_WYVERN = new CanariWyvern(builder);
             //COIN_DRAGON = new CoinDragon(builder);
             //DRAGONFRUIT_DRAKE = new DragonfruitDrake(builder);
-            //LESSER_DESERTWYRM = new LesserDesertwyrm(builder);
+            LESSER_DESERTWYRM = new LesserDesertwyrm(builder);
             OVERWORLD_DRAKE = new OverworldDrake(builder);
             ROOSTSTALKER = new Rooststalker(builder);
             //ROYAL_RED = new RoyalRed(builder);
@@ -97,7 +97,7 @@ public final class WRServerConfig {
         //public final CanariWyvern CANARI_WYVERN;
         //public final CoinDragon COIN_DRAGON;
         //public final DragonfruitDrake DRAGONFRUIT_DRAKE;
-        //public final LesserDesertwyrm LESSER_DESERTWYRM;
+        public final LesserDesertwyrm LESSER_DESERTWYRM;
         public final OverworldDrake OVERWORLD_DRAKE;
         public final Rooststalker ROOSTSTALKER;
         //public final RoyalRed ROYAL_RED;
