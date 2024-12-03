@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.item.LDWyrmItem;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
@@ -40,13 +41,16 @@ import java.util.function.Predicate;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-public class EntityLesserDesertwyrm extends WRDragonEntity
-{
+public class EntityLesserDesertwyrm extends WRDragonEntity {
     private int burrowTicks = 30;
+    public static final String BURROW_ANIMATION = "burrow";
+    public static final int BURROW_ANIMATION_TIME = 20;
+
+
     private static final EntityDataAccessor<Boolean> BURROWED = SynchedEntityData.defineId(EntityLesserDesertwyrm.class, EntityDataSerializers.BOOLEAN);
 
     @Override
-    public int idleAnimationVariants(){
+    public int idleAnimationVariants() {
         return 0;
     }
     public EntityLesserDesertwyrm(EntityType<? extends EntityLesserDesertwyrm> type, Level worldIn)
@@ -66,21 +70,18 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
     }
 
     @Override
-    protected void defineSynchedData()
-    {
+    protected void defineSynchedData() {
         this.entityData.define(BURROWED, Boolean.FALSE);
         super.defineSynchedData();
     }
 
-    public void addAdditionalSaveData(CompoundTag compound)
-    {
+    public void addAdditionalSaveData(CompoundTag compound) {
         super.addAdditionalSaveData(compound);
         compound.putBoolean("burrowed", this.getBurrowed());
     }
 
     @Override
-    public void readAdditionalSaveData(CompoundTag compound)
-    {
+    public void readAdditionalSaveData(CompoundTag compound) {
         super.readAdditionalSaveData(compound);
         if (compound.contains("burrowed")) {
             this.setBurrowed(compound.getBoolean("burrowed"));
@@ -116,11 +117,9 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
     }
 
     @Override
-    protected void registerGoals()
-    //TODO: Animate all goals
-    {
+    protected void registerGoals() {
         goalSelector.addGoal(1, new FloatGoal(this));
-        goalSelector.addGoal(2, new WRBurrowGoal());
+        goalSelector.addGoal(2, new WRBurrowGoal(this));
         goalSelector.addGoal(3, new AvoidEntityGoal<>(this, LivingEntity.class, 6f, 0.8d, 1.2d,
                 EntitySelector.NO_CREATIVE_OR_SPECTATOR::test));
         goalSelector.addGoal(4, new WaterAvoidingRandomStrollGoal(this, 1));
@@ -199,9 +198,7 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
         }
         return super.mobInteract(player, hand);
     }
-    public InteractionResult tameLogic (Player tamer, ItemStack stack) {
-        return InteractionResult.PASS;
-    };
+
     //Attracted to sand
     /*
 
@@ -284,8 +281,7 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
     }
 
     @Override
-    public boolean isImmobile()
-    {
+    public boolean isImmobile() {
         return super.isImmobile() || getBurrowed();
     }
 
@@ -295,93 +291,58 @@ public class EntityLesserDesertwyrm extends WRDragonEntity
     }
 
     @Override
-    public ItemStack getPickedResult(HitResult target)
-    {
+    public ItemStack getPickedResult(HitResult target) {
         return new ItemStack(ForgeSpawnEggItem.fromEntityType(getType()));
     }
 
-    public boolean getBurrowed()
-    {
+    public boolean getBurrowed() {
         return entityData.get(BURROWED);
     }
 
-    public void setBurrowed(boolean burrow)
-    {
+    public void setBurrowed(boolean burrow) {
         entityData.set(BURROWED, burrow);
     }
 
 
-    /*
-       @Override
-    public int getAnimationTick()
-    {
-        return animationTick;
-    }
-
-    @Override
-    public void setAnimationTick(int tick)
-    {
-        animationTick = tick;
-    }
-
-    @Override
-    public Animation getAnimation()
-    {
-        return animation;
-    }
-
-    @Override
-    public Animation[] getAnimations()
-    {
-        return new Animation[] {BITE_ANIMATION};
-    }
-
-    @Override
-    public void setAnimation(Animation animation)
-    {
-        this.animation = animation;
-        setAnimationTick(0);
-    }
-     */
     //Burrow Goal:
-    //TODO: Extend Animated Goal
-    class WRBurrowGoal extends Goal {
-        public WRBurrowGoal()
-        {
+    class WRBurrowGoal extends AnimatedGoal {
+        public WRBurrowGoal(EntityLesserDesertwyrm entity) {
+            super(entity);
             setFlags(EnumSet.of(Flag.MOVE, Flag.JUMP, Flag.LOOK));
         }
 
         @Override //Burrow if it is not burrowed and has sand below
-        public boolean canUse()
-        {
+        public boolean canUse() {
             return !getBurrowed() && this.belowIsSand();
         }
 
         @Override
-        //continue trying to burrow so long as below is sand, we are burrowed and we still have burrow time remaining
+        public void start(){
+            super.start(BURROW_ANIMATION, 2, BURROW_ANIMATION_TIME);
+
+        }
+        @Override
+        //continue trying to burrow so long as below is sand, we are burrowed, and we still have burrow time remaining
         public boolean canContinueToUse() {
             return belowIsSand() && (getBurrowed()) || burrowTicks > 0;
 
         }
 
         @Override
-        public void tick()
-        {
+        public void tick() {
             if (burrowTicks > 0 && --burrowTicks == 0) {
                 setBurrowed(true);
-//                setAnimationState(1);
             }
         }
 
         @Override
-        public void stop()
-        {
+        public void stop() {
             burrowTicks = 30;
             setBurrowed(false);
+            super.stop();
         }
 
-        private boolean belowIsSand()
-        {
+        private boolean belowIsSand() {
             return level.getBlockState(blockPosition().below(1)).is(BlockTags.SAND);
         }
     }
