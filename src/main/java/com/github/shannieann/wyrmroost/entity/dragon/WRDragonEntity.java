@@ -1944,6 +1944,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         else super.handleEntityEvent(id);
     }
 
+    public void doSpecialEffects() {}
+
     // ====================================
     //      E.1) Client: Sounds
     // ====================================
