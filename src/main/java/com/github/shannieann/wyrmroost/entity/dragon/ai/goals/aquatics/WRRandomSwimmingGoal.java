@@ -42,16 +42,14 @@ public class WRRandomSwimmingGoal extends Goal {
         if (this.entity.getSitting())
             return false;
 
-        else {
-            Vec3 targetPosition = this.getPosition();
-            if (targetPosition == null)
-                return false;
-             else {
-                this.x = targetPosition.x;
-                this.y = targetPosition.y;
-                this.z = targetPosition.z;
-                return true;
-            }
+        Vec3 targetPosition = this.getPosition();
+        if (targetPosition == null)
+            return false;
+         else {
+            this.x = targetPosition.x;
+            this.y = targetPosition.y;
+            this.z = targetPosition.z;
+            return true;
         }
     }
 
