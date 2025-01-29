@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRRandomFlyingGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import net.minecraft.sounds.SoundEvent;
@@ -65,7 +65,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
         goalSelector.addGoal(5, new ThreatenGoal());
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new WRDragonBreedGoal(this));
-        goalSelector.addGoal(8, new FlyerWanderGoal(this, 1));
+        goalSelector.addGoal(8, new WRRandomFlyingGoal(this, 1));
         goalSelector.addGoal(9, new LookAtPlayerGoal(this, LivingEntity.class, 8f));
         goalSelector.addGoal(10, new RandomLookAroundGoal(this));
 

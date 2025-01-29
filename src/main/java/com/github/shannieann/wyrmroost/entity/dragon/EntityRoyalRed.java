@@ -3,7 +3,7 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRRandomFlyingGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entity.projectile.breath.FireBreathEntity;
@@ -38,7 +38,6 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
-import net.minecraftforge.common.ForgeMod;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nullable;
@@ -626,7 +625,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
         goalSelector.addGoal(5, new RRAttackGoal(this));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new WRDragonBreedGoal(this));
-        goalSelector.addGoal(9, new FlyerWanderGoal(this, 1));
+        goalSelector.addGoal(9, new WRRandomFlyingGoal(this, 1));
         goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
         goalSelector.addGoal(11, new RandomLookAroundGoal(this));
         // TODO Replace this goal with a different WRFlyAwayWhenLosingGoal. Pretty sure RRs would just walk away and not use their wings which... isn't that smart.

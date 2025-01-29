@@ -3,7 +3,7 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDragonBreedGoal;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRRandomFlyingGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRAvoidEntityGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRFollowOwnerGoal;
 import com.github.shannieann.wyrmroost.network.packets.SGGlidePacket;
@@ -99,7 +99,7 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable
         goalSelector.addGoal(5, new WRDragonBreedGoal(this));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new SwoopGoal());
-        goalSelector.addGoal(8, new FlyerWanderGoal(this, 1));
+        goalSelector.addGoal(8, new WRRandomFlyingGoal(this, 1));
         goalSelector.addGoal(9, new LookAtPlayerGoal(this, LivingEntity.class, 7f));
         goalSelector.addGoal(10, new RandomLookAroundGoal(this));
     }
