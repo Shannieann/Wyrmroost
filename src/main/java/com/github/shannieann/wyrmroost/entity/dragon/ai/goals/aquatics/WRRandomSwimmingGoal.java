@@ -39,6 +39,9 @@ public class WRRandomSwimmingGoal extends Goal {
         if (this.entity.getSleeping())
             return false;
 
+        if (this.entity.getSitting())
+            return false;
+
         else {
             Vec3 targetPosition = this.getPosition();
             if (targetPosition == null)
