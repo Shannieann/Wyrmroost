@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.FlyerWanderGoal;
@@ -37,6 +38,7 @@ import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
+import net.minecraftforge.common.ForgeMod;
 import org.apache.commons.lang3.ArrayUtils;
 
 import javax.annotation.Nullable;
@@ -110,9 +112,8 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
     }
 
     // ====================================
-    //      A) Entity Data
+    //      A) Entity Data + Attributes
     // ====================================
-
 
     @Override
     protected void defineSynchedData() {
@@ -122,33 +123,17 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
 
     }
 
-    @Override
-    public void onSyncedDataUpdated(EntityDataAccessor<?> key) {
-        if (level.isClientSide && key.equals(BREATHING_FIRE) && getBreathingFire()) ;
-            //BreathSound.play(this);
-        else super.onSyncedDataUpdated(key);
-    }
 
     public static AttributeSupplier.Builder getAttributeSupplier() {
-        // base male attributes
         return Mob.createMobAttributes()
-                .add(MAX_HEALTH, 130)
-                .add(MOVEMENT_SPEED, 0.22)
+                .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.maxHealth.get())
+                .add(MOVEMENT_SPEED, 0.22F)
                 .add(KNOCKBACK_RESISTANCE, 1)
-                .add(FOLLOW_RANGE, 60)
-                .add(ATTACK_KNOCKBACK, 4)
-                .add(ATTACK_DAMAGE, 12)
-                .add(FLYING_SPEED, 0.1)
+                .add(ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.attackDamage.get())
+                .add(FOLLOW_RANGE, 70)
                 .add(WREntityTypes.Attributes.PROJECTILE_DAMAGE.get(), 4);
     }
-
-    /*
-    @Override
-    public EntitySerializer<EntityRoyalRed> getSerializer() {
-        return SERIALIZER;
-    }
-
-     */
+    
 
     public void setBreathingFire(boolean breathingFire) {
         if (!level.isClientSide) entityData.set(BREATHING_FIRE, breathingFire);

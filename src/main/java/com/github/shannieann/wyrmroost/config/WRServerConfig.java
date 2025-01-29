@@ -87,7 +87,7 @@ public final class WRServerConfig {
             LESSER_DESERTWYRM = new LesserDesertwyrm(builder);
             OVERWORLD_DRAKE = new OverworldDrake(builder);
             ROOSTSTALKER = new Rooststalker(builder);
-            //ROYAL_RED = new RoyalRed(builder);
+            ROYAL_RED = new RoyalRed(builder);
             //SILVER_GLIDER = new SilverGlider(builder);
             builder.pop();
         }
@@ -100,7 +100,7 @@ public final class WRServerConfig {
         public final LesserDesertwyrm LESSER_DESERTWYRM;
         public final OverworldDrake OVERWORLD_DRAKE;
         public final Rooststalker ROOSTSTALKER;
-        //public final RoyalRed ROYAL_RED;
+        public final RoyalRed ROYAL_RED;
         //public final SilverGlider SILVER_GLIDER;
     }
 
@@ -177,7 +177,7 @@ public final class WRServerConfig {
                     .comment("Percentage by which a baby's age will progress towards adult, each minute",
                             "If set to 10, it will progress by 10% each minute, meaning it will take 10 minutes to reach adult (100%)")
                     .translation(LANG_PREFIX + "age_progress")
-                    .defineInRange("age_progress", ageProgress, 10, 100);
+                    .defineInRange("age_progress", ageProgress, 1, 100);
             builder.pop();
         }
         public final ForgeConfigSpec.IntValue breedLimit;
@@ -348,11 +348,23 @@ public final class WRServerConfig {
                     1,
                     3,
                     Collections.singletonList("HILLS"),
-                    Collections.singletonList("")
-            );
+                    Collections.singletonList(""));
+            dragonAttributesConfig = new DragonAttributesConfig(builder,
+                    130,
+                    12,
+                    16);
+            dragonBreedingConfig = new DragonBreedingConfig(builder,
+                    2,
+                    1800,
+                    2);
+
             builder.pop();
         }
         public final SpawningConfig spawningConfig;
+        public final DragonAttributesConfig dragonAttributesConfig;
+        public final DragonBreedingConfig dragonBreedingConfig;
+
+
     }
 
     public static class SilverGlider {
