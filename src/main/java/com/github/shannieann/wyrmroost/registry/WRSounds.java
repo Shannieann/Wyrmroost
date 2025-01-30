@@ -28,9 +28,9 @@ public class WRSounds
     public static final RegistryObject<SoundEvent> ENTITY_OWDRAKE_HURT = entity("overworld_drake.hurt");
     public static final RegistryObject<SoundEvent> ENTITY_OWDRAKE_DEATH = entity("overworld_drake.death");
 
-    public static final RegistryObject<SoundEvent> ENTITY_STALKER_IDLE = entity("roost_stalker.idle");
-    public static final RegistryObject<SoundEvent> ENTITY_STALKER_HURT = entity("roost_stalker.hurt");
-    public static final RegistryObject<SoundEvent> ENTITY_STALKER_DEATH = entity("roost_stalker.death");
+    public static final RegistryObject<SoundEvent> ENTITY_STALKER_IDLE = entity("rooststalker.idle");
+    public static final RegistryObject<SoundEvent> ENTITY_STALKER_HURT = entity("rooststalker.hurt");
+    public static final RegistryObject<SoundEvent> ENTITY_STALKER_DEATH = entity("rooststalker.death");
 
     public static final RegistryObject<SoundEvent> ENTITY_BFLY_IDLE = entity("butterfly_leviathan.idle");
     public static final RegistryObject<SoundEvent> ENTITY_BFLY_ROAR = entity("butterfly_leviathan.roar");

@@ -67,25 +67,25 @@
     ],
     "subtitle": "subtitles.entity.overworld_drake.roar"
   },
-  "entity.roost_stalker.idle": {
+  "entity.rooststalker.idle": {
     "sounds": [
-      "wyrmroost:entity/roost_stalker/idle1",
-      "wyrmroost:entity/roost_stalker/idle2",
-      "wyrmroost:entity/roost_stalker/idle3"
+      "wyrmroost:entity/rooststalker/idle1",
+      "wyrmroost:entity/rooststalker/idle2",
+      "wyrmroost:entity/rooststalker/idle3"
     ],
-    "subtitle": "subtitles.entity.roost_stalker.idle"
+    "subtitle": "subtitles.entity.rooststalker.idle"
   },
-  "entity.roost_stalker.hurt": {
+  "entity.rooststalker.hurt": {
     "sounds": [
-      "wyrmroost:entity/roost_stalker/hurt"
+      "wyrmroost:entity/rooststalker/hurt"
     ],
-    "subtitle": "subtitles.entity.roost_stalker.hurt"
+    "subtitle": "subtitles.entity.rooststalker.hurt"
   },
-  "entity.roost_stalker.death": {
+  "entity.rooststalker.death": {
     "sounds": [
-      "wyrmroost:entity/roost_stalker/death"
+      "wyrmroost:entity/rooststalker/death"
     ],
-    "subtitle": "subtitles.entity.roost_stalker.death"
+    "subtitle": "subtitles.entity.rooststalker.death"
   },
   "entity.butterfly_leviathan.idle": {
     "sounds": [

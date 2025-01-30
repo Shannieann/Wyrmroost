@@ -9,7 +9,7 @@
 
   "entity.wyrmroost.overworld_drake": "Дрейк верхнего мира",
   "entity.wyrmroost.silver_glider": "Серебряный летун",
-  "entity.wyrmroost.roost_stalker": "Гнездовой сталкер",
+  "entity.wyrmroost.rooststalker": "Гнездовой сталкер",
   "entity.wyrmroost.lesser_desertwyrm": "Малый пустынный змей",
   "entity.wyrmroost.butterfly_leviathan": "Бабочковый левиафан",
   "entity.wyrmroost.dragon_fruit_drake": "Питахайевый дракон",
@@ -98,7 +98,7 @@
   "item.wyrmroost.overworld_drake_egg": "Яйцо призыва дрейка верхнего мира",
   "item.wyrmroost.lesser_desertwyrm_egg": "Яйцо призыва малого пустынного змея",
   "item.wyrmroost.silver_glider_egg": "Яйцо призыва серебряного летуна",
-  "item.wyrmroost.roost_stalker_egg": "Яйцо призыва гнездового сталкера",
+  "item.wyrmroost.rooststalker_egg": "Яйцо призыва гнездового сталкера",
   "item.wyrmroost.butterfly_leviathan_egg": "Яйцо призыва бабочкового левиафана",
   "item.wyrmroost.dragon_fruit_drake_egg": "Яйцо призыва питахайевого дракона",
   "item.wyrmroost.canari_wyvern_egg": "Яйцо призыва карликовой виверны",
