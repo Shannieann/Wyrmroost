@@ -79,7 +79,7 @@ public final class WRServerConfig {
     public static class EntitiesConfig {
         EntitiesConfig(final ForgeConfigSpec.Builder builder) {
             builder.push("entities");
-            //ALPINE = new Alpine(builder);
+            ALPINE_DRAGON = new AlpineDragon(builder);
             BUTTERFLY_LEVIATHAN = new ButterflyLeviathan(builder);
             //CANARI_WYVERN = new CanariWyvern(builder);
             //COIN_DRAGON = new CoinDragon(builder);
@@ -92,7 +92,7 @@ public final class WRServerConfig {
             builder.pop();
         }
 
-        //public final Alpine ALPINE;
+        public final AlpineDragon ALPINE_DRAGON;
         public final ButterflyLeviathan BUTTERFLY_LEVIATHAN;
         //public final CanariWyvern CANARI_WYVERN;
         //public final CoinDragon COIN_DRAGON;
@@ -186,9 +186,9 @@ public final class WRServerConfig {
         public final ForgeConfigSpec.IntValue ageProgress;
 
     }
-    public static class Alpine {
-        Alpine(final ForgeConfigSpec.Builder builder) {
-            builder.push("alpine");
+    public static class AlpineDragon {
+        AlpineDragon(final ForgeConfigSpec.Builder builder) {
+            builder.push("alpine_dragon");
             spawningConfig = new SpawningConfig(builder,
                     2,
                     1,
@@ -196,9 +196,20 @@ public final class WRServerConfig {
                     Collections.singletonList("HILLS"),
                     Collections.singletonList("")
             );
+            dragonAttributesConfig = new DragonAttributesConfig(builder,
+                    40,
+                    3,
+                    10
+            );
+            dragonBreedingConfig = new DragonBreedingConfig(builder,
+                    2,
+                    900,
+                    10);
             builder.pop();
         }
         public final SpawningConfig spawningConfig;
+        public final DragonAttributesConfig dragonAttributesConfig;
+        public final DragonBreedingConfig dragonBreedingConfig;
     }
 
     public static class ButterflyLeviathan {
@@ -218,7 +229,7 @@ public final class WRServerConfig {
             dragonBreedingConfig = new DragonBreedingConfig(builder,
                       2,
                     1600,
-                    10);
+                    5);
             builder.pop();
         }
 

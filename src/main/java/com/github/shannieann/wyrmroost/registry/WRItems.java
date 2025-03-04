@@ -177,7 +177,7 @@ public class WRItems {
                             case "wyrmroost:overworld_drake":         return 4.0F;
                             case "wyrmroost:rooststalker":            return 5.0F;
                             case "wyrmroost:silver_glider":           return 6.0F;
-                            case "wyrmroost:alpine":                  return 7.0F;
+                            case "wyrmroost:alpine_dragon":                  return 7.0F;
                             default:                                  return 0.0F;
                         }
                     }
