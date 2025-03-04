@@ -10,7 +10,7 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 public class ModelAlpineDragon<T extends EntityAlpineDragon> extends AnimatedGeoModel<T> {
 
     private static final ResourceLocation modelResource = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/alpine_dragon/alpine_dragon.geo.json");
-    private static final ResourceLocation animationResource = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/alpine_dragon/alpine_dragon.animation.json");
+    private static final ResourceLocation animationResource = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/alpine_dragon/alpine_dragon.json");
 
     @Override
     public ResourceLocation getModelLocation(T object) {
@@ -23,7 +23,7 @@ public class ModelAlpineDragon<T extends EntityAlpineDragon> extends AnimatedGeo
     @Override
     public ResourceLocation getTextureLocation(EntityAlpineDragon object) {
         if (object.isBaby()){
-            return new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/alpine_dragon/alpine_dragon_baby.png");
+            return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/alpine_dragon/alpine_dragon_baby.png");
         }
         String variant = object.getVariant();
         String gender = object.getGenderString();
