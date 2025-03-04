@@ -236,9 +236,6 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
 //        goalSelector.addGoal(1, new MoveToHomeGoal(this));
 //        goalSelector.addGoal(2, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(3, new WRDragonBreedGoal(this));
-
-        goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,12,3));
-        goalSelector.addGoal(5, new WRWaterLeapGoal(this, 1,12,30,64));
         goalSelector.addGoal(9, new WaterAvoidingRandomStrollGoal(this, 1));
         //goalSelector.addGoal(7,new WRIdleGoal(this, idleAnimation1Time));
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
