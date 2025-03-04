@@ -164,7 +164,7 @@ public class DragonEggItem extends Item {
                 "wyrmroost:overworld_drake",
                 "wyrmroost:rooststalker",
                 "wyrmroost:silver_glider",
-                "wyrmroost:alpine");
+                "wyrmroost:alpine_dragon");
     }
 
     //ToDo: ConfigHatchTimes

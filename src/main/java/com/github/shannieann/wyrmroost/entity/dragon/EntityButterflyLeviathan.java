@@ -499,7 +499,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
             // Attempt to tame the creature based on the player's mode and the creature's state
             float tameSuccessChance = (tamer.isCreative() || this.isHatchling()) ? 1.0f : 0.2f;
-            super.attemptTame(tameSuccessChance, tamer, stack);
+            super.attemptTame(tameSuccessChance, tamer);
 
             // Return successful taming interaction result
             return InteractionResult.SUCCESS;

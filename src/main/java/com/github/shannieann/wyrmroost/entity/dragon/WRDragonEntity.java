@@ -1642,7 +1642,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     //attemptTame is run when the taming conditions are met, only for tameables
-    public boolean attemptTame(float tameSucceedChance, @Nullable Player tamer, ItemStack stack) {
+    public boolean attemptTame(float tameSucceedChance, @Nullable Player tamer) {
         if (level.isClientSide) {
             return false;
         }

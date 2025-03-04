@@ -5,7 +5,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 
 public interface IBreedable {
-    InteractionResult breedLogic (Player tamer, ItemStack stack);
+    InteractionResult breedLogic (Player breeder, ItemStack stack);
 
     int hatchTime();
 
