@@ -77,7 +77,7 @@ public class WRRandomLiftOffGoal extends Goal {
         int maxAttempts = 10;
 
         while (attempts < maxAttempts) {
-            blockpos = generateAngleConstrainedPosInRange(pMob.getRandom(), pRadius, yMax, yMin,entity.getY(), pX, pZ, (double) pAmplifier);
+            blockpos = generateAngleConstrainedPosInRange(pMob.getRandom(), pRadius, yMax, yMin,(int)entity.getY(), pX, pZ, (double) pAmplifier);
             if (blockpos != null) {
                 if (blockpos.getY() < YMin) {
                     blockpos = new BlockPos(blockpos.getX(), YMin, blockpos.getZ());
