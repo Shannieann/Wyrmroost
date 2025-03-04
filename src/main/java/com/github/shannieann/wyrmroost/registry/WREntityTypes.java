@@ -123,15 +123,7 @@ public class WREntityTypes<E extends Entity> extends EntityType<E> {
             .attributes(CoinDragonEntity::getAttributeSupplier)
             .trackingRange(2)
             .build();
-    public static final RegistryObject<EntityType<AlpineEntity>> ALPINE_DRAGON = creature("alpine_dragon", AlpineDragonEntity::new)
-            .size(2f, 2f)
-            .attributes(AlpineDragonEntity::getAttributeSupplier)
-            .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, WRDragonEntity::canFlyerSpawn)
-            .spawnEgg(0xe3f8ff, 0xa8e9ff)
-            .dragonEgg(new DragonEggProperties(0.35f, 0.55f, 12000))
-            .renderModel(() -> AlpineDragonModel::new)
-            .trackingRange(9)
-            .build();
+
 */
     public static final RegistryObject<EntityType<WRDragonEggEntity>> DRAGON_EGG =
         WREntityTypes.<WRDragonEggEntity>buildMob("dragon_egg", WRDragonEggEntity::new, MobCategory.MISC)
@@ -143,6 +135,14 @@ public class WREntityTypes<E extends Entity> extends EntityType<E> {
                 .attributes(WRDragonEggEntity::getAttributeSupplier)
                 .build();
 
+    public static final RegistryObject<EntityType<EntityAlpineDragon>> ALPINE_DRAGON =
+            buildCreature("alpine_dragon", EntityAlpineDragon::new)
+            .size(2f, 2f)
+            .attributes(EntityAlpineDragon::getAttributeSupplier)
+            .spawnPlacement(SpawnPlacements.Type.NO_RESTRICTIONS, Heightmap.Types.MOTION_BLOCKING, WRDragonEntity::canFlyerSpawn)
+            .spawnEgg(0xe3f8ff, 0xa8e9ff)
+            .trackingRange(9)
+            .build();
 
     public static final RegistryObject<EntityType<GeodeTippedArrowEntity>> GEODE_TIPPED_ARROW =
             WREntityTypes.<GeodeTippedArrowEntity>buildMob("geode_tipped_arrow", GeodeTippedArrowEntity::new, MobCategory.MISC)

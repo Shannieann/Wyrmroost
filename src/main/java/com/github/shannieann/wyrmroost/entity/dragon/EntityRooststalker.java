@@ -248,7 +248,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
         if (!isTame() && stack.is(Tags.Items.EGGS)) {
             eat(tamer.getLevel(), stack);
             float tameChance = (tamer.isCreative() || this.isHatchling()) ? 1.0f : 0.25f;
-            if (attemptTame(tameChance, tamer, stack)) {
+            if (attemptTame(tameChance, tamer)) {
                 getAttribute(MAX_HEALTH).setBaseValue(20);
             }
             return InteractionResult.SUCCESS;

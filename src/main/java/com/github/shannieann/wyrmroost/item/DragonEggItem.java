@@ -170,7 +170,7 @@ public class DragonEggItem extends Item {
     //ToDo: ConfigHatchTimes
     private List<Integer> getHatchTimes() {
         return Arrays.asList(
-                //BFL
+                //Butterfly Leviathan
                 WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonBreedingConfig.hatchTime.get()*20,
                 //RR
                 100,
@@ -182,8 +182,8 @@ public class DragonEggItem extends Item {
                 WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonBreedingConfig.hatchTime.get()*20,
                 //SG
                 100,
-                //Al
-                100
+                //Alpine Dragon
+                WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonBreedingConfig.hatchTime.get()*20
         );
     }
 }

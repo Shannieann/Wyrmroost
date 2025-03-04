@@ -497,14 +497,14 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
 
         if (isHatchling() || tamer.isCreative()) {
             eat(tamer.level, stack);
-            attemptTame(0.1f, tamer, stack);
+            attemptTame(0.1f, tamer);
             setKnockedOut(false);
             return InteractionResult.sidedSuccess(level.isClientSide);
         }
 
         if (isKnockedOut() && knockOutTime <= MAX_KNOCKOUT_TIME / 2) {
             if (!level.isClientSide) {
-                if (attemptTame((float) knockOutTime/MAX_KNOCKOUT_TIME * 0.2f, tamer, stack)) {
+                if (attemptTame((float) knockOutTime/MAX_KNOCKOUT_TIME * 0.2f, tamer)) {
                     setKnockedOut(false);
                     //AnimationPacket.send(this, ROAR_ANIMATION);
                 } else knockOutTime += 600; // add 30 seconds to knockout time

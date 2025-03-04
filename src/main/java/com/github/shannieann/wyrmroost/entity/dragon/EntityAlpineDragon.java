@@ -14,6 +14,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.animal.AbstractFish;
 import net.minecraft.world.entity.animal.Bee;
@@ -238,7 +239,7 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
 
         goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,12,3));
         goalSelector.addGoal(5, new WRWaterLeapGoal(this, 1,12,30,64));
-        goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 1.0, 64,48));
+        goalSelector.addGoal(9, new WaterAvoidingRandomStrollGoal(this, 1));
         //goalSelector.addGoal(7,new WRIdleGoal(this, idleAnimation1Time));
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
         goalSelector.addGoal(9, new WRRandomLookAroundGoal(this,45));

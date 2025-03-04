@@ -41,5 +41,4 @@ public class RenderButterflyLeviathan extends WRDragonRender<EntityButterflyLevi
          */
         //stackIn.scale(2.4F * ageProgressScale, 2.4F * ageProgressScale, 2.4F * ageProgressScale);
     }
-
 }
