@@ -20,13 +20,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 
-public class LazySpawnEggItem<T extends Entity> extends ForgeSpawnEggItem
+public class WRLazySpawnEggItem<T extends Entity> extends ForgeSpawnEggItem
 {
-    public static final Set<LazySpawnEggItem<?>> SPAWN_EGGS = new HashSet<>();
+    public static final Set<WRLazySpawnEggItem<?>> SPAWN_EGGS = new HashSet<>();
 
     public final Lazy<EntityType<T>> type;
 
-    public LazySpawnEggItem(Supplier<EntityType<T>> type, int primaryColor, int secondaryColor)
+    public WRLazySpawnEggItem(Supplier<EntityType<T>> type, int primaryColor, int secondaryColor)
     {
         super(null, primaryColor, secondaryColor, WRItems.builder());
 
@@ -60,11 +60,11 @@ public class LazySpawnEggItem<T extends Entity> extends ForgeSpawnEggItem
         try
         {
             Map<EntityType<?>, SpawnEggItem> eggMap = ObfuscationReflectionHelper.getPrivateValue(SpawnEggItem.class, null, "f_43201_");
-            for (LazySpawnEggItem<?> item : SPAWN_EGGS) eggMap.put(item.type.get(), item);
+            for (WRLazySpawnEggItem<?> item : SPAWN_EGGS) eggMap.put(item.type.get(), item);
         }
         catch (Exception e)
         {
-            Wyrmroost.LOG.fatal("Something threw a fit when trying to touch the SpawnEgg map", e);
+            Wyrmroost.LOG.fatal("Error on SpawnEgg map", e);
         }
     }
 }

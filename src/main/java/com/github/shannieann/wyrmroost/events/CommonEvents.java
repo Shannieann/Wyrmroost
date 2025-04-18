@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.events;
 
 import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.item.LazySpawnEggItem;
+import com.github.shannieann.wyrmroost.item.WRLazySpawnEggItem;
 import com.github.shannieann.wyrmroost.item.base.ArmorBase;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.util.WRModUtils;
@@ -55,7 +55,7 @@ public class CommonEvents {
     public static void commonSetup(final FMLCommonSetupEvent event) {
 
         event.enqueueWork(() -> {
-            LazySpawnEggItem.addEggsToMap();
+            WRLazySpawnEggItem.addEggsToMap();
             WREntitySpawning.registerSpawnPlacementTypes();
         });
     }

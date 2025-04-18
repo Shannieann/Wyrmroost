@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.data;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.item.LazySpawnEggItem;
+import com.github.shannieann.wyrmroost.item.WRLazySpawnEggItem;
 import com.github.shannieann.wyrmroost.registry.WRBlocks;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.WRModUtils;
@@ -170,7 +170,7 @@ class RecipeData extends RecipeProvider
     {
         this.consumer = consumer;
 
-        exempt(LazySpawnEggItem.class);
+        exempt(WRLazySpawnEggItem.class);
         exempt(WRItems.DRAGON_EGG.get(), WRItems.DRAKE_BACKPLATE.get(), /*WRItems.LDWYRM.get(),*/
                 WRItems.RAW_LOWTIER_MEAT.get(), WRItems.RAW_COMMON_MEAT.get(), WRItems.RAW_APEX_MEAT.get(), WRItems.RAW_BEHEMOTH_MEAT.get(),
                 WRBlocks.BLUE_GEODE_ORE.get(), WRBlocks.RED_GEODE_ORE.get(), WRBlocks.PURPLE_GEODE_ORE.get(), WRBlocks.PLATINUM_ORE.get());

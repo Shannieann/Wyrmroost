@@ -13,7 +13,7 @@ import com.github.shannieann.wyrmroost.client.render.entity.projectile.BreathWea
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.GeodeTippedArrowRenderer;
 import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.item.LazySpawnEggItem;
+import com.github.shannieann.wyrmroost.item.WRLazySpawnEggItem;
 import com.github.shannieann.wyrmroost.registry.*;
 import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -90,8 +90,8 @@ public class ClientEvents {
 
     private static void itemColors(ColorHandlerEvent.Item evt) {
         ItemColors handler = evt.getItemColors();
-        ItemColor eggFunc = (stack, tintIndex) -> ((LazySpawnEggItem<?>) stack.getItem()).getColor(tintIndex);
-        for (LazySpawnEggItem<?> e : LazySpawnEggItem.SPAWN_EGGS) handler.register(eggFunc, e);
+        ItemColor eggFunc = (stack, tintIndex) -> ((WRLazySpawnEggItem<?>) stack.getItem()).getColor(tintIndex);
+        for (WRLazySpawnEggItem<?> e : WRLazySpawnEggItem.SPAWN_EGGS) handler.register(eggFunc, e);
 
         handler.register((stack, index) -> ((DyeableLeatherItem) stack.getItem()).getColor(stack), WRItems.LEATHER_DRAGON_ARMOR.get());
     }
