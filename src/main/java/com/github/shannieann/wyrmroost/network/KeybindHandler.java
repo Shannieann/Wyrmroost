@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.network.packets;
+package com.github.shannieann.wyrmroost.network;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
@@ -11,39 +11,34 @@ import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class KeybindHandler
-{
+public class KeybindHandler {
     public static final byte MOUNT_KEY = 1;
     public static final byte ALT_MOUNT_KEY = 2;
-    public static final byte SWITCH_FLIGHT = 4;
+    public static final byte SWITCH_FLIGHT = 3;
 
     private final byte key;
     private final int mods;
     private final boolean pressed;
 
-    public KeybindHandler(byte key, int mods, boolean pressed)
-    {
+    public KeybindHandler(byte key, int mods, boolean pressed) {
         this.key = key;
         this.mods = mods;
         this.pressed = pressed;
     }
 
-    public KeybindHandler(FriendlyByteBuf buf)
-    {
+    public KeybindHandler(FriendlyByteBuf buf) {
         this.key = buf.readByte();
         this.mods = buf.readInt();
         this.pressed = buf.readBoolean();
     }
 
-    public void encode(FriendlyByteBuf buf)
-    {
+    public void encode(FriendlyByteBuf buf) {
         buf.writeByte(key);
         buf.writeInt(mods);
         buf.writeBoolean(pressed);
     }
 
-    public boolean handle(Supplier<NetworkEvent.Context> context)
-    {
+    public boolean handle(Supplier<NetworkEvent.Context> context) {
         return process(context.get().getSender());
     }
 
@@ -75,7 +70,7 @@ public class KeybindHandler
     }
 
     private void handleSwitchFlight() {
-        if (pressed) return;  // Only toggle flight state when the key is released
+        if (pressed) return; // Only toggle flight state when the key is released
 
         ClientEvents.keybindFlight = !ClientEvents.keybindFlight;
         String flightState = ClientEvents.keybindFlight ? "controlled" : "free";

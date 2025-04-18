@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.network.packets;
+package com.github.shannieann.wyrmroost.network;
 
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;

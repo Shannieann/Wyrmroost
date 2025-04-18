@@ -823,7 +823,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
             if ((mods & GLFW.GLFW_MOD_CONTROL) != 0) setAnimation(ROAR_ANIMATION);
             else setAnimation(HORN_ATTACK_ANIMATION);
         }
-    }*/ // TODO READD
+    }*/ // TODO RE-ADD
 
 
 
@@ -849,7 +849,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     /*@Override
     public boolean isImmobile()
     {
-        return  || super.isImmobile(); TODO READD
+        return  || super.isImmobile(); TODO RE-ADD
     }*/
 
 

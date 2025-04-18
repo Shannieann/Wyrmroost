@@ -10,7 +10,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRRandomS
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRWaterLeapGoal;
 import com.github.shannieann.wyrmroost.entity.dragon_egg.WRDragonEggEntity;
-import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
+import com.github.shannieann.wyrmroost.network.KeybindHandler;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;

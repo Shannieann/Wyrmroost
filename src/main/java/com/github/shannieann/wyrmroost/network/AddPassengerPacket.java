@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.network.packets;
+package com.github.shannieann.wyrmroost.network;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.events.ClientEvents;

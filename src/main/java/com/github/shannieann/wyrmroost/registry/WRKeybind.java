@@ -2,7 +2,7 @@ package com.github.shannieann.wyrmroost.registry;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
-import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
+import com.github.shannieann.wyrmroost.network.KeybindHandler;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.gui.screens.Screen;

@@ -4,7 +4,7 @@ import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
 import com.github.shannieann.wyrmroost.items.book.action.BookAction;
-import com.github.shannieann.wyrmroost.network.packets.BookActionPacket;
+import com.github.shannieann.wyrmroost.network.BookActionPacket;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import com.github.shannieann.wyrmroost.util.ModUtils;

@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.network.packets;
+package com.github.shannieann.wyrmroost.network;
 
 import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
 import com.github.shannieann.wyrmroost.item.book.action.BookAction;

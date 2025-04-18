@@ -7,7 +7,7 @@ import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.MoveToHomeGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRFollowOwnerGoal;
 import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggProperties;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
-import com.github.shannieann.wyrmroost.network.packets.KeybindHandler;
+import com.github.shannieann.wyrmroost.network.KeybindHandler;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import com.github.shannieann.wyrmroost.util.Mafs;

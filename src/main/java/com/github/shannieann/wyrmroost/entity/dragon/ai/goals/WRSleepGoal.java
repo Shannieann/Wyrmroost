@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
 
 import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.fly.WRFlyLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
 import net.minecraft.core.BlockPos;
@@ -106,8 +107,9 @@ public class WRSleepGoal extends AnimatedGoal{
         if (lookControl instanceof WRSwimmingLookControl) {
             ((WRSwimmingLookControl) lookControl).stopLooking();
         }
-        //ToDo: Flying look Control
-
+        if (lookControl instanceof WRFlyLookControl) {
+            ((WRFlyLookControl) lookControl).stopLooking();
+        }
         // Heal while sleeping
         if (entity.getHealth() < entity.getMaxHealth() && entity.getRandom().nextDouble() < 0.005) {
             entity.heal(1);
