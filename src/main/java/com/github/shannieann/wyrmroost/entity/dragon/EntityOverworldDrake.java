@@ -477,6 +477,15 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
         };
     }
 
+
+    @Override
+    public float getRestrictRadius() {
+        return WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonAttributesConfig.homeRadius.get() *
+                WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonAttributesConfig.homeRadius.get();
+    }
+
+
+
     @Override
     public boolean canEquipArmor() {
         return true;
@@ -578,7 +587,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
 
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        targetSelector.addGoal(3, new DefendHomeGoal(this));
+        targetSelector.addGoal(3, new WRDefendHomeGoal(this));
         targetSelector.addGoal(4, new HurtByTargetGoal(this));
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Player.class, true, EntitySelector.ENTITY_STILL_ALIVE::test));
     }

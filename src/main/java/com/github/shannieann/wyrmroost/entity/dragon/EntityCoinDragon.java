@@ -46,6 +46,15 @@ public class CoinDragonEntity extends Mob
         goalSelector.addGoal(0, new LookAtPlayerGoal(this, Player.class, 4));
     }
 
+
+    @Override
+    public float getRestrictRadius() {
+        return WRServerConfig.SERVER.ENTITIES.CANARI.dragonAttributesConfig.homeRadius.get() *
+                WRServerConfig.SERVER.ENTITIES.CANARI.dragonAttributesConfig.homeRadius.get();
+    }
+
+
+
     @Override
     protected void defineSynchedData()
     {

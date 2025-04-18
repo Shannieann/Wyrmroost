@@ -256,6 +256,12 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
         return InteractionResult.PASS;
     }
 
+    @Override
+    public float getRestrictRadius() {
+        return WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonAttributesConfig.homeRadius.get() *
+                WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonAttributesConfig.homeRadius.get();
+    }
+
     // ====================================
     //      D.1) Taming: Inventory
     // ====================================
@@ -384,7 +390,7 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
         //goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.2f, 1.0f, 16.0f));
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        targetSelector.addGoal(3, new DefendHomeGoal(this));
+        targetSelector.addGoal(3, new WRDefendHomeGoal(this));
         targetSelector.addGoal(4, new HurtByTargetGoal(this).setAlertOthers());
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, true, target -> target instanceof Chicken || target instanceof Rabbit || target instanceof Turtle));
     }

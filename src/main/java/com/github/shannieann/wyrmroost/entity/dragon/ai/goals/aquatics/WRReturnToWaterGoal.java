@@ -3,16 +3,12 @@ package com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.Vec3;
 import javax.annotation.Nullable;
 import java.util.EnumSet;
 import java.util.Random;
-
-import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 
 
 public class WRReturnToWaterGoal extends Goal {

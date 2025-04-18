@@ -1,6 +1,7 @@
 
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDragonBreedGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRAvoidEntityGoal;
@@ -109,6 +110,15 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable
         return null; // Todo Implement animations
     }
     */
+
+    /*
+    @Override
+    public float getRestrictRadius() {
+        return WRServerConfig.SERVER.ENTITIES.SILVER.dragonAttributesConfig.homeRadius.get() *
+                WRServerConfig.SERVER.ENTITIES.SILVER.dragonAttributesConfig.homeRadius.get();
+    }
+
+     */
 
     @Override
     public void registerControllers(AnimationData data) {

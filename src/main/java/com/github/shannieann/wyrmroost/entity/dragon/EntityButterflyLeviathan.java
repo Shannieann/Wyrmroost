@@ -217,8 +217,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     }
 
     @Override
-    public float getRestrictRadius()
-    {
+    public float getRestrictRadius() {
         return WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonAttributesConfig.homeRadius.get() *
                 WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonAttributesConfig.homeRadius.get();
     }

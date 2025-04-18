@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
@@ -54,6 +55,15 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
 
     }
 
+    /*
+    @Override
+    public float getRestrictRadius() {
+        return WRServerConfig.SERVER.ENTITIES.CANARI.dragonAttributesConfig.homeRadius.get() *
+                WRServerConfig.SERVER.ENTITIES.CANARI.dragonAttributesConfig.homeRadius.get();
+    }
+
+     */
+
     @Override
     protected void registerGoals()
     {
@@ -70,7 +80,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
 
         targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
-        targetSelector.addGoal(2, new DefendHomeGoal(this));
+        targetSelector.addGoal(2, new WRDefendHomeGoal(this));
         targetSelector.addGoal(3, new HurtByTargetGoal(this));
     }
 

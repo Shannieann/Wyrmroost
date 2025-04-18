@@ -67,6 +67,11 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
     }
 
     @Override
+    public float getRestrictRadius() {
+        return WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonAttributesConfig.homeRadius.get() *
+                WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonAttributesConfig.homeRadius.get();
+    }
+    @Override
     public float initialBabyScale() {
         return 0.1F;
     }
@@ -74,12 +79,6 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
     @Override
     public boolean defendsHome() {
         return true;
-    }
-
-    @Override
-    public float getRestrictRadius() {
-        return WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonAttributesConfig.homeRadius.get() *
-                WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonAttributesConfig.homeRadius.get();
     }
 
     @Override

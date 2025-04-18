@@ -1,11 +1,7 @@
 package com.github.shannieann.wyrmroost.config;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.google.common.collect.ImmutableList;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.common.ForgeMod;
-import org.lwjgl.system.CallbackI;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;

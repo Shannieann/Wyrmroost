@@ -70,7 +70,25 @@ public class DragonFruitDrakeEntity extends WRDragonEntity implements IForgeShea
         super(dragon, level);
     }
 
+
     @Override
+    public float getRestrictRadius() {
+        return WRServerConfig.SERVER.ENTITIES.CANARI.dragonAttributesConfig.homeRadius.get() *
+                WRServerConfig.SERVER.ENTITIES.CANARI.dragonAttributesConfig.homeRadius.get();
+    }
+
+
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.state.BlockState;
+
+import javax.annotation.Nonnull;
+import java.util.EnumSet;
+
+@Override
     public EntitySerializer<DragonFruitDrakeEntity> getSerializer()
     {
         return SERIALIZER;

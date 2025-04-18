@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.fly.WRFlyLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
@@ -704,58 +705,49 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    public BlockPos getRestrictCenter()
-    {
+    public BlockPos getRestrictCenter() {
         BlockPos pos = getHomePos();
         return pos == null? BlockPos.ZERO : pos;
     }
 
 
     @Nullable
-    public BlockPos getHomePos()
-    {
+    public BlockPos getHomePos() {
         BlockPos pos = entityData.get(HOME_POS);
         return pos == BlockPos.ZERO? null : pos;
     }
 
-    public void setHomePos(@Nullable BlockPos pos)
-    {
+    public void setHomePos(@Nullable BlockPos pos) {
         entityData.set(HOME_POS, pos == null? BlockPos.ZERO : pos);
     }
 
-    public void clearHome()
-    {
+    public void clearHome() {
         setHomePos(null);
     }
 
     @Override
-    public boolean hasRestriction()
-    {
+    public boolean hasRestriction() {
         return this.getHomePos() != null;
 
     }
 
     @Override
-    public void restrictTo(BlockPos pos, int distance)
-    {
+    public void restrictTo(BlockPos pos, int distance) {
         setHomePos(pos);
     }
 
     @Override
-    public boolean isWithinRestriction()
-    {
+    public boolean isWithinRestriction() {
         return isWithinRestriction(blockPosition());
     }
 
     @Override
-    public boolean isWithinRestriction(BlockPos pos)
-    {
+    public boolean isWithinRestriction(BlockPos pos) {
         BlockPos home = getHomePos();
         return home == null || home.distSqr(pos) <= getRestrictRadius();
     }
 
-    public boolean tryTeleportToOwner()
-    {
+    public boolean tryTeleportToOwner() {
         if (getOwner() == null) return false;
         final int CONSTRAINT = (int) (getBbWidth() * 0.5) + 1;
         BlockPos pos = getOwner().blockPosition();
@@ -771,9 +763,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return false;
     }
 
-    public boolean defendsHome()
-    {
+    public boolean defendsHome() {
         return false;
+    }
+
+    @Override
+    public float getRestrictRadius() {
+        return -1;
     }
 
 
@@ -1713,8 +1709,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
         ItemStack stack = player.getItemInHand(hand);
         if (this instanceof  ITameable && !isTame()){
-            return ((ITameable)this).tameLogic(player,stack);
+            if (((ITameable)this).tameLogic(player,stack) == InteractionResult.SUCCESS) {
+                this.setHomePos(new BlockPos(this.position()));
+                return InteractionResult.SUCCESS;
+            } return ((ITameable)this).tameLogic(player,stack);
         }
+
+
 
         if (this instanceof IBreedable && getBreedingCooldown() <= 0 && getBreedingCount() < ((IBreedable)this).getBreedingLimit()) {
             IBreedable thisIBreedable = (IBreedable) this;

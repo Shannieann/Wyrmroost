@@ -4,14 +4,8 @@ import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 
-/**
- * Created by com.github.WolfShotz - 8/26/19 - 16:12
- * <p>
- * Disallows rotations while sitting, sleeping, and helps control yaw while controlling
- */
 
-public class WRBodyControl extends BodyRotationControl
-{
+public class WRBodyControl extends BodyRotationControl {
 
     private int headStableTime;
 
@@ -46,7 +40,6 @@ public class WRBodyControl extends BodyRotationControl
             }
         }
     }
-
 
     private boolean isMoving() {
         double d0 = this.entity.getX() - this.entity.xo;

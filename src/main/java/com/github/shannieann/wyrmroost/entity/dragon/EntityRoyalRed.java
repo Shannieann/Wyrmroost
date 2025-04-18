@@ -653,6 +653,13 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
         return 0;
     }
 
+    @Override
+    public float getRestrictRadius() {
+        return WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.homeRadius.get() *
+                WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.homeRadius.get();
+    }
+
+
 
     // ====================================
     //      F.n) Goals: RRAttackGoal

@@ -39,9 +39,7 @@ public class MoveToHomeGoal extends Goal
     }
 
     @Override
-    public void tick()
-    {
-        //ToDo: Home Radius
+    public void tick() {
         int sq = 20 * 20;
         Vec3 home = Vec3.atLowerCornerOf(dragon.getRestrictCenter());
         final int TIME_UNTIL_TELEPORT = 600; // 30 seconds
@@ -49,9 +47,7 @@ public class MoveToHomeGoal extends Goal
         time++;
         if (dragon.distanceToSqr(home) > sq + 35 || time >= TIME_UNTIL_TELEPORT)
             dragon.trySafeTeleport(dragon.getRestrictCenter().above());
-        else
-        {
-            //ToDo: Home Radius
+        else {
             BlockPos movePos;
             if (dragon.getNavigation().isDone() && (movePos = RandomPos.generateRandomPosTowardDirection(dragon, 20, new Random(), new BlockPos(home))) != null)
                 dragon.getNavigation().moveTo(movePos.getX(), movePos.getY(), movePos.getY(), 1.1);

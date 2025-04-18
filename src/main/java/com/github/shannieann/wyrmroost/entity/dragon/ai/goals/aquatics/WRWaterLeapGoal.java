@@ -5,7 +5,6 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.AnimatedGoal;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
 import java.util.EnumSet;
@@ -16,8 +15,6 @@ public class WRWaterLeapGoal extends AnimatedGoal {
     private final String breachEndAnimation = "breach_end";
     private final WRDragonEntity entity;
     private final double speedTowardsTarget;
-    private final int horizontalOffset;
-    private final int minWaterDistance;
     private final float distanceCheck;
     private Vec3 waterTargetPosition;
     private Vec3 initialPosition;
@@ -35,8 +32,6 @@ public class WRWaterLeapGoal extends AnimatedGoal {
         super(entity);
         this.entity = entity;
         this.speedTowardsTarget = speedIn;
-        this.horizontalOffset = horizontalOffset;
-        this.minWaterDistance = minWaterDistance;
         this.distanceCheck = distanceCheck;
         this.setFlags(EnumSet.of(Flag.LOOK, Flag.MOVE, Flag.JUMP, Flag.LOOK));
     }
