@@ -133,10 +133,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public Vector3f cameraRotVector = new Vector3f();
     public Map<UUID, Vector3d> cameraBonePos = new HashMap<>();
 
-
-
-    //TODO: CANCEL DAMAGE FROM CACTUS AND BERRY BUSHES AND OTHERS
-
     public enum NavigationType {
         GROUND,
         FLYING,
@@ -362,7 +358,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
 
 
-    // TODO reduce the amount of shared entity data... this amount could be burdensome on the server
     @Override
     protected void defineSynchedData() {
         entityData.define(ANIMATION, "base");
@@ -1056,18 +1051,22 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
-    public boolean hurt(DamageSource source, float amount)
-    {
+    public boolean hurt(DamageSource source, float amount) {
+        setSleeping(false);
+        setSitting(false);
         if (isImmuneToArrows() && source.getDirectEntity() != null) {
             EntityType<?> attackSource = source.getDirectEntity().getType();
             if (attackSource == EntityType.ARROW) return false;
             else if (attackSource == WREntityTypes.GEODE_TIPPED_ARROW.get()) amount *= 0.5f;
         }
-
-
-
-        setSleeping(false);
-        setSitting(false);
+        if (source == DamageSource.CACTUS ||
+            source == DamageSource.FLY_INTO_WALL ||
+            source == DamageSource.HOT_FLOOR ||
+            source == DamageSource.FREEZE ||
+            source == DamageSource.SWEET_BERRY_BUSH ||
+            source == DamageSource.STARVE) {
+            return false;
+        }
         return super.hurt(source, amount);
     }
 
@@ -1587,9 +1586,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     /**
      * Recieve the keybind message from the current controlling passenger.
      *
-     * @param key     shut up
+     * @param key     --
      * @param mods    the modifiers that is pressed when this key was pressed (e.g. shift was held, ctrl etc {@link org.lwjgl.glfw.GLFW})
-     * @param pressed true if pressed, false if released. pretty straight forward idk why ur fucking asking.
+     * @param pressed true if pressed, false if released
      */
     public void receivePassengerKeybind(int key, int mods, boolean pressed) {
     }
