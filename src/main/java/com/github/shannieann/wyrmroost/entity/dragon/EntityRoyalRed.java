@@ -424,11 +424,8 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
         return new Vec3(0, getBbHeight() * 1.15, index == 0 ? 1.75f : 1.0);
     }
 
-    //TODO: Whole keybind logic
     @Override
     public void receivePassengerKeybind(int key, int mods, boolean pressed) {
-        //if (!noAnimations()) return;
-
         if (key == KeybindHandler.MOUNT_KEY && pressed && !getBreathingFire()) {
             //if ((mods & GLFW.GLFW_MOD_CONTROL) != 0) setAnimation(ROAR_ANIMATION);
             //else meleeAttack();

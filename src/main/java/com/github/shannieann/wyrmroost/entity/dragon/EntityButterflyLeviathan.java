@@ -74,7 +74,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Armor
 // Tidy up EntityTypeRegistry
 // Datagen
-// Registry, tidy
+
 
 public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity, IBreedable, ITameable {
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.BOOLEAN);

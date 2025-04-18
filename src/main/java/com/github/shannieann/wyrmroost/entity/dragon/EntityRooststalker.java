@@ -128,26 +128,6 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
     public String getDefaultVariant() {
         return "0";
     }
-
-    // TODO just delete all of this and rename the files now that variants use strings lmao
-    /**
-     * A few things to note for Rooststalkers here:
-     * - We can't separate the pattern and the color because the pattern changes depending on the color.
-     * - The digit in the tens place decides color
-     * - 0 is the default red-brown color
-     * - 1 is green
-     * - 2 is black
-     * - 3 is blue
-     * - 4 is albino (rare version)
-     * - The digit in the ones place decides the pattern
-     * - 0 is patternless
-     * - 1 is spider/ribcage
-     * - 2 is socks
-     * - 3 is diamond
-     * - 4 is striped
-     * - 5 is reverse-striped (rare)
-     * - Koala
-     */
     @Override
     public String determineVariant() {
         // Rare chance for albino. Otherwise, a random choice of the other 4 colors.

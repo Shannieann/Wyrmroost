@@ -8,7 +8,6 @@ public abstract class AnimatedGoal extends Goal {
     public String animationName;
     public int animationType;
     public int animationTime;
-    public boolean isMovingAnimation;
     public int elapsedTime;
 
     public AnimatedGoal(WRDragonEntity entity){

@@ -105,13 +105,6 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable
 
     /*
     @Override
-    public <E extends IAnimatable> PlayState predicate(AnimationEvent<E> event) {
-        return null; // Todo Implement animations
-    }
-    */
-
-    /*
-    @Override
     public float getRestrictRadius() {
         return WRServerConfig.SERVER.ENTITIES.SILVER.dragonAttributesConfig.homeRadius.get() *
                 WRServerConfig.SERVER.ENTITIES.SILVER.dragonAttributesConfig.homeRadius.get();
