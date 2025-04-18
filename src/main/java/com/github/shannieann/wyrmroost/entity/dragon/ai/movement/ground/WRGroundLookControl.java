@@ -5,13 +5,10 @@ import net.minecraft.world.entity.ai.control.LookControl;
 
 public class WRGroundLookControl extends LookControl
 {
-    private final WRDragonEntity dragon;
     private boolean stopLooking;
 
-    public WRGroundLookControl(WRDragonEntity dragon)
-    {
+    public WRGroundLookControl(WRDragonEntity dragon) {
         super(dragon);
-        this.dragon = dragon;
     }
 
     @Override
@@ -29,8 +26,7 @@ public class WRGroundLookControl extends LookControl
         }
     }
 
-    public void stopLooking()
-    {
+    public void stopLooking() {
         //Method called to ensure we no longer look at targets, if something must lock rotation
         this.stopLooking = true;
     }
