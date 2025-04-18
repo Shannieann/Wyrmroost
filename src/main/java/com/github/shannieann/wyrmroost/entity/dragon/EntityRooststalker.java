@@ -404,9 +404,9 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
 
 
     class RSScavengeGoal extends AnimatedGoal {
-        //ToDo: Ensure this reaches the chest correctly for animation to play
+        // ToDo: Ensure this reaches the chest correctly for animation to play
         private Container container;
-        private  BlockPos openPos;
+        private BlockPos openPos;
         private BlockPos chestPos;
         private Direction facingDirection;
         private boolean animationPlaying;
@@ -415,14 +415,13 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
             super(rooststalker);
         }
 
-
         @Override
         public boolean canUse() {
             if (!isTame() && !hasItem()) {
-                BlockPos chestPos = findNearestChest(blockPosition(),12,5);
-                if (chestPos != BlockPos.ZERO && chestPos != null && facingDirection !=null){
+                BlockPos chestPos = findNearestChest(blockPosition(), 12, 5);
+                if (facingDirection != null && chestPos != null && chestPos != BlockPos.ZERO) {
                     container = getInventoryAtPosition(chestPos);
-                    if (container !=null && !container.isEmpty()) {
+                    if (container != null && !container.isEmpty()) {
                         return true;
                     }
                 }
@@ -432,96 +431,82 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
 
         public BlockPos findNearestChest(BlockPos mobPos, int searchRadius, int heightRange) {
             BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
-            for (int dy = -heightRange; dy <= heightRange; dy++) { // Height difference
-                for (int dx = -searchRadius; dx <= searchRadius; dx++) { // X range
-                    for (int dz = -searchRadius; dz <= searchRadius; dz++) { // Z range
+            for (int dy = -heightRange; dy <= heightRange; dy++) {
+                for (int dx = -searchRadius; dx <= searchRadius; dx++) {
+                    for (int dz = -searchRadius; dz <= searchRadius; dz++) {
                         mutablePos.setWithOffset(mobPos, dx, dy, dz);
-                        // Check if this position is valid and if we're dealing with a chest
                         if (isWithinRestriction(mutablePos) && level.getBlockEntity(mutablePos) instanceof ChestBlockEntity) {
                             BlockState blockState = level.getBlockState(mutablePos);
                             Direction facing = blockState.getValue(ChestBlock.FACING);
                             ChestType type = blockState.getValue(ChestBlock.TYPE);
+
                             if (type != ChestType.SINGLE) {
                                 facing = adjustFacingForDoubleChest(blockState, mutablePos, facing);
                             }
-                            BlockPos blockPos = mutablePos.immutable();
-                            //Offset the position, so we get the correct blockPos where the chest would open...
-                            blockPos = blockPos.relative(facing,1);
-                            //Check if the position is valid to walk to
-                            if (level.getBlockState(blockPos).isAir()) {
+
+                            BlockPos offsetPos = mutablePos.relative(facing, 1);
+                            if (level.getBlockState(offsetPos).isAir()) {
                                 facingDirection = facing;
-                                openPos = blockPos;
-                                //Return the actual chest position
+                                openPos = offsetPos;
                                 return mutablePos.immutable();
                             }
                         }
                     }
                 }
             }
-
             return BlockPos.ZERO;
         }
 
-        private Direction adjustFacingForDoubleChest(BlockState blockState, BlockPos pos, Direction facing) {
-            // Adjust the direction based on chest type
-            ChestType type = blockState.getValue(ChestBlock.TYPE);
-            if (type == ChestType.LEFT) {
-                return facing.getCounterClockWise(); // Adjust for left half of double chest
-            } else if (type == ChestType.RIGHT) {
-                return facing.getClockWise(); // Adjust for right half of double chest
-            }
-            return facing; // No adjustment needed for SINGLE
+        private Direction adjustFacingForDoubleChest(BlockState state, BlockPos pos, Direction facing) {
+            ChestType type = state.getValue(ChestBlock.TYPE);
+            return switch (type) {
+                case LEFT -> facing.getCounterClockWise();
+                case RIGHT -> facing.getClockWise();
+                default -> facing;
+            };
         }
 
-
         public void start() {
-            System.out.println("MOVING TO:"+openPos);
-            if (getMoveControl() instanceof WRGroundMoveControl){
+            System.out.println("MOVING TO: " + openPos);
+            if (getMoveControl() instanceof WRGroundMoveControl) {
                 System.out.println("WR MOVE CONTROL");
             }
-            getNavigation().moveTo(openPos.getX()+0.5, openPos.getY()-1, openPos.getZ()+0.5, 1.0F);
+            getNavigation().moveTo(openPos.getX() + 0.5, openPos.getY() - 1, openPos.getZ() + 0.5, 1.0F);
         }
 
         @Override
         public boolean canContinueToUse() {
-            if (container !=null){
-                if (animationPlaying) {
-                    return super.canContinueToUse();
-                }
-            }
-            return false;
+            return container != null && animationPlaying && super.canContinueToUse();
         }
 
         @Override
         public void tick() {
             super.tick();
-            //If animation playing, scavenging has started, let it play out, then stop
-            if (animationPlaying){
+
+            if (animationPlaying) {
                 if (super.canContinueToUse()) {
                     super.tick();
                 } else {
                     super.stop();
                     stop();
                 }
-                //Else, continue searching if chest is close
-            }
-            /*else if (openPos.closerToCenterThan(position(), 0.2)) {
-                getNavigation().stop();
-                setDeltaMovement(Vec3.ZERO);
-                //Rotate entity to face chest
-                setYRot(facingDirection.toYRot());
-                super.start("scavenge", 2, 20);
-                setScavenging(true);
-                animationPlaying = true;
-                if (container !=null && container instanceof ChestBlockEntity && ((ChestBlockEntity) container).openersCounter.getOpenerCount() == 0){
-                    interactChest(container, true);
-
-                }
             }
 
-             */
+        /*
+        else if (openPos.closerToCenterThan(position(), 0.2)) {
+            getNavigation().stop();
+            setDeltaMovement(Vec3.ZERO);
+            setYRot(facingDirection.toYRot());
+            super.start("scavenge", 2, 20);
+            setScavenging(true);
+            animationPlaying = true;
+
+            if (container instanceof ChestBlockEntity chest && chest.openersCounter.getOpenerCount() == 0) {
+                interactChest(container, true);
+            }
         }
-
+        */
+        }
 
         @Override
         public void stop() {
@@ -531,38 +516,30 @@ public class EntityRooststalker extends WRDragonEntity implements IBreedable {
             animationPlaying = false;
         }
 
-        /**
-         * Returns the IInventory (if applicable) of the TileEntity at the specified position
-         */
         @Nullable
         public Container getInventoryAtPosition(BlockPos pos) {
-            Container inv = null;
+            BlockState state = level.getBlockState(pos);
+            Block block = state.getBlock();
 
-            BlockState blockstate = level.getBlockState(pos);
-            Block block = blockstate.getBlock();
-            if (blockstate.hasBlockEntity()) {
-                BlockEntity tileentity = level.getBlockEntity(pos);
-                if (tileentity instanceof Container) {
-                    inv = (Container) tileentity;
-                    if (inv instanceof ChestBlockEntity && block instanceof ChestBlock)
-                        inv = ChestBlock.getContainer((ChestBlock) block, blockstate, level, pos, true);
+            if (state.hasBlockEntity()) {
+                BlockEntity tile = level.getBlockEntity(pos);
+                if (tile instanceof Container inv) {
+                    if (inv instanceof ChestBlockEntity && block instanceof ChestBlock chest) {
+                        return ChestBlock.getContainer(chest, state, level, pos, true);
+                    }
+                    return inv;
                 }
             }
-
-            return inv;
+            return null;
         }
 
-
-        /**
-         * Used to handle the chest opening animation when being used by the scavenger
-         */
         private void interactChest(Container inventory, boolean open) {
-            if (!(inventory instanceof ChestBlockEntity chest)) {
-                return;
-            }
+            if (!(inventory instanceof ChestBlockEntity chest)) return;
+
             chest.openersCounter.openCount = open ? 1 : 0;
             chest.getLevel().blockEvent(chest.getBlockPos(), chest.getBlockState().getBlock(), 1, chest.openersCounter.getOpenerCount());
-            if (!chest.isEmpty() && open) {
+
+            if (open && !chest.isEmpty()) {
                 int index = getRandom().nextInt(chest.getContainerSize());
                 ItemStack stack = chest.getItem(index);
 
