@@ -3,7 +3,6 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRRandomLiftOffGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entity.projectile.breath.FireBreathEntity;
@@ -620,20 +619,20 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
     protected void registerGoals() {
         super.registerGoals();
 
-        goalSelector.addGoal(4, new MoveToHomeGoal(this));
+        //goalSelector.addGoal(4, new MoveToHomeGoal(this));
         //goalSelector.addGoal(4, new WRRunWhenLosingGoal(this, 0.1f, 40, 0.95f, 0.99f ));
-        goalSelector.addGoal(5, new RRAttackGoal(this));
-        goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
-        goalSelector.addGoal(7, new WRDragonBreedGoal(this));
-        //goalSelector.addGoal(9, new WRRandomLiftOffGoal(this, 1));
-        goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
-        goalSelector.addGoal(11, new RandomLookAroundGoal(this));
+        //goalSelector.addGoal(5, new RRAttackGoal(this));
+        //goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
+        //goalSelector.addGoal(7, new WRDragonBreedGoal(this));
+        goalSelector.addGoal(9, new WRRandomFlyWalkGoal(this, 20,20));
+        //goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
+        //goalSelector.addGoal(11, new RandomLookAroundGoal(this));
         // TODO Replace this goal with a different WRFlyAwayWhenLosingGoal. Pretty sure RRs would just walk away and not use their wings which... isn't that smart.
         //goalSelector.addGoal(3, new WRRunWhenLosingGoal(this, 0.2f, 0.1f, 20f, 1.15f, 1f));
-        targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
-        targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        targetSelector.addGoal(3, new DefendHomeGoal(this));
-        targetSelector.addGoal(4, new HurtByTargetGoal(this));
+        //targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
+        //targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+        //targetSelector.addGoal(3, new DefendHomeGoal(this));
+        //targetSelector.addGoal(4, new HurtByTargetGoal(this));
         //TODO: Attack multiple LivingEntities, perhaps not select targets but rather exlude?
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false,
                 e -> e.getType() == EntityType.PLAYER || e instanceof Animal || e instanceof AbstractVillager));

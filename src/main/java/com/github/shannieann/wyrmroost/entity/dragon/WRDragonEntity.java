@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.fly.WRFlyLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
@@ -1061,12 +1062,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public boolean hurt(DamageSource source, float amount)
     {
-        if (isImmuneToArrows() && source.getDirectEntity() != null)
-        {
+        if (isImmuneToArrows() && source.getDirectEntity() != null) {
             EntityType<?> attackSource = source.getDirectEntity().getType();
             if (attackSource == EntityType.ARROW) return false;
             else if (attackSource == WREntityTypes.GEODE_TIPPED_ARROW.get()) amount *= 0.5f;
         }
+
+
 
         setSleeping(false);
         setSitting(false);
@@ -1074,8 +1076,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Deprecated
-    public boolean isImmuneToArrows()
-    {
+    public boolean isImmuneToArrows() {
         return false;
     }
 
@@ -1125,13 +1126,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
             case FLYING -> {
                 this.moveControl = new FlyerMoveController(this);
-                //ToDo: Flying look Control
-                this.lookControl = new WRGroundLookControl(this);
+                this.lookControl = new WRFlyLookControl(this,10);
                 this.navigation = new FlyerPathNavigator(this);
                 setOrderedToSit(false);
                 setSleeping(false);
-                //jumpFromGround(); TODO removing this for now, we don't want this to always jump from ground after flying is set.
-
             }
             case SWIMMING -> {
                 this.moveControl = new WRSwimmingMoveControl(this);
@@ -1641,7 +1639,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return false;
     }
 
-    //attemptTame is run when the taming conditions are met, only for tameables
+    //attemptTame runs when the taming conditions are met, only for tameables
     public boolean attemptTame(float tameSucceedChance, @Nullable Player tamer) {
         if (level.isClientSide) {
             return false;
@@ -1785,7 +1783,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     /**
      * It is VERY important to be careful when using this.
-     * It is VERY sidedness sensitive. If not done correctly, it can result in the loss of items! <P>
+     * It is VERY sided-ness sensitive. If not done correctly, it can result in the loss of items! <P>
      * {@code if (!level.isClient) setStackInSlot(...)}
      */
     public void setStackInSlot(int slot, ItemStack stack) {
