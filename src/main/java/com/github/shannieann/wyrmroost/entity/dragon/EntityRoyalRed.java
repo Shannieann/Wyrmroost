@@ -222,6 +222,11 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
 
      */
 
+     @Override
+     public float getFlyAccelModifier() {
+        return 0.75f;
+     }
+
 
     // ====================================
     //      B) Tick and AI

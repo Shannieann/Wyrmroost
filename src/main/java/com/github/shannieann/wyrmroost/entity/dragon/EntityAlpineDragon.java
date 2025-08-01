@@ -169,6 +169,11 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
         return new Vec3(0, this.getType().getDimensions().height * 0.95D, index == 1 ? -2 : 0);
     }
 
+    @Override
+     public float getFlyAccelModifier() {
+        return 1.5f;
+     }
+
     // =========================
     // D. Taming
     // =========================

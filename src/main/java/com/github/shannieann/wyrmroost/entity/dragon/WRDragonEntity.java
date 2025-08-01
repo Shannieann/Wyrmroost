@@ -1275,7 +1275,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
         // Acceleration
-        float acceleration = ClientEvents.getClient().options.keyUp.isDown()? 0.02f : -0.01f; // TODO accelerate faster depending on dragon?
+        float acceleration = this.getFlyAccelModifier() * (ClientEvents.getClient().options.keyUp.isDown()? 0.02f : -0.01f);
         currentSpeed = Mth.clamp(currentSpeed + acceleration, 0f, speed*SPEED_COEFFICIENT);
 
             // Set direction to travel
@@ -1437,6 +1437,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public int getYawRotationSpeed() {
         return isUsingFlyingNavigator()? 6 : 75;
+    }
+
+    public float getFlyAccelModifier() {
+        return 1; // default
     }
 
     //TODO: ???
