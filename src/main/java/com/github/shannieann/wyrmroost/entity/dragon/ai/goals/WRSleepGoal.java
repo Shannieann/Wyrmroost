@@ -1,5 +1,7 @@
 package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
 
+import java.util.EnumSet;
+
 import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.fly.WRFlyLookControl;
@@ -7,6 +9,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimming
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.control.LookControl;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -15,17 +18,34 @@ public class WRSleepGoal extends AnimatedGoal{
 
     private final WRDragonEntity entity;
     private boolean underwaterSleeping;
+    private boolean nocturnal;
+
     public WRSleepGoal(WRDragonEntity entity) {
         super(entity);
         this.entity = entity;
+        this.nocturnal = false;
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
     }
 
+    public WRSleepGoal(WRDragonEntity entity, boolean nocturnal) {
+        super(entity);
+        this.entity = entity;
+        this.nocturnal = nocturnal;
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+    }
     @Override
     public boolean canUse() {
+
+        //Sleep only if not doing any other activities...
+        if (!isIdling())  {
+            return false;
+        }
+
         //If it can swim, only sleep underwater
         if (entity.speciesCanSwim() && (!entity.isUnderWater() && !entity.isOnGround())) {
             return false;
         }
+
         //If BFL, only sleep in deep water
         if (entity instanceof EntityButterflyLeviathan) {
             double yWaterPos = (entity.position().y);
@@ -49,34 +69,30 @@ public class WRSleepGoal extends AnimatedGoal{
             }
         }
 
-
         //If it cannot swim, only sleep on ground
         if (!entity.speciesCanSwim() && !entity.isOnGround()) {
             return false;
         }
         //Sleep only if dragon did not recently sleep / woke up
-        if (entity.sleepCooldown > 0) {
+        if (entity.getSleepingCooldown() > 0) {
             return false;
         }
         //Sleep only at night
-        if (entity.level.getDayTime() < 14000 || entity.level.getDayTime() > 23500) {
+        if (! this.nocturnal && (entity.level.getDayTime() < 14000 || entity.level.getDayTime() > 23500)) {
+            return false;
+        } else if (this.nocturnal && (entity.level.getDayTime() >= 14000 && entity.level.getDayTime() <= 23500)) {
             return false;
         }
-        //Sleep only if not doing any other activities...
-        if (!isIdling())  {
-            return false;
-        }
+
         //If tamed, sleep only if at home and at reasonable health...
         //Or if set to sit down and all previous conditions are met...
-        //TODO: Verify sleep when tamed conditions
-        if (entity.isTame()) {
-            if (entity.isAtHome()) {
-                if (entity.defendsHome()) {
-                    return entity.getHealth() < entity.getMaxHealth() * 0.25;
-                }
+        if (entity.isTame() && !(entity instanceof EntityButterflyLeviathan)) {
+            if ((entity.isAtHome() && entity.defendsHome())) {
+                return entity.getHealth() < entity.getMaxHealth() * 0.5;
             }
-            else return entity.isInSittingPose();
+            return entity.getSitting();
         }
+
         return true;
     }
 
@@ -96,6 +112,8 @@ public class WRSleepGoal extends AnimatedGoal{
         }
         entity.clearAI();
         entity.setXRot(0);
+        // TODO: Do we have this animation? It's not working
+        super.start(underwaterSleeping ? "sleep_water" : "sleep", 1, Integer.MAX_VALUE);
     }
 
     @Override
@@ -114,7 +132,6 @@ public class WRSleepGoal extends AnimatedGoal{
         if (entity.getHealth() < entity.getMaxHealth() && entity.getRandom().nextDouble() < 0.005) {
             entity.heal(1);
         }
-        super.start(underwaterSleeping ? "sleep_water" : "sleep", 1, 20);
         super.tick();
     }
 
@@ -122,8 +139,10 @@ public class WRSleepGoal extends AnimatedGoal{
 
     @Override
     public boolean canContinueToUse(){
-        //If daytime, wake up
-        if (entity.level.getDayTime() < 14000 || entity.level.getDayTime() > 23500) {
+        //If wrong time of day, wake up
+        if (! this.nocturnal && (entity.level.getDayTime() < 14000 || entity.level.getDayTime() > 23500)) {
+            return false;
+        } else if (this.nocturnal && (entity.level.getDayTime() >= 14000 && entity.level.getDayTime() <= 23500)) {
             return false;
         }
         //If it's a water sleeping entity, and it somehow gets out of water, wake up
@@ -145,7 +164,7 @@ public class WRSleepGoal extends AnimatedGoal{
     public void stop(){
         entity.setSleeping(false);
         underwaterSleeping = false;
-        entity.sleepCooldown = 350;
+        entity.setSleepingCooldown(WRDragonEntity.MAX_SLEEPING_COOLDOWN);
         super.stop();
     }
 }

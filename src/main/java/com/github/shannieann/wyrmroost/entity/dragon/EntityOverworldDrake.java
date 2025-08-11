@@ -427,11 +427,14 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     // ====================================
     //      D.1) Taming: Inventory
     // ====================================
+    /* TODO: use synced entity data
     @Override
     public DragonInventory createInv()
     {
         return new DragonInventory(this, 24);
     }
+    */
+
     public InteractionResult tameLogic(Player tamer, ItemStack stack) {
         if (level.isClientSide) {
             return InteractionResult.CONSUME;
@@ -442,14 +445,14 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
                 tamer.startRiding(this);
             }
             else if (stack.getItem() == Items.SADDLE) {
-                        getInventory().insertItem(SADDLE_SLOT, stack.copy(), false);
+                        //getInventory().insertItem(SADDLE_SLOT, stack.copy(), false); // TODO: use synced entity data
                         stack.shrink(1);
                 return InteractionResult.SUCCESS;
 
             }
         return InteractionResult.PASS;
     }
-
+/* TODO: use synced entity data
     @Override
     public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad) {
         boolean playSound = !stack.isEmpty() && !onLoad;
@@ -469,6 +472,8 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
                 break;
         }
     }
+*/
+
     @Override
     public Vec2 getTomeDepictionOffset() {
         return switch (getVariant()) {
@@ -504,9 +509,11 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     @Override
     public void dropStorage()
     {
+        /* TODO: use synced entity data
         DragonInventory inv = getInventory();
         for (int i = CHEST_SLOT + 1; i < inv.getSlots(); i++)
             spawnAtLocation(inv.extractItem(i, 65, false), getBbHeight() / 2f);
+        */
     }
     // ====================================
     //      D.2) Taming: Breeding and Food
@@ -516,6 +523,11 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     public boolean isFood(ItemStack stack)
     {
         return stack.is(Tags.Items.CROPS_WHEAT);
+    }
+
+    @Override
+    public int getMaxBreedingCooldown() {
+        return WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonBreedingConfig.maxBreedingCooldown.get();
     }
 
     // ====================================
@@ -576,7 +588,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
         goalSelector.addGoal(1, new OWDBuckGoal(this));
         goalSelector.addGoal(2, new OWDRoarGoal(this));
         goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2D, false));
-        goalSelector.addGoal(4, new MoveToHomeGoal(this));
+        goalSelector.addGoal(4, new WRMoveToHomeGoal(this));
         goalSelector.addGoal(5, new ControlledAttackGoal(this, 1.425, true /*AnimationPacket.send(this, HORN_ATTACK_ANIMATION)*/));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         //goalSelector.addGoal(7, new DragonBreedGoal(this));

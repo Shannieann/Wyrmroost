@@ -6,6 +6,8 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 
+// Class is currently unused?
+
 /**
  * todo: hold slots here and have the container work with them from here
  */
@@ -24,13 +26,13 @@ public class DragonInventory extends ItemStackHandler
     @Override
     protected void onContentsChanged(int slot)
     {
-        dragon.onInvContentsChanged(slot, dragon.getStackInSlot(slot), false);
+        //dragon.onInvContentsChanged(slot, dragon.getStackInSlot(slot), false); // TODO: use synced entity data
     }
 
     @Override
     protected void onLoad()
     {
-        for (int i = 0; i < stacks.size(); i++) dragon.onInvContentsChanged(i, stacks.get(i), true);
+        //for (int i = 0; i < stacks.size(); i++) dragon.onInvContentsChanged(i, stacks.get(i), true); // TODO: use synced entity data
     }
 
 

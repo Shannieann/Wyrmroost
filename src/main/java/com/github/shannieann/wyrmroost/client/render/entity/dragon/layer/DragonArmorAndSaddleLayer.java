@@ -20,7 +20,7 @@ public class DragonArmorAndSaddleLayer<T extends WRDragonEntity> extends GeoLaye
 
     @Override
     public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T entityLivingBaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
-        ItemStack itemStack = entityLivingBaseIn.getArmorStack();
+        ItemStack itemStack = entityLivingBaseIn.getArmor();
         if (itemStack.getItem() instanceof DragonArmorItem){
             renderModel(getEntityModel(), getArmorResourceLocation(entityLivingBaseIn, itemStack), matrixStackIn, bufferIn, packedLightIn, entityLivingBaseIn, partialTicks, 1.0f, 1.0f, 1.0f);
         }

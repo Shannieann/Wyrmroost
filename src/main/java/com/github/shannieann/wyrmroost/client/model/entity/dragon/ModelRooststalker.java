@@ -13,9 +13,14 @@ import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.client.renderer.entity.ItemRenderer;
+import net.minecraft.client.renderer.entity.layers.FoxHeldItemLayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.BlockItem;
+import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TieredItem;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
@@ -44,7 +49,6 @@ public class ModelRooststalker extends AnimatedGeoModel<EntityRooststalker> {
         return ANIMATION_RESOURCE;
     }
 
-
     public static class RooststalkerMouthItemLayer< T extends EntityRooststalker> extends GeoLayerRenderer<T>{
 
         public RooststalkerMouthItemLayer(IGeoRenderer<T> entityRendererIn) {
@@ -59,17 +63,26 @@ public class ModelRooststalker extends AnimatedGeoModel<EntityRooststalker> {
             if (item.isEmpty()) return; // We don't want to even begin rendering if there's no item
             ItemInHandRenderer renderer = Minecraft.getInstance().getItemInHandRenderer();
 
+            boolean isSleeping = roostStalker.isSleeping();
+            boolean isBaby = roostStalker.isBaby();
 
-            // Get the model of the rooststalker
+            matrixStackIn.pushPose();
+
+            if (isBaby) {
+                matrixStackIn.scale(0.75f, 0.75f, 0.75f);
+                matrixStackIn.translate(0.0, 0.5, 0.20937499403953552);
+            }
+
             GeoModelProvider<T> provider = getEntityModel();
             GeoModel model = provider.getModel(provider.getModelLocation(roostStalker));
 
             // Then get the location of where the item should be rendered on the roost stalker (if the bone isnt in the model, throw an error instead)
-            if (model.getBone("mouthItem").isEmpty()){
-                throw new ReportedException(CrashReport.forThrowable(new Throwable(), "Dragon should have a bone named 'mouthItem' to show its held item in its mouth!"));
+            if (model.getBone("mouthItem").isEmpty()) {
+                throw new ReportedException(CrashReport.forThrowable(new Throwable(), "Rooststalker should have a bone named 'mouthItem' to show its held item in its mouth!"));
             }
             GeoBone bone = model.getBone("mouthItem").get();
 
+            /* OLD CODE FOR REFERENCE - replaced with ripoff vanilla Fox code
 
             // Translate the item based on whether its a tool/block
             if (item.getItem() instanceof TieredItem)
@@ -88,7 +101,7 @@ public class ModelRooststalker extends AnimatedGeoModel<EntityRooststalker> {
             // Rotate according to model rotations
             matrixStackIn.mulPoseMatrix(bone.getModelRotationMat());
 
-// Translate the item's render location to the bone's location
+            // Translate the item's render location to the bone's location
             // Divide by 16 to convert from pixels to coordinates (i think, I got inspiration from Ice and Fire code)
             // scale it
             pos.scale(0.0625f);
@@ -102,7 +115,45 @@ public class ModelRooststalker extends AnimatedGeoModel<EntityRooststalker> {
             matrixStackIn.scale(1.5f, 1.5f, 1.5f);
             // Finally, render the item
             renderer.renderItem(roostStalker, item, ItemTransforms.TransformType.FIXED, false, matrixStackIn, bufferIn, packedLightIn);
+             */
+
+            Vector3d pos = bone.getModelPosition();
+            pos.scale(0.0625f); // Convert to world coordinates
+            matrixStackIn.translate(pos.x, pos.y, pos.z);
+
+            // Apply bone rotation
+            matrixStackIn.mulPoseMatrix(bone.getModelRotationMat());
+
+            if (isBaby) {
+                if (isSleeping) {
+                    matrixStackIn.translate(0.4, -0.05, 0); // untested
+                } else {
+                    matrixStackIn.translate(0.06, 0.1, -0.65); // untested
+                }
+            } else {
+                if (isSleeping) {
+                    matrixStackIn.translate(0.46, -0.1, -0.05); // untested
+                } else {
+                    matrixStackIn.translate(0.06, 0.05, -0.75);
+                }
+            }
+
+            // Rotate the item to be held sideways
+            matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(90.0f));
+
+            if (isSleeping) {
+                matrixStackIn.mulPose(Vector3f.ZP.rotationDegrees(90.0f));
+            }
+
+            // Tilt weapons to make them look a bit better
+            if (item.getItem() instanceof SwordItem || item.getItem() instanceof AxeItem || item.getItem() instanceof HoeItem || item.getItem() instanceof ShovelItem) {
+                matrixStackIn.mulPose(Vector3f.XP.rotationDegrees(180.0f));
+            }
+
+            // Fox uses GROUND transform type, not FIXED. Copied that.
+            renderer.renderItem(roostStalker, item, ItemTransforms.TransformType.GROUND, false, matrixStackIn, bufferIn, packedLightIn);
+
+            matrixStackIn.popPose();
         }
     }
-
 }

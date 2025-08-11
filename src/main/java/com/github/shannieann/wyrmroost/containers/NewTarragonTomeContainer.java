@@ -91,6 +91,7 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
     // The addSlot part can't be put into another method b/c mayPlace needs access to where the new Slot is created.
     // These are used in the WRDragonEntity method applyTomeInfo() to add any slots the dragon may need.
     public NewTarragonTomeContainer addSaddleSlot(){
+        /* TODO: use synced entity data
         this.saddleSlot = addSlot(new SlotItemHandler(dragon.getInventory(), accessorySlotNumber, 8, 6 + (17 * accessorySlotNumber)) {
             public boolean mayPlace(ItemStack item) {
                 return item.getItem() instanceof SaddleItem;
@@ -99,9 +100,12 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
             public int getMaxStackSize(ItemStack stack) {return 1;}
         });
         accessorySlotNumber++;
+        */
         return this;
     }
+
     public NewTarragonTomeContainer addArmorSlot(){
+        /* TODO: use synced entity data
         this.armorSlot = addSlot(new SlotItemHandler(dragon.getInventory(), accessorySlotNumber, 8, 6 + (17 * accessorySlotNumber)) {
             public boolean mayPlace(ItemStack item) {
                 return item.getItem() instanceof DragonArmorItem;
@@ -110,9 +114,12 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
             public int getMaxStackSize(ItemStack stack) {return 1;}
         });
         accessorySlotNumber++;
+        */
         return this;
     }
+
     public NewTarragonTomeContainer addChestSlot(){
+    /* TODO: use synced entity data
         this.chestSlot = addSlot(new SlotItemHandler(dragon.getInventory(), accessorySlotNumber, 8, 6 + (17 * accessorySlotNumber)){
             public boolean mayPlace(@NotNull ItemStack stack) {return stack.is(Tags.Items.CHESTS_WOODEN);}
 
@@ -125,15 +132,18 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
                 setChestInventory(hasChestEquipped());
             }
         });
+        */
 
         // Create the chest slots, which are only active if the dragon has a chest equipped.
         final int startX = 26, startY = 74, slotSizePlus2 = 18;
         for (int row = 0; row < 3; row++){
             for(int column = 0; column < 7; column++){
+                /* TODO: use synced entity data
                 addSlot(new SlotItemHandler(dragon.getInventory(), accessorySlotNumber + 1 + row * 7 + column, startX + column * slotSizePlus2,
                         startY + row * slotSizePlus2) {
                     public boolean isActive() {return hasChestEquipped();}
                 });
+                */
             }
         }
         accessorySlotNumber++;
@@ -163,6 +173,7 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
         }
     }
 
+    /* TODO: use synced entity data
     // Adds an extra slot. What the slot contains is determined in the dragon's getTomeInfo method, where it supplies a predicate.
     public NewTarragonTomeContainer addExtraSlot(Predicate<ItemStack> condition){
         this.extraSlot = addSlot(new SlotItemHandler(dragon.getInventory(), accessorySlotNumber, 8, 6 + (17 * accessorySlotNumber)) {
@@ -176,6 +187,7 @@ public class NewTarragonTomeContainer extends AbstractContainerMenu {
         accessorySlotNumber++;
         return this;
     }
+    */
 
 
 
