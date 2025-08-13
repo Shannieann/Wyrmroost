@@ -512,6 +512,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     //      D.1) Taming: Inventory
     // ====================================
 
+    /* TODO: use synced entity data
     @Override
     public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad) {
         if (slot == CONDUIT_SLOT) {
@@ -526,7 +527,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public DragonInventory createInv() {
         return new DragonInventory(this, 1);
     }
-
+    */
     @Override
     public Vec2 getTomeDepictionOffset() {
         return switch (getVariant()) {
@@ -577,6 +578,10 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         return WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonBreedingConfig.hatchTime.get()*20;
     }
 
+    @Override
+    public int getMaxBreedingCooldown() {
+        return WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonBreedingConfig.maxBreedingCooldown.get();
+    }
 
     // ====================================
     //      E) Client
@@ -622,7 +627,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     protected void registerGoals() {
         goalSelector.addGoal(0, new WRSleepGoal(this));
         goalSelector.addGoal(0, new WRSitGoal(this));
-//        goalSelector.addGoal(1, new MoveToHomeGoal(this));
+//        goalSelector.addGoal(1, new WRMoveToHomeGoal(this));
 //        goalSelector.addGoal(2, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(3, new WRDragonBreedGoal(this));
 

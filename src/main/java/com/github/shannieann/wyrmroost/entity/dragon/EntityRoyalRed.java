@@ -3,6 +3,7 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entity.projectile.breath.FireBreathEntity;
@@ -41,7 +42,7 @@ import java.util.EnumSet;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
+public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITameable {
     //TODO: Breath + Nether Portals
     //TODO: Further breath optimizations + evaluator
     //TODO: Sleeping logic
@@ -515,6 +516,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
     //      D.1) Taming: Inventory
     // ====================================
 
+    /* TODO: use synced entity data
     @Override
     public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad) {
         if (slot == ARMOR_SLOT) setArmor(stack);
@@ -524,6 +526,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
     public DragonInventory createInv() {
         return new DragonInventory(this, 1);
     }
+    */
 
     @Override
     public Vec2 getTomeDepictionOffset() {
@@ -546,6 +549,11 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
     @SuppressWarnings("ConstantConditions")
     public boolean isFood(ItemStack stack) {
         return stack.getItem().isEdible() && stack.getItem().getFoodProperties(stack, this).isMeat();
+    }
+
+    @Override
+    public int getMaxBreedingCooldown() {
+        return WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonBreedingConfig.maxBreedingCooldown.get();
     }
 
 
@@ -616,7 +624,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable {
     protected void registerGoals() {
         super.registerGoals();
 
-        //goalSelector.addGoal(4, new MoveToHomeGoal(this));
+        //goalSelector.addGoal(4, new WRMoveToHomeGoal(this));
         //goalSelector.addGoal(4, new WRRunWhenLosingGoal(this, 0.1f, 40, 0.95f, 0.99f ));
         //goalSelector.addGoal(5, new RRAttackGoal(this));
         //goalSelector.addGoal(6, new WRFollowOwnerGoal(this));

@@ -3,7 +3,7 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 /*import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.client.model.entity.DragonFruitDrakeModel;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.DragonBreedGoal;
-import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.MoveToHomeGoal;
+import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRMoveToHomeGoal;
 import com.github.shannieann.wyrmroost.entities.dragon.ai.goals.WRFollowOwnerGoal;
 import com.github.shannieann.wyrmroost.entities.dragonegg.DragonEggProperties;
 import com.github.shannieann.wyrmroost.entities.util.EntitySerializer;
@@ -110,7 +110,7 @@ import java.util.EnumSet;
         super.registerGoals();
 
         goalSelector.addGoal(3, new MoveToCropsGoal());
-        goalSelector.addGoal(4, new MoveToHomeGoal(this));
+        goalSelector.addGoal(4, new WRMoveToHomeGoal(this));
         goalSelector.addGoal(5, new DragonBreedGoal(this));
         goalSelector.addGoal(6, new MeleeAttackGoal(this, 1.3, false));
         goalSelector.addGoal(8, new WRFollowOwnerGoal(this));

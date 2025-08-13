@@ -77,27 +77,27 @@ public final class WRServerConfig {
             builder.push("entities");
             ALPINE_DRAGON = new AlpineDragon(builder);
             BUTTERFLY_LEVIATHAN = new ButterflyLeviathan(builder);
-            //CANARI_WYVERN = new CanariWyvern(builder);
+            CANARI_WYVERN = new CanariWyvern(builder);
             //COIN_DRAGON = new CoinDragon(builder);
             //DRAGONFRUIT_DRAKE = new DragonfruitDrake(builder);
             LESSER_DESERTWYRM = new LesserDesertwyrm(builder);
             OVERWORLD_DRAKE = new OverworldDrake(builder);
             ROOSTSTALKER = new Rooststalker(builder);
             ROYAL_RED = new RoyalRed(builder);
-            //SILVER_GLIDER = new SilverGlider(builder);
+            SILVER_GLIDER = new SilverGlider(builder);
             builder.pop();
         }
 
         public final AlpineDragon ALPINE_DRAGON;
         public final ButterflyLeviathan BUTTERFLY_LEVIATHAN;
-        //public final CanariWyvern CANARI_WYVERN;
+        public final CanariWyvern CANARI_WYVERN;
         //public final CoinDragon COIN_DRAGON;
         //public final DragonfruitDrake DRAGONFRUIT_DRAKE;
         public final LesserDesertwyrm LESSER_DESERTWYRM;
         public final OverworldDrake OVERWORLD_DRAKE;
         public final Rooststalker ROOSTSTALKER;
         public final RoyalRed ROYAL_RED;
-        //public final SilverGlider SILVER_GLIDER;
+        public final SilverGlider SILVER_GLIDER;
     }
 
     public static class SpawningConfig {
@@ -158,13 +158,17 @@ public final class WRServerConfig {
 
 
     public static class DragonBreedingConfig {
-        DragonBreedingConfig(final ForgeConfigSpec.Builder builder, int breedLimit, int hatchTime, int ageProgress) {
+        DragonBreedingConfig(final ForgeConfigSpec.Builder builder, int breedLimit, int maxBreedingCooldown, int hatchTime, int ageProgress) {
             builder.push("breeding");
             this.breedLimit = builder
                     .comment("Breed limit for each dragon. This determines how many times a certain dragon can breed",
                             "Set to 0 to disable breeding")
                     .translation(LANG_PREFIX + "breed_limits")
                     .defineInRange("breed_limits", breedLimit, 0, Integer.MAX_VALUE);
+            this.maxBreedingCooldown = builder
+                    .comment("The maximum breeding cooldown for the dragon, in seconds")
+                    .translation(LANG_PREFIX + "max_breeding_cooldown")
+                    .defineInRange("max_breeding_cooldown", maxBreedingCooldown, 0, Integer.MAX_VALUE);
             this.hatchTime = builder
                     .comment("Hatch time for the dragon egg, in seconds")
                     .translation(LANG_PREFIX + "hatch_time")
@@ -177,7 +181,7 @@ public final class WRServerConfig {
             builder.pop();
         }
         public final ForgeConfigSpec.IntValue breedLimit;
-
+        public final ForgeConfigSpec.IntValue maxBreedingCooldown;
         public final ForgeConfigSpec.IntValue hatchTime;
         public final ForgeConfigSpec.IntValue ageProgress;
 
@@ -194,11 +198,12 @@ public final class WRServerConfig {
             );
             dragonAttributesConfig = new DragonAttributesConfig(builder,
                     40,
-                    3,
-                    10
+                    4,
+                    15
             );
             dragonBreedingConfig = new DragonBreedingConfig(builder,
                     2,
+                    1800,
                     900,
                     10);
             builder.pop();
@@ -220,12 +225,13 @@ public final class WRServerConfig {
             dragonAttributesConfig = new DragonAttributesConfig(builder,
                     180,
                     10,
-                    2
+                    20
             );
             dragonBreedingConfig = new DragonBreedingConfig(builder,
-                      2,
-                    1600,
-                    5);
+            2,
+            1800,
+            1600,
+            5);
             builder.pop();
         }
 
@@ -244,9 +250,21 @@ public final class WRServerConfig {
                     Collections.singletonList("SWAMP"),
                     Collections.singletonList("")
             );
+            dragonAttributesConfig = new DragonAttributesConfig(builder, // TODO: these values are all wrong??
+            10,
+            4,
+            10
+        );
+            dragonBreedingConfig = new DragonBreedingConfig(builder,
+            2,
+            1800,
+            1600,
+            5);
             builder.pop();
         }
         public final SpawningConfig spawningConfig;
+        public final DragonAttributesConfig dragonAttributesConfig;
+        public final DragonBreedingConfig dragonBreedingConfig;
     }
 
     public static class CoinDragon {
@@ -305,13 +323,14 @@ public final class WRServerConfig {
 
             );
             dragonAttributesConfig = new DragonAttributesConfig(builder,
-                    16,
-                    2,
-                    2
+                    60,
+                    8,
+                    15
             );
             builder.pop();
             dragonBreedingConfig = new DragonBreedingConfig(builder,
                     4,
+                    1800,
                     1200,
                     10);
         }
@@ -333,10 +352,11 @@ public final class WRServerConfig {
             dragonAttributesConfig = new DragonAttributesConfig(builder,
                     16,
                     2,
-                    2
+                    10
             );
             dragonBreedingConfig = new DragonBreedingConfig(builder,
                     5,
+                    1800,
                     600,
                     20);
             builder.pop();
@@ -359,9 +379,10 @@ public final class WRServerConfig {
             dragonAttributesConfig = new DragonAttributesConfig(builder,
                     130,
                     12,
-                    16);
+                    20);
             dragonBreedingConfig = new DragonBreedingConfig(builder,
                     2,
+                    1800,
                     1800,
                     2);
 
@@ -384,8 +405,20 @@ public final class WRServerConfig {
                     Arrays.asList("OCEAN", "BEACH"),
                     Collections.singletonList("")
             );
+            dragonAttributesConfig = new DragonAttributesConfig(builder, // TODO: these values are all very wrong
+            10,
+            2,
+            10
+                );
+            dragonBreedingConfig = new DragonBreedingConfig(builder,
+            2,
+            1800,
+            1600,
+            5);
             builder.pop();
         }
         public final SpawningConfig spawningConfig;
+        public final DragonAttributesConfig dragonAttributesConfig;
+        public final DragonBreedingConfig dragonBreedingConfig;
     }
 }

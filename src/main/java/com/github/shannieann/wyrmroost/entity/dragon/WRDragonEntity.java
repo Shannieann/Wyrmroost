@@ -1,6 +1,5 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
-import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.fly.WRFlyLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
@@ -11,7 +10,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGround
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundMoveControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.fly.FlyerMoveController;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.fly.FlyerPathNavigator;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
+//import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory; Unused?
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundNavigation;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingMoveControl;
@@ -34,6 +33,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.Style;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -63,10 +64,13 @@ import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.MilkBucketItem;
+import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
@@ -74,10 +78,8 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.ForgeSpawnEggItem;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
+//import net.minecraftforge.common.util.LazyOptional; Unused?
 import net.minecraftforge.event.ForgeEventFactory;
-import net.minecraftforge.items.CapabilityItemHandler;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -97,11 +99,9 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED
 
 public abstract class WRDragonEntity extends TamableAnimal implements IAnimatable, MenuProvider {
 
-
     double travelX0;
     double travelY0;
     double travelZ0;
-    public int sleepCooldown;
     //Only for swimmers:
     public float prevYRot;
     public float deltaYRot;
@@ -141,18 +141,20 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     private final AnimationFactory factory = GeckoLibUtil.createFactory(this);
 
+    public static final byte HEART_PARTICLES_EVENT_ID = 7;
     public static final byte HEAL_PARTICLES_EVENT_ID = 8;
+    public static final byte SHIELD_PARTICLES_EVENT_ID = 9;
 
     @Deprecated // https://github.com/MinecraftForge/MinecraftForge/issues/7622
-    public final LazyOptional<DragonInventory> inventory;
+    //public final LazyOptional<DragonInventory> inventory; Unused?
     public final LerpedFloat sleepTimer = LerpedFloat.unit();
     public static final EntityDataAccessor<Float> AGE_PROGRESS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
     public static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> CHESTED = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> YAW_UNLOCK = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
-
     /**
      * GENDER:
      * 0 --> FEMALE
@@ -160,24 +162,33 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      * Originally determined via coin flip
      */
     public static final EntityDataAccessor<Integer> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
+
+    // public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
+    // There is no nbt.getBlockPos("HomePos") method, so homePos is erased every time you restart the game. Using three INTs instead
+    public static final EntityDataAccessor<Integer> HOME_X = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> HOME_Y = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
+    public static final EntityDataAccessor<Integer> HOME_Z = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
+
     public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> SITTING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
     public static final EntityDataAccessor<String> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
+
     public static final EntityDataAccessor<Integer> EATING_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
-
+    public static final EntityDataAccessor<Integer> SLEEPING_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> BREEDING_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
-
     public static final EntityDataAccessor<Integer> BREEDING_COUNT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Float> DRAGON_X_ROTATION = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
+
     private static final int AGE_UPDATE_INTERVAL = 1200;
 
+    public static int MAX_EATING_COOLDOWN = 300; // 15 sec, can be overridden
+    public static int MAX_SLEEPING_COOLDOWN = 2400; // 2 minutes, can be overridden
+    public static int MAX_BREEDING_COOLDOWN; // must be overridden!
+
     protected static int IDLE_ANIMATION_VARIANTS;
-
     protected static int ATTACK_ANIMATION_VARIANTS;
-
     //ToDo: SittING / SleepING animations are not implemented for BFL. Once we implement for land creatures, they should not interfere with sleep goal.
     protected static int SITTING_ANIMATION_TIME;
     protected static int SLEEPING_ANIMATION_TIME;
@@ -203,8 +214,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     protected WRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.noCulling = true;
-        DragonInventory inv = createInv();
-        inventory = LazyOptional.of(inv == null? null : () -> inv);
+        // Below are unused?
+        //DragonInventory inv = createInv();
+        //inventory = LazyOptional.of(inv == null? null : () -> inv);
     }
 
     // =====================
@@ -381,11 +393,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(CHESTED, false);
 
         entityData.define(EATING_COOLDOWN, 0);
-
+        entityData.define(SLEEPING_COOLDOWN, 0);
         entityData.define(BREEDING_COOLDOWN, 0);
         entityData.define(BREEDING_COUNT, 0);
 
-        entityData.define(HOME_POS, BlockPos.ZERO);
+        entityData.define(HOME_X, 0);
+        entityData.define(HOME_Y, 0);
+        entityData.define(HOME_Z, 0);
 
         super.defineSynchedData();
     }
@@ -397,8 +411,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         nbt.putInt("Gender",getGender());
         nbt.putString("Variant",getVariant());
 
-        nbt.putBoolean("Sleeping",getSleeping());
         nbt.putBoolean("Sitting",getSitting());
+        nbt.putInt("HomeX", (getHomePos() == null) ? 0 : getHomePos().getX());
+        nbt.putInt("HomeY", (getHomePos() == null) ? 0 : getHomePos().getY());
+        nbt.putInt("HomeZ", (getHomePos() == null) ? 0 : getHomePos().getZ());
+
+        nbt.putBoolean("Sleeping",getSleeping());
+        nbt.putInt("SleepingCooldown",getSleepingCooldown());
 
         nbt.putInt("EatingCooldown",getEatingCooldown());
 
@@ -418,15 +437,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         // Default variant if variant is not set in the NBT
         setVariant(variant);
 
-        setSleeping(nbt.getBoolean("Sleeping"));
         setSitting(nbt.getBoolean("Sitting"));
+        setHomePos(new BlockPos(nbt.getInt("HomeX"), nbt.getInt("HomeY"), nbt.getInt("HomeZ")));
+
+        setSleeping(nbt.getBoolean("Sleeping"));
+        setSleepingCooldown(nbt.getInt("SleepingCooldown"));
 
         setEatingCooldown(nbt.getInt("EatingCooldown"));
 
         setBreedingCooldown(nbt.getInt("BreedingCooldown"));
         setBreedingCount(nbt.getInt("BreedingCount"));
 
-        float age = nbt.contains("AgeProgress")? nbt.getFloat("AgeProgress") : 1.0f;
+        float age = nbt.contains("AgeProgress") ? nbt.getFloat("AgeProgress") : 1.0f;
         // Default age is 1 if age is not set in the NBT
         setAgeProgress(age);
     }
@@ -473,7 +495,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 if (attribute.getModifier(DragonArmorItem.ARMOR_UUID) != null)
                     attribute.removeModifier(DragonArmorItem.ARMOR_UUID);
                 if (hasArmor()) {
-                    attribute.addTransientModifier(new AttributeModifier(DragonArmorItem.ARMOR_UUID, "Armor Modifier", DragonArmorItem.getDmgReduction(getArmorStack()), AttributeModifier.Operation.ADDITION));
+                    attribute.addTransientModifier(new AttributeModifier(DragonArmorItem.ARMOR_UUID, "Armor Modifier", DragonArmorItem.getDmgReduction(getArmor()), AttributeModifier.Operation.ADDITION));
                     playSound(SoundEvents.ARMOR_EQUIP_DIAMOND, 1, 1, true);
                 }
             }
@@ -634,26 +656,137 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     // ====================================
-    //      A.2) Entity Data: ARMOR
+    //      A.2) Entity Data: INVENTORY
     // ====================================
 
+    // All need to be overidden in subclasses
+    public boolean canEquipSaddle() {
+        return false;
+    }
+    public boolean canEquipArmor() {
+        return false;
+    }
+    public boolean canEquipChest() {
+        return false;
+    }
+    public boolean canEquipHeldItem() {
+        return false;
+    }
+    @Nullable
+    public Predicate<ItemStack> canEquipSpecialItem() {
+        return null;
+    }
+
+    public boolean isSaddled() {
+        return canEquipSaddle() && entityData.get(SADDLED);
+    }
+    public boolean isChested() {
+        return canEquipChest() && entityData.get(CHESTED);
+    }
+    public boolean hasHeldItem() {
+        return getHeldItem() != ItemStack.EMPTY;
+    }
     public boolean hasArmor()
     {
-        return hasEntityDataAccessor(ARMOR) && entityData.get(ARMOR).getItem() instanceof DragonArmorItem;
+        return getArmor().getItem() instanceof DragonArmorItem;
     }
 
-    public ItemStack getArmorStack()
+    public ItemStack getHeldItem() {
+        return canEquipHeldItem() ? this.getItemBySlot(EquipmentSlot.MAINHAND) : ItemStack.EMPTY;
+    }
+    public ItemStack getArmor()
     {
-        return hasEntityDataAccessor(ARMOR)? entityData.get(ARMOR) : ItemStack.EMPTY;
+        return canEquipArmor() ? entityData.get(ARMOR) : ItemStack.EMPTY;
     }
 
-    public void setArmor(@javax.annotation.Nullable ItemStack stack)
+    // "Deletes" current held item and sets new item
+    // Should be used in most cases
+    public ItemStack setHeldItem(ItemStack item) {
+
+        if (!canEquipHeldItem()) {
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack currentHeldItem = getHeldItem();
+
+        if (! level.isClientSide) {
+            this.setItemSlot(EquipmentSlot.MAINHAND, item);
+        }
+        if (!item.isEmpty()) {
+            playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 0.5f, 1);
+        }
+        return currentHeldItem;
+    }
+
+    // Dragon drops current held item and picks up new item
+    // Should not be used in general case, only for special cases like owner interaction
+    public void swapHeldItem(ItemStack item) {
+        ItemStack drop = this.setHeldItem(item);
+
+        if (!drop.isEmpty() && !level.isClientSide) {
+            ItemEntity itemEntity = new ItemEntity(level, getX(), getY(), getZ(), drop);
+            itemEntity.setPickUpDelay(10); // Prevent immediate pickup
+            level.addFreshEntity(itemEntity);
+        }
+    }
+
+    public ItemStack setArmor(ItemStack item) {
+        if (!canEquipArmor()) {
+            return ItemStack.EMPTY;
+        }
+        ItemStack currentArmor = getArmor();
+        if ((item.getItem() instanceof DragonArmorItem)) {
+            entityData.set(ARMOR, item);
+        }
+        if (!item.isEmpty()) {
+            playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 0.5f, 1);
+        }
+        return currentArmor;
+    }
+
+    @SuppressWarnings("null")
+    @Override
+    protected void dropEquipment() {
+
+        if (level.isClientSide) {
+            return;
+        }
+
+        List<ItemStack> inv = new ArrayList<>();
+        if (isSaddled()) {
+            inv.add(new ItemStack(Items.SADDLE));
+        }
+        if (isChested()) {
+            inv.add(new ItemStack(Items.CHEST));
+        }
+        if (hasHeldItem()) {
+            inv.add(getHeldItem());
+        }
+        if (hasArmor()) {
+            inv.add(getArmor());
+        }
+
+        for (ItemStack itemstack : inv) {
+            spawnAtLocation(itemstack);
+        }
+    }
+
+    public void dropStorage() {
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int id, Inventory playersInv, Player player)
     {
-        if (stack == null || !(stack.getItem() instanceof DragonArmorItem)) stack = ItemStack.EMPTY;
-        entityData.set(ARMOR, stack);
+        //System.out.println(new BookContainer(id, playersInv, this));
+        return new NewTarragonTomeContainer(id, playersInv, this);
     }
 
-
+    @Override
+    // Trick vanilla functionality into using held item for rooststalker damage calculations
+    // See doHurtTarget in Mob.class
+    public ItemStack getMainHandItem() {
+        return getHeldItem();
+    }
 
     // ====================================
     //      A.3) Entity Data: GENDER
@@ -663,21 +796,31 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      * GENDER:
      * 0 --> FEMALE
      * 1 --> MALE
+     * 2 -> GENDERLESS (never used)
      * Originally determined via coin flip
      */
 
+    // Override for Rooststalker, Lesser Desertwyrm, other dragons?
+    public boolean hasGender() {
+        return true;
+    }
+
     public int getGender()
     {
-        return entityData.get(GENDER);
+        return hasGender() ? entityData.get(GENDER) : 2;
     }
     // To make files look nicer
     public String getGenderString(){
-        return (getGender() == 0)? "female" : "male";
+        return (getGender() == 0) ? "female" : (getGender() == 1) ? "male" : "genderless";
     }
 
     public void setGender(int gender)
     {
         entityData.set(GENDER, gender);
+    }
+
+    public boolean isBreedableGender(WRDragonEntity dragon2) {
+        return (!hasGender() && !dragon2.hasGender()) || (getGender() != dragon2.getGender());
     }
 
     // ====================================
@@ -702,18 +845,20 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public BlockPos getRestrictCenter() {
         BlockPos pos = getHomePos();
-        return pos == null? BlockPos.ZERO : pos;
+        return pos == null ? BlockPos.ZERO : pos;
     }
 
 
     @Nullable
     public BlockPos getHomePos() {
-        BlockPos pos = entityData.get(HOME_POS);
-        return pos == BlockPos.ZERO? null : pos;
+        BlockPos homePos = new BlockPos(entityData.get(HOME_X), entityData.get(HOME_Y), entityData.get(HOME_Z));
+        return homePos.equals(BlockPos.ZERO) ? null : homePos;
     }
 
     public void setHomePos(@Nullable BlockPos pos) {
-        entityData.set(HOME_POS, pos == null? BlockPos.ZERO : pos);
+        entityData.set(HOME_X, pos == null? 0 : pos.getX());
+        entityData.set(HOME_Y, pos == null? 0 : pos.getY());
+        entityData.set(HOME_Z, pos == null? 0 : pos.getZ());
     }
 
     public void clearHome() {
@@ -764,9 +909,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     public float getRestrictRadius() {
-        return -1;
+        return -1; // Must be overridden by config for that dragon.
+        // Make sure it is squared because it is used in distance checks.
     }
-
 
     // ====================================
     //      A.5) Entity Data: SLEEP
@@ -791,6 +936,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void setSitting(boolean sit) {
         entityData.set(SITTING, sit);
         this.setOrderedToSit(sit);
+        this.getNavigation().stop();
     }
 
     // ====================================
@@ -851,11 +997,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public int getEatingCooldown() {
         return entityData.get(EATING_COOLDOWN);
-
     }
 
     public void setEatingCooldown(int cooldown) {
         entityData.set(EATING_COOLDOWN, cooldown);
+    }
+
+    public int getSleepingCooldown() {
+        return entityData.get(SLEEPING_COOLDOWN);
+    }
+
+    public void setSleepingCooldown(int cooldown) {
+        entityData.set(SLEEPING_COOLDOWN, cooldown);
     }
 
     public int getBreedingCount() {
@@ -876,7 +1029,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(BREEDING_COOLDOWN, cooldown);
     }
 
-
     // ====================================
     //      B) Tick and AI
     // ====================================
@@ -887,6 +1039,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         super.tick();
         setEatingCooldown(Math.max(getEatingCooldown()-1,0));
         setBreedingCooldown(Math.max(getBreedingCooldown()-1,0));
+        setSleepingCooldown(Math.max(getSleepingCooldown()-1,0));
 
         // X ROTATION
         if (speciesCanFly()) {
@@ -914,11 +1067,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         // Abstract method ageProgressAmount() sets the float amount by which to update age every minute
         if (!isAdult() && tickCount % AGE_UPDATE_INTERVAL == 0) {
             setAgeProgress(getAgeProgress()+ageProgressAmount());
-        }
-
-        //Update sleep timers
-        if (sleepCooldown > 0) {
-            sleepCooldown = Math.max(sleepCooldown-1,0);
         }
 
             //YAW OPERATIONS:
@@ -1044,7 +1192,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 {
                     player.getCooldowns().addCooldown(Items.SHIELD, disabledShieldTime);
                     player.stopUsingItem();
-                    level.broadcastEntityEvent(player, (byte) 9);
+                    level.broadcastEntityEvent(player, SHIELD_PARTICLES_EVENT_ID);
                 }
             }
         }
@@ -1052,8 +1200,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        setSleeping(false);
-        setSitting(false);
         if (isImmuneToArrows() && source.getDirectEntity() != null) {
             EntityType<?> attackSource = source.getDirectEntity().getType();
             if (attackSource == EntityType.ARROW) return false;
@@ -1064,8 +1210,16 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             source == DamageSource.HOT_FLOOR ||
             source == DamageSource.FREEZE ||
             source == DamageSource.SWEET_BERRY_BUSH ||
-            source == DamageSource.STARVE) {
+            source == DamageSource.STARVE ||
+            // TODO: In future, only make them fireproof above a certain tier?
+            source == DamageSource.IN_FIRE ||
+            source == DamageSource.LAVA ||
+            source == DamageSource.ON_FIRE) {
             return false;
+        }
+        if (! level.isClientSide) {
+            setSleeping(false);
+            setSitting(false);
         }
         return super.hurt(source, amount);
     }
@@ -1123,7 +1277,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 this.moveControl = new FlyerMoveController(this);
                 this.lookControl = new WRFlyLookControl(this,10);
                 this.navigation = new FlyerPathNavigator(this);
-                setOrderedToSit(false);
+                setSitting(false);
                 setSleeping(false);
             }
             case SWIMMING -> {
@@ -1133,8 +1287,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
         }
     }
-
-
 
     public NavigationType getProperNavigator(){
         //Priority order:
@@ -1508,7 +1660,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             int index = player.getPassengers().indexOf(this);
             if ((player.isShiftKeyDown() && !player.getAbilities().flying) || isInWater() || index > 2) {
                 stopRiding();
-                setOrderedToSit(false);
+                setSitting(false);
                 return;
             }
 
@@ -1571,7 +1723,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         super.addPassenger(passenger);
         if (getControllingPassenger() == passenger && isOwnedBy((LivingEntity) passenger)) {
             clearAI();
-            setOrderedToSit(false);
+            setSitting(false);
+            setSleeping(false);
             clearHome();
             if (isLeashed()) dropLeash(true, true);
         }
@@ -1633,9 +1786,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      D) Taming
     // ====================================
 
+    @SuppressWarnings("null")
     @Override
     public boolean canBeLeashed(Player pPlayer) {
-        return false;
+        return isTame() && getOwner() == pPlayer && !isLeashed() && !getSitting() && !isImmobile() && !isVehicle();
     }
 
     //attemptTame runs when the taming conditions are met, only for tameables
@@ -1648,7 +1802,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             tame(tamer);
             setHealth(getMaxHealth());
             clearAI();
-            level.broadcastEntityEvent(this, (byte) 7); // heart particles
+            this.navigation.stop();
+            this.setTarget((LivingEntity)null);
+            this.setSitting(true);
+            this.setHomePos(new BlockPos(this.position()));
+            level.broadcastEntityEvent(this, HEART_PARTICLES_EVENT_ID);
             return true;
         }
         return false;
@@ -1681,7 +1839,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             container.addChestSlot();
         }
         if (canEquipSpecialItem() != null){
-            container.addExtraSlot(canEquipSpecialItem());
+            //container.addExtraSlot(canEquipSpecialItem()); // TODO: use synced entity data
         }
     }
 
@@ -1710,30 +1868,83 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
+
         ItemStack stack = player.getItemInHand(hand);
-        if (this instanceof  ITameable && !isTame()){
-            if (((ITameable)this).tameLogic(player,stack) == InteractionResult.SUCCESS) {
-                this.setHomePos(new BlockPos(this.position()));
+
+        if (this.level.isClientSide) {
+            return InteractionResult.CONSUME;
+         }
+
+        // shiftclick is for sit => patrol => follow only
+        if (isTame() &&isOwnedBy(player) && player.isShiftKeyDown()) {
+            String message = "You shift clicked!";
+
+            if (getSitting()) { // Set to patrol mode
+                setSitting(false);
+                BlockPos homePos = new BlockPos(position());
+                setHomePos(homePos);
+                if (!level.isClientSide) {
+                    message = "[WYRMROOST] " + getName().getString() + " will stay near (" + homePos.getX() + ", " + homePos.getY() + ", " + homePos.getZ() + ")";
+                    player.sendMessage(new TextComponent(message).withStyle(Style.EMPTY), player.getUUID());
+                }
                 return InteractionResult.SUCCESS;
-            } return ((ITameable)this).tameLogic(player,stack);
+            } else if (getHomePos() != null) { // Set to follow mode
+                clearHome();
+                setSitting(false);
+                if (!level.isClientSide) {
+                    message = "[WYRMROOST] " + getName().getString() + " will follow you";
+                    player.sendMessage(new TextComponent(message).withStyle(Style.EMPTY), player.getUUID());
+                }
+                return InteractionResult.SUCCESS;
+            // TODO: Should BFLs be able to sit on land?
+            } else if (!isRiding() && !isUsingFlyingNavigator() && (isOnGround() || (speciesCanSwim() && isInWater()))) { // Set to stay mode
+                setSitting(true);
+                if (!level.isClientSide) {
+                    message = "[WYRMROOST] " + getName().getString() + " will stay";
+                    player.sendMessage(new TextComponent(message).withStyle(Style.EMPTY), player.getUUID());
+                }
+                return InteractionResult.SUCCESS;
+            }
+            return InteractionResult.PASS;
         }
 
+        if (this instanceof ITameable && !isTame()) {
+            return ((ITameable)this).tameLogic(player,stack); // overrides need to call attemptTame
+        }
 
-
-        if (this instanceof IBreedable && getBreedingCooldown() <= 0 && getBreedingCount() < ((IBreedable)this).getBreedingLimit()) {
+        if (this instanceof IBreedable && isAdult() && isTame()
+            && getBreedingCooldown() <= 0 && getBreedingCount() < ((IBreedable)this).getBreedingLimit() && isBreedingItem(stack))
+        {
             IBreedable thisIBreedable = (IBreedable) this;
-            if(thisIBreedable.breedLogic(player,stack) == InteractionResult.SUCCESS){
-                return thisIBreedable.breedLogic(player,stack);
+            InteractionResult result = thisIBreedable.breedLogic(player,stack); // overrides need to set cooldown
+            if (result == InteractionResult.SUCCESS) {
+                setInLove(player);
+                this.gameEvent(GameEvent.MOB_INTERACT, this.eyeBlockPosition());
+                if (isFood(stack) && getEatingCooldown() <= 0) {
+                    eat(this.level, stack);
+                } else {
+                    this.usePlayerItem(player, hand, stack);
+                }
             }
+            return result;
         }
 
         if (isOwnedBy(player) && isFood(stack)) {
             if (getEatingCooldown() <= 0) {
                 eat(this.level, stack);
-                setEatingCooldown(500);
-                return InteractionResult.sidedSuccess(level.isClientSide);
+                this.usePlayerItem(player, hand, stack);
+                this.gameEvent(GameEvent.MOB_INTERACT, this.eyeBlockPosition());
+                return InteractionResult.SUCCESS;
             }
+        }
 
+        // if dragon not rideable, and dragon can equip held item, right click sets held item
+        // at some point we're going to have a dragon that can hold things and be ridden and I'll have to change this
+        if (isOwnedBy(player) && !speciesCanBeRidden() && canEquipHeldItem() && (hasHeldItem() || !stack.isEmpty())) {
+            this.usePlayerItem(player, hand, stack);
+            ItemStack stackOneItem = stack.split(1);
+            swapHeldItem(stackOneItem);
+            return InteractionResult.SUCCESS;
         }
 
         if (isOwnedBy(player) && getPassengers().isEmpty() && canAddPassenger(player)) {
@@ -1743,15 +1954,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
           travelZ0 = this.position().z;
         }
 
-
+        // Overworld Drake, start riding for taming process
         if (!isOwnedBy(player) && canBeControlledByRider() && canAddPassenger(player)) {
             player.startRiding(this);
         }
 
-        if (isOwnedBy(player) && player.isShiftKeyDown()) {
-            setSitting(!getSitting());
-            return InteractionResult.sidedSuccess(level.isClientSide);
-        }
         return InteractionResult.PASS;
     }
 
@@ -1769,6 +1976,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     //      D.1) Taming: Inventory
     // ====================================
+
+    /* None of these methods are ever used?
 
     public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad) {
 
@@ -1789,53 +1998,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      * It is VERY important to be careful when using this.
      * It is VERY sided-ness sensitive. If not done correctly, it can result in the loss of items! <P>
      * {@code if (!level.isClient) setStackInSlot(...)}
-     */
+     *
     public void setStackInSlot(int slot, ItemStack stack) {
         inventory.ifPresent(i -> i.setStackInSlot(slot, stack));
     }
     public DragonInventory getInventory() {
         return inventory.orElseThrow(() -> new NoSuchElementException("This boi doesn't have an inventory wtf are u doing"));
     }
-
-    public boolean canEquipSaddle() {
-        return false;
-    }
-    public boolean canEquipArmor() {
-        return false;
-    }
-    public boolean canEquipChest() {
-        return false;
-    }
-    @Nullable
-    public Predicate<ItemStack> canEquipSpecialItem() {
-        return null;
-    }
-
-    public boolean isSaddled() {
-        return canEquipSaddle() && entityData.get(SADDLED);
-    }
-    public boolean isChested() {
-        return canEquipChest() && entityData.get(CHESTED);
-    }
-
-    @Override
-    protected void dropEquipment() {
-        inventory.ifPresent(i -> i.getContents().forEach(this::spawnAtLocation));
-    }
-
-    public void dropStorage() {
-    }
-
-    public DragonInventory createInv() {
-        return null;
-    }
-
-    @Override
-    public AbstractContainerMenu createMenu(int id, Inventory playersInv, Player player)
-    {
-        //System.out.println(new BookContainer(id, playersInv, this));
-        return new NewTarragonTomeContainer(id, playersInv, this);
-    }
+    */
 
 
     // ====================================
@@ -1850,36 +2020,45 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public abstract boolean isFood(ItemStack stack);
 
     @Override
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings({ "ConstantConditions", "null" })
     public ItemStack eat(Level level, ItemStack stack) {
         Vec3 mouth = getApproximateMouthPos();
         //ClientSide: Spawn Particles + sound
         if (level.isClientSide) {
             WRModUtils.playLocalSound(level, new BlockPos(mouth), getEatingSound(stack), 1f, 1f);
+            level.addParticle(ParticleTypes.HAPPY_VILLAGER, mouth.x, mouth.y, mouth.z, 0, 0, 0);
         }
         else {
             //ServerSide: Heal
-            final float maxHealth = getMaxHealth();
-            if (getHealth() < maxHealth) {
-                heal(Math.max((int) maxHealth / 5, 4)); // Base healing on max health, minimum 2 hearts.
-            }
 
             Item item = stack.getItem();
             //Apply possible item effects
             if (item.isEdible()) {
-                for (Pair<MobEffectInstance, Float> pair : item.getFoodProperties().getEffects())
-                    if (!level.isClientSide && pair.getFirst() != null && getRandom().nextFloat() < pair.getSecond()) {
+                final float maxHealth = getMaxHealth();
+                if (getHealth() < maxHealth) {
+                    heal(Math.max((int) maxHealth / 5, 4)); // Base healing on max health, minimum 2 hearts.
+                }
+                for (Pair<MobEffectInstance, Float> pair : item.getFoodProperties().getEffects()) {
+                    if (pair.getFirst() != null && getRandom().nextFloat() < pair.getSecond()) {
                         addEffect(new MobEffectInstance(pair.getFirst()));
                     }
+                }
+                if (item.hasContainerItem(stack)) {
+                    spawnAtLocation(item.getContainerItem(stack), (float) (mouth.y - getY()));
+                }
+                setEatingCooldown(MAX_EATING_COOLDOWN);
+                stack.shrink(1);
+            } else if (item instanceof PotionItem) {
+                ((PotionItem) item).finishUsingItem(stack, level, this);
+                stack = new ItemStack(Items.GLASS_BOTTLE, 1);
+                spawnAtLocation(stack, (float) (mouth.y - getY()));
+            } else if (item instanceof MilkBucketItem) {
+                ((MilkBucketItem) item).finishUsingItem(stack, level, this);
+                stack = new ItemStack(Items.BUCKET, 1);
+                spawnAtLocation(stack, (float) (mouth.y - getY()));
             }
-
-            if (item.hasContainerItem(stack)) {
-                spawnAtLocation(item.getContainerItem(stack), (float) (mouth.y - getY()));
-
-            }
-            stack.shrink(1);
         }
-        return stack;
+        return stack.getCount() > 0 ? stack : ItemStack.EMPTY;
     }
 
     @Override
@@ -1903,10 +2082,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     public boolean canMate(Animal mate) {
-        if (!(mate instanceof WRDragonEntity)) return false;
+        if (!(mate instanceof WRDragonEntity)) {
+            return false;
+        }
         WRDragonEntity dragon = (WRDragonEntity) mate;
-        if (isInSittingPose() || dragon.isInSittingPose()) return false;
-        if (hasEntityDataAccessor(GENDER) && (getGender()) == (dragon.getGender())) return false;
+        if (isInSittingPose() || dragon.isInSittingPose() || ! isBreedableGender(dragon) || getBreedingCooldown() > 0 || dragon.getBreedingCooldown() > 0) {
+            return false;
+        }
+
         return super.canMate(mate);
     }
 

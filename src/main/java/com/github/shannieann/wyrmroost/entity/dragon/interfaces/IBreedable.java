@@ -6,8 +6,7 @@ import net.minecraft.world.item.ItemStack;
 
 public interface IBreedable {
     InteractionResult breedLogic (Player breeder, ItemStack stack);
-
     int hatchTime();
-
     int getBreedingLimit();
+    int getMaxBreedingCooldown();
 }

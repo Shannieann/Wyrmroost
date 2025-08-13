@@ -2,7 +2,9 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDragonBreedGoal;
+import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRAvoidEntityGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRFollowOwnerGoal;
 import com.github.shannieann.wyrmroost.network.SGGlidePacket;
@@ -41,7 +43,7 @@ import java.util.Random;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 
-public class EntitySilverGlider extends WRDragonEntity implements IBreedable
+public class EntitySilverGlider extends WRDragonEntity implements IBreedable, ITameable
 {
     //TODO: BOIDS
     /*
@@ -368,6 +370,10 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable
         return 0;
     }
 
+    @Override
+    public int getMaxBreedingCooldown() {
+        return WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.dragonBreedingConfig.maxBreedingCooldown.get();
+    }
 
     /*@Nullable
     @Override

@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
+import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import net.minecraft.sounds.SoundEvent;
@@ -32,7 +33,7 @@ import java.util.EnumSet;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 
-public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
+public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, ITameable {
     /*
     private static final EntitySerializer<EntityCanariWyvern> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
@@ -69,7 +70,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
     {
         super.registerGoals();
 
-        goalSelector.addGoal(3, new MoveToHomeGoal(this));
+        goalSelector.addGoal(3, new WRMoveToHomeGoal(this));
         goalSelector.addGoal(4, new AttackGoal());
         goalSelector.addGoal(5, new ThreatenGoal());
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
@@ -279,6 +280,10 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable {
         return 0;
     }
 
+    @Override
+    public int getMaxBreedingCooldown() {
+        return WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.dragonBreedingConfig.maxBreedingCooldown.get();
+    }
 
     /*@org.jetbrains.annotations.Nullable
     @Override

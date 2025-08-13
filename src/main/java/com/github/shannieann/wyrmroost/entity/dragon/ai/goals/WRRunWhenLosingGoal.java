@@ -1,5 +1,7 @@
 package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
 
+import java.util.EnumSet;
+
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -12,21 +14,26 @@ public class WRRunWhenLosingGoal extends Goal {
 
     private final float healthPercent;
     private final WRDragonEntity dragon;
-
+    private final int maxDistance;
     private final float speed;
 
     private Path path;
 
-    public WRRunWhenLosingGoal(WRDragonEntity pDragon, float healthPercent, float pMaxDistance,float speed) {
+    public WRRunWhenLosingGoal(WRDragonEntity pDragon, float healthPercent, int pMaxDistance, float speed) {
         this.healthPercent = healthPercent;
         this.dragon = pDragon;
         this.speed = speed;
+        this.maxDistance = pMaxDistance;
+        this.setFlags(EnumSet.of(Flag.MOVE));
     }
-
 
     @Override
     public boolean canUse() {
-        if (this.dragon.getHealth()/this.dragon.getMaxHealth() > healthPercent) {
+        if (this.dragon.getHealth()/this.dragon.getMaxHealth() > healthPercent
+            || this.dragon.isImmobile()
+            || this.dragon.isRiding()
+            || this.dragon.getPassengers().size() > 0)
+        {
             return false;
         }
         LivingEntity avoidEntity = dragon.getLastHurtByMob();
@@ -40,7 +47,7 @@ public class WRRunWhenLosingGoal extends Goal {
             return false;
         }
 
-        Vec3 posAway = DefaultRandomPos.getPosAway(this.dragon, 16, 7, avoidEntity.position());
+        Vec3 posAway = DefaultRandomPos.getPosAway(this.dragon, maxDistance, 7, avoidEntity.position());
 
         if (posAway == null) {
                 return false;

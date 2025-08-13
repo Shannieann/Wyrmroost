@@ -3,7 +3,6 @@ package com.github.shannieann.wyrmroost.client.render.entity.dragon;
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.model.entity.dragon.ModelRooststalker;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.layer.DragonEyesLayer;
-import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.EntityRooststalker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
@@ -23,8 +22,6 @@ public class RenderRooststalker extends WRDragonRender<EntityRooststalker> {
                 getGeoModelProvider()::getModelLocation,
                 (entity) -> true));
         this.addLayer(new ModelRooststalker.RooststalkerMouthItemLayer<>(this));
-
-
     }
 
 

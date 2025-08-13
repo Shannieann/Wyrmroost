@@ -14,48 +14,53 @@ import java.util.EnumSet;
 import java.util.function.Predicate;
 
 public class WRDefendHomeGoal extends TargetGoal {
+
     private static final Predicate<LivingEntity> FILTER = e -> e instanceof Enemy && !(e instanceof Creeper) && !e.getName().getString().equalsIgnoreCase("Ignore Me");
     private static final TargetingConditions CONDITIONS = TargetingConditions.forCombat().selector(FILTER);
     private final WRDragonEntity defender;
+    private LivingEntity targetMob;
+
     public WRDefendHomeGoal(WRDragonEntity defender)
     {
         super(defender, false, false);
         this.defender = defender;
         setFlags(EnumSet.of(Goal.Flag.TARGET));
+        this.targetMob = null;
     }
-
 
     @Override
     public boolean canUse() {
-        if (defender.getHealth() <= defender.getMaxHealth() * 0.25) return false;
-        if (!defender.hasRestriction()) return false;
-        return defender.getRandom().nextDouble() < 0.2 && (targetMob = findPotentialTarget()) != null;
+        if (!defender.isTame() || !defender.hasRestriction() || defender.getHealth() <= defender.getMaxHealth() * 0.25) {
+            return false;
+        }
+        this.targetMob = findPotentialTarget();
+        return this.targetMob != null;
     }
 
     @Override
     public void start() {
         super.start();
-        for (Mob mob : defender.level.getEntitiesOfClass(Mob.class, defender.getBoundingBox().inflate(20), defender::isAlliedTo))
-            mob.setTarget(targetMob);
+        for (Mob mob : defender.level.getEntitiesOfClass(Mob.class, defender.getBoundingBox().inflate(defender.getRestrictRadius()), defender::isAlliedTo)) {
+            mob.setTarget(this.targetMob);
+        }
     }
 
     @Override
-    public boolean canContinueToUse() {
-        return defender.isWithinRestriction(targetMob.blockPosition()) && super.canContinueToUse();
-    }
-
-    @Override
+    // Used in TargetGoal parent class
     protected double getFollowDistance() {
         return defender.getRestrictRadius();
     }
 
     public LivingEntity findPotentialTarget() {
-        return defender.level.getNearestEntity(LivingEntity.class,
-                CONDITIONS,
-                defender,
-                defender.getX(),
-                defender.getEyeY(),
-                defender.getZ(),
-                new AABB(defender.getRestrictCenter()).inflate(20));
+        return defender.level.getNearestEntity(
+            LivingEntity.class,
+            CONDITIONS,
+            defender,
+            defender.getX(),
+            defender.getEyeY(),
+            defender.getZ(),
+            new AABB(defender.getRestrictCenter()).inflate(defender.getRestrictRadius())
+        );
     }
+
 }
