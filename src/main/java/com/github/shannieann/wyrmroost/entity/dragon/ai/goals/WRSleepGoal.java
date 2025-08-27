@@ -13,12 +13,12 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
-public class WRSleepGoal extends AnimatedGoal{
-
+public class WRSleepGoal extends AnimatedGoal {
 
     private final WRDragonEntity entity;
     private boolean underwaterSleeping;
     private boolean nocturnal;
+    private boolean lieDownDone;
 
     public WRSleepGoal(WRDragonEntity entity) {
         super(entity);
@@ -37,7 +37,7 @@ public class WRSleepGoal extends AnimatedGoal{
     public boolean canUse() {
 
         //Sleep only if not doing any other activities...
-        if (!isIdling())  {
+        if (!entity.isIdling())  {
             return false;
         }
 
@@ -96,28 +96,41 @@ public class WRSleepGoal extends AnimatedGoal{
         return true;
     }
 
-
-    public boolean isIdling() {
-        return entity.getNavigation().isDone()
-                && entity.getTarget() == null
-                && !entity.isVehicle() && (entity.speciesCanSwim() || !entity.isInWaterOrBubble())
-                && !entity.isUsingFlyingNavigator();
-    }
-
     @Override
-    public void start(){
+    public void start() {
         entity.setSleeping(true);
         if (entity.speciesCanSwim() && entity.isUnderWater()) {
             underwaterSleeping = true;
         }
         entity.clearAI();
         entity.setXRot(0);
-        // TODO: Do we have this animation? It's not working
-        super.start(underwaterSleeping ? "sleep_water" : "sleep", 1, Integer.MAX_VALUE);
+
+        if (underwaterSleeping) {
+            super.start("sleep_water", 1, 0);
+            this.lieDownDone = true;
+        }
+        // don't use lie down animation if already sitting or doesn't exist
+        else if (entity.getSitting() || this.entity.getLieDownTime() == -1) {
+            super.start("sleep", 1, 0);
+            this.lieDownDone = true;
+        }
+        else {
+            int lieDownTime = this.entity.getLieDownTime();
+            super.start("lay_down", 3, lieDownTime);
+            this.lieDownDone = false;
+        }
     }
 
     @Override
     public void tick() {
+        if (! this.lieDownDone && ! super.canContinueToUse()) {
+            // Done lying down, start sleeping
+            // Doesn't apply underwater
+            this.lieDownDone = true; // Mark as done so we don't keep checking
+            super.stop();
+            super.start("sleep", 1, 0);
+        }
+
         LookControl lookControl = entity.getLookControl();
         if (lookControl instanceof WRGroundLookControl) {
             ((WRGroundLookControl) lookControl).stopLooking();
@@ -163,7 +176,7 @@ public class WRSleepGoal extends AnimatedGoal{
     @Override
     public void stop(){
         entity.setSleeping(false);
-        underwaterSleeping = false;
+        this.lieDownDone = false;
         entity.setSleepingCooldown(WRDragonEntity.MAX_SLEEPING_COOLDOWN);
         super.stop();
     }

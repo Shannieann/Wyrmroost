@@ -158,5 +158,9 @@
   "tarragonTome.wyrmroost.title": "Tarragon Tome",
   "key.wyrmroost.category": "Wyrmroost",
 
-  "gui.wyrmroost.inventory_title": "Dragon Inventory"
+  "gui.wyrmroost.inventory_title": "Dragon Inventory",
+
+  "command.wyrmroost.dragon.patrol": "%s will stay near %s",
+  "command.wyrmroost.dragon.follow": "%s will follow you.",
+  "command.wyrmroost.dragon.sit": "%s will stay."
 }

@@ -48,7 +48,7 @@ public class WRMoveToHomeGoal extends Goal
     public void tick() {
         time++;
 
-        if (dragon.distanceToSqr(home) > TELEPORT_DISTANCE || time >= TIME_UNTIL_TELEPORT) {
+        if (dragon.distanceToSqr(home) > TELEPORT_DISTANCE || time > TIME_UNTIL_TELEPORT) {
             dragon.trySafeTeleport(dragon.getRestrictCenter().above());
         }
         else if (dragon.getNavigation().isDone()) {

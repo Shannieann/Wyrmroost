@@ -115,16 +115,17 @@ public class WREntityTypes<E extends Entity> extends EntityType<E> {
                     .fireImmune()
                     .trackingRange(11)
                     .build();
-/*
-    public static final RegistryObject<EntityType<CoinDragonEntity>> COIN_DRAGON = creature("coin_dragon", CoinDragonEntity::new)
+
+    public static final RegistryObject<EntityType<EntityCoinDragon>> COIN_DRAGON =
+        buildCreature("coin_dragon", EntityCoinDragon::new)
             .size(0.35f, 0.435f)
-            .renderModel(() -> CoinDragonModel::new)
+            // .renderModel(() -> CoinDragonModel::new)
             .spawnPlacement()
-            .attributes(CoinDragonEntity::getAttributeSupplier)
+            .attributes(EntityCoinDragon::getAttributeSupplier)
             .trackingRange(2)
             .build();
 
-*/
+
     public static final RegistryObject<EntityType<WRDragonEggEntity>> DRAGON_EGG =
         WREntityTypes.<WRDragonEggEntity>buildMob("dragon_egg", WRDragonEggEntity::new, MobCategory.MISC)
                 .size(1.0F,1.0F)

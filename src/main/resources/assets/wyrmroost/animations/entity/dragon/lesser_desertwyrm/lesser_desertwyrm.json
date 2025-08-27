@@ -4,7 +4,7 @@
 		"animation.placeholder": {
 			"loop": true
 		},
-		"slither.lesser_desertwyrm": {
+		"slither": {
 			"loop": true,
 			"animation_length": 9.625,
 			"bones": {
@@ -92,7 +92,7 @@
 				}
 			}
 		},
-		"dig.lesser_desertwyrm": {
+		"dig": {
 			"animation_length": 2,
 			"bones": {
 				"headReal": {
@@ -420,7 +420,7 @@
 				}
 			}
 		},
-		"idle.lesser_dessertwyrm.sand": {
+		"base_burrowed": {
 			"loop": true,
 			"bones": {
 				"headReal": {
@@ -498,7 +498,7 @@
 				}
 			}
 		},
-		"hiss.lesser_desertwyrm": {
+		"hiss": {
 			"loop": true,
 			"animation_length": 1,
 			"bones": {
@@ -689,7 +689,7 @@
 			}
 		},
 		"burrow": {
-			"animation_length": 2,
+			"animation_length": 20,
 			"bones": {
 				"headReal": {
 					"rotation": {
@@ -806,7 +806,7 @@
 				}
 			}
 		},
-		"idle.lesser_desertwyrm.above": {
+		"idle1": {
 			"loop": true
 		},
 		"forward": {
@@ -820,6 +820,9 @@
 			}
 		},
 		"base": {
+			"loop": true
+		},
+		"base_ground": {
 			"loop": true
 		}
 	}

@@ -75,7 +75,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     public static final int CHEST_SLOT = 2;
 
     @Override
-    public int idleAnimationVariants(){
+    public int numIdleAnimationVariants(){
         return 3;
     }
     // Dragon Entity Data
@@ -99,15 +99,21 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     // =====================
 
     @Override
-    public <E extends IAnimatable> PlayState predicateRiding(AnimationEvent<E> event) {
-        if (getDeltaMovement().length() >= 0.1f){
-            if (getDeltaMovement().y <= -0.1f) return PlayState.CONTINUE; // If we're falling we want to just continue what animation we were playing before (removes stuttering when going down hills)
-            if (riderIsSprinting || getDeltaMovement().length() >= 0.25f) {
-                event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
+    public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
+        // Check if the dragon is being ridden before running any code
+        if (isVehicle()) {
+            if (getDeltaMovement().length() >= 0.1f) {
+                if (getDeltaMovement().y <= -0.1f) {
+                    return PlayState.CONTINUE; // If we're falling we want to just continue what animation we were playing before (removes stuttering when going down hills)
+                }
+                if (riderIsSprinting || getDeltaMovement().length() >= 0.25f) {
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
+                }
+                else {
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
+                }
+                return PlayState.CONTINUE;
             }
-            else
-                event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
-            return PlayState.CONTINUE;
         }
 
         return super.predicateBasicLocomotion(event);

@@ -42,7 +42,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
      */
 
     @Override
-    public int idleAnimationVariants(){
+    public int numIdleAnimationVariants(){
         return 1;
     }
     public InteractionResult tameLogic (Player tamer, ItemStack stack) {

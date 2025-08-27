@@ -19,8 +19,8 @@ public class WRGetDroppedFoodGoal extends Goal {
     protected final WRDragonEntity dragon;
     protected int searchRadius;
     protected BlockPos itemAt;
-    protected ItemEntity targetItemStack;
-    protected ItemEntity oneItem;
+    protected ItemEntity targetItemEntity;
+    protected ItemEntity oneItemEntity;
     protected final Predicate<ItemEntity> itemFilter;
     // control vars
     protected boolean eatOnPickup = true;
@@ -65,7 +65,7 @@ public class WRGetDroppedFoodGoal extends Goal {
             || this.dragon.isImmobile()
             || this.dragon.isRiding()
             || this.dragon.getPassengers().size() > 0
-            || (this.dragon.isTame() && this.dragon.getSitting()))
+            || this.dragon.getSitting())
         {
             return false;
         }
@@ -75,11 +75,11 @@ public class WRGetDroppedFoodGoal extends Goal {
             return false;
         }
 
-        this.targetItemStack = droppedItems.get(0);
-        if (this.dragon.hasRestriction() && this.dragon.getRestrictRadius() < this.dragon.distanceToSqr(this.targetItemStack)) {
+        this.targetItemEntity = droppedItems.get(0);
+        if (this.dragon.hasRestriction() && this.dragon.getRestrictRadius() < this.dragon.distanceToSqr(this.targetItemEntity)) {
             return false;
         }
-        this.itemAt = this.targetItemStack.blockPosition();
+        this.itemAt = this.targetItemEntity.blockPosition();
         return true;
     }
 
@@ -103,79 +103,99 @@ public class WRGetDroppedFoodGoal extends Goal {
 
     @Override
     public void start() {
-        if (this.targetItemStack != null) {
-            this.itemAt = this.targetItemStack.blockPosition();
-            this.dragon.getNavigation().moveTo(this.targetItemStack, 1.1D);
+        System.out.println("WRGetDroppedFoodGoal: start()");
+        if (this.targetItemEntity != null) {
+            System.out.println("WRGetDroppedFoodGoal: start() targetItemEntity is not null");
+            this.itemAt = this.targetItemEntity.blockPosition();
+            this.dragon.getNavigation().moveTo(this.targetItemEntity, 1.1D);
         }
     }
 
     @Override
     public void tick() {
-        if (this.targetItemStack != null && this.targetItemStack.isAlive()) {
-            this.dragon.getNavigation().moveTo(this.targetItemStack, 1.1D);
-            double d2 = this.dragon.distanceToSqr(this.targetItemStack);
+
+        if (this.targetItemEntity != null && this.targetItemEntity.isAlive()) { // item exists
+
+            this.dragon.getNavigation().moveTo(this.targetItemEntity, 1.1D);
+            double d2 = this.dragon.distanceToSqr(this.targetItemEntity);
+
             // standard pickup radius
             if (d2 < 1.0D) {
-                if (!this.targetItemStack.getItem().isEmpty() && this.isAcceptedItem(this.targetItemStack)) {
-                    if (this.eatOnPickup) {
+
+                if (!this.targetItemEntity.getItem().isEmpty() && this.isAcceptedItem(this.targetItemEntity)) {
+                    System.out.println("WRGetDroppedFoodGoal: tick() targetItemEntity is not empty and isAcceptedItem is true");
+                    if (this.eatOnPickup) { // Regular action
                         if (this.dragon.level.isClientSide) {
+                            System.out.println("WRGetDroppedFoodGoal: tick() eatOnPickup is true and dragon.level.isClientSide is true");
                             return;
                         }
                         if (this.dragon.getEatingCooldown() < 0) {
-                            ItemStack itemStackOneItem = splitTargetItemStack();
-                            this.dragon.eat(this.dragon.level, itemStackOneItem);
-                            this.oneItem.discard();
+                            System.out.println("WRGetDroppedFoodGoal: tick() eatOnPickup is true and dragon.getEatingCooldown() < 0");
+                            ItemStack itemStackOneItem = splitTargetItemEntity();
+                            // Be extra careful here, can crash game if try to delete null item
+                            if (itemStackOneItem != ItemStack.EMPTY && this.oneItemEntity != null) {
+                                this.dragon.eat(this.dragon.level, itemStackOneItem);
+                                this.oneItemEntity.discard();
+                            }
                         }
                         stop();
                         return;
-                    } else {
+                    } else { // Override - do something else
+                        System.out.println("WRGetDroppedFoodGoal: tick() eatOnPickup is false");
                         this.readyForOtherAction = true;
                     }
                 }
             } else if ((! this.dragon.getNavigation().isInProgress())) {
+                System.out.println("WRGetDroppedFoodGoal: tick() !this.dragon.getNavigation().isInProgress()");
                 // Pathfinding sucks, shove closer
-                this.dragon.getNavigation().moveTo(this.targetItemStack, 1.1D);
-                Vec3 direction = this.targetItemStack.position().subtract(this.dragon.position()).normalize();
+                this.dragon.getNavigation().moveTo(this.targetItemEntity, 1.1D);
+                Vec3 direction = this.targetItemEntity.position().subtract(this.dragon.position()).normalize();
                 direction = new Vec3(direction.x, 0, direction.z); // no vertical push so it doesn't get stuck climbing
                 this.dragon.setDeltaMovement(direction.scale(0.1));
             }
         } else {
+            System.out.println("WRGetDroppedFoodGoal: tick() targetItemEntity is null");
             // Item no longer exists, find a new one
             List<ItemEntity> droppedItems = findDroppedItems();
             if (!droppedItems.isEmpty()) {
-                this.targetItemStack = droppedItems.get(0);
-                this.itemAt = this.targetItemStack.blockPosition();
+                this.targetItemEntity = droppedItems.get(0);
+                this.itemAt = this.targetItemEntity.blockPosition();
             } else {
                 stop();
             }
         }
     }
 
-    protected ItemStack splitTargetItemStack() {
-        ItemStack itemStack = this.targetItemStack.getItem();
-        ItemStack itemStackOneItem = itemStack.split(1);
-        this.targetItemStack.setItem(itemStack);
+    protected ItemStack splitTargetItemEntity() {
+        ItemStack oldItemStack = this.targetItemEntity.getItem();
+        System.out.println("WRGetDroppedFoodGoal: splitTargetItemEntity() itemStack.getCount() before split: " + oldItemStack.getCount());
+        ItemStack itemStackOneItem = oldItemStack.split(1);
 
-        if (itemStack.getCount() > 0) {
-            // Make new entity for new stack if old one has items left
-            this.oneItem = new ItemEntity(this.dragon.level, this.targetItemStack.getX(), this.targetItemStack.getY(), this.targetItemStack.getZ(), itemStackOneItem);
-            this.dragon.level.addFreshEntity(this.oneItem);
+        if (oldItemStack.getCount() > 0) {
+            System.out.println("WRGetDroppedFoodGoal: splitTargetItemEntity() oldItemStack.getCount() > 0");
+            // Make new entity for new stack if old one has multiple items left, give new stack 1 item
+            this.oneItemEntity = new ItemEntity(this.dragon.level, this.targetItemEntity.getX(), this.targetItemEntity.getY(), this.targetItemEntity.getZ(), itemStackOneItem);
+            this.dragon.level.addFreshEntity(this.oneItemEntity);
+            this.targetItemEntity.setItem(oldItemStack); // old item entity gets stack-1 items
         }
         else {
-            // otherwise, discard old entity
-            this.targetItemStack.discard();
+            System.out.println("WRGetDroppedFoodGoal: splitTargetItemEntity() oldItemStack.getCount() == 0");
+            // only 1 item left, just use old entity as new one and give it its item back
+            this.targetItemEntity.setItem(itemStackOneItem);
+            this.oneItemEntity = this.targetItemEntity;
         }
         return itemStackOneItem;
     }
 
     @Override
     public void stop() {
+        System.out.println("WRGetDroppedFoodGoal: stop()");
         this.dragon.getNavigation().stop();
-        this.targetItemStack = null;
+        this.searchRadius = 0;
+        this.targetItemEntity = null;
         this.itemAt = null;
         this.readyForOtherAction = false;
         this.cooldown = cooldownMax;
-        this.oneItem = null;
-
+        this.oneItemEntity = null;
     }
 }

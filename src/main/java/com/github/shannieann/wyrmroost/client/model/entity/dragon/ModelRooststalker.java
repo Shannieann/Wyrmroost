@@ -1,7 +1,6 @@
 package com.github.shannieann.wyrmroost.client.model.entity.dragon;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.client.render.entity.dragon.layer.DragonEyesLayer;
 import com.github.shannieann.wyrmroost.entity.dragon.EntityRooststalker;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3d;
@@ -12,16 +11,12 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.entity.ItemRenderer;
-import net.minecraft.client.renderer.entity.layers.FoxHeldItemLayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShovelItem;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.TieredItem;
 import software.bernie.geckolib3.geo.render.built.GeoBone;
 import software.bernie.geckolib3.geo.render.built.GeoModel;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
@@ -33,15 +28,14 @@ public class ModelRooststalker extends AnimatedGeoModel<EntityRooststalker> {
     private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/rooststalker/rooststalker.geo.json");
     private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/rooststalker/rooststalker.animation.json");
 
-
     @Override
-    public ResourceLocation getModelLocation(EntityRooststalker object) {
+    public ResourceLocation getModelLocation(EntityRooststalker roostie) {
         return MODEL_RESOURCE;
     }
 
     @Override
-    public ResourceLocation getTextureLocation(EntityRooststalker object) {
-        return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_" + object.getVariant() + ".png");
+    public ResourceLocation getTextureLocation(EntityRooststalker roostie) {
+        return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/" + roostie.getVariant() + ".png");
     }
 
     @Override
