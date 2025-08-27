@@ -111,7 +111,7 @@
 		},
 		"stalk": {
 			"loop": true,
-			"animation_length": 3,
+			"animation_length": 60,
 			"bones": {
 				"body": {
 					"rotation": {
@@ -4019,7 +4019,7 @@
 			}
 		},
 		"idle1": {
-			"animation_length": 2,
+			"animation_length": 40,
 			"bones": {
 				"ineck": {
 					"rotation": {
@@ -4151,7 +4151,7 @@
 			}
 		},
 		"idle2": {
-			"animation_length": 2.5,
+			"animation_length": 50,
 			"bones": {
 				"ibody": {
 					"rotation": {
@@ -4500,7 +4500,7 @@
 			}
 		},
 		"idle3": {
-			"loop": true,
+			"animation_length": 40,
 			"bones": {
 				"itail1": {
 					"rotation": {
@@ -4520,7 +4520,7 @@
 			}
 		},
 		"attack_land1": {
-			"animation_length": 0.5,
+			"animation_length": 10,
 			"bones": {
 				"ineck": {
 					"rotation": {
@@ -4581,7 +4581,7 @@
 			}
 		},
 		"attack_land2": {
-			"animation_length": 1,
+			"animation_length": 20,
 			"bones": {
 				"ibody": {
 					"rotation": {
@@ -5104,7 +5104,7 @@
 		},
 		"scavenge": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 2,
+			"animation_length": 40,
 			"bones": {
 				"ibody": {
 					"rotation": {
@@ -5610,9 +5610,9 @@
 				}
 			}
 		},
-		"scavange_end": {
+		"scavenge_end": {
 			"loop": "hold_on_last_frame",
-			"animation_length": 2,
+			"animation_length": 40,
 			"bones": {
 				"ibody": {
 					"rotation": {

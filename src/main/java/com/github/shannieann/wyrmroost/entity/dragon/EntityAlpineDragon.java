@@ -1,22 +1,26 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRReturnToWaterGoal;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRWaterLeapGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
-import com.github.shannieann.wyrmroost.entity.dragon_egg.WRDragonEggEntity;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
-import com.github.shannieann.wyrmroost.util.LerpedFloat;
+import com.github.shannieann.wyrmroost.registry.WRSounds;
+
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
-import net.minecraft.world.entity.animal.AbstractFish;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.animal.Bee;
 import net.minecraft.world.entity.monster.Skeleton;
 import net.minecraft.world.entity.monster.Spider;
@@ -25,7 +29,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
@@ -33,22 +36,80 @@ import net.minecraftforge.common.ForgeMod;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
 public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBreedable {
+
+    public static final int MAX_BREEDING_COOLDOWN = 12000; // 600 seconds, override
+
+/*
+    private static final ResourceLocation CLOSED_RED = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_red.png");
+    private static final ResourceLocation CLOSED_BLACK = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_black.png");
+    private static final ResourceLocation CLOSED_GREEN = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_green.png");
+    private static final ResourceLocation CLOSED_BLUE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_blue.png");
+    private static final ResourceLocation CLOSED_ALBINO = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_albino.png");
+
+    private static final ResourceLocation EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes.png");
+    private static final ResourceLocation EYES_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_spe.png");
+
+    // Eye texture mapping for different variant colors
+    private static final Map<String, ResourceLocation> CLOSED_EYE_TEXTURE_MAP = Map.of(
+        "albino", CLOSED_ALBINO,
+        "black", CLOSED_BLACK,
+        "blue", CLOSED_BLUE,
+        "green", CLOSED_GREEN,
+        "red", CLOSED_RED
+    );
+*/
 
     // =========================
     // A. Entity Data + Attributes
     // =========================
-    public final LerpedFloat sitTimer = LerpedFloat.unit();
 
     public EntityAlpineDragon(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.setNavigator(NavigationType.GROUND);
     }
 
+    // ====================================
+    //      Animations
+    // ====================================
+
     @Override
-    public int idleAnimationVariants() {
-        return 0;
+    public int numIdleAnimationVariants() {
+        return 0; // Only has sit idle animations?
     }
+
+    @Override
+    public int getIdleAnimationTime(int index) {
+        int[] animationTimesInOrder = {};
+        return animationTimesInOrder[index];
+    }
+
+    @Override
+    public int numAttackAnimationVariants() {
+        return 3;
+    }
+
+    @Override
+    public int getAttackAnimationTime(int index) {
+        int[] animationTimesInOrder = {17, 17, 17}; // all rounded up from 16.666 ticks
+        return animationTimesInOrder[index];
+    }
+
+    public int getLieDownTime() { // 2.1667 seconds
+        return 44;
+    }
+
+    public int getSitDownTime() { // 1 second
+        return 20;
+    }
+
+    // ====================================
+    //      A) Entity Data + Attributes
+    // ====================================
 
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return Mob.createMobAttributes()
@@ -61,20 +122,37 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
                 .add(FOLLOW_RANGE, 50);
     }
 
+    // ====================================
+    //      A.1) Entity Data: AGE
+    // ====================================
+
     @Override
     public float ageProgressAmount() {
         return WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonBreedingConfig.ageProgress.get() / 100F;
     }
 
     @Override
-    public float getRestrictRadius() {
-        return WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonAttributesConfig.homeRadius.get() *
-                WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonAttributesConfig.homeRadius.get();
-    }
-    @Override
     public float initialBabyScale() {
         return 0.1F;
     }
+
+    // ====================================
+    //      A.2) Entity Data: INVENTORY
+    // ====================================
+
+    @Override
+    public boolean canEquipSaddle() {
+        return true;
+    }
+
+    @Override
+    public boolean canEquipArmor() {
+        return true;
+    }
+
+    // ====================================
+    //      A.4) Entity Data: HOME
+    // ====================================
 
     @Override
     public boolean defendsHome() {
@@ -82,34 +160,67 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
     }
 
     @Override
+    public float getRestrictRadius() {
+        return WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonAttributesConfig.homeRadius.get() *
+                WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonAttributesConfig.homeRadius.get();
+    }
+
+    // ====================================
+    //      A.7) Entity Data: VARIANT
+    // ====================================
+
+    @Override
     public String getDefaultVariant() {
         return "black";
     }
 
+    @SuppressWarnings("null")
     @Override
     public String determineVariant() {
+        final String variant;
         if (getRandom().nextDouble() < 0.02) {
             this.getAttribute(ATTACK_DAMAGE).setBaseValue(40D);
-            return "special";
+            variant = "special";
+        } else {
+            switch (getRandom().nextInt(6)) {
+                case 1 -> variant = "blue";
+                case 2 -> variant = "green";
+                case 3 -> variant = "red";
+                case 4 -> variant = "white";
+                case 5 -> variant = "yellow";
+                default -> variant = getDefaultVariant();
+            }
         }
-        return switch (getRandom().nextInt(6)) {
-            case 1 -> "blue";
-            case 2 -> "green";
-            case 3 -> "red";
-            case 4 -> "white";
-            case 5 -> "yellow";
-            default -> getDefaultVariant();
-        };
+        return variant;
     }
 
-    // =========================
-    // B. Tick and AI
-    // =========================
+/*
     @Override
-    public void aiStep() {
-        super.aiStep();
-        sitTimer.add(isInSittingPose() ? 0.1f : -0.1f);
+    public ResourceLocation getClosedEyesTexture() {
+        return CLOSED_EYE_TEXTURE_MAP.entrySet().stream()
+            .filter(entry -> getVariant().contains(entry.getKey()))
+            .findFirst()
+            .map(Map.Entry::getValue)
+            .orElse(WRDragonEntity.BLANK_EYES);
     }
+
+    @Override
+    public ResourceLocation getEyesTexture() {
+        return isAlbino() ? EYES_SPECIAL : EYES;
+    }
+
+    @Override
+    public ResourceLocation getBehaviorEyesTexture() {
+        if (getSleeping() || getRandom().nextFloat() < 0.015) {
+            return getClosedEyesTexture();
+        }
+        return getEyesTexture();
+    }
+*/
+
+    // ====================================
+    //      B.1) Tick and AI: Attack and Hurt
+    // ====================================
 
     @Override
     public boolean doHurtTarget(Entity enemy) {
@@ -126,13 +237,23 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
         return flag;
     }
 
-    // =========================
-    // C. Navigation and Control
-    // =========================
+    // ====================================
+    //      C) Navigation and Control
+    // ====================================
+
+    @Override
+    public float getStepHeight() {
+        return 2;
+    }
+
     @Override
     public boolean speciesCanWalk() {
         return true;
     }
+
+    // ====================================
+    //      C.1) Navigation and Control: Flying
+    // ====================================
 
     @Override
     public boolean speciesCanFly() {
@@ -140,18 +261,19 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
     }
 
     @Override
-    public boolean speciesCanSwim() {
-        return false;
+    public boolean dragonCanFly() {
+        // TODO: Can babies fly?
+        return true;
     }
+
+
+    // ====================================
+    //      C.3) Navigation and Control: Riding
+    // ====================================
 
     @Override
     public boolean speciesCanBeRidden() {
         return true;
-    }
-
-    @Override
-    public float getStepHeight() {
-        return 2;
     }
 
     @Override
@@ -172,24 +294,33 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
     @Override
      public float getFlyAccelModifier() {
         return 1.5f;
-     }
+    }
 
-    // =========================
-    // D. Taming
-    // =========================
+    // ====================================
+    //      C.2) Navigation and Control: Swimming
+    // ====================================
+
+    @Override
+    public boolean speciesCanSwim() {
+        return false;
+    }
+
+    // ====================================
+    //      D) Taming
+    // ====================================
+
     @Override
     public InteractionResult tameLogic(Player tamer, ItemStack stack) {
         return InteractionResult.PASS;
     }
 
-    @Override
-    public boolean isFood(ItemStack stack) {
-        return stack.is(Items.HONEYCOMB);
-    }
+    // ====================================
+    //      D.2) Taming: Breeding and Food
+    // ====================================
 
     @Override
-    public Vec2 getTomeDepictionOffset() {
-        return null;
+    public boolean isFood(ItemStack stack) {
+        return stack.is(Items.HONEYCOMB) || stack.is(Items.HONEY_BOTTLE) || stack.is(Items.HONEY_BLOCK);
     }
 
     @Override
@@ -222,9 +353,15 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
         return WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonBreedingConfig.maxBreedingCooldown.get();
     }
 
-    // =========================
-    // E. Client
-    // =========================
+    // ====================================
+    //      E) Client
+    // ====================================
+
+    @Override
+    public Vec2 getTomeDepictionOffset() {
+        return null;
+    }
+
     @Override
     public void setupThirdPersonCamera(boolean backView, EntityViewRenderEvent.CameraSetup event, Player player) {
         if (backView) {
@@ -235,38 +372,73 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
     }
 
     // ====================================
+    //      E.1) Client: Sounds
+    // ====================================
+
+    @Nullable
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return WRSounds.ENTITY_ALPINE_IDLE.get();
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSourceIn) {
+        return WRSounds.ENTITY_ALPINE_HURT.get();
+    }
+
+    @Nullable
+    protected SoundEvent getRoarSound() {
+        return WRSounds.ENTITY_ALPINE_ROAR.get();
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getDeathSound() {
+        return WRSounds.ENTITY_ALPINE_DEATH.get();
+    }
+
+    @Override
+    public float getSoundVolume() {
+        return 1.0f;
+    }
+
+    // ====================================
     //      F) Goals
     // ====================================
 
     @Override
     protected void registerGoals() {
-        goalSelector.addGoal(0, new WRSleepGoal(this));
-        goalSelector.addGoal(0, new WRSitGoal(this));
-//        goalSelector.addGoal(1, new WRMoveToHomeGoal(this));
-//        goalSelector.addGoal(2, new WRFollowOwnerGoal(this));
-        goalSelector.addGoal(3, new WRDragonBreedGoal(this));
-        goalSelector.addGoal(9, new WaterAvoidingRandomStrollGoal(this, 1));
-        //goalSelector.addGoal(7,new WRIdleGoal(this, idleAnimation1Time));
-        goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
-        goalSelector.addGoal(9, new WRRandomLookAroundGoal(this,45));
+        goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.1d, true));
+        goalSelector.addGoal(2, new WRDragonBreedGoal<>(this));
+        goalSelector.addGoal(3, new WRMoveToHomeGoal(this));
+        goalSelector.addGoal(4, new WRFollowOwnerGoal(this));
+        goalSelector.addGoal(5, new WRSitGoal(this));
+        goalSelector.addGoal(6, new WRGetDroppedFoodGoal(this, 10, true));
+        goalSelector.addGoal(7, new WRSleepGoal(this));
+        goalSelector.addGoal(8, new WRIdleGoal(this));
+        goalSelector.addGoal(9, new WRRandomFlyWalkGoal(this, 30, 10));
+        goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
+        goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
+        goalSelector.addGoal(12, new WRRandomLookAroundGoal(this,45));
 
-        //targetSelector.addGoal(0, new OwnerHurtByTargetGoal(this));
-        //targetSelector.addGoal(1, new OwnerHurtTargetGoal(this));
-        //targetSelector.addGoal(3, new HurtByTargetGoal(this));
-        //targetSelector.addGoal(4, new DefendHomeGoal(this));
+        targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
+        targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+        targetSelector.addGoal(3, new HurtByTargetGoal(this, new Class[0]) {
+            @Override
+            protected double getFollowDistance() {
+                return (double) getRestrictRadius();
+            }
+        }.setAlertOthers(new Class[0]));
+        targetSelector.addGoal(4, new WRDefendHomeGoal(this));
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false,
                 entity -> {
-                    if (entity instanceof Bee) {
+                    if (entity instanceof Bee || entity instanceof Zombie || entity instanceof Skeleton || entity instanceof Spider) {
                         return true;
                     }
+                    return false;
+                })
+        );
 
-                    if (entity.getClass() == this.getClass() || entity instanceof WRDragonEggEntity) {
-                        return false;
-                    }
-
-                    if (entity instanceof Zombie || entity instanceof Skeleton || entity instanceof Spider) {
-                        return true;
-                    }
-                    return false;}));
     }
 }

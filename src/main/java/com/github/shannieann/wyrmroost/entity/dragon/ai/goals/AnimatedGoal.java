@@ -6,7 +6,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 public abstract class AnimatedGoal extends Goal {
     public WRDragonEntity entity;
     public String animationName;
-    public int animationType;
+    public int animationType; // 1 = loop, 2 = play once, 3 = hold on last frame
     public int animationTime;
     public int elapsedTime;
 
@@ -25,12 +25,8 @@ public abstract class AnimatedGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        if (elapsedTime > animationTime) {
-            return false;
-        }
-        return true;
+        return (elapsedTime < animationTime);
     }
-
 
     @Override
     public void start(){
@@ -39,10 +35,12 @@ public abstract class AnimatedGoal extends Goal {
         //Just proceed to count ticks directly...
     }
 
-    public void start(String animationName, int animationType, int animationTime){
+    public void start(String animationName, int animationType, int animationTime) {
+        this.elapsedTime = 0;
         this.entity.setAnimation(this.animationName = animationName);
         this.entity.setAnimationType(this.animationType = animationType);
         this.entity.setAnimationTime(this.animationTime = animationTime);
+        this.entity.setAnimationInOverride(true);
     }
 
     @Override
@@ -57,8 +55,6 @@ public abstract class AnimatedGoal extends Goal {
         //Once the animation has ran its course, we reset it, clearing up the entity to play new animations
         //We ensure we reset manualAnimationCall
         this.elapsedTime = 0;
-        this.entity.setAnimation("base");
-        this.entity.setAnimationType(1);
-        this.entity.setAnimationTime(0);
+        this.entity.setAnimationInOverride(false);
     }
 }

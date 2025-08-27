@@ -1851,7 +1851,7 @@
 				}
 			}
 		},
-		"fly": {
+		"fly_fast": {
 			"loop": true,
 			"animation_length": 2.48,
 			"bones": {
@@ -2711,7 +2711,7 @@
 				}
 			}
 		},
-		"glide": {
+		"fly": {
 			"loop": true,
 			"animation_length": 8,
 			"bones": {
@@ -3915,7 +3915,7 @@
 				}
 			}
 		},
-		"base_fly": {
+		"base_fly_unused": {
 			"loop": true,
 			"animation_length": 2.48,
 			"bones": {
@@ -4862,7 +4862,7 @@
 				}
 			}
 		},
-		"hover": {
+		"base_fly": {
 			"loop": true,
 			"animation_length": 2.48,
 			"bones": {
@@ -10295,7 +10295,7 @@
 				}
 			}
 		},
-		"sleep": {
+		"lay_down": {
 			"animation_length": 2.1667,
 			"bones": {
 				"torso": {

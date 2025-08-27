@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
+import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
@@ -20,6 +21,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.tags.FluidTags;
@@ -28,9 +30,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
@@ -59,6 +58,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.function.Predicate;
 
@@ -76,7 +76,8 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 // Datagen
 
 
-public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEntity, IBreedable, ITameable {
+public class EntityButterflyLeviathan extends WRDragonEntity implements IBreedable, ITameable {
+
     public static final EntityDataAccessor<Boolean> HAS_CONDUIT = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Integer> LIGHTNING_COOLDOWN = SynchedEntityData.defineId(EntityButterflyLeviathan.class, EntityDataSerializers.INT);
     public static final int CONDUIT_SLOT = 0;
@@ -103,6 +104,15 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
     public static final int WATER_ATTACK_QUEUE_TIME_2 = 6;
     public final int idleAnimation1Time = 80;
 
+    // TODO: Upload all closed eye textures
+    // Eye texture mapping for different variant colors
+    private static final Map<String, ResourceLocation> CLOSED_EYE_TEXTURE_MAP = Map.of(
+        "baby", new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png"),
+        "blue", new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png"),
+        "purple", new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png"),
+        "special", new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png")
+    );
+
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
         super(entityType, level);
         setPathfindingMalus(BlockPathTypes.WATER, 0);
@@ -115,11 +125,40 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
         this.groundMaxYaw = 5;
         this.setNavigator(NavigationType.SWIMMING);
     }
+
+    // ====================================
+    //      Animations
+    // ====================================
+
     @Override
-    public int idleAnimationVariants(){
+    public int numIdleAnimationVariants() {
         return 1;
     }
 
+    @Override
+    public int getIdleAnimationTime(int index) { // says 8, that's probably ticks not seconds
+        int[] animationTimesInOrder = {8};
+        return animationTimesInOrder[index];
+    }
+
+    @Override
+    public int numAttackAnimationVariants() { // 2 water, 2 land? TODO: fix
+        return 0;
+    }
+
+    @Override
+    public int getAttackAnimationTime(int index) {
+        int[] animationTimesInOrder = {};
+        return animationTimesInOrder[index];
+    }
+
+    public int getLieDownTime() { // doesn't have this animation
+        return -1;
+    }
+
+    public int getSitDownTime() { // doesn't have this animation
+        return -1;
+    }
 
     // ====================================
     //      A) Entity Data + Attributes
@@ -631,11 +670,20 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 //        goalSelector.addGoal(2, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(3, new WRDragonBreedGoal(this));
 
-        goalSelector.addGoal(4, new BFLAttackGoal(this));
+        //goalSelector.addGoal(4, new BFLAttackGoal(this)); TODO: Can make game crash. Fix.
+/*
+ * Crash stacktrace:
+        at java.util.Random.nextInt(Random.java:322) ~[?:?] {}
+        at com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan$BFLAttackGoal.queueMeleeAttack(EntityButterflyLeviathan.java:956) ~[%2383!/:?] {re:classloading}
+        at com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan$BFLAttackGoal.tick(EntityButterflyLeviathan.java:892) ~[%2383!/:?] {re:classloading}
+        at net.minecraft.world.entity.ai.goal.WrappedGoal.tick(WrappedGoal.java:65) ~[forge-1.18.2-40.2.0_mapped_parchment_2022.11.06-1.18.2.jar%2378!/:?] {re:classloading}
+        at net.minecraft.world.entity.ai.goal.GoalSelector.tickRunningGoals(GoalSelector.java:119) ~[forge-1.18.2-40.2.0_mapped_parchment_2022.11.06-1.18.2.jar%2378!/:?] {re:classloading}
+ */
+
         goalSelector.addGoal(5, new WRReturnToWaterGoal(this, 1.0,16,12,3));
         goalSelector.addGoal(5, new WRWaterLeapGoal(this, 1,12,30,64));
         goalSelector.addGoal(6, new WRRandomSwimmingGoal(this, 1.0, 64,48));
-        goalSelector.addGoal(7,new WRIdleGoal(this, idleAnimation1Time));
+        goalSelector.addGoal(7,new WRIdleGoal(this));
         goalSelector.addGoal(8, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
         goalSelector.addGoal(9, new WRRandomLookAroundGoal(this,45));
 
@@ -953,7 +1001,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IForgeEn
 
         public void queueMeleeAttack() {
             //Randomly define an attack variant...
-            attackVariant = 1+getRandom().nextInt(ATTACK_ANIMATION_VARIANTS);
+            attackVariant = 1+getRandom().nextInt(numAttackAnimationVariants());
             //Queue a melee attack, ensuring it happens once we reach the proper time...
             meleeAttackQueued = true;
             //An animation is now playing, we will not call any other melee attacks...

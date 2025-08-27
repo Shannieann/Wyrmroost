@@ -1,11 +1,12 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
+import com.github.shannieann.wyrmroost.entity.dragon_egg.WRDragonEggEntity;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entity.projectile.breath.FireBreathEntity;
 import com.github.shannieann.wyrmroost.network.KeybindHandler;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
@@ -14,6 +15,7 @@ import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionResult;
@@ -22,10 +24,14 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
+import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
-import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.npc.AbstractVillager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -39,38 +45,17 @@ import javax.annotation.Nullable;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.EnumSet;
+import java.util.Map;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITameable {
-    //TODO: Breath + Nether Portals
-    //TODO: Further breath optimizations + evaluator
-    //TODO: Sleeping logic
-    //TODO: Dynamic animations
-    static {
-        //TODO: Which are needed?
-        IDLE_ANIMATION_VARIANTS = 1;
-        //TODO: Correct number
-        ATTACK_ANIMATION_VARIANTS = 2;
-        SITTING_ANIMATION_TIME = 60;
-        SLEEPING_ANIMATION_TIME = 60;
-    }
 
-    @Override
-    public int idleAnimationVariants(){
-        return 0;
-    }
+    public static final int MAX_BREEDING_COOLDOWN = 24000; // 1200 seconds, override
 
     public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
 
-    /*
-    private static final EntitySerializer<EntityRoyalRed> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
-            .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender)
-            .track(EntitySerializer.INT, "KnockOutTime", EntityRoyalRed::getKnockOutTime, EntityRoyalRed::setKnockoutTime));
-
-
-     */
     public static final int ARMOR_SLOT = 0;
     private static final int MAX_KNOCKOUT_TIME = 3600; // 3 minutes
 
@@ -93,16 +78,86 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     public static final int ATTACK_QUEUE_TIME_2 = 9;
     public static final int ATTACK_QUEUE_TIME_3 = 25;
 
+    /*
+    private static final ResourceLocation CLOSED_RED = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_red.png");
+    private static final ResourceLocation CLOSED_BLACK = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_black.png");
+    private static final ResourceLocation CLOSED_GREEN = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_green.png");
+    private static final ResourceLocation CLOSED_BLUE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_blue.png");
+    private static final ResourceLocation CLOSED_ALBINO = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_albino.png");
+
+    private static final ResourceLocation EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes.png");
+    private static final ResourceLocation EYES_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_spe.png");
+
+    // Eye texture mapping for different variant colors
+    private static final Map<String, ResourceLocation> CLOSED_EYE_TEXTURE_MAP = Map.of(
+        "albino", CLOSED_ALBINO,
+        "black", CLOSED_BLACK,
+        "blue", CLOSED_BLUE,
+        "green", CLOSED_GREEN,
+        "red", CLOSED_RED
+    );
+*/
+
+/*
+    //TODO: Breath + Nether Portals
+    //TODO: Further breath optimizations + evaluator
+    //TODO: Sleeping logic
+    //TODO: Dynamic animations
+    static {
+        //TODO: Which are needed?
+        IDLE_ANIMATION_VARIANTS = 1;
+        //TODO: Correct number
+        ATTACK_ANIMATION_VARIANTS = 2;
+        SITTING_ANIMATION_TIME = 60;
+        SLEEPING_ANIMATION_TIME = 60;
+    }
+*/
+
+    public EntityRoyalRed(EntityType<? extends WRDragonEntity> type, Level worldIn) {
+        super(type, worldIn);
+        setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0);
+        setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0);
+    }
+
+    // TODO: Find newer way to do this
     public final LerpedFloat flightTimer = LerpedFloat.unit();
     public final LerpedFloat sitTimer = LerpedFloat.unit();
     public final LerpedFloat breathTimer = LerpedFloat.unit();
     public final LerpedFloat knockOutTimer = LerpedFloat.unit();
     private int knockOutTime = 0;
 
-    public EntityRoyalRed(EntityType<? extends WRDragonEntity> type, Level worldIn) {
-        super(type, worldIn);
-        setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0);
-        setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0);
+    // ====================================
+    //      Animations
+    // ====================================
+
+    @Override
+    public int numIdleAnimationVariants(){
+        return 4;
+    }
+
+    @Override
+    public int getIdleAnimationTime(int index) { // 2.2, 8, 3.52, 1.52 seconds
+        int[] animationTimesInOrder = {44, 160, 71, 31};
+        return animationTimesInOrder[index];
+    }
+
+    @Override
+    public int numAttackAnimationVariants() { // not included: 2 stationary, 1 flying
+        return 2;
+    }
+
+    @Override
+    public int getAttackAnimationTime(int index) { // 2, 4 seconds
+        int[] animationTimesInOrder = {40, 80};
+        return animationTimesInOrder[index];
+    }
+
+    public int getLieDownTime() { // doesn't have this animation
+        return -1;
+    }
+
+    public int getSitDownTime() { // time says 8, but that's probably in ticks, not seconds
+        return 8;
     }
 
     // ====================================
@@ -117,7 +172,6 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
 
     }
 
-
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.maxHealth.get())
@@ -127,23 +181,52 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
                 .add(FOLLOW_RANGE, 70)
                 .add(WREntityTypes.Attributes.PROJECTILE_DAMAGE.get(), 4);
     }
-    
 
-    public void setBreathingFire(boolean breathingFire) {
-        if (!level.isClientSide) entityData.set(BREATHING_FIRE, breathingFire);
+    // ====================================
+    //      A.1) Entity Data: AGE
+    // ====================================
+
+    @Override
+    public float ageProgressAmount() {
+        return 0.1f;
     }
 
+    @Override
+    public float initialBabyScale() {
+        return 0.2f;
+    }
+    @Override
+    public float childToAdultScale() {
+        return 3.0f;
+    }
 
-    public boolean getBreathingFire() {
-        return entityData.get(BREATHING_FIRE);
+    // ====================================
+    //      A.2) Entity Data: INVENTORY
+    // ====================================
+
+    @Override
+    public boolean canEquipSaddle() {
+        return true;
+    }
+
+    @Override
+    public boolean canEquipArmor() {
+        return true;
     }
 
     // ====================================
     //      A.4) Entity Data: HOME
     // ====================================
+
     @Override
     public boolean defendsHome() {
         return true;
+    }
+
+    @Override
+    public float getRestrictRadius() {
+        int radiusRoot = WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.homeRadius.get();
+        return radiusRoot * radiusRoot;
     }
 
 
@@ -151,7 +234,10 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     //      A.6) Entity Data: VARIANT
     // ====================================
 
-
+    @Override
+    public String getDefaultVariant() {
+        return "base";
+    }
 
     @Override
     public String determineVariant() {
@@ -160,9 +246,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
             return "april";
 
         return getRandom().nextDouble() < 0.03 ? "special" : getDefaultVariant();
-
     }
-
 
     // ====================================
     //      A.7) Entity Data: Miscellaneous
@@ -189,20 +273,6 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     }
 
     @Override
-    public float ageProgressAmount() {
-        return 0.1f;
-    }
-
-    @Override
-    public float initialBabyScale() {
-        return 0.2f;
-    }
-    @Override
-    public float childToAdultScale() {
-        return 3.0f;
-    }
-
-    @Override
     public boolean isImmobile() {
         return super.isImmobile() || isKnockedOut();
     }
@@ -223,11 +293,41 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
 
      */
 
-     @Override
-     public float getFlyAccelModifier() {
-        return 0.75f;
-     }
+    public void setBreathingFire(boolean breathingFire) {
+        if (!level.isClientSide) entityData.set(BREATHING_FIRE, breathingFire);
+    }
+    public boolean getBreathingFire() {
+        return entityData.get(BREATHING_FIRE);
+    }
 
+    public void setKnockedOut(boolean b) {
+        entityData.set(KNOCKED_OUT, b);
+        if (!level.isClientSide) {
+            knockOutTime = b ? MAX_KNOCKOUT_TIME : 0;
+            if (b) {
+                setXRot(0);
+                clearAI();
+                setNavigator(NavigationType.GROUND);
+            }
+        }
+    }
+
+    public int getKnockOutTime() {
+        return knockOutTime;
+    }
+
+    public void setKnockoutTime(int i) {
+        knockOutTime = Math.max(0, i);
+        if (i > 0 && !isKnockedOut()) entityData.set(KNOCKED_OUT, true);
+    }
+
+    public boolean canBreatheFire() {
+        return getAgeProgress() > 0.75f;
+    }
+
+    public boolean isKnockedOut() {
+        return entityData.get(KNOCKED_OUT);
+    }
 
     // ====================================
     //      B) Tick and AI
@@ -307,35 +407,6 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
         return false;
     }
 
-    public boolean canBreatheFire() {
-        return getAgeProgress() > 0.75f;
-    }
-
-    public boolean isKnockedOut() {
-        return entityData.get(KNOCKED_OUT);
-    }
-
-    public void setKnockedOut(boolean b) {
-        entityData.set(KNOCKED_OUT, b);
-        if (!level.isClientSide) {
-            knockOutTime = b ? MAX_KNOCKOUT_TIME : 0;
-            if (b) {
-                setXRot(0);
-                clearAI();
-                setNavigator(NavigationType.GROUND);
-            }
-        }
-    }
-
-    public int getKnockOutTime() {
-        return knockOutTime;
-    }
-
-    public void setKnockoutTime(int i) {
-        knockOutTime = Math.max(0, i);
-        if (i > 0 && !isKnockedOut()) entityData.set(KNOCKED_OUT, true);
-    }
-
     //TODO Not working
     @Override
     public void die(DamageSource cause) {
@@ -348,7 +419,6 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
         }
     }
 
-
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
         return source == DamageSource.IN_WALL || super.isInvulnerableTo(source);
@@ -360,26 +430,27 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
         return false;
     }
 
-
     // ====================================
     //      C) Navigation and Control
     // ====================================
+
+    @Override
+    public float getStepHeight() {
+        return 2;
+    }
 
     public boolean speciesCanWalk() {
         return true;
     }
 
-
     // ====================================
     //      C.1) Navigation and Control: Flying
     // ====================================
-
 
     @Override
     public boolean speciesCanFly() {
         return true;
     }
-
 
     @Override
     public boolean causeFallDamage(float distance, float damageMultiplier, DamageSource source) {
@@ -395,6 +466,11 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     @Override
     public int getYawRotationSpeed() {
         return isUsingFlyingNavigator() ? 5 : 7;
+    }
+
+    @Override
+    public float getFlyAccelModifier() {
+       return 0.75f;
     }
 
     // ====================================
@@ -536,24 +612,34 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
         };
     }
 
-    @Override
-    public boolean canEquipArmor() {
-        return true;
-    }
-
     // ====================================
     //      D.2) Taming: Breeding and Food
     // ====================================
 
     @Override
-    @SuppressWarnings("ConstantConditions")
+    @SuppressWarnings({ "ConstantConditions", "null" })
     public boolean isFood(ItemStack stack) {
-        return stack.getItem().isEdible() && stack.getItem().getFoodProperties(stack, this).isMeat();
+        return stack.getItem().isEdible() && stack.getFoodProperties(this) != null && stack.getFoodProperties(this).isMeat();
     }
 
     @Override
     public int getMaxBreedingCooldown() {
         return WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonBreedingConfig.maxBreedingCooldown.get();
+    }
+
+    @Override
+    public InteractionResult breedLogic(Player tamer, ItemStack stack) {
+        return InteractionResult.PASS;
+    }
+
+    @Override
+    public int hatchTime() {
+        return 500;
+    }
+
+    @Override
+    public int getBreedingLimit() {
+        return 2;
     }
 
 
@@ -624,47 +710,42 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     protected void registerGoals() {
         super.registerGoals();
 
-        //goalSelector.addGoal(4, new WRMoveToHomeGoal(this));
-        //goalSelector.addGoal(4, new WRRunWhenLosingGoal(this, 0.1f, 40, 0.95f, 0.99f ));
-        //goalSelector.addGoal(5, new RRAttackGoal(this));
-        //goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
-        //goalSelector.addGoal(7, new WRDragonBreedGoal(this));
-        goalSelector.addGoal(9, new WRRandomFlyWalkGoal(this, 20,20));
-        //goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
-        //goalSelector.addGoal(11, new RandomLookAroundGoal(this));
-        // TODO Replace this goal with a different WRFlyAwayWhenLosingGoal. Pretty sure RRs would just walk away and not use their wings which... isn't that smart.
-        //goalSelector.addGoal(3, new WRRunWhenLosingGoal(this, 0.2f, 0.1f, 20f, 1.15f, 1f));
-        //targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
-        //targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        //targetSelector.addGoal(3, new DefendHomeGoal(this));
-        //targetSelector.addGoal(4, new HurtByTargetGoal(this));
-        //TODO: Attack multiple LivingEntities, perhaps not select targets but rather exlude?
+        goalSelector.addGoal(1, new MeleeAttackGoal(this, 1.1d, true)); // TODO: replace with RRAttackGoal
+        goalSelector.addGoal(2, new WRDragonBreedGoal<>(this));
+        goalSelector.addGoal(3, new WRMoveToHomeGoal(this));
+        goalSelector.addGoal(4, new WRFollowOwnerGoal(this));
+        goalSelector.addGoal(5, new WRSitGoal(this));
+        goalSelector.addGoal(6, new WRGetDroppedFoodGoal(this, 10, true));
+        goalSelector.addGoal(7, new WRSleepGoal(this));
+        goalSelector.addGoal(8, new WRIdleGoal(this));
+        goalSelector.addGoal(9, new WRRandomFlyWalkGoal(this, 30, 10));
+        goalSelector.addGoal(10, new WaterAvoidingRandomStrollGoal(this, 1));
+        goalSelector.addGoal(11, new LookAtPlayerGoal(this, LivingEntity.class, 14f, 1));
+        goalSelector.addGoal(12, new WRRandomLookAroundGoal(this,45));
+
+
+        targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
+        targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+        targetSelector.addGoal(3, new HurtByTargetGoal(this, new Class[0]) {
+            @Override
+            protected double getFollowDistance() {
+                return (double) getRestrictRadius();
+            }
+        }.setAlertOthers(new Class[0]));
+        targetSelector.addGoal(4, new WRDefendHomeGoal(this));
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, false,
-                e -> e.getType() == EntityType.PLAYER || e instanceof Animal || e instanceof AbstractVillager));
+                entity -> {
+                    // Attack everything that isn't an apex dragon, dragon egg, or too small to be worthwhile
+                    if (entity.getClass() == this.getClass() || entity instanceof EntityButterflyLeviathan || entity instanceof WRDragonEggEntity) {
+                        return false;
+                    }
+                    if (entity.getBbHeight() < 0.9f) {
+                        return false;
+                    }
+                    return true;
+                })
+        );
     }
-
-    @Override
-    public InteractionResult breedLogic(Player tamer, ItemStack stack) {
-        return null;
-    }
-
-    @Override
-    public int hatchTime() {
-        return 500;
-    }
-
-    @Override
-    public int getBreedingLimit() {
-        return 0;
-    }
-
-    @Override
-    public float getRestrictRadius() {
-        return WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.homeRadius.get() *
-                WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.homeRadius.get();
-    }
-
-
 
     // ====================================
     //      F.n) Goals: RRAttackGoal
@@ -804,7 +885,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
 
                 //AnimationLogic: decide which attack variant we are using
                 //TODO: REMOVED TAIL ATTACK TEMPORARILY, VARIANT 3, RE_ADD
-                int attackVariant = 1+entity.random.nextInt(ATTACK_ANIMATION_VARIANTS) /*+ 1*/;
+                int attackVariant = 1+entity.random.nextInt(numAttackAnimationVariants()) /*+ 1*/;
                 String attackAnimation = ATTACK_ANIMATION + attackVariant;
                 int attackAnimationTime = 0;
 

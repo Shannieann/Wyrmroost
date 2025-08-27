@@ -41,10 +41,11 @@ public class WRItems {
 
     public static final DeferredRegister<Item> REGISTRY = DeferredRegister.create(ForgeRegistries.ITEMS, Wyrmroost.MOD_ID);
 
+    public static final RegistryObject<Item> COIN_DRAGON = register("coin_dragon", CoinDragonItem::new);
     public static final RegistryObject<Item> LDWYRM = register("desert_wyrm", LDWyrmItem::new);
+
     public static final RegistryObject<Item> SOUL_CRYSTAL = register("soul_crystal", SoulCrystalItem::new);
     public static final RegistryObject<Item> TARRAGON_TOME = register("tarragon_tome", TarragonTomeItem::new);
-    //public static final RegistryObject<Item> COIN_DRAGON = register("coin_dragon", CoinDragonItem::new);
     public static final RegistryObject<Item> TRUMPET = register("trumpet", TrumpetItem::new);
 
     public static final RegistryObject<Item> BLUE_GEODE = register("blue_geode");
@@ -108,9 +109,14 @@ public class WRItems {
     public static final RegistryObject<Item> COOKED_COMMON_MEAT = register("cooked_common_meat", food(8, 0.8f).meat());
     public static final RegistryObject<Item> COOKED_APEX_MEAT = register("cooked_apex_meat", food(16, 1f).meat());
     public static final RegistryObject<Item> COOKED_BEHEMOTH_MEAT = register("cooked_behemoth_meat", food(20, 2f).meat());
-    public static final RegistryObject<Item> COOKED_MINUTUS = register("cooked_desertwyrm", food(10, 1f).meat());
-    public static final RegistryObject<Item> JEWELLED_APPLE = register("jewelled_apple", food(8, 0.9f).alwaysEat().effect(() -> new MobEffectInstance(MobEffects.GLOWING, 800), 1f).effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 100, 2), 1f).effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 800), 1f).effect(() -> new MobEffectInstance(MobEffects.ABSORPTION, 6000, 2), 1f).effect(() -> new MobEffectInstance(MobEffects.NIGHT_VISION, 800), 1f));
-
+    public static final RegistryObject<Item> COOKED_MINUTUS = register("cooked_desert_wyrm", food(10, 1f).meat());
+    public static final RegistryObject<Item> JEWELLED_APPLE = register("jewelled_apple",
+        food(8, 0.9f).alwaysEat()
+            .effect(()-> new MobEffectInstance(MobEffects.GLOWING, 800), 1f)
+            .effect(() -> new MobEffectInstance(MobEffects.REGENERATION, 100, 2), 1f)
+            .effect(() -> new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 800), 1f)
+            .effect(() -> new MobEffectInstance(MobEffects.ABSORPTION, 6000, 2), 1f)
+            .effect(() -> new MobEffectInstance(MobEffects.NIGHT_VISION, 800), 1f));
 
     public static final RegistryObject<Item> LEATHER_DRAGON_ARMOR = register("leather_dragon_armor", () -> new DragonArmorItem.Dyeable(2, net.minecraft.world.item.ArmorMaterials.LEATHER.getEnchantmentValue()));
     public static final RegistryObject<Item> IRON_DRAGON_ARMOR = register("iron_dragon_armor", () -> new DragonArmorItem(4, net.minecraft.world.item.ArmorMaterials.IRON.getEnchantmentValue()));
