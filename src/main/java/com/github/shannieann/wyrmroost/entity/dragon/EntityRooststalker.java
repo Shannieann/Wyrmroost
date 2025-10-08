@@ -86,7 +86,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     private static final ResourceLocation CLOSED_ALBINO = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_albino.png");
 
     private static final ResourceLocation EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes.png");
-    private static final ResourceLocation EYES_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_spe.png");
+    private static final ResourceLocation EYES_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_sp.png");
 
     // Eye texture mapping for different variant colors
     private static final Map<String, ResourceLocation> CLOSED_EYE_TEXTURE_MAP = Map.of(
@@ -226,21 +226,25 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
 
     @Override
     public String getDefaultVariant() {
-        return "red-patternless";
+        return "0";
     }
 
     @Override
     public String determineVariant() {
 
+        int color = getRandom().nextDouble() < 0.01 ? 40 : getRandom().nextInt(0, 4) * 10;
+        int pattern = getRandom().nextDouble() < 0.01 ? 5 : getRandom().nextInt(0, 5);
+        return String.valueOf(color + pattern);
+
+        /* Couldn't get new names to work
         String[] patterns = {"patternless", "striped", "diamond", "socks", "spider", "tiger"};
         String[] normalColors = {"red", "blue", "green", "black"};
-
         String pattern = patterns[getRandom().nextInt(patterns.length)];
         boolean isAlbino = getRandom().nextDouble() <= 0.01; // 1% chance for albino
         String color = isAlbino ? "albino" : normalColors[getRandom().nextInt(normalColors.length)];
         String variantStr = color + "-" + pattern;
-
         return variantStr;
+        */
     }
 
     @Override
@@ -266,7 +270,8 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     }
 
     public boolean isAlbino(){
-        return getVariant().contains("albino");
+        Integer variant = Integer.getInteger(getVariant());
+        return variant != null && variant >= 40;
     }
 
     // ====================================

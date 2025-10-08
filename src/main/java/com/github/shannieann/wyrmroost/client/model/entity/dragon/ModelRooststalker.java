@@ -35,7 +35,7 @@ public class ModelRooststalker extends AnimatedGeoModel<EntityRooststalker> {
 
     @Override
     public ResourceLocation getTextureLocation(EntityRooststalker roostie) {
-        return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/" + roostie.getVariant() + ".png");
+        return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_" + roostie.getVariant() + ".png");
     }
 
     @Override
