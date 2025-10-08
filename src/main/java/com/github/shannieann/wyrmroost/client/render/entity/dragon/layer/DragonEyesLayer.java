@@ -1,6 +1,5 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon.layer;
 
-import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -16,7 +15,14 @@ public class DragonEyesLayer<T extends WRDragonEntity> extends AbstractLayerGeo<
     private final Function<T, Boolean> shouldRender;
     @Override
     public RenderType getRenderType(ResourceLocation textureLocation) {
-        return RenderType.eyes(textureLocation);
+        // If it's a closed eyes texture, use normal cutout rendering instead of emissive eyes
+        String path = textureLocation.getPath();
+
+        if (path.contains("closed_eyes") || path.equals("textures/entity/dragon/blank_eyes.png")) {
+            return RenderType.entityCutoutNoCull(textureLocation); // closed eyes are opaque
+        } else {
+            return RenderType.eyes(textureLocation); // normal eyes emissive (glow)
+        }
     }
 
     public DragonEyesLayer(GeoEntityRenderer<T> entityRendererIn,
@@ -52,8 +58,11 @@ public class DragonEyesLayer<T extends WRDragonEntity> extends AbstractLayerGeo<
             location = funcGetCurrentTexture.apply(dragon);
         }
 
-        reRenderCurrentModelInRenderer(dragon, partialTicks, matrixStackIn, bufferIn, packedLightIn,
-                RenderType.eyes(location));
+        // Get the appropriate render type for this texture
+        RenderType renderType = getRenderType(location);
+
+        // Render the model with the correct texture and render type
+        reRenderCurrentModelInRenderer(dragon, partialTicks, matrixStackIn, bufferIn, packedLightIn, renderType);
     }
 
 }

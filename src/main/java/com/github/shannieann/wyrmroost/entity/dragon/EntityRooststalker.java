@@ -243,11 +243,12 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
 
     @Override
     public ResourceLocation getClosedEyesTexture() {
-        Integer variant = Integer.getInteger(getVariant());
-        if (variant == null) {
-            return WRDragonEntity.BLANK_EYES;
+        try {
+            return CLOSED_EYE_TEXTURES[Integer.parseInt(getVariant())/10];
+        } catch (Exception e) {
+            return CLOSED_EYE_TEXTURES[4]; // albino as arbitrary default
         }
-        return CLOSED_EYE_TEXTURES[variant/10];
+
     }
 
     @Override

@@ -1097,16 +1097,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.set(VARIANT, variant);
     }
 
-    // Override for all dragons with closed eye textures
+    // Must override for all dragons with closed eye textures
     public ResourceLocation getClosedEyesTexture() {
         return BLANK_EYES;
     }
 
-    // Override for all dragons with eyes
+    // Must override for all dragons with eyes
     public ResourceLocation getEyesTexture() {
         return BLANK_EYES;
     }
 
+    // Must override for all dragons with closed eye textures
     public ResourceLocation getBehaviorEyesTexture() {
         return BLANK_EYES;
     }
