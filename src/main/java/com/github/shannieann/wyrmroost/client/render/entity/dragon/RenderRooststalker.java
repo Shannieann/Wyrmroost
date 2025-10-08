@@ -13,7 +13,7 @@ public class RenderRooststalker extends WRDragonRender<EntityRooststalker> {
     public RenderRooststalker(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelRooststalker());
         this.addLayer(new DragonEyesLayer<>(this,
-                (entity) -> entity.getEyesTexture(),
+                (entity) -> entity.getBehaviorEyesTexture(),
                 getGeoModelProvider()::getModelLocation,
                 (entity) -> true));
         this.addLayer(new ModelRooststalker.RooststalkerMouthItemLayer<>(this));
@@ -30,8 +30,6 @@ public class RenderRooststalker extends WRDragonRender<EntityRooststalker> {
                 buffer, packedLight, packedOverlay, red, green, blue,
         alpha);
     }
-
-
 }
 
 

@@ -79,23 +79,17 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
 
     public static final EntityDataAccessor<Integer> SCAVENGING_COOLDOWN = SynchedEntityData.defineId(EntityRooststalker.class, EntityDataSerializers.INT);
 
-    private static final ResourceLocation CLOSED_RED = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_red.png");
-    private static final ResourceLocation CLOSED_BLACK = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_black.png");
-    private static final ResourceLocation CLOSED_GREEN = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_green.png");
-    private static final ResourceLocation CLOSED_BLUE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_blue.png");
-    private static final ResourceLocation CLOSED_ALBINO = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_albino.png");
-
     private static final ResourceLocation EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes.png");
     private static final ResourceLocation EYES_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_sp.png");
 
-    // Eye texture mapping for different variant colors
-    private static final Map<String, ResourceLocation> CLOSED_EYE_TEXTURE_MAP = Map.of(
-        "albino", CLOSED_ALBINO,
-        "black", CLOSED_BLACK,
-        "blue", CLOSED_BLUE,
-        "green", CLOSED_GREEN,
-        "red", CLOSED_RED
-    );
+    // Eye texture mappings for different variant colors. Use (int) variant/10 to get index. Variant should always be int for rooststalker.
+    private static final ResourceLocation[] CLOSED_EYE_TEXTURES = {
+        new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_red.png"),
+        new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_green.png"),
+        new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_black.png"),
+        new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_blue.png"),
+        new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_albino.png")
+    };
 
     public EntityRooststalker(EntityType<? extends EntityRooststalker> rooststalker, Level level) {
         super(rooststalker, level);
@@ -249,11 +243,11 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
 
     @Override
     public ResourceLocation getClosedEyesTexture() {
-        return CLOSED_EYE_TEXTURE_MAP.entrySet().stream()
-            .filter(entry -> getVariant().contains(entry.getKey()))
-            .findFirst()
-            .map(Map.Entry::getValue)
-            .orElse(WRDragonEntity.BLANK_EYES);
+        Integer variant = Integer.getInteger(getVariant());
+        if (variant == null) {
+            return WRDragonEntity.BLANK_EYES;
+        }
+        return CLOSED_EYE_TEXTURES[variant/10];
     }
 
     @Override
@@ -263,7 +257,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
 
     @Override
     public ResourceLocation getBehaviorEyesTexture() {
-        if (getSleeping() || getRandom().nextFloat() < 0.015) {
+        if (getSleeping()) {
             return getClosedEyesTexture();
         }
         return getEyesTexture();

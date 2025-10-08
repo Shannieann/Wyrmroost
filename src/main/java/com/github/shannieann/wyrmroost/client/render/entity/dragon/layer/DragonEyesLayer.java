@@ -40,27 +40,18 @@ public class DragonEyesLayer<T extends WRDragonEntity> extends AbstractLayerGeo<
     @Override
     public void render(PoseStack matrixStackIn, MultiBufferSource bufferIn, int packedLightIn, T dragon, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch) {
 
-        ResourceLocation BLANK_EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png");
-        
         if (!shouldRender.apply(dragon)) {
             return;
         }
 
         ResourceLocation location;
 
-        if (dragon.getSleeping()) { // Sleeping
-            location = BLANK_EYES; // returns BLANK_EYES if no texture found
+        if (dragon.getSleeping()) {
+            location = dragon.getClosedEyesTexture();
         } else {
             location = funcGetCurrentTexture.apply(dragon);
         }
-/*
-Is blinking causing an issue?
-        if (dragon.getSleeping() || dragon.getRandom().nextFloat() < 0.015) { // Random blinks or sleeping
-            location = dragon.getClosedEyesTexture(); // returns BLANK_EYES if no texture found
-        } else {
-            location = funcGetCurrentTexture.apply(dragon);
-        }
-*/
+
         reRenderCurrentModelInRenderer(dragon, partialTicks, matrixStackIn, bufferIn, packedLightIn,
                 RenderType.eyes(location));
     }

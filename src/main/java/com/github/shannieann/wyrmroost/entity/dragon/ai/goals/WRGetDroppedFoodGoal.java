@@ -103,9 +103,7 @@ public class WRGetDroppedFoodGoal extends Goal {
 
     @Override
     public void start() {
-        System.out.println("WRGetDroppedFoodGoal: start()");
         if (this.targetItemEntity != null) {
-            System.out.println("WRGetDroppedFoodGoal: start() targetItemEntity is not null");
             this.itemAt = this.targetItemEntity.blockPosition();
             this.dragon.getNavigation().moveTo(this.targetItemEntity, 1.1D);
         }
@@ -123,14 +121,11 @@ public class WRGetDroppedFoodGoal extends Goal {
             if (d2 < 1.0D) {
 
                 if (!this.targetItemEntity.getItem().isEmpty() && this.isAcceptedItem(this.targetItemEntity)) {
-                    System.out.println("WRGetDroppedFoodGoal: tick() targetItemEntity is not empty and isAcceptedItem is true");
                     if (this.eatOnPickup) { // Regular action
                         if (this.dragon.level.isClientSide) {
-                            System.out.println("WRGetDroppedFoodGoal: tick() eatOnPickup is true and dragon.level.isClientSide is true");
                             return;
                         }
                         if (this.dragon.getEatingCooldown() < 0) {
-                            System.out.println("WRGetDroppedFoodGoal: tick() eatOnPickup is true and dragon.getEatingCooldown() < 0");
                             ItemStack itemStackOneItem = splitTargetItemEntity();
                             // Be extra careful here, can crash game if try to delete null item
                             if (itemStackOneItem != ItemStack.EMPTY && this.oneItemEntity != null) {
@@ -141,12 +136,10 @@ public class WRGetDroppedFoodGoal extends Goal {
                         stop();
                         return;
                     } else { // Override - do something else
-                        System.out.println("WRGetDroppedFoodGoal: tick() eatOnPickup is false");
                         this.readyForOtherAction = true;
                     }
                 }
             } else if ((! this.dragon.getNavigation().isInProgress())) {
-                System.out.println("WRGetDroppedFoodGoal: tick() !this.dragon.getNavigation().isInProgress()");
                 // Pathfinding sucks, shove closer
                 this.dragon.getNavigation().moveTo(this.targetItemEntity, 1.1D);
                 Vec3 direction = this.targetItemEntity.position().subtract(this.dragon.position()).normalize();
@@ -154,7 +147,6 @@ public class WRGetDroppedFoodGoal extends Goal {
                 this.dragon.setDeltaMovement(direction.scale(0.1));
             }
         } else {
-            System.out.println("WRGetDroppedFoodGoal: tick() targetItemEntity is null");
             // Item no longer exists, find a new one
             List<ItemEntity> droppedItems = findDroppedItems();
             if (!droppedItems.isEmpty()) {
@@ -168,18 +160,15 @@ public class WRGetDroppedFoodGoal extends Goal {
 
     protected ItemStack splitTargetItemEntity() {
         ItemStack oldItemStack = this.targetItemEntity.getItem();
-        System.out.println("WRGetDroppedFoodGoal: splitTargetItemEntity() itemStack.getCount() before split: " + oldItemStack.getCount());
         ItemStack itemStackOneItem = oldItemStack.split(1);
 
         if (oldItemStack.getCount() > 0) {
-            System.out.println("WRGetDroppedFoodGoal: splitTargetItemEntity() oldItemStack.getCount() > 0");
             // Make new entity for new stack if old one has multiple items left, give new stack 1 item
             this.oneItemEntity = new ItemEntity(this.dragon.level, this.targetItemEntity.getX(), this.targetItemEntity.getY(), this.targetItemEntity.getZ(), itemStackOneItem);
             this.dragon.level.addFreshEntity(this.oneItemEntity);
             this.targetItemEntity.setItem(oldItemStack); // old item entity gets stack-1 items
         }
         else {
-            System.out.println("WRGetDroppedFoodGoal: splitTargetItemEntity() oldItemStack.getCount() == 0");
             // only 1 item left, just use old entity as new one and give it its item back
             this.targetItemEntity.setItem(itemStackOneItem);
             this.oneItemEntity = this.targetItemEntity;
@@ -189,7 +178,6 @@ public class WRGetDroppedFoodGoal extends Goal {
 
     @Override
     public void stop() {
-        System.out.println("WRGetDroppedFoodGoal: stop()");
         this.dragon.getNavigation().stop();
         this.searchRadius = 0;
         this.targetItemEntity = null;
