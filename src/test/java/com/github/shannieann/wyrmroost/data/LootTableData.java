@@ -197,21 +197,15 @@ class LootTableData extends LootTableProvider
                     .withPool(singleRollPool().add(meat(WRItems.RAW_COMMON_MEAT.get(), 1, 7, 2, 3)))
                     .withPool(singleRollPool().add(item(WRItems.DRAKE_BACKPLATE.get(), 1)).when(LootItemKilledByPlayerCondition.killedByPlayer()).when(LootItemRandomChanceCondition.randomChance(0.15f)).apply(looting(0, 1))));
 
-
             add(WREntityTypes.ROOSTSTALKER.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_LOWTIER_MEAT.get(), 0, 2, 1, 2)))
                     .withPool(singleRollPool().add(item(Items.GOLD_NUGGET, 0, 2))));
 
             //add(WREntityTypes.DRAGON_FRUIT_DRAKE.get(), LootTable.lootTable().withPool(singleRollPool().add(item(Items.APPLE, 0, 6))));
 
-
-
-
-
             add(WREntityTypes.CANARI_WYVERN.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_COMMON_MEAT.get(), 0, 2, 1, 2)))
                     .withPool(singleRollPool().add(item(Items.FEATHER, 1, 4).apply(looting(2, 6)))));
-
 
             add(WREntityTypes.SILVER_GLIDER.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_LOWTIER_MEAT.get(), 0, 3, 1, 3))));
@@ -224,13 +218,13 @@ class LootTableData extends LootTableProvider
             add(WREntityTypes.ROYAL_RED.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_APEX_MEAT.get(), 4, 8, 3, 5))));
 
-            /*add(WREntityTypes.COIN_DRAGON.get(), LootTable.lootTable().withPool(singleRollPool()
+            add(WREntityTypes.COIN_DRAGON.get(), LootTable.lootTable().withPool(singleRollPool()
                     .add(meat(WRItems.RAW_LOWTIER_MEAT.get(), 1, 1, 0, 1))
                     .add(item(Items.GOLD_NUGGET, 4))));
 
-            add(WREntityTypes.ALPINE.get(), LootTable.lootTable()
+            add(WREntityTypes.ALPINE_DRAGON.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_COMMON_MEAT.get(), 3, 7, 2, 6)))
-                    .withPool(singleRollPool().add(item(Items.FEATHER, 3, 10).apply(looting(3, 11)))));*/
+                    .withPool(singleRollPool().add(item(Items.FEATHER, 3, 10).apply(looting(3, 11)))));
         }
 
         private static LootingEnchantFunction.Builder looting(float min, float max)

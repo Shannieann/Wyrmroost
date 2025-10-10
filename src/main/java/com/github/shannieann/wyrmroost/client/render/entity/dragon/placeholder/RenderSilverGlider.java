@@ -5,8 +5,8 @@ import com.github.shannieann.wyrmroost.entity.dragon.EntitySilverGlider;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
-public class SilverGliderRenderer<T extends EntitySilverGlider> extends GeoEntityRenderer<T> {
-    public SilverGliderRenderer(EntityRendererProvider.Context renderManager) {
+public class RenderSilverGlider<T extends EntitySilverGlider> extends GeoEntityRenderer<T> {
+    public RenderSilverGlider(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelSilverGlider<>());
     }
 

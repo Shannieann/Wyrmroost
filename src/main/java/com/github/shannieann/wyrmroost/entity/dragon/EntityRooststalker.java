@@ -1,5 +1,6 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
@@ -15,7 +16,9 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+import java.util.Map;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.CompoundContainer;
@@ -35,7 +38,6 @@ import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.LeapAtTargetGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.animal.Chicken;
@@ -57,6 +59,11 @@ import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.Tags;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.builder.ILoopType;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 
 import javax.annotation.Nullable;
 
@@ -67,23 +74,76 @@ import java.util.EnumSet;
 import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 public class EntityRooststalker extends WRDragonEntity implements ITameable, IBreedable {
 
-    public static final int ITEM_SLOT = 0;
     public static final int MAX_BREEDING_COOLDOWN = 6000; // 300 seconds, override
-    public static final int MAX_SCAVENGING_COOLDOWN = 1200; // 60 seconds
+    public static final int MAX_SCAVENGING_COOLDOWN = 100; // 5 seconds
 
     public static final EntityDataAccessor<Integer> SCAVENGING_COOLDOWN = SynchedEntityData.defineId(EntityRooststalker.class, EntityDataSerializers.INT);
 
+    private static final ResourceLocation EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes.png");
+    private static final ResourceLocation EYES_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_sp.png");
+
+    // Eye texture mappings for different variant colors. Use (int) variant/10 to get index. Variant should always be int for rooststalker.
+    private static final ResourceLocation[] CLOSED_EYE_TEXTURES = {
+        new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_red.png"),
+        new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_green.png"),
+        new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_black.png"),
+        new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_blue.png"),
+        new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_albino.png")
+    };
+
     public EntityRooststalker(EntityType<? extends EntityRooststalker> rooststalker, Level level) {
         super(rooststalker, level);
+        // Cannot use any other navigation or move control
         this.setNavigator(NavigationType.GROUND);
+        this.moveControl = new WRGroundMoveControl(this, 10.0f); // 10.0f is the default groundMaxYaw
     }
 
     // ====================================
     //      Animations
     // ====================================
+
     @Override
-    public int idleAnimationVariants() {
-        return 0;
+    public int numIdleAnimationVariants() {
+        return 3;
+    }
+
+    @Override
+    public int getIdleAnimationTime(int index) {
+        int[] animationTimesInOrder = {40, 50, 40}; // TODO: Last one is totally a guess
+        return animationTimesInOrder[index];
+    }
+
+    @Override
+    public int numAttackAnimationVariants() {
+        return 2;
+    }
+
+    @Override
+    public int getAttackAnimationTime(int index) {
+        int[] animationTimesInOrder = {40, 50, 40}; // TODO: Last one is totally a guess
+        return animationTimesInOrder[index];
+    }
+
+    public int getLieDownTime() { // 0.75 seconds = 15 ticks
+        return 10;
+    }
+
+    public int getSitDownTime() { // 0.375 seconds = 7.5 ticks. Rounding down
+        return 4;
+    }
+
+    // For special name "Sir"
+    @Override
+    public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
+        if (!this.getSitting()
+            && !this.getSleeping()
+            && this.getDeltaMovement().length() > 0.1
+            && !this.isAggressive()
+            && getName().getString().toLowerCase().equals("sir")) {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("sir", ILoopType.EDefaultLoopTypes.LOOP));
+                return PlayState.CONTINUE;
+        }
+        return super.predicateBasicLocomotion(event);
     }
 
     // ====================================
@@ -114,6 +174,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         setScavengingCooldown(nbt.getInt("ScavengingCooldown"));
     }
 
+    // Should have same height when sitting/sleeping/standing
     @Override
     public EntityDimensions getDimensions(Pose pose) {
         return getType().getDimensions().scale(getScale());
@@ -139,44 +200,10 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     }
 
     // ====================================
-    //      A.7) Entity Data: VARIANT
+    //      A.4) Entity Data: HOME
     // ====================================
 
     @Override
-    public String getDefaultVariant() {
-        return "0";
-    }
-
-    @Override
-    public String determineVariant() {
-        // Rare chance for albino. Otherwise, a random choice of the other 4 colors.
-        // Since it is the digit in the tens place, we multiply by 10.
-        int color = (getRandom().nextDouble() < 0.005) ? 40 : getRandom().nextInt(0, 4) * 10;
-        // Rare chance for reverse-striped
-        // Otherwise a random pattern
-        int pattern = (getRandom().nextDouble() < 0.005) ? 5 : getRandom().nextInt(0, 5);
-
-        // TODO change this... im too lazy to rename the files lol
-        return String.valueOf(color + pattern);
-    }
-    public boolean isAlbino(){
-        Integer i = Integer.getInteger(getVariant());
-        if (i == null) return false;
-        return i >= 40;
-    }
-
-    // ====================================
-    //      A.8) Entity Data: Miscellaneous
-    // ====================================
-
-    public int getScavengingCooldown() {
-        return entityData.get(SCAVENGING_COOLDOWN);
-
-    }
-    public void setScavengingCooldown(int cooldown) {
-        entityData.set(SCAVENGING_COOLDOWN, cooldown);
-    }
-
     public boolean defendsHome() {
         return true;
     }
@@ -188,12 +215,77 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     }
 
     // ====================================
+    //      A.7) Entity Data: VARIANT
+    // ====================================
+
+    @Override
+    public String getDefaultVariant() {
+        return "0";
+    }
+
+    @Override
+    public String determineVariant() {
+
+        int color = getRandom().nextDouble() < 0.01 ? 40 : getRandom().nextInt(0, 4) * 10;
+        int pattern = getRandom().nextDouble() < 0.01 ? 5 : getRandom().nextInt(0, 5);
+        return String.valueOf(color + pattern);
+
+        /* Couldn't get new names to work
+        String[] patterns = {"patternless", "striped", "diamond", "socks", "spider", "tiger"};
+        String[] normalColors = {"red", "blue", "green", "black"};
+        String pattern = patterns[getRandom().nextInt(patterns.length)];
+        boolean isAlbino = getRandom().nextDouble() <= 0.01; // 1% chance for albino
+        String color = isAlbino ? "albino" : normalColors[getRandom().nextInt(normalColors.length)];
+        String variantStr = color + "-" + pattern;
+        return variantStr;
+        */
+    }
+
+    @Override
+    public ResourceLocation getClosedEyesTexture() {
+        try {
+            return CLOSED_EYE_TEXTURES[Integer.parseInt(getVariant())/10];
+        } catch (Exception e) {
+            return CLOSED_EYE_TEXTURES[4]; // albino as arbitrary default
+        }
+
+    }
+
+    @Override
+    public ResourceLocation getEyesTexture() {
+        return isAlbino() ? EYES_SPECIAL : EYES;
+    }
+
+    @Override
+    public ResourceLocation getBehaviorEyesTexture() {
+        if (getSleeping()) {
+            return getClosedEyesTexture();
+        }
+        return getEyesTexture();
+    }
+
+    public boolean isAlbino(){
+        Integer variant = Integer.getInteger(getVariant());
+        return variant != null && variant >= 40;
+    }
+
+    // ====================================
+    //      A.8) Entity Data: Miscellaneous
+    // ====================================
+
+    public int getScavengingCooldown() {
+        return entityData.get(SCAVENGING_COOLDOWN);
+    }
+    public void setScavengingCooldown(int cooldown) {
+        entityData.set(SCAVENGING_COOLDOWN, cooldown);
+    }
+
+    // ====================================
     //      B) Tick and AI
     // ====================================
     @Override
     public void aiStep() {
         super.aiStep();
-
         if (!level.isClientSide) {
             ItemStack item = getHeldItem();
             double temp = getRandom().nextDouble();
@@ -273,12 +365,6 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         // Other mod eggs will work here, too.
         // (Not sure if this is a good idea but why not?)
         if (!isTame() && stack.is(Tags.Items.EGGS)) {
-            // TODO: make sure you can't tame them with rooststalker eggs
-            if (stack.getItem() instanceof DragonEggItem && ((DragonEggItem)stack.getItem()).getName(stack).getString() == "Rooststalker") {
-                // this isn't working
-                System.out.println("[DEBUG] No rooststalker eggs allowed!!");
-                return InteractionResult.PASS;
-            }
             eat(tamer.getLevel(), stack);
             float tameChance = (tamer.isCreative() || this.isHatchling()) ? 1.0f : 0.25f;
             boolean tamed = attemptTame(tameChance, tamer);
@@ -416,23 +502,23 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     @Override
     protected void registerGoals() {
         super.registerGoals();
-        goalSelector.addGoal(1, new FloatGoal(this));
-        goalSelector.addGoal(2, new WRRunWhenLosingGoal(this, 0.2f, 8, 1.5f));
-        goalSelector.addGoal(3, new LeapAtTargetGoal(this, 0.4F));
-        goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.1d, true));
-        goalSelector.addGoal(5, new AvoidEntityGoal<>(this, Player.class, 7f, 1.15f, 1f) {
+        goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.2f, 8, 1.5f));
+        goalSelector.addGoal(2, new LeapAtTargetGoal(this, 0.4F));
+        goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.1d, true));
+        goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Player.class, 7f, 1.15f, 1f) {
             @Override
             public boolean canUse() {
                 return !isTame() && !getHeldItem().isEmpty() && super.canUse();
             }
         });
-        goalSelector.addGoal(6, new WRDragonBreedGoal<>(this));
-        goalSelector.addGoal(7, new WRMoveToHomeGoal(this));
-        goalSelector.addGoal(8, new WRFollowOwnerGoal(this));
-        goalSelector.addGoal(9, new RSScavengeGoal(this));
+        goalSelector.addGoal(5, new WRDragonBreedGoal<>(this));
+        goalSelector.addGoal(6, new WRMoveToHomeGoal(this));
+        goalSelector.addGoal(7, new WRFollowOwnerGoal(this));
+        goalSelector.addGoal(8, new RSScavengeGoal(this));
+        goalSelector.addGoal(9, new WRSitGoal(this));
         goalSelector.addGoal(10, new RSGetDroppedFoodGoal(this));
         goalSelector.addGoal(11, new WRSleepGoal(this, true));
-        goalSelector.addGoal(12, new WRSitGoal(this));
+        goalSelector.addGoal(12, new WRIdleGoal(this));
         goalSelector.addGoal(13, new WaterAvoidingRandomStrollGoal(this, 1));
         goalSelector.addGoal(14, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
         goalSelector.addGoal(15, new RandomLookAroundGoal(this));
@@ -464,6 +550,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         private Direction facingDirection;
         // logic control vars
         private boolean animationStarted = false;
+        private boolean secondAnimationStarted = false;
         private boolean abortGoal = false;
         private int stealFromSlot = -1;
         // cooldown vars
@@ -544,11 +631,6 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         }
 
         public void start() {
-
-            if (getMoveControl() instanceof WRGroundMoveControl) {
-                System.out.println("[DEBUG] WR MOVE CONTROL");
-            }
-
             this.currentPath = getNavigation().createPath(this.openPos.x, this.openPos.y, this.openPos.z, 1);
             if (this.currentPath != null) {
                 this.pathRecalcCooldown = PATH_RECALCULATION_INTERVAL;
@@ -565,6 +647,9 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
             if (this.animationStarted) {
                 if (canContinueToUse()) {
                     super.tick();
+                } else if (! canContinueToUse() && !this.secondAnimationStarted) {
+                    this.secondAnimationStarted = true;
+                    super.start("scavenge_end", 3, 40);
                 }
             }
 
@@ -589,7 +674,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
                 getNavigation().stop();
                 setDeltaMovement(Vec3.ZERO);
                 setYRot(this.facingDirection.getOpposite().toYRot());
-                super.start("scavenge", 2, 20);
+                super.start("scavenge", 3, 40);
 
                 if (this.container instanceof ChestBlockEntity chest && chest.openersCounter.getOpenerCount() == 0) {
                     this.chestEntity = chest;
@@ -676,9 +761,6 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
 
             if (this.container instanceof CompoundContainer) {
                 // For double chests, derive which half the entity is opening from facing and type
-                BlockState state = level.getBlockState(chestPos);
-                ChestType type = state.getValue(ChestBlock.TYPE);
-                Direction facing = state.getValue(ChestBlock.FACING);
                 handleDoubleChestOpenClose(open);
                 // play sound. method in ChestBlockEntity is private, so we have to do it this way
                 level.playSound((Player)null, this.chestPos.getX(), this.chestPos.getY(), this.chestPos.getZ(), sound, SoundSource.BLOCKS, 0.5F, level.random.nextFloat() * 0.1F + 0.9F);
@@ -713,7 +795,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
                         ((Integer)this.container.getItem(slot1).getCount()).compareTo((Integer)this.container.getItem(slot2).getCount()));
 
                     this.stealFromSlot = nonEmptySlots.get(0);
-                    // Only set held item item after animation is done so it doesn't display weird
+                    // Only set held item after animation is done so it doesn't display weird
                 }
             }
         }
@@ -727,10 +809,9 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
             ChestType type = baseState.getValue(ChestBlock.TYPE);
             Direction facing = baseState.getValue(ChestBlock.FACING);
 
-            // For double chests, use a more reliable approach with multiple block events
+            // For double chests, use multiple block events
             // This ensures both halves are properly synchronized
-            // Send block events to both halves with a slight delay to ensure proper
-            // animation
+            // Send block events to both halves with a slight delay to ensure proper animation
             lvl.blockEvent(this.chestPos, baseState.getBlock(), 1, open ? 1 : 0);
 
             // Figure out the offset for the other half of the chest
@@ -775,6 +856,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
             this.chestEntity = null;
             this.facingDirection = null;
             this.animationStarted = false;
+            this.secondAnimationStarted = false;
             this.abortGoal = false;
             this.stealFromSlot = -1;
             this.navTime = 0;
@@ -811,15 +893,20 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         }
 
         @Override
+        public boolean canContinueToUse() {
+            return getHeldItem().isEmpty() && super.canUse();
+        }
+
+        @Override
         public void tick() {
             super.tick();
             if (super.readyForOtherAction) {
-                if (super.targetItemStack != null && super.targetItemStack.isAlive()) {
-                    ItemStack itemStackOneItem = super.splitTargetItemStack();
-                    setHeldItem(itemStackOneItem); // Current held item should always be empty
-                    super.oneItem.discard();
-                    stop();
-                    return;
+                if (super.targetItemEntity != null && super.targetItemEntity.isAlive()) {
+                    ItemStack itemStackOneItem = super.splitTargetItemEntity();
+                    if (dragon.getHeldItem() == ItemStack.EMPTY && itemStackOneItem != ItemStack.EMPTY && super.oneItemEntity != null) {
+                        setHeldItem(itemStackOneItem);
+                        super.oneItemEntity.discard();
+                    }
                 }
             }
         }

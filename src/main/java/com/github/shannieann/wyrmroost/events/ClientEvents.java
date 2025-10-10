@@ -4,9 +4,8 @@ import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.network.PacketKey;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.*;
-import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.CanariWyvernRenderer;
-import com.github.shannieann.wyrmroost.client.render.entity.dragon.RenderOverworldDrake;
-import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.SilverGliderRenderer;
+import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.RenderCanariWyvern;
+import com.github.shannieann.wyrmroost.client.render.entity.dragon.placeholder.RenderSilverGlider;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon_egg.RenderDragonEgg;
 import com.github.shannieann.wyrmroost.client.render.entity.effect.RenderLightningNova;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
@@ -99,12 +98,13 @@ public class ClientEvents {
     public static void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerEntityRenderer(WREntityTypes.ALPINE_DRAGON.get(), RenderAlpineDragon::new);
         event.registerEntityRenderer(WREntityTypes.BUTTERFLY_LEVIATHAN.get(), RenderButterflyLeviathan::new);
-        event.registerEntityRenderer(WREntityTypes.CANARI_WYVERN.get(), CanariWyvernRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.CANARI_WYVERN.get(), RenderCanariWyvern::new);
+        event.registerEntityRenderer(WREntityTypes.COIN_DRAGON.get(), RenderCoinDragon::new);
         event.registerEntityRenderer(WREntityTypes.LESSER_DESERTWYRM.get(), RenderLesserDesertwyrm::new);
         event.registerEntityRenderer(WREntityTypes.OVERWORLD_DRAKE.get(), RenderOverworldDrake::new);
         event.registerEntityRenderer(WREntityTypes.ROOSTSTALKER.get(), RenderRooststalker::new);
         event.registerEntityRenderer(WREntityTypes.ROYAL_RED.get(), RenderRoyalRed::new);
-        event.registerEntityRenderer(WREntityTypes.SILVER_GLIDER.get(), SilverGliderRenderer::new);
+        event.registerEntityRenderer(WREntityTypes.SILVER_GLIDER.get(), RenderSilverGlider::new);
 
         event.registerEntityRenderer(WREntityTypes.SOUL_CRYSTAL.get(), ThrownItemRenderer::new);
         event.registerEntityRenderer(WREntityTypes.GEODE_TIPPED_ARROW.get(), GeodeTippedArrowRenderer::new);

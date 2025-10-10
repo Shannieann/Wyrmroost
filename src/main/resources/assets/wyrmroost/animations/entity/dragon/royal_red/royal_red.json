@@ -3692,7 +3692,7 @@
 				}
 			}
 		},
-		"hover": {
+		"base_fly": {
 			"loop": true,
 			"animation_length": 2.48,
 			"bones": {
@@ -5695,7 +5695,7 @@
 				}
 			}
 		},
-		"attack2": {
+		"attack1": {
 			"loop": true,
 			"animation_length": 2,
 			"bones": {
@@ -6030,7 +6030,7 @@
 				}
 			}
 		},
-		"attack3": {
+		"attack2": {
 			"loop": true,
 			"animation_length": 4,
 			"bones": {
@@ -8634,7 +8634,7 @@
 				}
 			}
 		},
-		"sitting": {
+		"sit": {
 			"loop": true,
 			"animation_length": 3,
 			"bones": {
@@ -9430,7 +9430,7 @@
 				}
 			}
 		},
-		"sit": {
+		"sit_down": {
 			"loop": true,
 			"animation_length": 8,
 			"bones": {

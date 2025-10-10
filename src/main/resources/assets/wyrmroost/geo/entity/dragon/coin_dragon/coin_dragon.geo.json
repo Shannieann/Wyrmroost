@@ -1,0 +1,42 @@
+{
+  "format_version": "1.12.0",
+  "minecraft:geometry": [
+    {
+      "description": {
+        "identifier": "geometry.coin_dragon",
+        "texture_width": 64,
+        "texture_height": 64
+      },
+      "bones": [
+        {
+          "name": "root",
+          "pivot": [0, 0, 0]
+        },
+        {
+          "name": "body",
+          "parent": "root",
+          "pivot": [0, 8, 0],
+          "cubes": [
+            {
+              "origin": [-4, 4, -8],
+              "size": [8, 8, 16],
+              "uv": [0, 0]
+            }
+          ]
+        },
+        {
+          "name": "head",
+          "parent": "body",
+          "pivot": [0, 12, -8],
+          "cubes": [
+            {
+              "origin": [-3, 8, -12],
+              "size": [6, 6, 6],
+              "uv": [16, 0]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

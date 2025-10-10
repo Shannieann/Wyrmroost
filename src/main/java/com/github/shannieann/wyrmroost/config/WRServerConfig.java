@@ -78,8 +78,8 @@ public final class WRServerConfig {
             ALPINE_DRAGON = new AlpineDragon(builder);
             BUTTERFLY_LEVIATHAN = new ButterflyLeviathan(builder);
             CANARI_WYVERN = new CanariWyvern(builder);
-            //COIN_DRAGON = new CoinDragon(builder);
-            //DRAGONFRUIT_DRAKE = new DragonfruitDrake(builder);
+            COIN_DRAGON = new CoinDragon(builder);
+            DRAGONFRUIT_DRAKE = new DragonfruitDrake(builder);
             LESSER_DESERTWYRM = new LesserDesertwyrm(builder);
             OVERWORLD_DRAKE = new OverworldDrake(builder);
             ROOSTSTALKER = new Rooststalker(builder);
@@ -91,8 +91,8 @@ public final class WRServerConfig {
         public final AlpineDragon ALPINE_DRAGON;
         public final ButterflyLeviathan BUTTERFLY_LEVIATHAN;
         public final CanariWyvern CANARI_WYVERN;
-        //public final CoinDragon COIN_DRAGON;
-        //public final DragonfruitDrake DRAGONFRUIT_DRAKE;
+        public final CoinDragon COIN_DRAGON;
+        public final DragonfruitDrake DRAGONFRUIT_DRAKE;
         public final LesserDesertwyrm LESSER_DESERTWYRM;
         public final OverworldDrake OVERWORLD_DRAKE;
         public final Rooststalker ROOSTSTALKER;
@@ -245,8 +245,8 @@ public final class WRServerConfig {
             builder.push("canari_wyvern");
             spawningConfig = new SpawningConfig(builder,
                     2,
-                    1,
-                    3,
+                    4, // spawn in flocks
+                    7,
                     Collections.singletonList("SWAMP"),
                     Collections.singletonList("")
             );
@@ -271,15 +271,21 @@ public final class WRServerConfig {
         CoinDragon(final ForgeConfigSpec.Builder builder) {
             builder.push("coin_dragon");
             spawningConfig = new SpawningConfig(builder,
-                    2,
-                    1,
-                    3,
+                    0,  // Shouldn't spawn naturally
+                    0,
+                    0,
                     Collections.singletonList(""),
                     Collections.singletonList("")
             );
+            dragonAttributesConfig = new DragonAttributesConfig(builder,
+            1,
+            0,
+            3
+        );
             builder.pop();
         }
         public final SpawningConfig spawningConfig;
+        public final DragonAttributesConfig dragonAttributesConfig;
     }
     public static class DragonfruitDrake {
         DragonfruitDrake(final ForgeConfigSpec.Builder builder) {
@@ -291,9 +297,21 @@ public final class WRServerConfig {
                     Collections.singletonList("JUNGLE"),
                     Collections.singletonList("")
             );
+            dragonAttributesConfig = new DragonAttributesConfig(builder, // TODO: these values are all wrong??
+            40,
+            4,
+            15
+        );
+            dragonBreedingConfig = new DragonBreedingConfig(builder,
+            2,
+            1800,
+            900,
+            5);
             builder.pop();
         }
         public final SpawningConfig spawningConfig;
+        public final DragonAttributesConfig dragonAttributesConfig;
+        public final DragonBreedingConfig dragonBreedingConfig;
     }
 
     public static class LesserDesertwyrm {

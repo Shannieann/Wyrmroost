@@ -5,8 +5,8 @@ import com.github.shannieann.wyrmroost.entity.dragon.EntityCanariWyvern;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import software.bernie.geckolib3.renderers.geo.GeoEntityRenderer;
 
-public class CanariWyvernRenderer<T extends EntityCanariWyvern> extends GeoEntityRenderer<T> {
-    public CanariWyvernRenderer(EntityRendererProvider.Context renderManager) {
+public class RenderCanariWyvern<T extends EntityCanariWyvern> extends GeoEntityRenderer<T> {
+    public RenderCanariWyvern(EntityRendererProvider.Context renderManager) {
         super(renderManager, new ModelCanariWyvern<>());
     }
 

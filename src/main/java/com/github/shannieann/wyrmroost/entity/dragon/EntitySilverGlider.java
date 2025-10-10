@@ -76,7 +76,7 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     }
 
     @Override
-    public int idleAnimationVariants(){
+    public int numIdleAnimationVariants(){
         return 0;
     }
     @Override

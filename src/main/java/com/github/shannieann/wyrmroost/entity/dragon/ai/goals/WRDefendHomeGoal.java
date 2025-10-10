@@ -19,6 +19,9 @@ public class WRDefendHomeGoal extends TargetGoal {
     private static final TargetingConditions CONDITIONS = TargetingConditions.forCombat().selector(FILTER);
     private final WRDragonEntity defender;
     private LivingEntity targetMob;
+    private int targetRecalcTimer = 0;
+    private static final int TARGET_RECALC_INTERVAL = 20; // 1 second
+    private boolean abortGoal = false;
 
     public WRDefendHomeGoal(WRDragonEntity defender)
     {
@@ -26,6 +29,7 @@ public class WRDefendHomeGoal extends TargetGoal {
         this.defender = defender;
         setFlags(EnumSet.of(Goal.Flag.TARGET));
         this.targetMob = null;
+        this.abortGoal = false;
     }
 
     @Override
@@ -34,15 +38,48 @@ public class WRDefendHomeGoal extends TargetGoal {
             return false;
         }
         this.targetMob = findPotentialTarget();
-        return this.targetMob != null;
+        return this.targetMob != null && defender.isWithinRestriction(this.targetMob);
     }
 
     @Override
     public void start() {
         super.start();
+        this.targetRecalcTimer = 0;
+        
         for (Mob mob : defender.level.getEntitiesOfClass(Mob.class, defender.getBoundingBox().inflate(defender.getRestrictRadius()), defender::isAlliedTo)) {
             mob.setTarget(this.targetMob);
         }
+    }
+
+    @Override
+    // Recalculate target and check if target is out of bounds once per second
+    // prevents dragon from ignoring everything else to chase something that left home radius
+    public void tick() {
+        this.targetRecalcTimer++;
+        if (this.targetRecalcTimer > TARGET_RECALC_INTERVAL) {
+            this.targetRecalcTimer = 0;
+            LivingEntity newTarget = findPotentialTarget();
+            if (newTarget != null && newTarget != this.targetMob) {    
+                this.targetMob = newTarget;
+                for (Mob mob : defender.level.getEntitiesOfClass(Mob.class, defender.getBoundingBox().inflate(defender.getRestrictRadius()), defender::isAlliedTo)) {
+                    mob.setTarget(this.targetMob);
+                }
+            } else if (! defender.isWithinRestriction(this.targetMob)) {
+                this.abortGoal = true;
+            }
+        }
+    }
+
+    @Override
+    public boolean canContinueToUse() {
+        return !this.abortGoal && super.canContinueToUse();
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        this.targetMob = null;
+        this.targetRecalcTimer = 0;
     }
 
     @Override
@@ -52,7 +89,7 @@ public class WRDefendHomeGoal extends TargetGoal {
     }
 
     public LivingEntity findPotentialTarget() {
-        return defender.level.getNearestEntity(
+        LivingEntity target = defender.level.getNearestEntity(
             LivingEntity.class,
             CONDITIONS,
             defender,
@@ -61,6 +98,7 @@ public class WRDefendHomeGoal extends TargetGoal {
             defender.getZ(),
             new AABB(defender.getRestrictCenter()).inflate(defender.getRestrictRadius())
         );
+        return target;
     }
 
 }
