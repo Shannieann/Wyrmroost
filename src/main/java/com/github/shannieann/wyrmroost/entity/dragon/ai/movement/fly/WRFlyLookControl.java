@@ -3,7 +3,6 @@ package com.github.shannieann.wyrmroost.entity.dragon.ai.movement.fly;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.control.LookControl;
-import net.minecraft.world.entity.ai.control.MoveControl;
 
 public class WRFlyLookControl extends LookControl {
 
@@ -23,11 +22,13 @@ public class WRFlyLookControl extends LookControl {
                 this.mob.yHeadRot = this.rotateTowards(this.mob.yHeadRot, rot + 20.0F, this.yMaxRotSpeed);
             });
             this.getXRotD().ifPresent((rot) -> {
-                this.mob.setXRot(this.rotateTowards(this.mob.getXRot(), rot + 10.0F, this.xMaxRotAngle));
+                // Commenting out as this makes it impossible for anything else to set xrot while flying. Unlike for y, there is no separate head xrot.
+                // this.mob.setXRot(this.rotateTowards(this.mob.getXRot(), rot + 10.0F, this.xMaxRotAngle));
             });
         } else {
             if (this.mob.getNavigation().isDone()) {
-                this.mob.setXRot(this.rotateTowards(this.mob.getXRot(), 0.0F, 5.0F));
+                // Commenting out as this makes it impossible for anything else to set xrot while flying. Unlike for y, there is no separate head xrot.
+                // this.mob.setXRot(this.rotateTowards(this.mob.getXRot(), 0.0F, 5.0F));
             }
 
             this.mob.yHeadRot = this.rotateTowards(this.mob.yHeadRot, this.mob.yBodyRot, this.yMaxRotSpeed);

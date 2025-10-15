@@ -4,7 +4,6 @@ import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
-import com.github.shannieann.wyrmroost.item.DragonEggItem;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundMoveControl;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
@@ -18,7 +17,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
-import java.util.Map;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.CompoundContainer;
@@ -46,8 +44,6 @@ import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.MilkBucketItem;
-import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.ChestBlock;
@@ -74,10 +70,11 @@ import java.util.EnumSet;
 import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 public class EntityRooststalker extends WRDragonEntity implements ITameable, IBreedable {
 
-    public static final int MAX_BREEDING_COOLDOWN = 6000; // 300 seconds, override
     public static final int MAX_SCAVENGING_COOLDOWN = 100; // 5 seconds
 
     public static final EntityDataAccessor<Integer> SCAVENGING_COOLDOWN = SynchedEntityData.defineId(EntityRooststalker.class, EntityDataSerializers.INT);
+
+    private static final float MOVEMENT_SPEED = 0.285f;
 
     private static final ResourceLocation EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes.png");
     private static final ResourceLocation EYES_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_sp.png");
@@ -152,7 +149,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return (Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonAttributesConfig.maxHealth.get())
-                .add(Attributes.MOVEMENT_SPEED, 0.285D)
+                .add(Attributes.MOVEMENT_SPEED, EntityRooststalker.MOVEMENT_SPEED)
                 .add(Attributes.ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonAttributesConfig.maxHealth.get()));
     }
 
@@ -315,6 +312,15 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     // ====================================
 
     @Override
+    public float getMovementSpeed() {
+        return MOVEMENT_SPEED;
+    }
+    @Override
+    public float getFlyingSpeed() { // Can't fly
+        return -1;
+    }
+
+    @Override
     public float getStepHeight() {
         return 1;
     }
@@ -369,7 +375,8 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
             float tameChance = (tamer.isCreative() || this.isHatchling()) ? 1.0f : 0.25f;
             boolean tamed = attemptTame(tameChance, tamer);
             if (tamed) {
-                getAttribute(MAX_HEALTH).setBaseValue(20);
+                this.playSound(SoundEvents.CAT_PURREOW, 2f, 0.7f);
+                getAttribute(MAX_HEALTH).setBaseValue(WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonAttributesConfig.maxHealth.get());
                 heal((float)getAttribute(MAX_HEALTH).getBaseValue());
             }
             return InteractionResult.SUCCESS;
@@ -381,21 +388,11 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     //      D.1) Taming: Inventory
     // ====================================
 
+    @Override
     public boolean canEquipHeldItem() {
         return true;
     }
-/* Unused?
-    @Nullable
-    @Override
-    public Predicate<ItemStack> canEquipSpecialItem() {
-        return (stack) -> true;
-    }
 
-    @Override
-    public DragonInventory createInv() {
-        return new DragonInventory(this, 1);
-    }
-*/
     // ====================================
     //      D.2) Taming: Breeding and Food
     // ====================================
@@ -419,7 +416,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
 
     @Override
     public int hatchTime() {
-        return WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonBreedingConfig.hatchTime.get()*20;
+        return WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonBreedingConfig.hatchTime.get();
     }
 
     @Override
@@ -441,13 +438,6 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     @SuppressWarnings({ "ConstantConditions", "null" })
     public boolean isFood(ItemStack stack) {
         return stack.getItem().isEdible() && stack.getFoodProperties(this) != null && stack.getFoodProperties(this).isMeat();
-    }
-
-    private boolean isDrink(ItemStack stack) {
-        if (stack.getItem() instanceof PotionItem || stack.getItem() instanceof MilkBucketItem) {
-            return true;
-        }
-        return false;
     }
 
     // ====================================
@@ -505,7 +495,8 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.2f, 8, 1.5f));
         goalSelector.addGoal(2, new LeapAtTargetGoal(this, 0.4F));
         goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.1d, true));
-        goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Player.class, 7f, 1.15f, 1f) {
+        goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Player.class, 7f, 1.15f, 1f,
+        EntitySelector.NO_CREATIVE_OR_SPECTATOR::test) {
             @Override
             public boolean canUse() {
                 return !isTame() && !getHeldItem().isEmpty() && super.canUse();
@@ -530,7 +521,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
             protected double getFollowDistance() {
                 return (double) getRestrictRadius();
             }
-        }.setAlertOthers(new Class[0]));
+        }.setAlertOthers(new Class[0])); // Like wolves, alert friends if hurt
         targetSelector.addGoal(4, new WRDefendHomeGoal(this));
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, true, target -> target instanceof Chicken || target instanceof Rabbit || target instanceof Turtle));
     }
@@ -568,7 +559,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
 
         @Override
         public boolean canUse() {
-            if (getScavengingCooldown() <= 0 && !isTame() && !hasHeldItem() && !isLeashed() && !isRiding() && !isVehicle() && !isInWater()) {
+            if (getScavengingCooldown() <= 0 && !isTame() && !hasHeldItem() && !isLeashed() && !isRiding() && !isVehicle() && !isInWater() && getTarget() == null) {
                 BlockPos foundChestPos = findNearestNonEmptyChest(blockPosition(), 12, 5);
 
                 if (this.facingDirection != null && foundChestPos != null && foundChestPos != BlockPos.ZERO && this.openPos != null) {

@@ -20,6 +20,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
@@ -53,6 +54,9 @@ import java.util.function.Predicate;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class EntityLesserDesertwyrm extends WRDragonEntity {
+
+    private static final float MOVEMENT_SPEED = 0.4f;
+
     public static final int BURROW_COOLDOWN_MAX = 200; // 10 seconds
 
     private static final EntityDataAccessor<Boolean> BURROWED = SynchedEntityData.defineId(EntityLesserDesertwyrm.class, EntityDataSerializers.BOOLEAN);
@@ -152,7 +156,7 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
     {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 4)
-                .add(MOVEMENT_SPEED, 0.4)
+                .add(Attributes.MOVEMENT_SPEED, EntityLesserDesertwyrm.MOVEMENT_SPEED)
                 .add(ATTACK_DAMAGE, 4);
     }
 
@@ -294,6 +298,15 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
     // ====================================
     //      C) Navigation and Control
     // ====================================
+
+    @Override
+    public float getMovementSpeed() {
+        return MOVEMENT_SPEED;
+    }
+    @Override
+    public float getFlyingSpeed() { // Can't fly
+        return -1;
+    }
 
     @Override
     public boolean speciesCanWalk() {

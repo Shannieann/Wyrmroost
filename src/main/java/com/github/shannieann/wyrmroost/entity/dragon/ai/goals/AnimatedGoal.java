@@ -7,7 +7,7 @@ public abstract class AnimatedGoal extends Goal {
     public WRDragonEntity entity;
     public String animationName;
     public int animationType; // 1 = loop, 2 = play once, 3 = hold on last frame
-    public int animationTime;
+    public int animationTime; // Keep in mind that AI goal ticks are oftn checked every 0.1 seconds, as opposed to the usual 0.05 seconds for general entity updates
     public int elapsedTime;
 
     public AnimatedGoal(WRDragonEntity entity){

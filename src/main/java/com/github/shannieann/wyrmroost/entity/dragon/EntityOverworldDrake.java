@@ -25,6 +25,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
@@ -73,6 +74,8 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     public static final int SADDLE_SLOT = 0;
     public static final int ARMOR_SLOT = 1;
     public static final int CHEST_SLOT = 2;
+
+    private static final float MOVEMENT_SPEED = 0.2125f;
 
     @Override
     public int numIdleAnimationVariants(){
@@ -161,7 +164,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonAttributesConfig.maxHealth.get())
-                .add(MOVEMENT_SPEED, 0.2125)
+                .add(Attributes.MOVEMENT_SPEED, EntityOverworldDrake.MOVEMENT_SPEED)
                 .add(KNOCKBACK_RESISTANCE, 0.75)
                 .add(FOLLOW_RANGE, 20)
                 .add(ATTACK_KNOCKBACK, 2.85)
@@ -336,7 +339,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     @Override
     public float getTravelSpeed()
     {
-        float speed = (float) getAttributeValue(MOVEMENT_SPEED);
+        float speed = (float) getAttributeValue(Attributes.MOVEMENT_SPEED);
         //if (canBeControlledByRider()) speed += 0.15f;
         return speed + momentum;
     }
@@ -364,8 +367,14 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
         return true;
     }
 
-
-
+    @Override
+    public float getMovementSpeed() {
+        return MOVEMENT_SPEED;
+    }
+    @Override
+    public float getFlyingSpeed() { // Can't fly
+        return -1;
+    }
 
     // ====================================
     //      C.1) Navigation and Control: Flying

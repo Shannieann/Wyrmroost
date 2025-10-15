@@ -245,20 +245,20 @@ public final class WRServerConfig {
             builder.push("canari_wyvern");
             spawningConfig = new SpawningConfig(builder,
                     2,
-                    4, // spawn in flocks
-                    7,
+                    3, // spawn in flocks
+                    5,
                     Collections.singletonList("SWAMP"),
                     Collections.singletonList("")
             );
-            dragonAttributesConfig = new DragonAttributesConfig(builder, // TODO: these values are all wrong??
-            10,
-            4,
+            dragonAttributesConfig = new DragonAttributesConfig(builder,
+            12,
+            3,
             10
         );
             dragonBreedingConfig = new DragonBreedingConfig(builder,
-            2,
-            1800,
-            1600,
+            0,
+            300,
+            300,
             5);
             builder.pop();
         }
@@ -363,8 +363,8 @@ public final class WRServerConfig {
             builder.push("rooststalker");
             spawningConfig = new SpawningConfig(builder,
                     5,
-                    2,
-                    10,
+                    1,
+                    3,
                     Collections.singletonList(""),
                     Collections.singletonList("minecraft:forest"));
             dragonAttributesConfig = new DragonAttributesConfig(builder,

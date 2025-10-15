@@ -65,7 +65,7 @@ public abstract class WRDragonRender<T extends WRDragonEntity> extends GeoEntity
         if (model.getBone(mainBoneName).isPresent()) {
             GeoBone bone = model.getBone(mainBoneName).get();
 
-            final float newRot = defaultXRot + (animatable.getDragonXRotation()/57);
+            final float newRot = defaultXRot + (animatable.getXRot()/57);
             bone.setRotationX(newRot);
 
         }

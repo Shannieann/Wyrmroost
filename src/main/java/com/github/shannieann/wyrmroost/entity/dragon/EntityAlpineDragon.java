@@ -14,6 +14,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
@@ -43,26 +44,8 @@ import javax.annotation.Nullable;
 public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBreedable {
 
     public static final int MAX_BREEDING_COOLDOWN = 12000; // 600 seconds, override
-
-/*
-    private static final ResourceLocation CLOSED_RED = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_red.png");
-    private static final ResourceLocation CLOSED_BLACK = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_black.png");
-    private static final ResourceLocation CLOSED_GREEN = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_green.png");
-    private static final ResourceLocation CLOSED_BLUE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_blue.png");
-    private static final ResourceLocation CLOSED_ALBINO = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_albino.png");
-
-    private static final ResourceLocation EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes.png");
-    private static final ResourceLocation EYES_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_spe.png");
-
-    // Eye texture mapping for different variant colors
-    private static final Map<String, ResourceLocation> CLOSED_EYE_TEXTURE_MAP = Map.of(
-        "albino", CLOSED_ALBINO,
-        "black", CLOSED_BLACK,
-        "blue", CLOSED_BLUE,
-        "green", CLOSED_GREEN,
-        "red", CLOSED_RED
-    );
-*/
+    private static final float MOVEMENT_SPEED = 0.22f;
+    private static final float FLYING_SPEED = 0.185f;
 
     // =========================
     // A. Entity Data + Attributes
@@ -114,8 +97,8 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonAttributesConfig.maxHealth.get())
-                .add(MOVEMENT_SPEED, 0.22)
-                .add(FLYING_SPEED, 0.185f)
+                .add(Attributes.MOVEMENT_SPEED, EntityAlpineDragon.MOVEMENT_SPEED)
+                .add(Attributes.FLYING_SPEED, EntityAlpineDragon.FLYING_SPEED)
                 .add(ForgeMod.SWIM_SPEED.get(), 0.15F)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonAttributesConfig.attackDamage.get())
@@ -249,6 +232,15 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
     @Override
     public boolean speciesCanWalk() {
         return true;
+    }
+
+    @Override
+    public float getMovementSpeed() {
+        return MOVEMENT_SPEED;
+    }
+    @Override
+    public float getFlyingSpeed() {
+        return FLYING_SPEED;
     }
 
     // ====================================

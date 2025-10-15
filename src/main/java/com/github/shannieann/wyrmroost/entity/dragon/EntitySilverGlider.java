@@ -3,9 +3,9 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDefendHomeGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDragonBreedGoal;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRAvoidEntityGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRFollowOwnerGoal;
 import com.github.shannieann.wyrmroost.network.SGGlidePacket;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
@@ -20,10 +20,21 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.ai.goal.TemptGoal;
+import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
+import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.animal.Chicken;
+import net.minecraft.world.entity.animal.Cod;
+import net.minecraft.world.entity.animal.Rabbit;
+import net.minecraft.world.entity.animal.Salmon;
+import net.minecraft.world.entity.animal.TropicalFish;
+import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -57,6 +68,9 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
 
     public TemptGoal temptGoal;
     public boolean isGliding; // controlled by player-gliding.
+
+    private static final float MOVEMENT_SPEED = 0.23f;
+    private static final float FLYING_SPEED = 0.12f;
 
     public EntitySilverGlider(EntityType<? extends WRDragonEntity> dragon, Level level)
     {
@@ -96,13 +110,18 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
         super.registerGoals();
 
         goalSelector.addGoal(3, temptGoal = new TemptGoal(this, 0.8d,  Ingredient.of(ItemTags.FISHES), true));
-        goalSelector.addGoal(4, new WRAvoidEntityGoal<>(this, Player.class, 10f, 0.8));
+        goalSelector.addGoal(4, new AvoidEntityGoal<Player>(this, Player.class, 10f, 1.0, 1.1));
         goalSelector.addGoal(5, new WRDragonBreedGoal(this));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
         goalSelector.addGoal(7, new SwoopGoal());
         //goalSelector.addGoal(8, new WRRandomLiftOffGoal(this, 1));
         goalSelector.addGoal(9, new LookAtPlayerGoal(this, LivingEntity.class, 7f));
         goalSelector.addGoal(10, new RandomLookAroundGoal(this));
+
+        targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this)); // Does it defend owner?
+        targetSelector.addGoal(2, new OwnerHurtTargetGoal(this)); // Does it attack?
+        targetSelector.addGoal(4, new WRDefendHomeGoal(this)); // Does it defend home?
+        targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, true, target -> target instanceof Salmon || target instanceof Cod || target instanceof TropicalFish));
     }
 
     /*
@@ -311,6 +330,15 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     }
 
     @Override
+    public float getMovementSpeed() {
+        return MOVEMENT_SPEED;
+    }
+    @Override
+    public float getFlyingSpeed() {
+        return FLYING_SPEED;
+    }
+
+    @Override
     public boolean isFood(ItemStack stack)
     {
         return stack.is(ItemTags.FISHES);
@@ -351,8 +379,8 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 20)
-                .add(MOVEMENT_SPEED, 0.23)
-                .add(FLYING_SPEED, 0.12);
+                .add(Attributes.MOVEMENT_SPEED, EntitySilverGlider.MOVEMENT_SPEED)
+                .add(Attributes.FLYING_SPEED, EntitySilverGlider.FLYING_SPEED);
     }
 
     @Override

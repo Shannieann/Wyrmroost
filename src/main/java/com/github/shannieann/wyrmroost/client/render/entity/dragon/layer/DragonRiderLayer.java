@@ -99,7 +99,7 @@ public class DragonRiderLayer<T extends WRDragonEntity> extends GeoLayerRenderer
         vec.transform(bone.getModelRotationMat());
 
         // Minus one because one is the default value of the vector if there was no rotation.
-        dragon.cameraRotVector.set(vec.x() - 1f +  dragon.getDragonXRotation(), vec.y() - 1f, vec.z() - 1f);
+        dragon.cameraRotVector.set(vec.x() - 1f +  dragon.getXRot(), vec.y() - 1f, vec.z() - 1f);
     }
 
 
