@@ -30,10 +30,7 @@ public class WREntitySpawning {
             registerEntityWorldSpawn(WREntityTypes.SILVER_GLIDER.get(), WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig, MobCategory.CREATURE, event);
         }
 
-        /*if (WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.biomeWhitelist, biomeKey)) {
-            registerEntityWorldSpawn(WREntityTypes.CANARI_WYVERN.get(), WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig, MobCategory.CREATURE, event);
-        }
-        
+        /*
 
         if (WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.ROYAL_RED.get(), WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig, MobCategory.CREATURE, event);
@@ -42,11 +39,21 @@ public class WREntitySpawning {
 
         //Butterfly Leviathan
         if (WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig.spawnRate.get() > 0
-            && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig.biomeTypes,
-            WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig.biomeWhitelist, biomeKey)) {
+                && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig.biomeTypes,
+                WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig.biomeWhitelist, biomeKey)) {
+
             registerEntityWorldSpawn(WREntityTypes.BUTTERFLY_LEVIATHAN.get(),
-            WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig,
-            MobCategory.CREATURE, event);
+                WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.spawningConfig,
+                MobCategory.CREATURE, event);
+        }
+
+        if (WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.spawnRate.get() > 0
+                && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.biomeTypes,
+                WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig.biomeWhitelist, biomeKey)) {
+
+            registerEntityWorldSpawn(WREntityTypes.CANARI_WYVERN.get(),
+                WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.spawningConfig,
+                MobCategory.CREATURE, event);
         }
 
         //Lesser DesertWyrm
@@ -54,17 +61,18 @@ public class WREntitySpawning {
                 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.biomeTypes,
                 WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.LESSER_DESERTWYRM.get(),
-                    WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig,
-                    MobCategory.CREATURE, event);
+                WRServerConfig.SERVER.ENTITIES.LESSER_DESERTWYRM.spawningConfig,
+                MobCategory.CREATURE, event);
         }
 
         //Overworld Drake
         if (WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.spawningConfig.spawnRate.get() > 0
                 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.spawningConfig.biomeTypes,
                 WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.spawningConfig.biomeWhitelist, biomeKey)) {
+
             registerEntityWorldSpawn(WREntityTypes.OVERWORLD_DRAKE.get(),
-                    WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.spawningConfig,
-                    MobCategory.CREATURE, event);
+                WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.spawningConfig,
+                MobCategory.CREATURE, event);
         }
 
         //Rooststalker
@@ -73,8 +81,8 @@ public class WREntitySpawning {
                 WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.spawningConfig.biomeWhitelist, biomeKey)) {
 
             registerEntityWorldSpawn(WREntityTypes.ROOSTSTALKER.get(),
-                    WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.spawningConfig,
-                    MobCategory.CREATURE, event);
+                WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.spawningConfig,
+                MobCategory.CREATURE, event);
         }
     }
 

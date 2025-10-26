@@ -17,14 +17,14 @@ public class WRIdleGoal extends AnimatedGoal{
                 && this.entity.isIdling()
                 && !this.entity.isAggressive()
                 && ! this.entity.getSleeping()
-                && ! this.entity.isRiding()
+                && ! this.entity.isPassenger()
                 && ! this.entity.isVehicle();
     }
 
     @Override
     public void start(){
         int randInt = entity.getRandom().nextInt(this.entity.numIdleAnimationVariants());
-        super.start(this.entity.getRandomIdleAnimation(randInt), 1, this.entity.getIdleAnimationTime(randInt));
+        super.start(this.entity.getRandomIdleAnimation(randInt), 3, this.entity.getIdleAnimationTime(randInt));
     }
 
     @Override
@@ -36,7 +36,7 @@ public class WRIdleGoal extends AnimatedGoal{
     public boolean canContinueToUse(){
         return ! this.entity.isAggressive()
                 && this.entity.isIdling()
-                && ! this.entity.isRiding()
+                && ! this.entity.isPassenger()
                 && ! this.entity.isVehicle()
                 && super.canContinueToUse();
     }

@@ -15,6 +15,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRSleepGoal;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -29,6 +30,7 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 
+import static net.minecraft.world.entity.ai.attributes.Attributes.FLYING_SPEED;
 import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
 import static net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED;
 
@@ -36,6 +38,8 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED
 // Simple Entity really, just bob and down in the same spot, and land to sleep at night. Easy.
 public class EntityCoinDragon extends WRDragonEntity
 {
+
+    private static final float FLYING_SPEED = 0.02f;
 
     public EntityCoinDragon(EntityType<? extends EntityCoinDragon> coindragon, Level level) {
         super(coindragon, level);
@@ -69,7 +73,7 @@ public class EntityCoinDragon extends WRDragonEntity
     {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 4)
-                .add(MOVEMENT_SPEED, 0.02);
+                .add(Attributes.FLYING_SPEED, EntityCoinDragon.FLYING_SPEED);
     }
 
     @Override
@@ -213,6 +217,15 @@ public class EntityCoinDragon extends WRDragonEntity
     // ====================================
     //      C) Navigation and Control
     // ====================================
+
+    @Override
+    public float getMovementSpeed() {
+        return -1; // Can't walk
+    }
+    @Override
+    public float getFlyingSpeed() { 
+        return FLYING_SPEED;
+    }
 
     @Override
     public boolean speciesCanFly() {

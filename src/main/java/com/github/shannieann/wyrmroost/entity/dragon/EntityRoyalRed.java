@@ -23,6 +23,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
@@ -51,7 +52,8 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITameable {
 
-    public static final int MAX_BREEDING_COOLDOWN = 24000; // 1200 seconds, override
+    private static final float MOVEMENT_SPEED = 0.22f;
+    private static final float FLYING_SPEED = 0.13f; // I'm assuming it's a good amount less than alpine?
 
     public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> KNOCKED_OUT = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
@@ -77,26 +79,6 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     public static final int ATTACK_QUEUE_TIME_1 = 9;
     public static final int ATTACK_QUEUE_TIME_2 = 9;
     public static final int ATTACK_QUEUE_TIME_3 = 25;
-
-    /*
-    private static final ResourceLocation CLOSED_RED = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_red.png");
-    private static final ResourceLocation CLOSED_BLACK = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_black.png");
-    private static final ResourceLocation CLOSED_GREEN = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_green.png");
-    private static final ResourceLocation CLOSED_BLUE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_blue.png");
-    private static final ResourceLocation CLOSED_ALBINO = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_closed_eyes_albino.png");
-
-    private static final ResourceLocation EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes.png");
-    private static final ResourceLocation EYES_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_spe.png");
-
-    // Eye texture mapping for different variant colors
-    private static final Map<String, ResourceLocation> CLOSED_EYE_TEXTURE_MAP = Map.of(
-        "albino", CLOSED_ALBINO,
-        "black", CLOSED_BLACK,
-        "blue", CLOSED_BLUE,
-        "green", CLOSED_GREEN,
-        "red", CLOSED_RED
-    );
-*/
 
 /*
     //TODO: Breath + Nether Portals
@@ -175,7 +157,8 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.maxHealth.get())
-                .add(MOVEMENT_SPEED, 0.22F)
+                .add(Attributes.MOVEMENT_SPEED, EntityRoyalRed.MOVEMENT_SPEED)
+                .add(Attributes.FLYING_SPEED, EntityRoyalRed.FLYING_SPEED)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.attackDamage.get())
                 .add(FOLLOW_RANGE, 70)
@@ -441,6 +424,15 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
 
     public boolean speciesCanWalk() {
         return true;
+    }
+
+    @Override
+    public float getMovementSpeed() {
+        return MOVEMENT_SPEED;
+    }
+    @Override
+    public float getFlyingSpeed() {
+        return FLYING_SPEED;
     }
 
     // ====================================

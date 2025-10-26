@@ -30,8 +30,7 @@ public class WRRunWhenLosingGoal extends Goal {
     @Override
     public boolean canUse() {
         if (this.dragon.getHealth()/this.dragon.getMaxHealth() > healthPercent
-            || this.dragon.isImmobile()
-            || this.dragon.isRiding()
+            || this.dragon.isPassenger()
             || this.dragon.getPassengers().size() > 0)
         {
             return false;

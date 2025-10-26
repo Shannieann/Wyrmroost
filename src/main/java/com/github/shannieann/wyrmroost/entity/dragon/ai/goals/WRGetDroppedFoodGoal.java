@@ -62,8 +62,7 @@ public class WRGetDroppedFoodGoal extends Goal {
 
         if ((this.eatOnPickup && this.dragon.getEatingCooldown() > 0)
             || this.dragon.getTarget() != null
-            || this.dragon.isImmobile()
-            || this.dragon.isRiding()
+            || this.dragon.isPassenger()
             || this.dragon.getPassengers().size() > 0
             || this.dragon.getSitting())
         {
@@ -87,8 +86,7 @@ public class WRGetDroppedFoodGoal extends Goal {
     public boolean canContinueToUse() {
         if (this.dragon.getEatingCooldown() > 0
             || this.dragon.getTarget() != null
-            || this.dragon.isImmobile()
-            || this.dragon.isRiding()
+            || this.dragon.isPassenger()
             || this.dragon.getPassengers().size() > 0)
         {
             return false;
@@ -105,7 +103,10 @@ public class WRGetDroppedFoodGoal extends Goal {
     public void start() {
         if (this.targetItemEntity != null) {
             this.itemAt = this.targetItemEntity.blockPosition();
-            this.dragon.getNavigation().moveTo(this.targetItemEntity, 1.1D);
+            this.dragon.getNavigation().createPath(this.targetItemEntity, 1);
+            if (this.dragon.getNavigation().getPath() == null) {
+                this.dragon.getNavigation().moveTo(this.targetItemEntity, 1.1D);
+            }
         }
     }
 
@@ -114,7 +115,12 @@ public class WRGetDroppedFoodGoal extends Goal {
 
         if (this.targetItemEntity != null && this.targetItemEntity.isAlive()) { // item exists
 
-            this.dragon.getNavigation().moveTo(this.targetItemEntity, 1.1D);
+            if (this.dragon.getNavigation().getPath() == null) {
+                this.dragon.getNavigation().createPath(this.targetItemEntity, 1);
+                if (this.dragon.getNavigation().getPath() == null) {
+                    this.dragon.getNavigation().moveTo(this.targetItemEntity, 1.1D);
+                }
+            }
             double d2 = this.dragon.distanceToSqr(this.targetItemEntity);
 
             // standard pickup radius
@@ -125,12 +131,12 @@ public class WRGetDroppedFoodGoal extends Goal {
                         if (this.dragon.level.isClientSide) {
                             return;
                         }
-                        if (this.dragon.getEatingCooldown() < 0) {
-                            ItemStack itemStackOneItem = splitTargetItemEntity();
-                            // Be extra careful here, can crash game if try to delete null item
-                            if (itemStackOneItem != ItemStack.EMPTY && this.oneItemEntity != null) {
+                        if (this.dragon.getEatingCooldown() <= 0) {
+                            ItemStack oldItemStack = this.targetItemEntity.getItem();
+                            ItemStack itemStackOneItem = oldItemStack.split(1);
+                            if (itemStackOneItem != ItemStack.EMPTY) {
                                 this.dragon.eat(this.dragon.level, itemStackOneItem);
-                                this.oneItemEntity.discard();
+                                this.targetItemEntity.setItem(oldItemStack);
                             }
                         }
                         stop();

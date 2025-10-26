@@ -65,7 +65,7 @@ public abstract class WRDragonRender<T extends WRDragonEntity> extends GeoEntity
         if (model.getBone(mainBoneName).isPresent()) {
             GeoBone bone = model.getBone(mainBoneName).get();
 
-            final float newRot = defaultXRot + (animatable.getDragonXRotation()/57);
+            final float newRot = defaultXRot + (animatable.getXRot()/57); // TODO: Is this what's causing xrot to not work on flying dragons?
             bone.setRotationX(newRot);
 
         }

@@ -20,6 +20,7 @@ public class RenderRooststalker extends WRDragonRender<EntityRooststalker> {
     }
 
     @Override
+    // TODO: Add aging. This currently does nothing.
     public void renderLate(EntityRooststalker animatable, PoseStack poseStack, float partialTick, MultiBufferSource bufferSource,
                            VertexConsumer buffer, int packedLight, int packedOverlay, float red, float green, float blue,
                            float alpha) {

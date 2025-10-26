@@ -13,8 +13,8 @@ import static com.github.shannieann.wyrmroost.util.WRModUtils.TEXTURE_FOLDER;
 
 public class ModelSilverGlider<T extends EntitySilverGlider> extends AnimatedGeoModel<T> {
 
-    private static final ResourceLocation modelResource = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/canari_wyvern.geo.json");
-    private static final ResourceLocation animationResource = new ResourceLocation(Wyrmroost.MOD_ID, "animations/canari_wyvern.animation.json");
+    private static final ResourceLocation modelResource = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/silver_glider.geo.json");
+    private static final ResourceLocation animationResource = new ResourceLocation(Wyrmroost.MOD_ID, "animations/silver_glider.animation.json");
 
     @Override
     public ResourceLocation getModelLocation(T object) {

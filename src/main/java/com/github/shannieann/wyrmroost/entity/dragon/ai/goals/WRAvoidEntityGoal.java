@@ -1,3 +1,4 @@
+/* Nothing uses this? Not much point in having it, overriding base AvoidEntityGoal for additional canUse() checks is easier
 package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
 
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
@@ -67,3 +68,4 @@ public class WRAvoidEntityGoal<T extends LivingEntity> extends Goal
         avoidTarget = null;
     }
 }
+*/

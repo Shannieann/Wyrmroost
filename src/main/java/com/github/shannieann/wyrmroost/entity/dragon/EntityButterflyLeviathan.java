@@ -31,6 +31,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.target.*;
@@ -104,14 +105,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IBreedab
     public static final int WATER_ATTACK_QUEUE_TIME_2 = 6;
     public final int idleAnimation1Time = 80;
 
-    // TODO: Upload all closed eye textures
-    // Eye texture mapping for different variant colors
-    private static final Map<String, ResourceLocation> CLOSED_EYE_TEXTURE_MAP = Map.of(
-        "baby", new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png"),
-        "blue", new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png"),
-        "purple", new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png"),
-        "special", new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png")
-    );
+    private static final float MOVEMENT_SPEED = 0.10f;
 
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
         super(entityType, level);
@@ -174,7 +168,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IBreedab
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonAttributesConfig.maxHealth.get())
-                .add(MOVEMENT_SPEED, 0.10F)
+                .add(Attributes.MOVEMENT_SPEED, EntityButterflyLeviathan.MOVEMENT_SPEED)
                 .add(ForgeMod.SWIM_SPEED.get(), 0.15F)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonAttributesConfig.attackDamage.get())
@@ -421,7 +415,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IBreedab
     public float getTravelSpeed() {
         //@formatter:off
         return isInWater() ? (float) getAttributeValue(ForgeMod.SWIM_SPEED.get())
-                : (float) getAttributeValue(MOVEMENT_SPEED);
+                : (float) getAttributeValue(Attributes.MOVEMENT_SPEED);
         //@formatter:on
     }
 
@@ -447,6 +441,15 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IBreedab
     @Override
     public float getStepHeight() {
         return 3;
+    }
+
+    @Override
+    public float getMovementSpeed() {
+        return MOVEMENT_SPEED;
+    }
+    @Override
+    public float getFlyingSpeed() { // Can't fly
+        return -1;
     }
 
     // ====================================
