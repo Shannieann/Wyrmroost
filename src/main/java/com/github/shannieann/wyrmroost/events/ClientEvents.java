@@ -6,7 +6,6 @@ import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.*;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon_egg.RenderDragonEgg;
 import com.github.shannieann.wyrmroost.client.render.entity.effect.RenderLightningNova;
-import com.github.shannieann.wyrmroost.client.render.entity.player.DragonOnPlayerShoulderLayer;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.BreathWeaponRenderer;
 import com.github.shannieann.wyrmroost.client.render.entity.projectile.GeodeTippedArrowRenderer;
 import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
@@ -27,6 +26,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -75,13 +75,6 @@ public class ClientEvents {
     private static void clientSetup(final FMLClientSetupEvent event) {
         WRKeybind.registerKeys();
         WRIO.screenSetup();
-        event.enqueueWork(() -> {
-            Minecraft.getInstance().getEntityRenderDispatcher().getSkinMap().forEach((name, renderer) -> {
-                if (renderer instanceof PlayerRenderer playerRenderer) {
-                    playerRenderer.addLayer(new DragonOnPlayerShoulderLayer(playerRenderer));
-                }
-            });
-        });
     }
 
     private static void bakeParticles(ParticleFactoryRegisterEvent event) {

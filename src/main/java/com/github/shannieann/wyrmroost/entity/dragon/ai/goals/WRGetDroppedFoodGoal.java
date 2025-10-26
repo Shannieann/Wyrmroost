@@ -62,8 +62,7 @@ public class WRGetDroppedFoodGoal extends Goal {
 
         if ((this.eatOnPickup && this.dragon.getEatingCooldown() > 0)
             || this.dragon.getTarget() != null
-            || this.dragon.isImmobile()
-            || this.dragon.isRiding()
+            || this.dragon.isPassenger()
             || this.dragon.getPassengers().size() > 0
             || this.dragon.getSitting())
         {
@@ -87,8 +86,7 @@ public class WRGetDroppedFoodGoal extends Goal {
     public boolean canContinueToUse() {
         if (this.dragon.getEatingCooldown() > 0
             || this.dragon.getTarget() != null
-            || this.dragon.isImmobile()
-            || this.dragon.isRiding()
+            || this.dragon.isPassenger()
             || this.dragon.getPassengers().size() > 0)
         {
             return false;

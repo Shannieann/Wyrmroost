@@ -29,12 +29,9 @@ import net.minecraft.world.entity.ai.goal.TemptGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
-import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.animal.Cod;
-import net.minecraft.world.entity.animal.Rabbit;
 import net.minecraft.world.entity.animal.Salmon;
 import net.minecraft.world.entity.animal.TropicalFish;
-import net.minecraft.world.entity.animal.Turtle;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
@@ -143,7 +140,7 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     {
         super.aiStep();
 
-        if (isGliding && !isRiding()) isGliding = false;
+        if (isGliding && !isPassenger()) isGliding = false;
 
         sitTimer.add((isInSittingPose() || getSleeping())? 0.2f : -0.2f);
         sleepTimer.add(getSleeping()? 0.05f : -0.1f);
@@ -295,19 +292,6 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     }
 
     @Override
-    public Vec3 getRidingPosOffset(int passengerIndex)
-    {
-        return new Vec3(0, 1.81, 0.5d);
-    }
-
-
-    @Override
-    public boolean shouldUseFlyingNavigator()
-    {
-        return isRiding()? isDiving() : super.shouldUseFlyingNavigator();
-    }
-
-    @Override
     public int getHeadRotSpeed()
     {
         return 30;
@@ -316,17 +300,12 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     @Override
     public int getYawRotationSpeed()
     {
-        return isUsingFlyingNavigator()? 5 : 75;
+        return isUsingFlyingNavigator() ? 5 : 75;
     }
 
     @Override
     public boolean speciesCanSwim() {
-        return false;
-    }
-
-    public boolean isDiving()
-    {
-        return isGliding;
+        return true;
     }
 
     @Override
@@ -423,7 +402,7 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
         public boolean canUse()
         {
             if (!isUsingFlyingNavigator()) return false;
-            if (isRiding()) return false;
+            if (isPassenger()) return false;
             if (getRandom().nextDouble() > 0.001) return false;
             if (level.getFluidState(this.pos = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, blockPosition()).below()).isEmpty())
                 return false;

@@ -57,6 +57,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -159,14 +160,17 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      */
     public static final EntityDataAccessor<Integer> GENDER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
-    // public static final EntityDataAccessor<BlockPos> HOME_POS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BLOCK_POS);
-    // There is no nbt.getBlockPos("HomePos") method, so homePos is erased every time you restart the game. Using three INTs instead
     public static final EntityDataAccessor<Integer> HOME_X = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> HOME_Y = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> HOME_Z = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<Boolean> SLEEPING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> SITTING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
+
+    // Used for custom riding system (dragon riding player only, not other way around)
+    // Mostly because I can't get vanilla riding system to work for dragons riding players for some reason
+    // 0 = not riding player, 1 = left shoulder, 2 = center/head, 3 = right shoulder
+    public static final EntityDataAccessor<Integer> POS_ON_PLAYER = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
     public static final EntityDataAccessor<String> VARIANT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.STRING);
 
@@ -351,7 +355,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
         // PRIORITY 3: Sleeping (overrides movement in predicateBasicLocomotion) (Handled by WRSleepGoal)
-        // PRIORITY 4: Sitting (overrides movement in predicateBasicLocomotion) (Handled by WRSitGoal)
+        // PRIORITY 4: Sitting (overrides movement in predicateBasicLocomotion) (Handled by WRSitGoal/WRRidePlayerGoal)
         // PRIORITY 5: Random idle animations if not moving. Cannot be sitting/sleeping if we reached this code (handled by WRIdleGoal)
 
         // PRIORITY 6: Default base pose (when no other animation is needed)
@@ -362,7 +366,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
 
         // Don't do locomotion animation if dragon is doing something special
-        if (this.getSleeping() || this.getSitting() || this.getBreaching()) {
+        if (this.getSleeping() || this.getSitting() || this.isRidingPlayer() ||this.getBreaching()) {
             return PlayState.STOP;
         }
 
@@ -508,6 +512,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         entityData.define(SLEEPING, false);
         entityData.define(SITTING, false);
+        entityData.define(POS_ON_PLAYER, 0);
 
         entityData.define(ARMOR, ItemStack.EMPTY);
         entityData.define(SADDLED, false);
@@ -541,7 +546,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         nbt.putInt("SleepingCooldown",getSleepingCooldown());
 
         nbt.putInt("EatingCooldown",getEatingCooldown());
-
+        nbt.putInt("PosOnPlayer",getPosOnPlayer());
         nbt.putInt("BreedingCooldown",getBreedingCooldown());
         nbt.putInt("BreedingCount",getBreedingCount());
 
@@ -565,7 +570,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         setSleepingCooldown(nbt.getInt("SleepingCooldown"));
 
         setEatingCooldown(nbt.getInt("EatingCooldown"));
-
+        setPosOnPlayer(nbt.getInt("PosOnPlayer"));
         setBreedingCooldown(nbt.getInt("BreedingCooldown"));
         setBreedingCount(nbt.getInt("BreedingCount"));
 
@@ -1137,6 +1142,32 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     @Override
+    // Don't push owner when riding
+    public boolean canCollideWith(Entity pEntity) {
+        return (! isRidingPlayer() || ! (pEntity == this.getOwner())) && super.canCollideWith(pEntity);
+    }
+
+    @Override
+    public boolean isPushable()
+    {
+        return ! isRidingPlayer() && super.isPushable();
+    }
+
+    @Override
+    public boolean isPickable()
+    {
+        return super.isPickable() && ! isRidingPlayer() && ! isLeashed() && ! isVehicle() && ! isPassenger();
+    }
+
+    @Override
+    protected void doPush(Entity entityIn)
+    {
+        if (! isRidingPlayer() && super.isPushable()) {
+            super.doPush(entityIn);
+        }
+    }
+
+    @Override
     public ItemStack getPickedResult(HitResult target)
     {
         return new ItemStack(ForgeSpawnEggItem.fromEntityType(getType()));
@@ -1169,11 +1200,18 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     public int getBreedingCooldown() {
         return entityData.get(BREEDING_COOLDOWN);
-
     }
 
     public void setBreedingCooldown(int cooldown) {
         entityData.set(BREEDING_COOLDOWN, cooldown);
+    }
+
+    public int getPosOnPlayer() {
+        return entityData.get(POS_ON_PLAYER);
+    }
+
+    public void setPosOnPlayer(int pos) {
+        entityData.set(POS_ON_PLAYER, pos);
     }
 
     // ====================================
@@ -1182,12 +1220,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public void tick() {
 
-
         super.tick();
         setEatingCooldown(Math.max(getEatingCooldown()-1,0));
         setBreedingCooldown(Math.max(getBreedingCooldown()-1,0));
         setSleepingCooldown(Math.max(getSleepingCooldown()-1,0));
-        
+
         // Check if attack animation has completed
         if (attackAnimationStartTick >= 0 && getAnimationInOverride()) {
             int elapsedTicks = tickCount - attackAnimationStartTick;
@@ -1198,6 +1235,35 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 setAnimationInOverride(false);
                 attackAnimationStartTick = -1;
             }
+        }
+
+        if (isRidingPlayer()) {
+
+            // animations are handled by WRRidePlayerGoal.java
+            // This controls riding vs not riding and dragon position
+
+            setDeltaMovement(Vec3.ZERO);
+            Player owner = (Player) this.getOwner();
+
+            if (owner == null || ! owner.isAlive()) {
+                stopRidingPlayer();
+                return;
+            }
+    
+            if ((owner.isShiftKeyDown() && ! owner.isOnGround() && ! owner.getAbilities().flying)
+                || owner.isFallFlying() // TODO: Override this for silver glider
+                || (! speciesCanSwim() && isInWater()))
+            {
+                stopRidingPlayer();
+                return;
+            }
+
+            this.setPos(getPosByDragonAndPlayer(owner));
+            float yrot = owner.getYRot();
+            float xrot = 0.0f; // TODO: If silver glider, we need to properly set this
+            this.setYRot(yrot);
+            this.setXRot(xrot);
+            this.setYHeadRot(yrot);
         }
 
         NavigationType properNavigator = getProperNavigationType();
@@ -1346,6 +1412,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     }
 
+    // Needs to be overridden by child classes!
+    public Vec3 getPosByDragonAndPlayer(Player owner) {
+        return owner.position();
+    }
 
     public void clearAI() {
         jumping = false;
@@ -1360,8 +1430,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         setSpeed(0);
         setYya(0);
     }
-
-
 
     // ====================================
     //      B.1) Tick and AI: Attack and Hurt
@@ -1409,7 +1477,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 amount *= 0.5f;
             }
         }
-        if (source == DamageSource.CACTUS ||
+        if ((this.dragonCanFly() && source == DamageSource.FALL) ||
+            source == DamageSource.CACTUS ||
             source == DamageSource.FLY_INTO_WALL ||
             source == DamageSource.HOT_FLOOR ||
             source == DamageSource.FREEZE ||
@@ -1421,18 +1490,20 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             source == DamageSource.ON_FIRE) {
             return false;
         }
-        if (! level.isClientSide) {
-            setSleeping(false);
+
+        boolean wasHurt =super.hurt(source, amount);
+        if (wasHurt) {
+            stopRidingPlayer();
             setSitting(false);
+            setSleeping(false);
         }
-        return super.hurt(source, amount);
+        return wasHurt;
     }
 
     @Deprecated
     public boolean isImmuneToArrows() {
         return false;
     }
-
 
     public List<LivingEntity> getEntitiesNearby(double radius, Predicate<LivingEntity> filter)
     {
@@ -1451,12 +1522,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return !isAlliedTo(target);
     }
 
-
-
     @Override
     public boolean isInvulnerableTo(DamageSource source)
     {
-        if (isRiding() && source == DamageSource.IN_WALL) return true;
+        if (isRidingPlayer() && source == DamageSource.IN_WALL) return true;
         if (isImmuneToArrows() && source == DamageSource.CACTUS) return true;
         return super.isInvulnerableTo(source);
     }
@@ -1500,7 +1569,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         //3.- Ground
 
         // If dragon is riding something else (ex: player), use ground navigator so it doesn't start flying.
-        if (isRiding()) {
+        if (isPassenger()) {
             return NavigationType.GROUND;
         }
 
@@ -1732,12 +1801,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return getBoundingBox().move(Vec3.directionFromRotation(0, yBodyRot).scale(offset));
     }
 
-    public boolean isRiding()
-    {
-        return getVehicle() != null;
-    }
-
-
     @Override
     public boolean isSuppressingSlidingDownLadder()
     {
@@ -1892,34 +1955,87 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //      C.3) Navigation and Control: Riding
     // ====================================
 
-    public abstract boolean speciesCanBeRidden();
+    // ====================================
+    // Subsection 1: Dragon riding player
+    // Had to basically make my own riding system for this
+    // because vanilla forces the dragon to freeze in place for some reason
+    // ====================================
 
-    public int getMaxPassengers() {
-        return 1;
+    // Basically isPassenger but for my custom riding system
+    // Overriding isPassenger and isVehicle to use my synced int makes the dragon freeze in place,
+    // just like when I try to use the vanilla riding system to make them ride players.
+    public boolean isRidingPlayer() {
+        return this.getPosOnPlayer() != 0;
     }
 
-    // This is for player carrying dragons!! Not dragon carrying players
-    // May need to modify if more dragons besides silver glider and canari wyvern can sit on players
+    public void startRidingPlayer(Player player) {
+
+        int ridePos = getPosToRideOnPlayer();
+        if (ridePos != 0 && canPlayerAddDragonPassenger((Player) this.getOwner())) {
+            clearHome();
+            clearAI();
+            setNavigator(NavigationType.GROUND);
+            setSleeping(false);
+            setSitting(false);
+            teleportTo(player.getX(), player.getY() + 1.81, player.getZ());
+            setPosOnPlayer(ridePos);
+        }
+    }
+
+    public void stopRidingPlayer() {
+        setPosOnPlayer(0);
+    }
+
+    // TODO: Will need to modify if more dragons besides silver glider and canari wyvern can sit on players
     public boolean canPlayerAddDragonPassenger(Player player) {
-        int numCanariWyverns = 0;
+
+        if (! (this instanceof EntityCanariWyvern || this instanceof EntitySilverGlider)) {
+            return false;
+        }
+
         List<Entity> passengers = player.getPassengers();
         for (Entity passenger : passengers) {
-            if (passenger instanceof EntitySilverGlider) {
+            if (passenger instanceof EntitySilverGlider || this instanceof EntitySilverGlider) {
                 return false; // If we have a silver glider, no other shoulder pets
-            } else if (passenger instanceof EntityCanariWyvern) {
-                numCanariWyverns++;
+                // and if we have any current passenger, no adding silver glider
             }
         }
-        return numCanariWyverns < 3 && passengers.size() < 3;
+        return passengers.size() < 3;
     }
 
+    // Gets available positions if we are sure dragon can ride on player
+    public int getPosToRideOnPlayer() {
+        Player p = (Player) this.getOwner();
+        boolean[] takenPos = new boolean[] {false, false, false}; // for positions 1, 2, 3
+        List<WRDragonEntity> list = p.level.getNearbyEntities(
+                WRDragonEntity.class,
+                TargetingConditions.forNonCombat().selector(e -> e instanceof WRDragonEntity && ((WRDragonEntity) e).getOwner() == p && ((WRDragonEntity) e).isRidingPlayer()),
+                p,
+                p.getBoundingBox().inflate(5));
+        for (WRDragonEntity d : list) {
+            takenPos[d.getPosOnPlayer() - 1] = true;
+        }
+        if (! takenPos[1]) { // head not taken
+            return 2;
+        }
+        else if (! takenPos[0]) { // left shoulder not taken
+            return 1;
+        }
+        else if (! takenPos[2]) { // right shoulder not taken
+            return 3;
+        }
+        return 0; // No open positions to ride player
+    }
+
+/*
     @Override
     public void rideTick() {
         //Method only gets called when the dragon is riding something; not when something is riding the dragon
+        // Should be overridden by child classes to handle special riding logic (ex: max num passengers for different dragons, silver glider elytra)
         super.rideTick();
         Entity entity = getVehicle();
 
-        if (entity == null || !entity.isAlive()) {
+        if (entity == null || ! entity.isAlive()) {
             stopRiding();
             return;
         }
@@ -1944,7 +2060,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             Vec3 vec3d = getRidingPosOffset(index);
             if (player.isFallFlying())
             {
-                if (!dragonCanFly())
+                if (! dragonCanFly())
                 {
                     stopRiding();
                     return;
@@ -1970,6 +2086,22 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 return new Vec3(x, 1.38d, 0);
         }
     }
+*/
+
+    // ====================================
+    // Subsection 2: Player riding dragon
+    // ====================================
+
+    public abstract boolean speciesCanBeRidden();
+
+    public boolean dragonCanBeRidden() {
+        return speciesCanBeRidden() && isJuvenile();
+    }
+
+    // Override if future dragons can have more
+    public int getMaxPassengers() {
+        return 1;
+    }
 
     @Override
     public void positionRider(Entity passenger) {
@@ -1990,6 +2122,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
     @Override
     protected void addPassenger(Entity passenger) {
+        if (this.getPassengers().size() >= getMaxPassengers()) {
+            return;
+        }
         super.addPassenger(passenger);
         if (getControllingPassenger() == passenger && isOwnedBy((LivingEntity) passenger)) {
             clearAI();
@@ -2020,18 +2155,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public void receivePassengerKeybind(int key, int mods, boolean pressed) {
     }
 
+    // BFL and other aquatic dragons should override this! But is it used anywhere?
     @Override
     public boolean canBeRiddenInWater(Entity rider) {
         return false;
     }
-
-    //Do not perform AI actions while entity is being ridden
-    // Do *NOT* check for Sleeping, as this is now a Goal and entity's AI must still work while asleep
-    @Override
-    public boolean isImmobile() {
-        return super.isImmobile() || isRiding();
-    }
-
 
     @Override
     // Only OWNERS can control their pets
@@ -2059,7 +2187,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @SuppressWarnings("null")
     @Override
     public boolean canBeLeashed(Player pPlayer) {
-        return isTame() && getOwner() == pPlayer && !isLeashed() && !getSitting() && !isImmobile() && !isVehicle();
+        return isTame() && getOwner() == pPlayer && ! isLeashed() && ! getSitting() && ! isVehicle() && ! isRidingPlayer();
     }
 
     //attemptTame runs when the taming conditions are met, only for tameables
@@ -2130,12 +2258,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
     }*/
 
-    @Override
-    public boolean isPickable()
-    {
-        return super.isPickable() && !isRiding();
-    }
-
+    // Many child classes will need to override this method for special functionality.
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand hand) {
 
@@ -2146,7 +2269,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
         // shiftclick is for sit => patrol => follow only
-        if (isOwnedBy(player) && player.isShiftKeyDown()) {
+        if (isOwnedBy(player) && player.isShiftKeyDown() && ! isRidingPlayer() && ! isVehicle()) {
 
             if (getSitting()) { // Set to patrol mode
                 setSitting(false);
@@ -2157,7 +2280,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                                                                         "(" + homePos.getX() + ", " + homePos.getY() + ", " + homePos.getZ() + ")")
                                                                     .withStyle(ChatFormatting.ITALIC), true);
                 return InteractionResult.SUCCESS;
-            } else if (getHomePos() != null) { // Set to follow mode
+            } else if (getHomePos() != null) { // Set to follow mode (default if no homePos and not sitting)
                 clearHome();
                 setSitting(false);
                 player.displayClientMessage(new TranslatableComponent("command.wyrmroost.dragon.follow",
@@ -2165,7 +2288,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                                                                     .withStyle(ChatFormatting.ITALIC), true);
                 return InteractionResult.SUCCESS;
             // TODO: Should BFLs be able to sit on land?
-            } else if (!isRiding() && !isUsingFlyingNavigator() && (isOnGround() || (speciesCanSwim() && isInWater()))) { // Set to stay mode
+            } else if (! isUsingFlyingNavigator() && (isOnGround() || (speciesCanSwim() && isInWater()))) { // Set to stay mode
                 setSitting(true);
                 player.displayClientMessage(new TranslatableComponent("command.wyrmroost.dragon.sit",
                                                                         getName())
@@ -2207,22 +2330,27 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         // if dragon not rideable, and dragon can equip held item, right click sets held item
         // at some point we're going to have a dragon that can hold things and be ridden and I'll have to change this
-        if (isOwnedBy(player) && !speciesCanBeRidden() && canEquipHeldItem() && (hasHeldItem() || !stack.isEmpty())) {
+        if (isOwnedBy(player) && ! speciesCanBeRidden() && canEquipHeldItem() && (hasHeldItem() || ! stack.isEmpty())) {
             this.usePlayerItem(player, hand, stack);
             ItemStack stackOneItem = stack.split(1);
             swapHeldItem(stackOneItem);
             return InteractionResult.SUCCESS;
         }
 
-        if (isOwnedBy(player) && getPassengers().isEmpty() && canAddPassenger(player)) {
+        if (isOwnedBy(player) && this.speciesCanBeRidden() && this.canAddPassenger(player)) {
           player.startRiding(this);
           travelX0 = this.position().x;
           travelY0 = this.position().y;
           travelZ0 = this.position().z;
         }
 
+        if (stack.isEmpty() && isOwnedBy(player) && canPlayerAddDragonPassenger(player)) {
+            this.startRidingPlayer(player);
+            return InteractionResult.SUCCESS;
+        }
+
         // Overworld Drake, start riding for taming process
-        if (!isOwnedBy(player) && canBeControlledByRider() && canAddPassenger(player)) {
+        if (!isTame() && isJuvenile() && canBeControlledByRider() && this.canAddPassenger(player)) {
             player.startRiding(this);
         }
 

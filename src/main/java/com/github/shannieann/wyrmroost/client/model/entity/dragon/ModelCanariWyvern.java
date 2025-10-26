@@ -19,13 +19,15 @@ public class ModelCanariWyvern<T extends EntityCanariWyvern> extends AnimatedGeo
 
     @Override
     public ResourceLocation getTextureLocation(EntityCanariWyvern dragon) {
-        if (dragon.hasCustomName() && dragon.getCustomName().getContents().equalsIgnoreCase("lady")){
+        if (dragon.isHatchling()) {
+            return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "canari_wyvern/baby.png");
+        }
+        else if (dragon.hasCustomName() && dragon.getCustomName().getContents().equalsIgnoreCase("lady")){
             return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "canari_wyvern/lady.png");
         }
         else if (dragon.hasCustomName() && dragon.getCustomName().getContents().equalsIgnoreCase("rudy")){
             return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "canari_wyvern/rudy.png");
         }
-
         return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "canari_wyvern/body_" + (dragon.getGender() == 0 ? "f" : "m") + dragon.getVariant() + ".png");
     }
 

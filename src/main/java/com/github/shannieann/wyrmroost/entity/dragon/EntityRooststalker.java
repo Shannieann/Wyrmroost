@@ -559,7 +559,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
 
         @Override
         public boolean canUse() {
-            if (getScavengingCooldown() <= 0 && !isTame() && !hasHeldItem() && !isLeashed() && !isRiding() && !isVehicle() && !isInWater() && getTarget() == null) {
+            if (getScavengingCooldown() <= 0 && !isTame() && !hasHeldItem() && !isLeashed() && !isPassenger() && !isVehicle() && !isInWater() && getTarget() == null) {
                 BlockPos foundChestPos = findNearestNonEmptyChest(blockPosition(), 12, 5);
 
                 if (this.facingDirection != null && foundChestPos != null && foundChestPos != BlockPos.ZERO && this.openPos != null) {
@@ -724,9 +724,8 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
             return !this.abortGoal
                     && ((this.animationStarted && super.canContinueToUse()) || (! this.animationStarted && this.navTime < giveUpTime))
                     && !isTame()
-                    && !isRiding()
-                    && getTarget() == null // getting attacked halfway should interrupt goal
-                    && !isImmobile();
+                    && !isPassenger()
+                    && getTarget() == null; // getting attacked halfway should interrupt goal
         }
 
         @Nullable

@@ -9,6 +9,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimming
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.player.Player;
 public class WRSitGoal extends AnimatedGoal {
 
     private final WRDragonEntity entity;
@@ -23,19 +24,13 @@ public class WRSitGoal extends AnimatedGoal {
 
     public boolean canUse() {
         LivingEntity owner = entity.getOwner();
-        return owner != null
-        && entity.distanceToSqr(owner) < 144.0
-        // Right now only tame entities can sit.
-        // Will need to rework goal + change priorities in all classes if that changes.
-        && entity.getSitting()
-        && entity.isTame()
+        return entity.getSitting()
+        && (owner == null || entity.distanceToSqr(owner) < 144.0)
         // TODO: Should BFLs be able to sit on land?
-        && ((!entity.speciesCanSwim() && entity.isOnGround()) || (entity.speciesCanSwim() && entity.isInWater()))
+        && (!entity.speciesCanSwim() && entity.isOnGround()) || (entity.speciesCanSwim() && entity.isInWater())
         && !entity.isUsingFlyingNavigator()
-        && !entity.isRiding()
         && entity.getPassengers().size() == 0
-        && entity.getTarget() == null
-        && !entity.isImmobile();
+        && entity.getTarget() == null;
     }
 
     @Override
@@ -84,19 +79,16 @@ public class WRSitGoal extends AnimatedGoal {
     }
 
     @Override
-    public boolean canContinueToUse(){
+    public boolean canContinueToUse() {
         return entity.getSitting()
-            && entity.isOnGround()
             // TODO: Should BFLs be able to sit on land?
-            && ((!entity.speciesCanSwim() && entity.isOnGround()) || (entity.speciesCanSwim() && entity.isInWater()))
-            && !entity.isRiding()
+            && (! entity.speciesCanSwim() && entity.isOnGround()) || (entity.speciesCanSwim() && entity.isInWater()) || (entity.isPassenger() && entity.getVehicle() instanceof Player)
             && entity.getPassengers().size() == 0
-            && entity.getTarget() == null // getting attacked halfway should interrupt goal
-            && !entity.isImmobile();
+            && entity.getTarget() == null; // getting attacked halfway should interrupt goal
     }
 
     @Override
-    public void stop(){
+    public void stop() {
         this.sitDownDone = false;
         entity.setSitting(false);
         super.stop();

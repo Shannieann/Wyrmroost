@@ -17,7 +17,7 @@ public class WRIdleGoal extends AnimatedGoal{
                 && this.entity.isIdling()
                 && !this.entity.isAggressive()
                 && ! this.entity.getSleeping()
-                && ! this.entity.isRiding()
+                && ! this.entity.isPassenger()
                 && ! this.entity.isVehicle();
     }
 
@@ -36,7 +36,7 @@ public class WRIdleGoal extends AnimatedGoal{
     public boolean canContinueToUse(){
         return ! this.entity.isAggressive()
                 && this.entity.isIdling()
-                && ! this.entity.isRiding()
+                && ! this.entity.isPassenger()
                 && ! this.entity.isVehicle()
                 && super.canContinueToUse();
     }

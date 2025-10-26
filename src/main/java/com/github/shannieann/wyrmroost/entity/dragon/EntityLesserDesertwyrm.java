@@ -216,31 +216,23 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
     @Override
     public boolean isPushable()
     {
-        return !getBurrowed();
+        return !getBurrowed() && super.isPushable();
     }
 
     @Override
     public boolean isPickable()
     {
-        return !getBurrowed();
+        return !getBurrowed() && super.isPickable();
     }
 
     @Override
     protected void doPush(Entity entityIn)
     {
-        if (!getBurrowed()) {
+        if (!getBurrowed() && super.isPushable()) {
             super.doPush(entityIn);
         }
     }
 
-    // Cannot override isImmobile() to include burrowed state because it's used by goalSelector
-    // Goals will not run when mob is immobile!
-/*
-    @Override
-    public boolean isImmobile() {
-        return super.isImmobile() || getBurrowed();
-    }
-*/
     @Override
     public ItemStack getPickedResult(HitResult target) {
         return new ItemStack(ForgeSpawnEggItem.fromEntityType(getType()));

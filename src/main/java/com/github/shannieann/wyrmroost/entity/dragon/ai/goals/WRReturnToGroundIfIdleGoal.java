@@ -26,7 +26,7 @@ public class WRReturnToGroundIfIdleGoal extends Goal
         return entity.getRandom().nextDouble() < 0.01
             && entity.getNavigationType() == WRDragonEntity.NavigationType.FLYING && entity.getNavigation().isDone() && entity.getTarget() == null
             && ! entity.getAnimationInOverride() && ! entity.isSleeping() && ! entity.getSitting() && ! entity.isLeashed()
-            && ! entity.isImmobile() && ! entity.isRiding() && ! entity.isVehicle() && ! entity.isInWaterOrBubble();
+            && ! entity.isPassenger() && ! entity.isVehicle() && ! entity.isInWaterOrBubble();
     }
 
     @Override
@@ -48,7 +48,7 @@ public class WRReturnToGroundIfIdleGoal extends Goal
     @Override
     public boolean canContinueToUse()
     {
-        return ! abortGoal &&! entity.isOnGround() && entity.getTarget() == null && ! entity.isRiding() && ! entity.isVehicle();
+        return ! abortGoal &&! entity.isOnGround() && entity.getTarget() == null && ! entity.isPassenger() && ! entity.isVehicle();
     }
 
 

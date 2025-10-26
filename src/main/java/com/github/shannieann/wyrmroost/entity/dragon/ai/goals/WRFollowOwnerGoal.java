@@ -27,7 +27,7 @@ public class WRFollowOwnerGoal extends Goal
     {
         setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         this.dragon = tameableEntity;
-        this.startDistance = this.dragon.getRestrictRadius();
+        this.startDistance = this.dragon.getRestrictRadius()/2;
         this.TELEPORT_DISTANCE = (int) (dragon.getRestrictRadius() * 2);
     }
 

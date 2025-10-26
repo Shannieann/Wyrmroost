@@ -3,7 +3,7 @@ package com.github.shannieann.wyrmroost.entity.projectile.breath;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.entity.projectile.DragonProjectileEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;;
+import net.minecraft.core.Direction;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;

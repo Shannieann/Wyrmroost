@@ -5,6 +5,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -37,7 +38,6 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.ai.util.LandRandomPos;
-import net.minecraft.world.entity.animal.Chicken;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.BowItem;
@@ -49,7 +49,6 @@ import net.minecraft.world.item.TridentItem;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
-import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
@@ -81,10 +80,6 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
 
     private static final float MOVEMENT_SPEED = 0.21f;
     private static final float FLYING_SPEED = 0.14f;
-
-    // Can't extend ShoulderRidingEntity.class, going to DIY it
-    private static final int RIDE_COOLDOWN = 100;
-    private int rideCooldownCounter;
 
     // This timer is used to check two different complicated things only once per second, which helps prevent lag
     private static final int CHECK_JUKEBOX_NEARBY_PLAYERS_INTERVAL = 20;
@@ -132,7 +127,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
         return 10;
     }
 
-    // Has a swim animation
+    // Canari has a swim animation
     public boolean notAquaticShouldUseSwimAnimation() {
         return isInWater();
     }
@@ -148,9 +143,10 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
                 .add(Attributes.FLYING_SPEED, FLYING_SPEED)
                 .add(Attributes.ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.dragonAttributesConfig.attackDamage.get()));
     }
+
     // Should have same height when sitting/sleeping/standing
     @Override
-     public EntityDimensions getDimensions(Pose pose) {
+    public EntityDimensions getDimensions(Pose pose) {
         return getType().getDimensions().scale(getScale());
     }
 
@@ -302,7 +298,6 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
 
     @Override
     public void tick() {
-        this.rideCooldownCounter++;
         this.checkJukeboxNearbyPlayersTimer++;
         super.tick();
 
@@ -373,6 +368,43 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
         setThreateningTimer(-1); // reset timer either way
     }
 
+    @Override
+    public Vec3 getPosByDragonAndPlayer(Player owner) {
+        double offX = 0d;
+        double offY = 0d;
+        double offZ = 0d;
+
+        double playerX = owner.getX();
+        double playerY = owner.getY();
+        double playerZ = owner.getZ();
+
+        switch (this.getPosOnPlayer()) {
+            case 1:
+                offX = 0.3;
+                offY = 1.4;
+                offZ = 0.1d;
+                break;
+            case 2:
+                offY = 1.83;
+                offZ = 0.2d;
+            case 3:
+                offX = -0.3;
+                offY = 1.4;
+                offZ = 0.1d;
+                break;
+            default:
+                return null;
+        }
+
+        if (owner.isShiftKeyDown()) {
+            offY -= 0.3;
+        }
+
+        // Rotate the offset based on the player's rotation
+        Vec3 rotatedOffset = WRMathsUtility.rotateXZVectorByYawAngle(owner.getYRot(), offX, offZ);
+        return new Vec3(playerX + rotatedOffset.x, playerY + offY, playerZ + rotatedOffset.z);
+    }
+
     public void aiStep() {
         super.aiStep();
         // Randomly shed feathers when tame
@@ -430,11 +462,14 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
 
     @Override
     public boolean hurt(DamageSource source, float amount) {
-        setThreateningTimer(-1); // should just attack instead of threaten
-        setFlockingX(0);
-        setFlockingY(0);
-        setFlockingZ(0);
-        return (source == DamageSource.FALL ? false : super.hurt(source, amount));
+        if (super.hurt(source, amount)) {
+            setThreateningTimer(-1); // should just attack instead of threaten
+            setFlockingX(0);
+            setFlockingY(0);
+            setFlockingZ(0);
+            return true;
+        }
+        return false;
     }
 
     // ====================================
@@ -466,11 +501,6 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     }
 
     @Override
-    public boolean dragonCanFly() {
-        return true; // ??? check
-    }
-
-    @Override
     public boolean speciesCanSwim() {
         return false;
     }
@@ -489,6 +519,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     // ====================================
     //      D) Taming
     // ====================================
+
     @SuppressWarnings("null")
     @Override
     public InteractionResult tameLogic(Player tamer, ItemStack stack) {
@@ -506,6 +537,9 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
                 getAttribute(MAX_HEALTH).setBaseValue(WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.dragonAttributesConfig.maxHealth.get());
                 heal((float)getAttribute(MAX_HEALTH).getBaseValue());
                 setThreateningTimer(-1);
+                setFlockingX(0);
+                setFlockingY(0);
+                setFlockingZ(0);
             } else {
                 // give player 5 extra seconds for each fed berry
                 setThreateningTimer(getThreateningTimer()+100);
@@ -514,109 +548,6 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
-    }
-
-    // Need to override to allow sitting on shoulder
-    @Override
-    public InteractionResult mobInteract(Player player, InteractionHand hand) {
-
-        ItemStack stack = player.getItemInHand(hand);
-
-        if (this.level.isClientSide) {
-            return InteractionResult.CONSUME;
-        }
-
-        // shiftclick is for sit => patrol => follow only
-        if (isOwnedBy(player) && player.isShiftKeyDown()) {
-
-            if (getSitting()) { // Set to patrol mode
-                setSitting(false);
-                BlockPos homePos = new BlockPos(position());
-                setHomePos(homePos);
-                player.displayClientMessage(new TranslatableComponent("command.wyrmroost.dragon.patrol",
-                                                                        getName(),
-                                                                        "(" + homePos.getX() + ", " + homePos.getY() + ", " + homePos.getZ() + ")")
-                                                                    .withStyle(ChatFormatting.ITALIC), true);
-                return InteractionResult.SUCCESS;
-            } else if (getHomePos() != null) { // Set to follow mode
-                clearHome();
-                setSitting(false);
-                player.displayClientMessage(new TranslatableComponent("command.wyrmroost.dragon.follow",
-                                                                        getName())
-                                                                    .withStyle(ChatFormatting.ITALIC), true);
-                return InteractionResult.SUCCESS;
-            } else if (!isRiding() && !isUsingFlyingNavigator() && isOnGround()) { // Set to stay mode
-                setSitting(true);
-                player.displayClientMessage(new TranslatableComponent("command.wyrmroost.dragon.sit",
-                                                                        getName())
-                                                                    .withStyle(ChatFormatting.ITALIC), true);
-                return InteractionResult.SUCCESS;
-            }
-            return InteractionResult.PASS;
-        }
-
-        if (this instanceof ITameable && ! isTame()) {
-            return ((ITameable)this).tameLogic(player,stack); // overrides need to call attemptTame
-        }
-
-        if (this instanceof IBreedable && isAdult() && isTame()
-            && getBreedingCooldown() <= 0 && getBreedingCount() < ((IBreedable)this).getBreedingLimit() && isBreedingItem(stack))
-        {
-            IBreedable thisIBreedable = (IBreedable) this;
-            InteractionResult result = thisIBreedable.breedLogic(player,stack); // overrides need to set cooldown
-            if (result == InteractionResult.SUCCESS) {
-                setInLove(player);
-                this.gameEvent(GameEvent.MOB_INTERACT, this.eyeBlockPosition());
-                if (isFood(stack)) { // skip eating cooldown check if breeding
-                    eat(this.level, stack);
-                } else {
-                    this.usePlayerItem(player, hand, stack);
-                }
-            }
-            return result;
-        }
-
-        if (isOwnedBy(player) && (isFood(stack) || isDrink(stack))) {
-            if (getEatingCooldown() <= 0) {
-                eat(this.level, stack);
-                this.usePlayerItem(player, hand, stack);
-                this.gameEvent(GameEvent.MOB_INTERACT, this.eyeBlockPosition());
-                return InteractionResult.SUCCESS;
-            }
-        }
-
-        // Make canari wyvern start riding player
-
-        if (stack.isEmpty() && isOwnedBy(player) && ! isLeashed() && canPlayerAddDragonPassenger(player)) {
-            setSleeping(false);
-            setSitting(true);
-            clearHome();
-            setNavigator(NavigationType.GROUND);
-            clearAI();
-            this.startRiding(player, true);
-            return InteractionResult.SUCCESS;
-        }
-
-        return InteractionResult.PASS;
-    }
-
-    // Mostly copied from ShoulderRidingEntity.class
-    @SuppressWarnings("null")
-    public boolean setEntityOnShoulder(ServerPlayer pPlayer) {
-        CompoundTag tag = new CompoundTag();
-        // tag.putString("id", this.getEncodeId()); We can't get an encoded ID because there's no EntityType<Dragon>, and we need an EntityType for this
-        tag.putString("id", "CanariWyvern");
-        this.saveWithoutId(tag);
-        if (pPlayer.setEntityOnShoulder(tag)) {
-           this.discard();
-           return true;
-        } else {
-           return false;
-        }
-    }
-
-    public boolean canSitOnShoulder() {
-        return this.rideCooldownCounter > RIDE_COOLDOWN;
     }
 
     // ====================================
@@ -709,29 +640,30 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     {
         super.registerGoals();
 
-        goalSelector.addGoal(1, new FloatGoal(this));
-        goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.1d, true));
-        goalSelector.addGoal(3, new CanariThreatenGoal(this));
-        goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Player.class, THREATEN_PREDICATE, (isHatchling() ? 15f : 8f), 1.15D, 1.2D, entity -> true) {
+        goalSelector.addGoal(1, new WRRidePlayerGoal(this));
+        goalSelector.addGoal(2, new FloatGoal(this));
+        goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.1d, true));
+        goalSelector.addGoal(4, new CanariThreatenGoal(this));
+        goalSelector.addGoal(5, new AvoidEntityGoal<>(this, Player.class, THREATEN_PREDICATE, (isHatchling() ? 15f : 8f), 1.15D, 1.2D, entity -> true) {
             @Override
             public boolean canUse() {
                 return !isTame() && getThreateningTimer() == -1 && super.canUse();
             }
         });
-        goalSelector.addGoal(5, new WRDragonBreedGoal<>(this));
-        goalSelector.addGoal(6, new WRMoveToHomeGoal(this));
-        goalSelector.addGoal(7, new WRFollowOwnerGoal(this));
-        goalSelector.addGoal(8, new WRSitGoal(this));
-        goalSelector.addGoal(9, new CanariDanceGoal(this));
-        goalSelector.addGoal(10, new WRGetDroppedFoodGoal(this, 15, true));
-        goalSelector.addGoal(11, new WRSleepGoal(this));
-        goalSelector.addGoal(12, new WRIdleGoal(this));
-        goalSelector.addGoal(13, new CanariFlockFlyAwayGoal(this, 25, 35));
-        goalSelector.addGoal(14, new CanariReturnToFlockGoal(this, 12));
-        goalSelector.addGoal(15, new WRReturnToGroundIfIdleGoal(this));
-        goalSelector.addGoal(16, new WaterAvoidingRandomStrollGoal(this, 1));
-        goalSelector.addGoal(17, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
-        goalSelector.addGoal(18, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(6, new WRDragonBreedGoal<>(this));
+        goalSelector.addGoal(7, new WRMoveToHomeGoal(this));
+        goalSelector.addGoal(8, new WRFollowOwnerGoal(this));
+        goalSelector.addGoal(9, new WRSitGoal(this));
+        goalSelector.addGoal(10, new CanariDanceGoal(this));
+        goalSelector.addGoal(11, new WRGetDroppedFoodGoal(this, 15, true));
+        goalSelector.addGoal(12, new WRSleepGoal(this));
+        goalSelector.addGoal(13, new WRIdleGoal(this));
+        goalSelector.addGoal(14, new CanariFlockFlyAwayGoal(this, 25, 35));
+        goalSelector.addGoal(15, new CanariReturnToFlockGoal(this, 12));
+        goalSelector.addGoal(16, new WRReturnToGroundIfIdleGoal(this));
+        goalSelector.addGoal(17, new WaterAvoidingRandomStrollGoal(this, 1));
+        goalSelector.addGoal(18, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
+        goalSelector.addGoal(19, new RandomLookAroundGoal(this));
 
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
@@ -762,7 +694,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
         public boolean canUse() {
             // TODO: When the caustic swamp nasty not-water is added, check it's not in that...
             // powder snow and lava will hurt the canari and reset the threat timer anyways
-            return getThreateningTimer() > 0 && ! dragon.isTame() && ! dragon.isLeashed() && ! dragon.isRiding() && ! dragon.isVehicle() && ! dragon.isInWater() && ! dragon.isUsingFlyingNavigator() && ! dragon.getAnimationInOverride();
+            return getThreateningTimer() > 0 && ! dragon.isTame() && ! dragon.isLeashed() && ! dragon.isPassenger() && ! dragon.isVehicle() && ! dragon.isInWater() && ! dragon.isUsingFlyingNavigator() && ! dragon.getAnimationInOverride();
         }
 
         private boolean checkClosestPlayerBeingNice()
@@ -807,7 +739,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
 
         @Override
         public boolean canContinueToUse() {
-            return dragon.getThreateningTimer() > 0 && dragon.getTarget() == null && ! dragon.isImmobile();
+            return dragon.getThreateningTimer() > 0 && dragon.getTarget() == null;
         }
 
         @Override
