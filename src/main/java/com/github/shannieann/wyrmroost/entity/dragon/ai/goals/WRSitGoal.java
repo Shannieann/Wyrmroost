@@ -27,7 +27,7 @@ public class WRSitGoal extends AnimatedGoal {
         return entity.getSitting()
         && (owner == null || entity.distanceToSqr(owner) < 144.0)
         // TODO: Should BFLs be able to sit on land?
-        && (!entity.speciesCanSwim() && entity.isOnGround()) || (entity.speciesCanSwim() && entity.isInWater())
+        && (entity.isOnGround() || (entity.speciesCanSwim() && entity.isInWater()))
         && !entity.isUsingFlyingNavigator()
         && entity.getPassengers().size() == 0
         && entity.getTarget() == null;
@@ -82,7 +82,7 @@ public class WRSitGoal extends AnimatedGoal {
     public boolean canContinueToUse() {
         return entity.getSitting()
             // TODO: Should BFLs be able to sit on land?
-            && (! entity.speciesCanSwim() && entity.isOnGround()) || (entity.speciesCanSwim() && entity.isInWater()) || (entity.isPassenger() && entity.getVehicle() instanceof Player)
+            && (entity.isOnGround() || (entity.speciesCanSwim() && entity.isInWater()))
             && entity.getPassengers().size() == 0
             && entity.getTarget() == null; // getting attacked halfway should interrupt goal
     }

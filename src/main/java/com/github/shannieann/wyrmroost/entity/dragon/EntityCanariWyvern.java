@@ -7,17 +7,13 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -98,7 +94,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     // ====================================
 
     @Override
-    public int numIdleAnimationVariants(){
+    public int numIdleAnimationVariants() {
         return 2;
     }
 
@@ -260,36 +256,6 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     }
     public void setFlockingZ(int flockingZ) {
         entityData.set(FLOCKING_Z, flockingZ);
-    }
-
-    @Override
-    public void setSitting(boolean sit) {
-        super.setSitting(sit);
-        if (sit) {
-            setFlockingX(0);
-            setFlockingY(0);
-            setFlockingZ(0);
-        }
-    }
-
-    @Override
-    public void setSleeping(boolean sleep) {
-        super.setSleeping(sleep);
-        if (sleep) {
-            setFlockingX(0);
-            setFlockingY(0);
-            setFlockingZ(0);
-        }
-    }
-
-    @Override
-    public void setHomePos(@Nullable BlockPos pos) {
-        super.setHomePos(pos);
-        if (pos != null) {
-            setFlockingX(0);
-            setFlockingY(0);
-            setFlockingZ(0);
-        }
     }
 
     // ====================================
@@ -730,9 +696,8 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
             super.start("taming", AnimatedGoal.HOLD_ON_LAST_FRAME, 120); // 12-second animation
 
             // we don't have a threaten sound... this is a substitute
-            dragon.playSound(SoundEvents.BEE_LOOP_AGGRESSIVE, 1, 1.5F);
-            dragon.playSound(SoundEvents.WOLF_GROWL, 3, 2F);
-            dragon.playSound(SoundEvents.PARROT_HURT, 2, 0.8F);
+            dragon.playSound(SoundEvents.BEE_LOOP_AGGRESSIVE, 1f, 1.5F);
+            dragon.playSound(SoundEvents.WOLF_GROWL, 5f, 3F);
 
             dragon.setThreateningTimer(240); // 12 seconds, but entity ticks are twice as fast as goal ticks...
         }
@@ -751,6 +716,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
                 if (checkClosestPlayerBeingNice()) {
                     // Player now has 6 seconds to tame wyvern or run away (+5 per sweet berry fed)
                     dragon.setThreateningTimer(120);
+                    dragon.playSound(WRSounds.ENTITY_CANARI_IDLE.get(), 2f, 1F);
                 } else {
                     // checkClosestPlayerBeingNice will set target if it returns false
                     super.stop();

@@ -6,7 +6,7 @@ import net.minecraft.resources.ResourceLocation;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
 
 public class ModelDragonEgg extends AnimatedGeoModel<WRDragonEggEntity> {
-    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/royal_red/royal_red.json");
+    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/royal_red/royal_red.json"); // TODO: Dragon egg animation
 
     @Override
     public ResourceLocation getModelLocation(WRDragonEggEntity egg) {

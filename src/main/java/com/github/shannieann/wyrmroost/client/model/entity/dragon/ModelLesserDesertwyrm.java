@@ -9,7 +9,7 @@ public class ModelLesserDesertwyrm extends AnimatedGeoModel<EntityLesserDesertwy
 {
     private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/lesser_desertwyrm/lesser_desertwyrm.geo.json");
     private static final ResourceLocation TEXTURE_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/lesser_desertwyrm/lesser_desertwyrm.png");
-    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/lesser_desertwyrm/lesser_desertwyrm.json");
+    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/lesser_desertwyrm/lesser_desertwyrm.animation.json");
 
     @Override
     public ResourceLocation getModelLocation(EntityLesserDesertwyrm object) {

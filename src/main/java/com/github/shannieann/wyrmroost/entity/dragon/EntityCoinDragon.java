@@ -16,9 +16,22 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
+import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
+import net.minecraft.world.entity.ai.util.LandRandomPos;
+
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.AnimatedGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRMoveToHomeGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRRandomLiftOffGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRSleepGoal;
 import net.minecraft.world.entity.item.ItemEntity;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.builder.ILoopType;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -28,31 +41,85 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 
+import java.util.EnumSet;
+
 import javax.annotation.Nullable;
-
-import static net.minecraft.world.entity.ai.attributes.Attributes.FLYING_SPEED;
-import static net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH;
-import static net.minecraft.world.entity.ai.attributes.Attributes.MOVEMENT_SPEED;
-
 
 // Simple Entity really, just bob and down in the same spot, and land to sleep at night. Easy.
 public class EntityCoinDragon extends WRDragonEntity
 {
 
     private static final float FLYING_SPEED = 0.02f;
+    private static final float MOVEMENT_SPEED = 0.1f;
+    private static final float MAX_HEALTH = 4.0f;
+
+    private static final String[] VARIANTS = {"blue", "gold", "gray", "green", "pink", "red"};
 
     public EntityCoinDragon(EntityType<? extends EntityCoinDragon> coindragon, Level level) {
         super(coindragon, level);
+        this.setHomePos(blockPosition()); // Set home to spawn position
     }
-
 
     // ====================================
     //      Animations
     // ====================================
 
+    // Simplify, plus make sure walking animation is actually only used when walking
     @Override
-    public int numIdleAnimationVariants() {
-        return 0;
+    public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
+
+        // Don't do locomotion animation if dragon is doing something special
+        if (this.getSleeping() || this.getSitting()) {
+            return PlayState.STOP;
+        }
+
+        // Don't do locomotion animation if there's an animation override
+        if (this.getAnimationInOverride()) {
+            return PlayState.STOP;
+        }
+
+        NavigationType navigationType = this.getNavigationType();
+
+        if (navigationType == NavigationType.GROUND) {
+            if (this.getDeltaMovement().length() > (this.getMovementSpeed()/3)) {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
+            } else {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
+            }
+            return PlayState.CONTINUE;
+        }
+        else if (navigationType == NavigationType.FLYING) {
+            Vec3 deltaMovement = this.getDeltaMovement();
+            if (Math.abs(deltaMovement.x()) > 0.05 || Math.abs(deltaMovement.z()) > 0.05) { // If it's flying even slightly horizontal
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
+            } else { // If it's flying almost entirely vertical
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("base_fly", ILoopType.EDefaultLoopTypes.LOOP));
+            }
+            return PlayState.CONTINUE;
+        }
+
+        // Default case - shouldn't happen if all other animations are added
+        event.getController().setAnimation(new AnimationBuilder().addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
+        System.out.println("Base");
+        return PlayState.CONTINUE;
+    }
+
+    private int numGroundIdleAnimationVariants() {
+        return 3;
+    }
+
+    private int getGroundIdleAnimationTime(int index) {
+        int[] animationTimesInOrder = {20, 50, 40}; // Time in seconds is 2, 5, 4
+        return animationTimesInOrder[index];
+    }
+
+    private int numFlyingIdleAnimationVariants() {
+        return 2;
+    }
+
+    private int getFlyingIdleAnimationTime(int index) {
+        int[] animationTimesInOrder = {30, 40}; // Time in seconds is 3, 4
+        return animationTimesInOrder[index];
     }
 
     @Override
@@ -72,8 +139,9 @@ public class EntityCoinDragon extends WRDragonEntity
     public static AttributeSupplier.Builder getAttributeSupplier()
     {
         return Mob.createMobAttributes()
-                .add(MAX_HEALTH, 4)
-                .add(Attributes.FLYING_SPEED, EntityCoinDragon.FLYING_SPEED);
+                .add(Attributes.FLYING_SPEED, EntityCoinDragon.FLYING_SPEED)
+                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
+                .add(Attributes.MAX_HEALTH, MAX_HEALTH);
     }
 
     @Override
@@ -124,11 +192,11 @@ public class EntityCoinDragon extends WRDragonEntity
         return stack;
     }
 
-        // Should have same height when sitting/sleeping/standing
-        @Override
-        public EntityDimensions getDimensions(Pose pose) {
-            return getType().getDimensions().scale(getScale());
-        }
+    // Should have same height when sitting/sleeping/standing
+    @Override
+    public EntityDimensions getDimensions(Pose pose) {
+        return getType().getDimensions().scale(getScale());
+    }
 
     // ====================================
     //      A.1) Entity Data: AGE
@@ -177,18 +245,17 @@ public class EntityCoinDragon extends WRDragonEntity
 
     @Override
     public String getDefaultVariant() {
-        return "body_0";
+        return "gray";
     }
 
     @Override
     public String determineVariant() {
-        return "body_" + String.valueOf(this.getRandom().nextInt(5));
+        return VARIANTS[this.getRandom().nextInt(VARIANTS.length)];
     }
 
     // ====================================
     //      A.8) Entity Data: Miscellaneous
     // ====================================
-
 
     @Override
     public boolean hasGender() {
@@ -199,19 +266,13 @@ public class EntityCoinDragon extends WRDragonEntity
     //      B) Tick and AI
     // ====================================
 
-    @Override
-    public void aiStep() {
-        super.aiStep();
-        // Coin dragons don't eat, so no food logic needed
-    }
-
     // ====================================
     //      B.1) Tick and AI: Attack and Hurt
     // ====================================
 
     @Override
     public boolean isInvulnerableTo(DamageSource source) {
-        return source == DamageSource.DROWN || super.isInvulnerableTo(source);
+        return source == DamageSource.DROWN || source == DamageSource.FALL || super.isInvulnerableTo(source);
     }
 
     // ====================================
@@ -252,21 +313,9 @@ public class EntityCoinDragon extends WRDragonEntity
         return false;
     }
 
-    // move up if too low, move down if too high, else, just bob up and down
     @Override
-    public void travel(Vec3 positionIn)
-    {
-        if (isNoAi()) return;
-        double moveSpeed = 0.02;
-        double yMot;
-        double altitiude = getAltitude();
-        if (altitiude < 1.5) yMot = moveSpeed;
-        else if (altitiude > 3) yMot = -moveSpeed;
-        else yMot = Math.sin(tickCount * 0.1) * 0.0035;
-
-        setDeltaMovement(getDeltaMovement().add(0, yMot, 0));
-        move(MoverType.SELF, getDeltaMovement());
-        setDeltaMovement(getDeltaMovement().scale(0.91));
+    public float getStepHeight() {
+        return 0.5f;
     }
 
     @Override
@@ -284,13 +333,6 @@ public class EntityCoinDragon extends WRDragonEntity
     @Override
     protected void checkFallDamage(double y, boolean onGroundIn, BlockState state, BlockPos pos) {
         // no fall damage
-    }
-
-    public double getAltitude()
-    {
-        BlockPos.MutableBlockPos pos = blockPosition().mutable().move(0, -1, 0);
-        while (pos.getY() > 0 && !level.getBlockState(pos).canOcclude()) pos.setY(pos.getY() - 1);
-        return getY() - pos.getY();
     }
 
     // ====================================
@@ -322,14 +364,14 @@ public class EntityCoinDragon extends WRDragonEntity
     @Override
     protected SoundEvent getHurtSound(DamageSource damageSourceIn)
     {
-        return WRSounds.ENTITY_COINDRAGON_IDLE.get();
+        return WRSounds.ENTITY_COINDRAGON_IDLE.get(); // TODO: hurt sound
     }
 
     @Nullable
     @Override
     protected SoundEvent getDeathSound()
     {
-        return WRSounds.ENTITY_COINDRAGON_IDLE.get();
+        return WRSounds.ENTITY_COINDRAGON_IDLE.get(); // TODO: death sound
     }
 
     @Override
@@ -353,8 +395,166 @@ public class EntityCoinDragon extends WRDragonEntity
     @Override
     protected void registerGoals()
     {
-        goalSelector.addGoal(0, new WRSleepGoal(this));
-        goalSelector.addGoal(1, new LookAtPlayerGoal(this, Player.class, 8));
+        goalSelector.addGoal(0, new WRMoveToHomeGoal(this));
+        goalSelector.addGoal(1, new WRSleepGoal(this));
+        goalSelector.addGoal(2, new CoinDragonIdleGoal(this));
+        goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, 8));
+        goalSelector.addGoal(4, new CoinDragonRandomStrollGoal(this, 1));
+        goalSelector.addGoal(5, new WRRandomLiftOffGoal(this));
+        goalSelector.addGoal(6, new CoinDragonReturnToGroundGoal(this));
+        goalSelector.addGoal(7, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(8, new CoinDragonBobUpAndDownGoal(this));
     }
 
+    // =====================================================================
+    //      F.1) Coin Dragon special idle goal for separate fly/ground idles
+    // =====================================================================
+    class CoinDragonIdleGoal extends AnimatedGoal
+    {
+        public CoinDragonIdleGoal(EntityCoinDragon dragon) {
+            super(dragon);
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK, Flag.JUMP));
+        }
+
+        @Override
+        public boolean canUse() {
+            return this.entity.getRandom().nextFloat() < 0.015
+                    && this.entity.getNavigation().isDone()
+                    && ! this.entity.getSleeping()
+                    && ! this.entity.isPassenger();
+        }
+    
+        @Override
+        public void start(){
+            if (this.entity.isOnGround()) {
+                int randInt = entity.getRandom().nextInt(((EntityCoinDragon) entity).numGroundIdleAnimationVariants());
+                super.start(("idle"+(randInt+1)), 3, ((EntityCoinDragon) entity).getGroundIdleAnimationTime(randInt));
+            } else {
+                int randInt = entity.getRandom().nextInt(((EntityCoinDragon) entity).numFlyingIdleAnimationVariants());
+                super.start(("idle_fly"+(randInt+1)), 3, ((EntityCoinDragon) entity).getFlyingIdleAnimationTime(randInt));
+            }
+        }
+
+        @Override
+        public boolean canContinueToUse(){
+            return this.entity.getNavigation().isDone()
+                    && ! this.entity.isPassenger()
+                    && super.canContinueToUse();
+        }
+
+    }
+
+    // =====================================================================
+    //      F.2) Coin Dragon return to ground goal
+    // (Not sure if flight threshold from WRReturnToGroundIfIdleGoal would work for this?
+    // Made a simpler version for coin dragon. Also massively increased probability)
+    // =====================================================================
+    class CoinDragonReturnToGroundGoal extends Goal
+    {
+        private final EntityCoinDragon entity;
+        public CoinDragonReturnToGroundGoal(EntityCoinDragon dragon) {
+            this.entity = dragon;
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.JUMP));
+        }
+
+        @Override
+        public boolean canUse() {
+            return this.entity.getRandom().nextDouble() < 0.01
+                    && this.entity.getNavigationType() == NavigationType.FLYING
+                    && this.entity.getNavigation().isDone()
+                    && ! this.entity.isPassenger();
+        }
+
+        @Override
+        public void tick() {
+            this.entity.setDeltaMovement(0, -0.05, 0);
+            this.entity.setNavigator(NavigationType.GROUND);
+        }
+        
+        @Override
+        public boolean canContinueToUse() {
+            return ! this.entity.isPassenger() && ! this.entity.isOnGround();
+        }
+    }
+
+    // =====================================================================
+    //      F.3) Coin Dragon custom random stroll goal (never leaves home radius)
+    // =====================================================================
+    public class CoinDragonRandomStrollGoal extends RandomStrollGoal {
+        public static final float PROBABILITY = 0.001F;
+        protected final float probability;
+     
+        public CoinDragonRandomStrollGoal(EntityCoinDragon pMob, double pSpeedModifier) {
+            super(pMob, pSpeedModifier);
+            this.probability = PROBABILITY;
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        }
+
+        @Nullable
+        protected Vec3 getPosition() {
+
+            Vec3 randomPos = LandRandomPos.getPos(this.mob, (int) this.mob.getRestrictRadius(), 7);
+            // Ensure randomPos is not null before checking restriction
+            while (randomPos != null && !((EntityCoinDragon) this.mob).isWithinRestriction(new BlockPos(randomPos))) {
+                randomPos = LandRandomPos.getPos(this.mob, (int) this.mob.getRestrictRadius(), 7);
+            }
+
+           if (this.mob.isInWaterOrBubble()) {
+              return randomPos;
+           } else {
+              return this.mob.getRandom().nextFloat() >= this.probability ? LandRandomPos.getPos(this.mob, (int) this.mob.getRestrictRadius(), 7) : super.getPosition();
+           }
+        }
+    }
+
+    // =====================================================================
+    //      F.4) Coin Dragon bob up and down goal when flying/idle goal
+    // =====================================================================
+    class CoinDragonBobUpAndDownGoal extends Goal
+    {
+        private final EntityCoinDragon dragon;
+        public CoinDragonBobUpAndDownGoal(EntityCoinDragon dragon) {
+            this.dragon = dragon;
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.JUMP));
+        }
+
+    @Override
+    public boolean canUse() {
+        return dragon.getRandom().nextDouble() < 0.01
+                && dragon.getNavigationType() == NavigationType.FLYING
+                && dragon.getNavigation().isDone()
+                && ! dragon.isPassenger();
+    }
+
+    @Override
+    public boolean canContinueToUse() {
+        return dragon.getNavigation().isDone()
+                && ! dragon.isPassenger()
+                && dragon.getNavigationType() == NavigationType.FLYING
+                && super.canContinueToUse()
+                && dragon.getRandom().nextDouble() > 0.0005; // very small chance to randomly stop, just so this doesn't go on forever
+    }
+
+    @Override
+    public void tick() {
+        double yMot;
+        double altitiude = dragon.getAltitude();
+        if (altitiude < 1) {
+            yMot = dragon.getFlyingSpeed();
+        } else if (altitiude > 2.5) {
+            yMot = -dragon.getFlyingSpeed();
+        } else {
+            yMot = Math.sin(dragon.tickCount * 0.1) * 0.0035;
+        }
+
+        dragon.setDeltaMovement(dragon.getDeltaMovement().add(0, yMot, 0));
+        dragon.move(MoverType.SELF, dragon.getDeltaMovement());
+        dragon.setDeltaMovement(dragon.getDeltaMovement().scale(0.91));
+    }
+
+    @Override
+    public void stop() {
+        dragon.getNavigation().stop();
+    }
+}
 }
