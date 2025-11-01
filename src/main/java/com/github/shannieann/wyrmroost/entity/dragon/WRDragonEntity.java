@@ -179,7 +179,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final EntityDataAccessor<Integer> BREEDING_COOLDOWN = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     public static final EntityDataAccessor<Integer> BREEDING_COUNT = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
 
-    private static final int AGE_UPDATE_INTERVAL = 1200;
+    public static final int AGE_UPDATE_INTERVAL = 1200;
 
     // placeholder for closed/unavailable eye textures
     public static final ResourceLocation BLANK_EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/blank_eyes.png");
@@ -201,7 +201,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     private static final EntityDataAccessor<Integer> ANIMATION_TIME = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> ANIMATION_IN_OVERRIDE = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     // Needed to know when to stop attack animation in tick()
-    private int attackAnimationStartTick = -1;
+    protected int attackAnimationStartTick = -1;
 
     protected WRDragonEntity(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
@@ -339,6 +339,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         // Locomotion animations will still play
         if (this.getAnimationInOverride()) {
             String currentAnim = this.getAnimation();
+            System.out.println("Override non-locomotion animation: " + currentAnim);
             // Actually set the animation on the controller so it plays
             switch (this.getAnimationType()) {
                 case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim, ILoopType.EDefaultLoopTypes.LOOP));
@@ -348,17 +349,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return PlayState.CONTINUE; // Continue playing the current animation instead of stopping
         }
 
-        // PRIORITY 2: Death/dying
-        if (this.dead || this.getHealth() < 0.01) {
-            event.getController().setAnimation(new AnimationBuilder().addAnimation("death", ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
-            return PlayState.CONTINUE;
-        }
+        // PRIORITY 2: Sleeping (overrides movement in predicateBasicLocomotion) (Handled by WRSleepGoal)
+        // PRIORITY 3: Sitting (overrides movement in predicateBasicLocomotion) (Handled by WRSitGoal/WRRidePlayerGoal)
+        // PRIORITY 4: Random idle animations if not moving. Cannot be sitting/sleeping if we reached this code (handled by WRIdleGoal)
 
-        // PRIORITY 3: Sleeping (overrides movement in predicateBasicLocomotion) (Handled by WRSleepGoal)
-        // PRIORITY 4: Sitting (overrides movement in predicateBasicLocomotion) (Handled by WRSitGoal/WRRidePlayerGoal)
-        // PRIORITY 5: Random idle animations if not moving. Cannot be sitting/sleeping if we reached this code (handled by WRIdleGoal)
-
-        // PRIORITY 6: Default base pose (when no other animation is needed)
+        // PRIORITY 5: Default base pose (when no other animation is needed)
         event.getController().setAnimation(new AnimationBuilder().addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
         return PlayState.CONTINUE;
     }
@@ -367,6 +362,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         // Don't do locomotion animation if dragon is doing something special
         if (this.getSleeping() || this.getSitting() || this.isRidingPlayer() ||this.getBreaching()) {
+            System.out.println("Sitting: " + this.getSitting() + " Sleeping: " + this.getSleeping());
             return PlayState.STOP;
         }
 
@@ -376,6 +372,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
         NavigationType navigationType = this.getNavigationType();
+        System.out.println("Navigation type: " + navigationType);
 
         if (this.getDeltaMovement().length() > 0.1 && this.isAggressive()) {
             switch (navigationType) {
@@ -395,20 +392,25 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
             if (navigationType == NavigationType.GROUND && this.getDeltaMovement().length() > (this.getMovementSpeed()/3)) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
+                System.out.println("Walking: " + this.getAnimation());
                 return PlayState.CONTINUE;
             }
             else if (navigationType == NavigationType.FLYING && this.getDeltaMovement().length() > (this.getFlyingSpeed()/2)) {
                 if (isDiving()) {
                     event.getController().setAnimation(new AnimationBuilder().addAnimation("dive", ILoopType.EDefaultLoopTypes.LOOP));
+                    System.out.println("Diving: " + this.getAnimation());
                 } else if (isGliding()) {
                     event.getController().setAnimation(new AnimationBuilder().addAnimation("glide", ILoopType.EDefaultLoopTypes.LOOP));
+                    System.out.println("Gliding: " + this.getAnimation());
                 } else {
                     event.getController().setAnimation(new AnimationBuilder().addAnimation("fly", ILoopType.EDefaultLoopTypes.LOOP));
+                    System.out.println("Flying: " + this.getAnimation());
                 }
                 return PlayState.CONTINUE;
             }
             else if (notAquaticShouldUseSwimAnimation() || (navigationType == NavigationType.SWIMMING && this.getDeltaMovement().length() > 0.1)) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
+                System.out.println("Swimming: " + this.getAnimation());
                 return PlayState.CONTINUE;
             }
         }
@@ -417,20 +419,24 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (! this.getSleeping()) {
             if (navigationType == NavigationType.SWIMMING) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("base_swim", ILoopType.EDefaultLoopTypes.LOOP));
+                System.out.println("Base Swimming: " + this.getAnimation());
                 return PlayState.CONTINUE;
             }
             if (navigationType == NavigationType.FLYING) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("base_fly", ILoopType.EDefaultLoopTypes.LOOP));
+                System.out.println("Base Flying: " + this.getAnimation());
                 return PlayState.CONTINUE;
             }
             if (navigationType == NavigationType.GROUND) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
+                System.out.println("Base Ground: " + this.getAnimation());
                 return PlayState.CONTINUE;
             }
         }
 
         // Default case - shouldn't happen if all other animations are added
         event.getController().setAnimation(new AnimationBuilder().addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
+        System.out.println("USING BASE ANIMATION! THIS SHOULDN'T HAPPEN!");
         return PlayState.CONTINUE;
     }
 
@@ -1018,6 +1024,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return home == null || home.distSqr(pos) <= getRestrictRadius();
     }
 
+    public boolean isWithinRestriction(Vec3 pos) {
+        BlockPos home = getHomePos();
+        return home == null || home.distSqr(new BlockPos(pos)) <= getRestrictRadius();
+    }
+
     public boolean isWithinRestriction(LivingEntity entity) {
         BlockPos home = getHomePos();
         return home == null || home.distSqr(entity.blockPosition()) <= getRestrictRadius();
@@ -1285,13 +1296,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (speciesCanFly()) {
             if (this.getNavigationType() != NavigationType.FLYING) {
                 if ((! speciesCanSwim() || ! isInWaterOrBubble()) && this.getXRot() != 0) {
-                    safeSetCappedXRot(0, 180.0f); // Shouldn't be rotated on ground or water. cap of 180 = instant change, no smoothing.
+                    safeSetCappedXRot(0, 360.0f); // Shouldn't be rotated on ground or water. cap of 180 = instant change, no smoothing.
                 }
             }
             else if (getDeltaMovement().length() <= (this.getFlyingSpeed()/2) && getXRot() != 0) {
             // Every tick, slowly orient the dragon's pitch back to 0 if its barely moving, so it isn't just awkwardly pointing down or up. Also if the player is upside down.
                 //System.out.println("Rotating back to 0");
-                safeSetCappedXRot(0, 180.0f);  // TODO: temporary, 180 allows for instant change with no cap. Reduce cap to 5 or something when xrot works.
+                safeSetCappedXRot(0, 360.0f);  // TODO: temporary, 180 allows for instant change with no cap. Reduce cap to 5 or something when xrot works.
             }
             else { // If it's moving, rotate based on angle
                 Vec3 deltaVector = this.getDeltaMovement();
@@ -1301,7 +1312,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 float pitchInDegrees = wrapPitchDegrees((float) Math.toDegrees(pitchInRadians));
                 //System.out.println("Rotating based on angle: " + pitchInDegrees);
                 //System.out.println("Current xRot: " + this.getXRot());
-                safeSetCappedXRot(pitchInDegrees, 180.0f); // TODO: temporary, 180 allows for instant change with no cap. Reduce cap to 10 or something when xrot works.
+                safeSetCappedXRot(pitchInDegrees, 360.0f); // TODO: temporary, 180 allows for instant change with no cap. Reduce cap to 10 or something when xrot works.
             }
 
 /* Experimenting with capping changes in x rotation to n degrees at a time instead of lerping
@@ -1717,8 +1728,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         super.travel(moveVec);
     }
 
-    // Converts given pitch to range (-90)-90, and then limits any applied changes to the given cap.
-    // For instant change without cap limiting it, set cap to 180.
+    // Converts given pitch to range (-180)-180, and then limits any applied changes to the given cap.
+    // For instant change without cap limiting it, set cap to 360.
     public void safeSetCappedXRot(float targetXRot, float cap) {
         targetXRot = wrapPitchDegrees(targetXRot);
         float currXRot = this.getXRot();
@@ -1726,18 +1737,21 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (targetXRot > currXRot+cap) {
             //System.out.println("[DEBUG] Setting xRot to " + (currXRot+cap));
             this.setXRot(currXRot+cap);
+            this.xRotO = currXRot+cap;
         }
         else if (targetXRot < currXRot-cap) {
             //System.out.println("[DEBUG] Setting xRot to " + (currXRot-cap));
             this.setXRot(currXRot-cap);
+            this.xRotO = currXRot-cap;
         }
         else {
             //System.out.println("[DEBUG] Setting xRot to " + targetXRot);
             this.setXRot(targetXRot);
+            this.xRotO = targetXRot;
         }
     }
 
-    // Converts given yaw to range (-180)-180, and then limits any applied changes to the given cap.
+    // Converts given yaw to range 0-360, and then limits any applied changes to the given cap.
     // For instant change without cap limiting it, set cap to 360.
     public void safeSetCappedYRot(float targetYRot, float cap) {
         targetYRot = wrapYawDegrees(targetYRot);
@@ -1758,10 +1772,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return Mth.wrapDegrees(yaw);
     }
 
-    // Can't use wrap degrees for pitch. That only works for 0-360 scale. We need (-90)-90.
-    // Convert from (-90)-90, to 0 to 180, modulo, convert back to (-90)-90
+    // Can't directly use wrap degrees for pitch. That only works for 0-360 scale. We need (-180)-180.
     public float wrapPitchDegrees(float pitch) {
-        return ((pitch + 90) % 180) - 90;
+        return Mth.wrapDegrees(pitch + 180) - 180;
     }
 
     protected void handleGroundRiding(float speed, float groundX, float groundZ, Vec3 vec3d, LivingEntity livingentity) {
@@ -1828,10 +1841,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public abstract boolean speciesCanFly();
 
     public boolean shouldUseFlyingNavigator() {
-        return (getAltitude() > getFlightThreshold()) && ! isUnderWater() && ceilingLowEnoughToFlyHere();
+        return (getAltitude() > getFlightThreshold()) && ! isUnderWater() && ceilingHighEnoughToFlyHere();
     }
 
-    public boolean ceilingLowEnoughToFlyHere() {
+    public boolean ceilingHighEnoughToFlyHere() {
 
         int heightDiff = level.getHeight(Heightmap.Types.MOTION_BLOCKING, (int) getX(), (int) getZ()) - (int) getY();
         int passengerHeight = 0;
@@ -1856,7 +1869,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return false; // We can't lift off the ground in the air...
         }
 
-        return ceilingLowEnoughToFlyHere();
+        return ceilingHighEnoughToFlyHere();
     }
 
     public boolean dragonCanFly()
@@ -2055,7 +2068,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             yHeadRot = yBodyRot = yRotO  = player.getYRot();
             setYRot(yHeadRot);
             safeSetCappedYRot(player.yHeadRot, 360.0f);
-            safeSetCappedXRot(player.getXRot(), 180.0f);
+            safeSetCappedXRot(player.getXRot(), 360.0f);
 
             Vec3 vec3d = getRidingPosOffset(index);
             if (player.isFallFlying())

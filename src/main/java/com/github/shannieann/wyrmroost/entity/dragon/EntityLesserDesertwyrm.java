@@ -233,11 +233,6 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
         }
     }
 
-    @Override
-    public ItemStack getPickedResult(HitResult target) {
-        return new ItemStack(ForgeSpawnEggItem.fromEntityType(getType()));
-    }
-
     @Nullable
     @Override
     public AgeableMob getBreedOffspring(ServerLevel pLevel, AgeableMob pOtherParent) {

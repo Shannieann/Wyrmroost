@@ -6,6 +6,7 @@ import java.util.function.Predicate;
 
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 
+import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -41,9 +42,23 @@ public class WRGetDroppedFoodGoal extends Goal {
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
+    public WRGetDroppedFoodGoal(WRDragonEntity dragon, int searchRadius, boolean eatOnPickup, Predicate<ItemEntity> itemFilter) {
+        this.dragon = dragon;
+        if (this.dragon.isTame() && this.dragon.hasRestriction()) {
+            this.searchRadius = Math.min(searchRadius, (int) this.dragon.getRestrictRadius());
+        } else {
+            this.searchRadius = searchRadius;
+        }
+        this.eatOnPickup = eatOnPickup;
+        this.itemFilter = itemFilter;
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+    }
+
     private boolean isAcceptedItem(ItemEntity itemEntity) {
         ItemStack stack = itemEntity.getItem();
-        if (stack.isEmpty()) return false;
+        if (stack.isEmpty()) {
+            return false;
+        }
         return this.dragon.isFood(stack);
     }
 

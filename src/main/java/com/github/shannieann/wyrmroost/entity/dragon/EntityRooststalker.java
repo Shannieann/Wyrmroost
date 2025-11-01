@@ -223,8 +223,8 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     @Override
     public String determineVariant() {
 
-        int color = getRandom().nextDouble() < 0.01 ? 40 : getRandom().nextInt(0, 4) * 10;
-        int pattern = getRandom().nextDouble() < 0.01 ? 5 : getRandom().nextInt(0, 5);
+        int color = getRandom().nextDouble() < 0.05 ? 40 : getRandom().nextInt(0, 4) * 10;
+        int pattern = getRandom().nextDouble() < 0.05 ? 5 : getRandom().nextInt(0, 5);
         return String.valueOf(color + pattern);
 
         /* Couldn't get new names to work
