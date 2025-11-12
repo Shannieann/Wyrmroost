@@ -7,15 +7,16 @@ public class WRIdleGoal extends AnimatedGoal{
 
     public WRIdleGoal(WRDragonEntity entity) {
         super(entity);
-        this.setFlags(EnumSet.of(Goal.Flag.LOOK, Goal.Flag.MOVE, Goal.Flag.JUMP));
+        this.setFlags(EnumSet.of(Goal.Flag.LOOK));
     }
 
     @Override
     public boolean canUse() {
         return this.entity.numIdleAnimationVariants() > 0
-                && this.entity.getRandom().nextFloat() < 0.015
+                && this.entity.getRandom().nextFloat() < 0.012
                 && this.entity.isIdling()
-                && !this.entity.isAggressive()
+                && ! this.entity.isAggressive()
+                && ! this.entity.getSitting()
                 && ! this.entity.getSleeping()
                 && ! this.entity.isPassenger()
                 && ! this.entity.isVehicle();

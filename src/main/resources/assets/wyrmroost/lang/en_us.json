@@ -160,7 +160,7 @@
 
   "gui.wyrmroost.inventory_title": "Dragon Inventory",
 
-  "command.wyrmroost.dragon.patrol": "%s will stay near %s",
+  "command.wyrmroost.dragon.patrol": "%s will patrol near %s",
   "command.wyrmroost.dragon.follow": "%s will follow you.",
   "command.wyrmroost.dragon.sit": "%s will stay."
 }

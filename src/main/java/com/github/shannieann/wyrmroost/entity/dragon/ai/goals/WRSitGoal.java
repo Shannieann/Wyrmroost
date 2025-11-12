@@ -2,6 +2,7 @@ package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
 
 import java.util.EnumSet;
 
+import com.github.shannieann.wyrmroost.entity.dragon.EntityButterflyLeviathan;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingLookControl;
@@ -9,7 +10,6 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimming
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.player.Player;
 public class WRSitGoal extends AnimatedGoal {
 
     private final WRDragonEntity entity;
@@ -19,7 +19,7 @@ public class WRSitGoal extends AnimatedGoal {
     public WRSitGoal(WRDragonEntity entity) {
         super(entity);
         this.entity = entity;
-        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP));
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.JUMP, Goal.Flag.TARGET));
     }
 
     public boolean canUse() {
@@ -27,7 +27,7 @@ public class WRSitGoal extends AnimatedGoal {
         return entity.getSitting()
         && (owner == null || entity.distanceToSqr(owner) < 144.0)
         // TODO: Should BFLs be able to sit on land?
-        && (entity.isOnGround() || (entity.speciesCanSwim() && entity.isInWater()))
+        && (entity.isOnGround() || (entity instanceof EntityButterflyLeviathan && entity.isUnderWater()))
         && !entity.isUsingFlyingNavigator()
         && entity.getPassengers().size() == 0
         && entity.getTarget() == null;
@@ -35,7 +35,7 @@ public class WRSitGoal extends AnimatedGoal {
 
     @Override
     public void start() {
-        if (entity.speciesCanSwim() && entity.isUnderWater()) {
+        if (entity instanceof EntityButterflyLeviathan && entity.isUnderWater()) {
             underwaterSitting = true;
         }
         entity.clearAI();
@@ -43,11 +43,11 @@ public class WRSitGoal extends AnimatedGoal {
 
         // Don't use sit down animation if underwater or not defined
         if (underwaterSitting || this.entity.getSitDownTime() == -1) {
-            super.start("sit", 1, 0);
             this.sitDownDone = true;
         }
         else {
             int sitDownTime = this.entity.getSitDownTime();
+            System.out.println("WRSitGoal start: sitting down for " + sitDownTime + " ticks");
             super.start("sit_down", 3, sitDownTime);
             this.sitDownDone = false;
         }
@@ -56,16 +56,14 @@ public class WRSitGoal extends AnimatedGoal {
     @Override
     public void tick() {
         if (! this.sitDownDone && ! super.canContinueToUse()) {
-            // Done sitting down, start sitting
+            // Done sitting down, start sitting (handled by prediateLocomotion)
             // Doesn't apply underwater
             super.stop();
-            if (entity.speciesCanSwim() && entity.isUnderWater()) {
-                super.start("swim_sit", 1, 0);
-            }
-            else {
-                super.start("sit", 1, 0);
-            }
             this.sitDownDone = true;
+            System.out.println("WRSitGoal stop: done sitting down");
+        }
+        else if (! this.sitDownDone) {
+            super.tick();
         }
 
         LookControl lookControl = entity.getLookControl();
@@ -75,14 +73,13 @@ public class WRSitGoal extends AnimatedGoal {
         if (lookControl instanceof WRSwimmingLookControl) {
             ((WRSwimmingLookControl) lookControl).stopLooking();
         }
-        super.tick();
     }
 
     @Override
     public boolean canContinueToUse() {
         return entity.getSitting()
             // TODO: Should BFLs be able to sit on land?
-            && (entity.isOnGround() || (entity.speciesCanSwim() && entity.isInWater()))
+            && (entity.isOnGround() || (entity.canBreatheUnderwater() && entity.isUnderWater()))
             && entity.getPassengers().size() == 0
             && entity.getTarget() == null; // getting attacked halfway should interrupt goal
     }

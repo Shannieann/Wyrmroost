@@ -2,14 +2,13 @@ package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
 
 import java.util.EnumSet;
 import java.util.List;
-import java.util.function.Predicate;
 
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 
-import net.minecraft.advancements.critereon.ItemPredicate;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
@@ -22,13 +21,13 @@ public class WRGetDroppedFoodGoal extends Goal {
     protected BlockPos itemAt;
     protected ItemEntity targetItemEntity;
     protected ItemEntity oneItemEntity;
-    protected final Predicate<ItemEntity> itemFilter;
     // control vars
     protected boolean eatOnPickup = true;
     protected boolean readyForOtherAction = false;
+    protected Item acceptedFood;
     // cooldown vars
     protected int cooldown = 50;
-    private static final int cooldownMax = 50; // only search for food every 2.5 seconds, avoid lag
+    private static final int cooldownMax = 20; // only search for food every 2 seconds (goal tick = 0.1), avoid lag
 
     public WRGetDroppedFoodGoal(WRDragonEntity dragon, int searchRadius, boolean eatOnPickup) {
         this.dragon = dragon;
@@ -38,11 +37,11 @@ public class WRGetDroppedFoodGoal extends Goal {
             this.searchRadius = searchRadius;
         }
         this.eatOnPickup = eatOnPickup;
-        this.itemFilter = this::isAcceptedItem;
+        this.acceptedFood = null;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
-    public WRGetDroppedFoodGoal(WRDragonEntity dragon, int searchRadius, boolean eatOnPickup, Predicate<ItemEntity> itemFilter) {
+    public WRGetDroppedFoodGoal(WRDragonEntity dragon, int searchRadius, boolean eatOnPickup, Item acceptedFood) {
         this.dragon = dragon;
         if (this.dragon.isTame() && this.dragon.hasRestriction()) {
             this.searchRadius = Math.min(searchRadius, (int) this.dragon.getRestrictRadius());
@@ -50,22 +49,23 @@ public class WRGetDroppedFoodGoal extends Goal {
             this.searchRadius = searchRadius;
         }
         this.eatOnPickup = eatOnPickup;
-        this.itemFilter = itemFilter;
+        this.acceptedFood = acceptedFood;
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
     private boolean isAcceptedItem(ItemEntity itemEntity) {
-        ItemStack stack = itemEntity.getItem();
-        if (stack.isEmpty()) {
+        if (itemEntity == null || itemEntity.getItem() == null || itemEntity.getItem().isEmpty()) {
             return false;
         }
-        return this.dragon.isFood(stack);
-    }
+        return this.acceptedFood != null
+            ? this.acceptedFood.equals(itemEntity.getItem().getItem())
+            : this.dragon.isFood(itemEntity.getItem());
+    }    
 
     private List<ItemEntity> findDroppedItems() {
         Level level = this.dragon.level;
         AABB searchBox = this.dragon.getBoundingBox().inflate(this.searchRadius, this.searchRadius, this.searchRadius);
-        return level.getEntitiesOfClass(ItemEntity.class, searchBox, this.itemFilter);
+        return level.getEntitiesOfClass(ItemEntity.class, searchBox, itemEntity -> isAcceptedItem(itemEntity));
     }
 
     @Override
@@ -93,7 +93,6 @@ public class WRGetDroppedFoodGoal extends Goal {
         if (this.dragon.hasRestriction() && this.dragon.getRestrictRadius() < this.dragon.distanceToSqr(this.targetItemEntity)) {
             return false;
         }
-        this.itemAt = this.targetItemEntity.blockPosition();
         return true;
     }
 
@@ -108,7 +107,7 @@ public class WRGetDroppedFoodGoal extends Goal {
         }
         if (this.itemAt != null) {
             AABB checkBox = new AABB(this.itemAt).inflate(1, 1, 1);
-            List<ItemEntity> itemsAtPos = this.dragon.level.getEntitiesOfClass(ItemEntity.class, checkBox, this.itemFilter);
+            List<ItemEntity> itemsAtPos = this.dragon.level.getEntitiesOfClass(ItemEntity.class, checkBox, itemEntity -> isAcceptedItem(itemEntity));
             return !itemsAtPos.isEmpty();
         }
         return false;
@@ -140,7 +139,6 @@ public class WRGetDroppedFoodGoal extends Goal {
 
             // standard pickup radius
             if (d2 < 1.0D) {
-
                 if (!this.targetItemEntity.getItem().isEmpty() && this.isAcceptedItem(this.targetItemEntity)) {
                     if (this.eatOnPickup) { // Regular action
                         if (this.dragon.level.isClientSide) {
@@ -156,7 +154,7 @@ public class WRGetDroppedFoodGoal extends Goal {
                         }
                         stop();
                         return;
-                    } else { // Override - do something else
+                    } else { // Override - do something else (currently only rooststalker)
                         this.readyForOtherAction = true;
                     }
                 }

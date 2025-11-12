@@ -426,7 +426,7 @@ public final class WRServerConfig {
             dragonAttributesConfig = new DragonAttributesConfig(builder, // TODO: these values are all very wrong
             10,
             2,
-            10
+            15
                 );
             dragonBreedingConfig = new DragonBreedingConfig(builder,
             2,

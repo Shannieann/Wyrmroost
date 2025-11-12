@@ -1,4 +1,4 @@
-package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
+package com.github.shannieann.wyrmroost.entity.dragon.ai.goals.flyers;
 
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import net.minecraft.core.BlockPos;

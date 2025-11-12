@@ -3,7 +3,7 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.AnimatedGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRAnimatedFloatGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDefendHomeGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRDragonBreedGoal;
 import com.github.shannieann.wyrmroost.Wyrmroost;
@@ -12,10 +12,15 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRFollowOwnerGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRGetDroppedFoodGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRIdleGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRMoveToHomeGoal;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRRandomLiftOffGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRRidePlayerGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRSitGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRSleepGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRRandomSwimmingGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRSwimToSurfaceGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.flyers.WRFlockFlyInCirclesGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.flyers.WRRandomLiftOffGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRMoveToLandToSleepGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRTemptGoal;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.mojang.math.Vector3f;
@@ -28,7 +33,6 @@ import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
@@ -39,12 +43,13 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
+import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.TemptGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
+import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.animal.Cod;
 import net.minecraft.world.entity.animal.Salmon;
 import net.minecraft.world.entity.animal.TropicalFish;
@@ -60,22 +65,24 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.builder.ILoopType;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Random;
-import java.util.function.Predicate;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 
 public class EntitySilverGlider extends WRDragonEntity implements IBreedable, ITameable
 {
-
-    // Only used to make a group of silver gliders fly in circles in a flock. When not flocking, (0,0,0).
-    public static final EntityDataAccessor<Integer> FLOCKING_X = SynchedEntityData.defineId(EntitySilverGlider.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FLOCKING_Y = SynchedEntityData.defineId(EntitySilverGlider.class, EntityDataSerializers.INT);
-    public static final EntityDataAccessor<Integer> FLOCKING_Z = SynchedEntityData.defineId(EntitySilverGlider.class, EntityDataSerializers.INT);
+    // 0 = not flocking, 1 = flock follower, 2 = flock leader
+    public static final EntityDataAccessor<Integer> IS_FLOCKING = SynchedEntityData.defineId(EntitySilverGlider.class, EntityDataSerializers.INT);
 
     private static final float MOVEMENT_SPEED = 0.23f;
     private static final float FLYING_SPEED = 0.12f;
@@ -83,9 +90,7 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     private static final ResourceLocation EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/silver_glider/eyes.png");
     private static final ResourceLocation EYES_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/silver_glider/spe_eyes.png");
 
-
-
-    private TemptGoal temptGoal;
+    private WRTemptGoal temptGoal;
     private static final Ingredient TEMPT_INGREDIENT = Ingredient.of(new ItemLike[]{Items.COD, Items.SALMON, Items.TROPICAL_FISH, Items.PUFFERFISH});
 
     public EntitySilverGlider(EntityType<? extends WRDragonEntity> dragon, Level level)
@@ -96,6 +101,28 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     // ====================================
     //      Animations
     // ====================================
+
+    @Override
+    public <E extends IAnimatable> PlayState predicateAnimation(AnimationEvent<E> event) {
+
+        if (this.isRidingPlayer()) {
+            if (this.isAdult() && this.getOwner().isFallFlying())  {
+                if (this.getOwner().jumping) {
+                    System.out.println("Boosting");
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation("boost", ILoopType.EDefaultLoopTypes.LOOP));
+                } else {
+                    System.out.println("Player flying");
+                    event.getController().setAnimation(new AnimationBuilder().addAnimation("player_fly", ILoopType.EDefaultLoopTypes.LOOP));
+                }
+            }
+            else {
+                System.out.println("Perching");
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("perch", ILoopType.EDefaultLoopTypes.LOOP));
+            }
+            return PlayState.CONTINUE; // Absolutely nothing else should play while riding on player
+        }
+        return super.predicateAnimation(event);
+    }
 
     @Override
     public int numIdleAnimationVariants() {
@@ -150,25 +177,19 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     @Override
     protected void defineSynchedData() {
         super.defineSynchedData();
-        entityData.define(FLOCKING_X, 0);
-        entityData.define(FLOCKING_Y, 0);
-        entityData.define(FLOCKING_Z, 0);
+        entityData.define(IS_FLOCKING, 0);
     }
 
     @Override
     public void addAdditionalSaveData(CompoundTag nbt) {
         super.addAdditionalSaveData(nbt);
-        nbt.putInt("FlockingX", getFlockingX());
-        nbt.putInt("FlockingY", getFlockingY());
-        nbt.putInt("FlockingZ", getFlockingZ());
+        nbt.putInt("IsFlocking", getIsFlocking());
     }
 
     @Override
     public void readAdditionalSaveData(CompoundTag nbt) {
         super.readAdditionalSaveData(nbt);
-        setFlockingX(nbt.getInt("FlockingX"));
-        setFlockingY(nbt.getInt("FlockingY"));
-        setFlockingZ(nbt.getInt("FlockingZ"));
+        setIsFlocking(nbt.getInt("IsFlocking"));
     }
 
     // ====================================
@@ -252,25 +273,12 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     //      A.8) Entity Data: Miscellaneous
     // ====================================
 
-    public int getFlockingX() {
-        return entityData.get(FLOCKING_X);
+    public int getIsFlocking() {
+        return entityData.get(IS_FLOCKING);
     }
-    public void setFlockingX(int flockingX) {
-        entityData.set(FLOCKING_X, flockingX);
+    public void setIsFlocking(int isFlocking) {
+        entityData.set(IS_FLOCKING, isFlocking);
     }
-    public int getFlockingY() {
-        return entityData.get(FLOCKING_Y);
-    }
-    public void setFlockingY(int flockingY) {
-        entityData.set(FLOCKING_Y, flockingY);
-    }
-    public int getFlockingZ() {
-        return entityData.get(FLOCKING_Z);
-    }
-    public void setFlockingZ(int flockingZ) {
-        entityData.set(FLOCKING_Z, flockingZ);
-    }
-
 
     @Override
     public int getHeadRotSpeed()
@@ -297,31 +305,46 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
         return new Attribute[] {MAX_HEALTH};
     }
 
+    // Can't breathe underwater but can hold breath for 1 minute (as opposed to 15 seconds)
+    // Copied from WaterAnimal.class
+    protected void handleAirSupply(int pAirSupply) {
+        if (this.isAlive() && this.isUnderWater()) {
+           this.setAirSupply(pAirSupply - 1);
+           if (this.getAirSupply() == -20) {
+              this.setAirSupply(0);
+              this.hurt(DamageSource.DROWN, 2.0F);
+            }
+        } else {
+           this.setAirSupply(1200);
+        }
+    }
+
+    @Override
+    public double getFluidJumpThreshold() { // So animated float goal works better
+        return 0.1d;
+    }
+
     // ====================================
     //      B) Tick and AI
     // ====================================
+
+    // custom breath hold
+    @Override
+    public void baseTick() {
+        int airSupply = this.getAirSupply();
+        super.baseTick();
+        this.handleAirSupply(airSupply);
+     }
 
     @Override
     // Override for elytra logic
     public void tick() {
 
-        super.tick();
-        setEatingCooldown(Math.max(getEatingCooldown()-1,0));
-        setBreedingCooldown(Math.max(getBreedingCooldown()-1,0));
-        setSleepingCooldown(Math.max(getSleepingCooldown()-1,0));
-
-        // TODO: Do silver gliders attack anything ever?
-        // Check if attack animation has completed
-        if (attackAnimationStartTick >= 0 && getAnimationInOverride()) {
-            int elapsedTicks = tickCount - attackAnimationStartTick;
-            int requiredTicks = getAnimationTime(); // TODO: Attack animation end may not necessarily be at the end of the animation time?
-            System.out.println("[DEBUG] Attack animation check for " + this.getName().getString() + ": elapsed=" + elapsedTicks + ", required=" + requiredTicks);
-            if (elapsedTicks >= requiredTicks) {
-                System.out.println("[DEBUG] Attack animation completed for " + this.getName().getString() + ", turning off override");
-                setAnimationInOverride(false);
-                attackAnimationStartTick = -1;
-            }
+        if (this.temptGoal != null && this.temptGoal.isRunning() && !this.isTame() && this.tickCount % 100 == 0) {
+            this.playSound(WRSounds.ENTITY_SILVERGLIDER_IDLE.get(), 1.5F, 3.0F);
         }
+
+        super.tick();
 
         if (isRidingPlayer()) {
 
@@ -343,10 +366,12 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
 
             // Try to start player elytra flight
             if (! owner.isOnGround() && ! owner.isFallFlying() && isAdult() && ! owner.isInWater() && ! owner.hasEffect(MobEffects.LEVITATION)) {
+                System.out.println("Starting fall flying");
                 owner.startFallFlying();
+                System.out.println("started fall flying:" + owner.isFallFlying());
              }
 
-             /*
+    /*
     public boolean shouldGlide(Player player)
     {
         if (isBaby()) return false;
@@ -358,58 +383,20 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
         if (isDiving() && !player.isOnGround()) return true;
         return getAltitude() - 1.8 > 4;
     }
-*/
+    */
 
             this.setPos(getPosByDragonAndPlayer(owner));
             float yrot = owner.getYRot();
             this.setYRot(yrot);
             this.setYHeadRot(yrot);
-
+            System.out.println("XRot before setting: " + this.getXRot());
             if (owner.isFallFlying()) {
-                safeSetCappedXRot((owner.getXRot() + 90), 360.0f);
-
-                /* TODO: Do we need this, or does it just work?
-                 *
-                 *  Vec3 vec3d = player.getLookAngle().scale(0.3);
-                 * player.setDeltaMovement(player.getDeltaMovement().scale(0.6).add(vec3d.x, Math.min(vec3d.y * 2, 0), vec3d.z));
-                 * player.fallDistance = 0;
-                 * 
-                 */
+                this.safeSetCappedXRot((owner.getXRot() + 90), 360.0f);
             } else {
-                this.setXRot(90.0f); // needs to be vertical clinging to player
+                this.safeSetCappedXRot(90.0f, 360.0f);
             }
+            System.out.println("XRot after setting: " + this.getXRot());
         }
-
-        NavigationType properNavigator = getProperNavigationType();
-        if (properNavigator != this.getNavigationType()) {
-            setNavigator(properNavigator);
-        }
-
-        // copy paste from WRDragonEntity
-
-        else if (getDeltaMovement().length() <= (this.getFlyingSpeed()/2) && getXRot() != 0) {
-        // Every tick, slowly orient the dragon's pitch back to 0 if its barely moving, so it isn't just awkwardly pointing down or up. Also if the player is upside down.
-            //System.out.println("Rotating back to 0");
-            safeSetCappedXRot(0, 180.0f);  // TODO: temporary, 180 allows for instant change with no cap. Reduce cap to 5 or something when xrot works.
-        }
-        else { // If it's moving, rotate based on angle
-            Vec3 deltaVector = this.getDeltaMovement();
-            // Horizontal direction doesn't matter, only distance. Use Pythagorean theorem.
-            double horizontalDistance = Math.sqrt(deltaVector.x * deltaVector.x + deltaVector.z * deltaVector.z);
-            double pitchInRadians = Math.atan2(deltaVector.y, horizontalDistance);
-            float pitchInDegrees = wrapPitchDegrees((float) Math.toDegrees(pitchInRadians));
-            //System.out.println("Rotating based on angle: " + pitchInDegrees);
-            //System.out.println("Current xRot: " + this.getXRot());
-            safeSetCappedXRot(pitchInDegrees, 180.0f); // TODO: temporary, 180 allows for instant change with no cap. Reduce cap to 10 or something when xrot works.
-        }
-
-        // UPDATE AGE:
-        // The entity's is updated once every minute (AGE_UPDATE_INTERVAL == 1200)
-        // Abstract method ageProgressAmount() sets the float amount by which to update age every minute
-        if (!isAdult() && tickCount % AGE_UPDATE_INTERVAL == 0) {
-            setAgeProgress(getAgeProgress()+ageProgressAmount());
-        }
-
     }
 
     @Override
@@ -436,17 +423,42 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     @Override
     public boolean hurt(DamageSource source, float amount) {
         if (super.hurt(source, amount)) {
-            setFlockingX(0);
-            setFlockingY(0);
-            setFlockingZ(0);
+            setIsFlocking(0);
             return true;
         }
         return false;
     }
 
+    // Some changes so that whenever it has a target, it attacks once and then flies away
+    // coward glider
     @Override
-    public boolean isInvulnerableTo(DamageSource source) {
-        return source == DamageSource.DROWN || super.isInvulnerableTo(source);
+    public boolean doHurtTarget(Entity entity)
+    {
+        System.out.println("Silver Glider doHurtTarget: " + entity.getName().getString());
+        boolean didHurt = super.doHurtTarget(entity);
+        boolean hitFish = entity instanceof Cod || entity instanceof Salmon || entity instanceof TropicalFish;
+        System.out.println("Silver Glider did hurt: " + didHurt+ " hitFish: " + hitFish);
+        if (didHurt && ! hitFish) {
+            setTarget(null);
+            setAggressive(false);
+
+            // launch into air and fly away
+            if (canLiftOff()) {
+                setDeltaMovement(0, 0.2, 0);
+                setNavigator(NavigationType.FLYING);
+            }
+
+            // Get random position ~30 blocks away and ~20 blocks up
+            double randX = entity.getX() + (getRandom().nextDouble() * 5) + ((getRandom().nextBoolean() ? -1 : 1) * 25);
+            double randZ = entity.getZ() + (getRandom().nextDouble() * 5) + ((getRandom().nextBoolean() ? -1 : 1) * 25);
+            double randY = entity.getY() + 30;
+
+            getNavigation().createPath(randX, randY, randZ, 1);
+            if (getNavigation().getPath() == null) {
+                getNavigation().moveTo(randX, randY, randZ, 1.5D);
+            }
+        }
+        return didHurt;
     }
 
     // ====================================
@@ -491,8 +503,6 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     //      D) Taming
     // ====================================
 
-    // TODO: Figure out how to integrate this with tempt goal
-
     @SuppressWarnings("null")
     @Override
     public InteractionResult tameLogic(Player tamer, ItemStack stack) {
@@ -500,9 +510,11 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
         if (tamer.level.isClientSide) {
             return InteractionResult.CONSUME;
         }
-        //         if (! isTame() && this.temptGoal != null && this.temptGoal.isRunning()) {
 
-        if (! isTame()) {
+        if (! isTame() && this.temptGoal != null && this.temptGoal.isRunning()
+            && (stack.getItem() == Items.COD || stack.getItem() == Items.SALMON || stack.getItem() == Items.TROPICAL_FISH || stack.getItem() == Items.PUFFERFISH)
+        ) {
+            System.out.println("Taming. Tempt goal is running: " + this.temptGoal.isRunning());
             eat(tamer.getLevel(), stack);
             float tameChance = (tamer.isCreative() || this.isHatchling()) ? 1.0f : 0.3f;
             boolean tamed = attemptTame(tameChance, tamer);
@@ -511,9 +523,7 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
                 this.playSound(SoundEvents.CAT_PURREOW, 2f, 1.5f);
                 getAttribute(MAX_HEALTH).setBaseValue(WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.dragonAttributesConfig.maxHealth.get());
                 heal((float)getAttribute(MAX_HEALTH).getBaseValue());
-                setFlockingX(0);
-                setFlockingY(0);
-                setFlockingZ(0);
+                setIsFlocking(0);
             }
 
             return InteractionResult.SUCCESS;
@@ -621,7 +631,7 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
 
     @Override
     public float getSoundVolume() {
-        return 0.8f;
+        return 0.6f;
     }
 
     // ====================================
@@ -633,41 +643,64 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     {
         super.registerGoals();
 
-        // TODO: Land at night to sleep goal
-        // TODO: Flock in circles goal
+        this.temptGoal = new WRTemptGoal(this, 0.8d, TEMPT_INGREDIENT, true);
 
-        this.temptGoal = new TemptGoal(this, 0.8d, TEMPT_INGREDIENT, true);
-
-        goalSelector.addGoal(1, new WRRidePlayerGoal(this, "perch", "player_fly", "boost"));
-        goalSelector.addGoal(2, this.temptGoal);
-        goalSelector.addGoal(3, new AvoidEntityGoal<Player>(this, Player.class, 10f, 1.0, 1.1));
+        goalSelector.addGoal(1, new WRRidePlayerGoal(this));
+        goalSelector.addGoal(2, new MeleeAttackGoal(this, 1.1d, true));
+        goalSelector.addGoal(3, this.temptGoal);
         goalSelector.addGoal(4, new WRDragonBreedGoal(this));
         goalSelector.addGoal(5, new WRMoveToHomeGoal(this));
         goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
-        goalSelector.addGoal(7, new WRSitGoal(this));
-        goalSelector.addGoal(8, new WRGetDroppedFoodGoal(this, 20, true, (itemEntity -> itemEntity.getItem().getItem() == Items.BAKED_POTATO)));
-        goalSelector.addGoal(9, new WRSleepGoal(this));
-        goalSelector.addGoal(10, new SwoopGoal());
-        goalSelector.addGoal(11, new WRIdleGoal(this));
-        goalSelector.addGoal(12, new WRRandomLiftOffGoal(this));
-        goalSelector.addGoal(13, new AnimatedFloatGoal(this, "float", AnimatedGoal.LOOP, 0));
-        goalSelector.addGoal(14, new LookAtPlayerGoal(this, LivingEntity.class, 7f));
-        goalSelector.addGoal(15, new WaterAvoidingRandomStrollGoal(this, 1));
-        goalSelector.addGoal(16, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(7, new WRSleepGoal(this));
+        goalSelector.addGoal(8, new WRSitGoal(this));
+        goalSelector.addGoal(9, new WRGetDroppedFoodGoal(this, 25, true, Items.BAKED_POTATO));
 
-        targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this)); // Does it defend owner?
-        targetSelector.addGoal(2, new OwnerHurtTargetGoal(this)); // Does it attack?
-        targetSelector.addGoal(4, new WRDefendHomeGoal(this)); // Does it defend home?
+        goalSelector.addGoal(10, new AvoidEntityGoal<Player>(this, Player.class, 10f, 1.0, 1.1, EntitySelector.NO_CREATIVE_OR_SPECTATOR::test) {
+            @Override
+            // Try to make escape pos in air so dragon flies away from players
+            public boolean canUse() {
+                boolean canUse = super.canUse();
+                if (canUse && canLiftOff()) { // Make it fly away from player
+                    setNavigator(NavigationType.FLYING);
+                    setDeltaMovement(0, 0.2, 0);
+
+                    Vec3 pos = DefaultRandomPos.getPosAway(this.mob, 16, 7, this.toAvoid.position());
+                    this.path = this.pathNav.createPath(pos.x, pos.y+20, pos.z, 0);
+                    return this.path != null;
+                }
+                return canUse;
+            }
+        });
+        goalSelector.addGoal(11, new WRMoveToLandToSleepGoal(this, false));
+        goalSelector.addGoal(12, new SilverGliderSwoopGoal());
+        goalSelector.addGoal(13, new WRFlockFlyInCirclesGoal(this, 20, 20));
+        goalSelector.addGoal(14, new WRIdleGoal(this));
+        goalSelector.addGoal(15, new WRRandomLiftOffGoal(this, 20, 0.15));
+        goalSelector.addGoal(16, new WRRandomSwimmingGoal(this, 1, 15, 15, 5));
+        goalSelector.addGoal(17, new WRSwimToSurfaceGoal(this));
+        goalSelector.addGoal(18, new WRAnimatedFloatGoal(this));
+        goalSelector.addGoal(19, new LookAtPlayerGoal(this, LivingEntity.class, 7f));
+        goalSelector.addGoal(20, new RandomLookAroundGoal(this));
+
+        targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
+        targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
+        targetSelector.addGoal(3, new HurtByTargetGoal(this, new Class[0]) {
+            @Override
+            protected double getFollowDistance() {
+                return (double) getRestrictRadius();
+            }
+        });
+        targetSelector.addGoal(4, new WRDefendHomeGoal(this));
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, LivingEntity.class, true, target -> target instanceof Salmon || target instanceof Cod || target instanceof TropicalFish));
     }
 
-    public class SwoopGoal extends Goal
+    public class SilverGliderSwoopGoal extends Goal
     {
         private BlockPos pos;
 
-        public SwoopGoal()
+        public SilverGliderSwoopGoal()
         {
-            setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+            setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK, Flag.JUMP));
         }
 
         @Override
@@ -675,53 +708,41 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
         {
             if (! isUsingFlyingNavigator() || isPassenger() || isRidingPlayer()
                 || getRandom().nextDouble() > 0.001
+                || getIsFlocking() == 2 // leader
+                || getTarget() != null // attacking
                 || level.getFluidState(this.pos = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, blockPosition()).below()).isEmpty()) {
                 return false;
             }
+            System.out.println("SwoopGoal canUse: " + (getY() - pos.getY() > 8));
             return getY() - pos.getY() > 8;
+        }
+
+        @Override
+        public void start() {
+            System.out.println("SwoopGoal start");
+            setIsFlocking(0);
         }
 
         @Override
         public boolean canContinueToUse()
         {
-            return blockPosition().distSqr(pos) > 8;
+            return blockPosition().distSqr(pos) > 4;
         }
 
         @Override
         public void tick()
         {
             if (getNavigation().isDone()) {
-                getNavigation().moveTo(pos.getX(), pos.getY() + 2, pos.getZ(), 1);
+                getNavigation().moveTo(pos.getX(), pos.getY(), pos.getZ(), 1);
             }
-            getLookControl().setLookAt(pos.getX(), pos.getY() + 2, pos.getZ());
-        }
-    }
-
-    public class AnimatedFloatGoal extends AnimatedGoal
-    {
-        public AnimatedFloatGoal(WRDragonEntity dragon, String animationName, int animationType, int animationTime) {
-            super(dragon, animationName, animationType, animationTime);
-            this.setFlags(EnumSet.of(Flag.JUMP));
-            entity.getNavigation().setCanFloat(true);
+            getLookControl().setLookAt(pos.getX(), pos.getY(), pos.getZ());
         }
 
-        public boolean canUse() {
-           return entity.isInWater() && entity.getFluidHeight(FluidTags.WATER) > entity.getFluidJumpThreshold() || entity.isInLava();
-        }
-
-        public boolean canContinueToUse() {
-            return entity.isInWater() && entity.getFluidHeight(FluidTags.WATER) > entity.getFluidJumpThreshold() || entity.isInLava();
-         }
-
-        public boolean requiresUpdateEveryTick() {
-           return true;
-        }
-
-        public void tick() {
-           if (entity.getRandom().nextDouble() < 0.8D) {
-              entity.getJumpControl().jump();
-           }
-
+        @Override
+        public void stop() {
+            System.out.println("SwoopGoal stop");
+            super.stop();
+            pos = null;
         }
     }
 

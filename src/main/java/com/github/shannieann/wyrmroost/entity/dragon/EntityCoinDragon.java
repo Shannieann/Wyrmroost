@@ -24,8 +24,10 @@ import net.minecraft.world.entity.ai.util.LandRandomPos;
 
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRMoveToHomeGoal;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRRandomLiftOffGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRRandomWalkingGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRSleepGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.flyers.WRRandomLiftOffGoal;
+
 import net.minecraft.world.entity.item.ItemEntity;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -66,16 +68,39 @@ public class EntityCoinDragon extends WRDragonEntity
 
     // Simplify, plus make sure walking animation is actually only used when walking
     @Override
-    public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
+    public <E extends IAnimatable> PlayState predicateAnimation(AnimationEvent<E> event) {
 
-        // Don't do locomotion animation if dragon is doing something special
-        if (this.getSleeping() || this.getSitting()) {
-            return PlayState.STOP;
+        // Every "override" animation should completely replace regular animations
+        // ex: rooststalker scavenge, canari threaten, canari dance
+        // UNLESS it is attack or idle, which can be played over regular animations
+        if (this.isInOverrideAnimation()) {
+            String currentAnim = this.getOverrideAnimation();
+            // Actually set the animation on the controller so it plays
+            if (currentAnim.contains("sit_down") || currentAnim.contains("lay_down")) {
+                System.out.println("adding base ground for special animation: " + currentAnim);
+                // This needs to be layered over base ground specifically
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
+                return PlayState.CONTINUE;
+            }
+            else if (!currentAnim.contains("idle")) {
+                // Everything except idle and attack animations uses regular bones and shouldn't be layered over anything
+                System.out.println("Playing regular bone special animation: " + currentAnim);
+                switch (this.getAnimationType()) {
+                    case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim, ILoopType.EDefaultLoopTypes.LOOP));
+                    case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim, ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+                    case 3 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim,ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
+                }
+                System.out.println("Animation override: " + currentAnim + " is not idle, no layer");
+                return PlayState.CONTINUE;
+            }
+            else {
+                // Must be idle or attack animation. Choose regular bone animation as normal
+            }
         }
 
-        // Don't do locomotion animation if there's an animation override
-        if (this.getAnimationInOverride()) {
-            return PlayState.STOP;
+        if (this.getSleeping()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("sleep", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
         }
 
         NavigationType navigationType = this.getNavigationType();
@@ -98,10 +123,8 @@ public class EntityCoinDragon extends WRDragonEntity
             return PlayState.CONTINUE;
         }
 
-        // Default case - shouldn't happen if all other animations are added
-        event.getController().setAnimation(new AnimationBuilder().addAnimation("base", ILoopType.EDefaultLoopTypes.LOOP));
-        System.out.println("Base");
-        return PlayState.CONTINUE;
+        // Should never get here
+        return PlayState.STOP;
     }
 
     private int numGroundIdleAnimationVariants() {
@@ -399,8 +422,8 @@ public class EntityCoinDragon extends WRDragonEntity
         goalSelector.addGoal(1, new WRSleepGoal(this));
         goalSelector.addGoal(2, new CoinDragonIdleGoal(this));
         goalSelector.addGoal(3, new LookAtPlayerGoal(this, Player.class, 8));
-        goalSelector.addGoal(4, new CoinDragonRandomStrollGoal(this, 1));
-        goalSelector.addGoal(5, new WRRandomLiftOffGoal(this));
+        goalSelector.addGoal(4, new WRRandomWalkingGoal(this, 1));
+        goalSelector.addGoal(5, new WRRandomLiftOffGoal(this, 3, 0.05)); // fly_transition is takeoff??
         goalSelector.addGoal(6, new CoinDragonReturnToGroundGoal(this));
         goalSelector.addGoal(7, new RandomLookAroundGoal(this));
         goalSelector.addGoal(8, new CoinDragonBobUpAndDownGoal(this));
@@ -478,83 +501,55 @@ public class EntityCoinDragon extends WRDragonEntity
     }
 
     // =====================================================================
-    //      F.3) Coin Dragon custom random stroll goal (never leaves home radius)
-    // =====================================================================
-    public class CoinDragonRandomStrollGoal extends RandomStrollGoal {
-        public static final float PROBABILITY = 0.001F;
-        protected final float probability;
-     
-        public CoinDragonRandomStrollGoal(EntityCoinDragon pMob, double pSpeedModifier) {
-            super(pMob, pSpeedModifier);
-            this.probability = PROBABILITY;
-            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
-        }
-
-        @Nullable
-        protected Vec3 getPosition() {
-
-            Vec3 randomPos = LandRandomPos.getPos(this.mob, (int) this.mob.getRestrictRadius(), 7);
-            // Ensure randomPos is not null before checking restriction
-            while (randomPos != null && !((EntityCoinDragon) this.mob).isWithinRestriction(new BlockPos(randomPos))) {
-                randomPos = LandRandomPos.getPos(this.mob, (int) this.mob.getRestrictRadius(), 7);
-            }
-
-           if (this.mob.isInWaterOrBubble()) {
-              return randomPos;
-           } else {
-              return this.mob.getRandom().nextFloat() >= this.probability ? LandRandomPos.getPos(this.mob, (int) this.mob.getRestrictRadius(), 7) : super.getPosition();
-           }
-        }
-    }
-
-    // =====================================================================
-    //      F.4) Coin Dragon bob up and down goal when flying/idle goal
+    //      F.3) Coin Dragon bob up and down goal when flying/idle goal
     // =====================================================================
     class CoinDragonBobUpAndDownGoal extends Goal
     {
         private final EntityCoinDragon dragon;
+
         public CoinDragonBobUpAndDownGoal(EntityCoinDragon dragon) {
             this.dragon = dragon;
             this.setFlags(EnumSet.of(Flag.MOVE, Flag.JUMP));
         }
 
-    @Override
-    public boolean canUse() {
-        return dragon.getRandom().nextDouble() < 0.01
-                && dragon.getNavigationType() == NavigationType.FLYING
-                && dragon.getNavigation().isDone()
-                && ! dragon.isPassenger();
-    }
-
-    @Override
-    public boolean canContinueToUse() {
-        return dragon.getNavigation().isDone()
-                && ! dragon.isPassenger()
-                && dragon.getNavigationType() == NavigationType.FLYING
-                && super.canContinueToUse()
-                && dragon.getRandom().nextDouble() > 0.0005; // very small chance to randomly stop, just so this doesn't go on forever
-    }
-
-    @Override
-    public void tick() {
-        double yMot;
-        double altitiude = dragon.getAltitude();
-        if (altitiude < 1) {
-            yMot = dragon.getFlyingSpeed();
-        } else if (altitiude > 2.5) {
-            yMot = -dragon.getFlyingSpeed();
-        } else {
-            yMot = Math.sin(dragon.tickCount * 0.1) * 0.0035;
+        @Override
+        public boolean canUse() {
+            return dragon.getRandom().nextDouble() < 0.01
+                    && dragon.getNavigationType() == NavigationType.FLYING
+                    && dragon.getNavigation().isDone()
+                    && !dragon.isPassenger();
         }
 
-        dragon.setDeltaMovement(dragon.getDeltaMovement().add(0, yMot, 0));
-        dragon.move(MoverType.SELF, dragon.getDeltaMovement());
-        dragon.setDeltaMovement(dragon.getDeltaMovement().scale(0.91));
-    }
+        @Override
+        public boolean canContinueToUse() {
+            return dragon.getNavigation().isDone()
+                    && !dragon.isPassenger()
+                    && dragon.getNavigationType() == NavigationType.FLYING
+                    && super.canContinueToUse()
+                    && dragon.getRandom().nextDouble() > 0.0005; // very small chance to randomly stop, just so this
+                                                                 // doesn't go on forever
+        }
 
-    @Override
-    public void stop() {
-        dragon.getNavigation().stop();
+        @Override
+        public void tick() {
+            double yMot;
+            double altitiude = dragon.getAltitude();
+            if (altitiude < 1) {
+                yMot = dragon.getFlyingSpeed();
+            } else if (altitiude > 2.5) {
+                yMot = -dragon.getFlyingSpeed();
+            } else {
+                yMot = Math.sin(dragon.tickCount * 0.1) * 0.0035;
+            }
+
+            dragon.setDeltaMovement(dragon.getDeltaMovement().add(0, yMot, 0));
+            dragon.move(MoverType.SELF, dragon.getDeltaMovement());
+            dragon.setDeltaMovement(dragon.getDeltaMovement().scale(0.91));
+        }
+
+        @Override
+        public void stop() {
+            dragon.getNavigation().stop();
+        }
     }
-}
 }
