@@ -4,20 +4,19 @@ import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRSwimToSurfaceGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.flyers.WRFlockFlyAwayGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.flyers.WRReturnToGroundIfIdleGoal;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 
-import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -27,12 +26,9 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
-import net.minecraft.world.entity.ai.goal.FloatGoal;
-import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
@@ -55,6 +51,11 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.living.PotionEvent;
 import net.minecraftforge.eventbus.api.Event.Result;
+import software.bernie.geckolib3.core.IAnimatable;
+import software.bernie.geckolib3.core.PlayState;
+import software.bernie.geckolib3.core.builder.AnimationBuilder;
+import software.bernie.geckolib3.core.builder.ILoopType;
+import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 
 import javax.annotation.Nullable;
 
@@ -98,7 +99,17 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     // ====================================
 
     @Override
-    public int numIdleAnimationVariants(){
+    public <E extends IAnimatable> PlayState predicateAnimation(AnimationEvent<E> event) {
+
+        if (this.isRidingPlayer()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("sit", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+        return super.predicateAnimation(event);
+    }
+
+    @Override
+    public int numIdleAnimationVariants() {
         return 2;
     }
 
@@ -120,16 +131,11 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     }
 
     public int getLieDownTime() {
-        return 10;
+        return 5;
     }
 
     public int getSitDownTime() {
-        return 10;
-    }
-
-    // Canari has a swim animation
-    public boolean notAquaticShouldUseSwimAnimation() {
-        return isInWater();
+        return 5;
     }
 
     // ====================================
@@ -153,7 +159,8 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     @Override
     public int getYawRotationSpeed()
     {
-        return isUsingFlyingNavigator()? 12 : 75;
+        // Let it rotate instantly when threatening
+        return isUsingFlyingNavigator() ? 12 : (getThreateningTimer() > 0 ? 1000 : 75);
     }
 
     @Override
@@ -262,36 +269,6 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
         entityData.set(FLOCKING_Z, flockingZ);
     }
 
-    @Override
-    public void setSitting(boolean sit) {
-        super.setSitting(sit);
-        if (sit) {
-            setFlockingX(0);
-            setFlockingY(0);
-            setFlockingZ(0);
-        }
-    }
-
-    @Override
-    public void setSleeping(boolean sleep) {
-        super.setSleeping(sleep);
-        if (sleep) {
-            setFlockingX(0);
-            setFlockingY(0);
-            setFlockingZ(0);
-        }
-    }
-
-    @Override
-    public void setHomePos(@Nullable BlockPos pos) {
-        super.setHomePos(pos);
-        if (pos != null) {
-            setFlockingX(0);
-            setFlockingY(0);
-            setFlockingZ(0);
-        }
-    }
-
     // ====================================
     //      B) Tick and AI
     // ====================================
@@ -300,6 +277,31 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     public void tick() {
         this.checkJukeboxNearbyPlayersTimer++;
         super.tick();
+
+        if (isRidingPlayer()) {
+
+            // animations are handled by predicateLocomotion
+            // This controls riding vs not riding and dragon position
+
+            setDeltaMovement(Vec3.ZERO);
+            Player owner = (Player) this.getOwner();
+
+            if (owner == null || ! owner.isAlive()) {
+                stopRidingPlayer();
+                return;
+            }
+
+            if ((owner.isShiftKeyDown() && ! owner.isOnGround() && ! owner.getAbilities().flying) || owner.isFallFlying() || (! speciesCanSwim() && isInWater())) {
+                stopRidingPlayer();
+                return;
+            }
+
+            this.setXRot(0.0f);
+            this.setPos(getPosByDragonAndPlayer(owner));
+            float yrot = owner.getYRot();
+            this.setYRot(yrot);
+            this.setYHeadRot(yrot);
+        }
 
         if (getThreateningTimer() < 0) {
             if (this.checkJukeboxNearbyPlayersTimer >= CHECK_JUKEBOX_NEARBY_PLAYERS_INTERVAL) {
@@ -382,15 +384,15 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
             case 1:
                 offX = 0.3;
                 offY = 1.4;
-                offZ = 0.1d;
+                offZ = 0.05d;
                 break;
             case 2:
                 offY = 1.83;
-                offZ = 0.2d;
+                offZ = 0.15d;
             case 3:
                 offX = -0.3;
                 offY = 1.4;
-                offZ = 0.1d;
+                offZ = 0.05d;
                 break;
             default:
                 return null;
@@ -424,11 +426,12 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     {
         if (super.doHurtTarget(entity) && entity instanceof LivingEntity)
         {
-            if (!(entity instanceof Player)) { // other mobs get full poison
+            if (!(entity instanceof Player)) { // non-player mobs always get 15 seconds of poison
                 ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.POISON, 15 * 20));
                 return true;
             }
 
+            // for players, depends on difficulty
             switch (level.getDifficulty())
             {
                 case HARD:
@@ -528,7 +531,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
             return InteractionResult.CONSUME;
         }
 
-        if (!isTame() && stack.is(Items.SWEET_BERRIES) && getAnimation().equals("taming")) {
+        if (! isTame() && stack.is(Items.SWEET_BERRIES) && isInOverrideAnimation() && getOverrideAnimation().equals("taming")) {
             eat(tamer.getLevel(), stack);
             float tameChance = (tamer.isCreative() || this.isHatchling()) ? 1.0f : 0.3f;
             boolean tamed = attemptTame(tameChance, tamer);
@@ -641,29 +644,42 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
         super.registerGoals();
 
         goalSelector.addGoal(1, new WRRidePlayerGoal(this));
-        goalSelector.addGoal(2, new FloatGoal(this));
-        goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.1d, true));
-        goalSelector.addGoal(4, new CanariThreatenGoal(this));
-        goalSelector.addGoal(5, new AvoidEntityGoal<>(this, Player.class, THREATEN_PREDICATE, (isHatchling() ? 15f : 8f), 1.15D, 1.2D, entity -> true) {
+        goalSelector.addGoal(2, new WRAnimatedFloatGoal(this));
+        goalSelector.addGoal(3, new WRSwimToSurfaceGoal(this, 1));
+        goalSelector.addGoal(4, new MeleeAttackGoal(this, 1.1d, true));
+        goalSelector.addGoal(5, new CanariThreatenGoal(this));
+        goalSelector.addGoal(6, new WRDragonBreedGoal<>(this));
+        goalSelector.addGoal(7, new WRMoveToHomeGoal(this));
+        goalSelector.addGoal(8, new WRFollowOwnerGoal(this));
+        goalSelector.addGoal(9, new CanariDanceGoal(this));
+        goalSelector.addGoal(10, new WRSleepGoal(this));
+        goalSelector.addGoal(11, new WRSitGoal(this));
+        goalSelector.addGoal(12, new WRGetDroppedFoodGoal(this, 12, true));
+        goalSelector.addGoal(13, new AvoidEntityGoal<>(this, Player.class, THREATEN_PREDICATE, (isHatchling() ? 15f : 8f), 1.15D, 1.2D, entity -> true) {
             @Override
             public boolean canUse() {
                 return !isTame() && getThreateningTimer() == -1 && super.canUse();
             }
         });
-        goalSelector.addGoal(6, new WRDragonBreedGoal<>(this));
-        goalSelector.addGoal(7, new WRMoveToHomeGoal(this));
-        goalSelector.addGoal(8, new WRFollowOwnerGoal(this));
-        goalSelector.addGoal(9, new WRSitGoal(this));
-        goalSelector.addGoal(10, new CanariDanceGoal(this));
-        goalSelector.addGoal(11, new WRGetDroppedFoodGoal(this, 15, true));
-        goalSelector.addGoal(12, new WRSleepGoal(this));
-        goalSelector.addGoal(13, new WRIdleGoal(this));
-        goalSelector.addGoal(14, new CanariFlockFlyAwayGoal(this, 25, 35));
-        goalSelector.addGoal(15, new CanariReturnToFlockGoal(this, 12));
-        goalSelector.addGoal(16, new WRReturnToGroundIfIdleGoal(this));
-        goalSelector.addGoal(17, new WaterAvoidingRandomStrollGoal(this, 1));
-        goalSelector.addGoal(18, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
-        goalSelector.addGoal(19, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(14, new WRIdleGoal(this));
+        goalSelector.addGoal(15, new WRFlockFlyAwayGoal(this, 25, 35, 7));
+        goalSelector.addGoal(16, new WRReturnToFlockGoal(this, 12) { // Need some overrides so this goal doesn't trigger when flock flying or threatening player
+            @Override
+            public boolean canUse() {
+                return !(getFlockingX() != 0 || getFlockingY() != 0 || getFlockingZ() != 0
+                || getThreateningTimer() > 0) && super.canUse();
+            }
+            @Override
+            public boolean canContinueToUse() {
+                return !(getFlockingX() != 0 || getFlockingY() != 0 || getFlockingZ() != 0
+                || getThreateningTimer() > 0) && super.canContinueToUse();
+            }
+        });
+        goalSelector.addGoal(17, new WRReturnToGroundIfIdleGoal(this));
+        goalSelector.addGoal(18, new WRMoveToLandToSleepGoal(this, false));
+        goalSelector.addGoal(19, new WRRandomWalkingGoal(this, 1));
+        goalSelector.addGoal(20, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
+        goalSelector.addGoal(21, new RandomLookAroundGoal(this));
 
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
@@ -694,7 +710,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
         public boolean canUse() {
             // TODO: When the caustic swamp nasty not-water is added, check it's not in that...
             // powder snow and lava will hurt the canari and reset the threat timer anyways
-            return getThreateningTimer() > 0 && ! dragon.isTame() && ! dragon.isLeashed() && ! dragon.isPassenger() && ! dragon.isVehicle() && ! dragon.isInWater() && ! dragon.isUsingFlyingNavigator() && ! dragon.getAnimationInOverride();
+            return getThreateningTimer() > 0 && ! dragon.isTame() && ! dragon.isLeashed() && ! dragon.isPassenger() && ! dragon.isVehicle() && ! dragon.isInWater() && ! dragon.isUsingFlyingNavigator() && ! dragon.isInOverrideAnimation();
         }
 
         private boolean checkClosestPlayerBeingNice()
@@ -730,9 +746,8 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
             super.start("taming", AnimatedGoal.HOLD_ON_LAST_FRAME, 120); // 12-second animation
 
             // we don't have a threaten sound... this is a substitute
-            dragon.playSound(SoundEvents.BEE_LOOP_AGGRESSIVE, 1, 1.5F);
-            dragon.playSound(SoundEvents.WOLF_GROWL, 3, 2F);
-            dragon.playSound(SoundEvents.PARROT_HURT, 2, 0.8F);
+            dragon.playSound(SoundEvents.BEE_LOOP_AGGRESSIVE, 1f, 1.5F);
+            dragon.playSound(SoundEvents.WOLF_GROWL, 5f, 3F);
 
             dragon.setThreateningTimer(240); // 12 seconds, but entity ticks are twice as fast as goal ticks...
         }
@@ -751,6 +766,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
                 if (checkClosestPlayerBeingNice()) {
                     // Player now has 6 seconds to tame wyvern or run away (+5 per sweet berry fed)
                     dragon.setThreateningTimer(120);
+                    dragon.playSound(WRSounds.ENTITY_CANARI_IDLE.get(), 2f, 1F);
                 } else {
                     // checkClosestPlayerBeingNice will set target if it returns false
                     super.stop();
@@ -770,224 +786,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     }
 
     // =====================================================================
-    //      F.2) Fly away as a group goal
-    // If more dragons that do this are added, move this to its own file
-    // and find a way to convert it to work for any one species.
-    // May need to add the flocking X, Y, Z synced ints to the base class for that.
-    // =====================================================================
-    public class CanariFlockFlyAwayGoal extends Goal {
-
-        private final EntityCanariWyvern dragon;
-        private int minDistance;
-        private int maxDistance;
-        private boolean abortGoal;
-        private int giveUpTimer;
-
-        public CanariFlockFlyAwayGoal(EntityCanariWyvern dragon, int minDistance, int maxDistance) {
-            setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
-            this.dragon = dragon;
-            this.minDistance = minDistance;
-            this.maxDistance = maxDistance;
-            this.abortGoal = false;
-            this.giveUpTimer = 0;
-        }
-
-        @Override
-        public boolean canUse() {
-            // Very low chance of triggering a flock fly away as the leader. This seems to be about every ~30 seconds.
-            boolean canFlockFlyLeader = getRandom().nextInt(10000) < 8
-                                        && dragon.getFlockingX() == 0 && dragon.getFlockingY() == 0 && dragon.getFlockingZ() == 0
-                                        && dragon.isOnGround() && ! dragon.getAnimationInOverride() && dragon.getTarget() == null && ! dragon.isTame() && ! dragon.isLeashed()   ;  
-            // In start(), the leader will set the flock target. Followers just need to have such a position set. They can be woken up from sleep or interrupted mid-idle or mid-attack.
-            boolean canFlockFlyFollower = dragon.getFlockingX() != 0 && dragon.getFlockingY() != 0 && dragon.getFlockingZ() != 0
-                                        && dragon.isOnGround() && dragon.getTarget() == null && ! dragon.isTame() && ! dragon.isLeashed();
-            return canFlockFlyLeader || canFlockFlyFollower;
-        }
-
-        @Override
-        public void start() {
-
-            if (dragon.getFlockingX() == 0 && dragon.getFlockingY() == 0 && dragon.getFlockingZ() == 0) {
-                // This one is the leader: find a fly away position and set it for everyone in flock
-                setLeaderFlyAwayPos();
-                if (abortGoal) {
-                    return;
-                }
-                setFollowerFlyAwayPos();
-            }
-
-            this.dragon.clearAI();
-            this.dragon.setAnimationInOverride(false); // force quit idles/special animations
-            this.dragon.setSleeping(false);
-
-            this.dragon.playSound(getAmbientSound(), 1.5F, 1.0F);
-
-            this.dragon.getJumpControl().jump();
-            this.dragon.setNavigator(NavigationType.FLYING);
-            this.dragon.getNavigation().createPath(this.dragon.getFlockingX(), this.dragon.getFlockingY(), this.dragon.getFlockingZ(), 1);
-            if (this.dragon.getNavigation().getPath() == null) {
-                this.dragon.getNavigation().moveTo(this.dragon.getFlockingX(), this.dragon.getFlockingY(), this.dragon.getFlockingZ(), 1);
-            }
-        }
-
-        private void setLeaderFlyAwayPos() {
-
-            Vec3 pos = null;
-
-            for (int i = 0; i < 10; i++) { // Make ten attempts to find position between min/max range before giving up
-                pos = LandRandomPos.getPos(this.dragon, this.maxDistance, 20);
-                if (pos != null && this.dragon.distanceToSqr(pos) > this.minDistance * this.minDistance) {
-                    break;
-                } else {
-                    pos = null;
-                }
-            }
-
-            if (pos == null) {
-                this.abortGoal = true;
-                return;
-            }
-
-            this.dragon.setFlockingX(((int)pos.x));
-            this.dragon.setFlockingY((int)pos.y);
-            this.dragon.setFlockingZ((int)pos.z);
-        }
-
-        private void setFollowerFlyAwayPos() {
-
-            int flyAwayX = this.dragon.getFlockingX();
-            int flyAwayY = this.dragon.getFlockingY();
-            int flyAwayZ = this.dragon.getFlockingZ();
-
-            for (EntityCanariWyvern mob : this.dragon.level.getEntitiesOfClass(EntityCanariWyvern.class, this.dragon.getBoundingBox().inflate(this.dragon.getRestrictRadius()), entity -> entity != this.dragon)) {
-                // Followers get a random position within 3 horizontal blocks of leader, unless they already have one
-                if (mob.getFlockingX() == 0 && mob.getFlockingY() == 0 && mob.getFlockingZ() == 0) {
-                    mob.setFlockingX(flyAwayX + getRandom().nextInt(7) - 4);
-                    mob.setFlockingY(flyAwayY);
-                    mob.setFlockingZ(flyAwayZ + getRandom().nextInt(7) - 4);
-                }
-            }
-        }
-
-        @Override
-        public void tick() {
-
-            this.giveUpTimer++;
-
-            if (this.dragon.getNavigation().isDone() && ! isNearFlyAwayPos(false)) {
-                this.dragon.getNavigation().createPath(this.dragon.getFlockingX(), this.dragon.getFlockingY(), this.dragon.getFlockingZ(), 1);
-                if (this.dragon.getNavigation().getPath() == null) {
-                    this.dragon.getNavigation().moveTo(this.dragon.getFlockingX(), this.dragon.getFlockingY(), this.dragon.getFlockingZ(), 1);
-                }
-            }
-
-            // They keep landing for some reason... make them fly unless they're pretty close to target
-            if (! isNearFlyAwayPos(true) && this.dragon.getAltitude() < 1.5*this.dragon.getFlightThreshold()) {
-                Vec3 direction = new Vec3(this.dragon.getFlockingX(), this.dragon.getFlockingY(), this.dragon.getFlockingZ()).subtract(position()).normalize();
-                direction = new Vec3(direction.x, 1, direction.z);
-                setDeltaMovement(direction.scale(0.3));
-            }
-        }
-
-        @Override
-        public boolean canContinueToUse() {
-            return ! this.abortGoal && this.giveUpTimer < 600 && ! isNearFlyAwayPos(false) && dragon.getFlockingX() != 0 && dragon.getFlockingY() != 0 && dragon.getFlockingZ() != 0
-                && dragon.getTarget() == null && ! dragon.isTame() && ! dragon.isLeashed();
-        }
-
-        private boolean isNearFlyAwayPos(boolean loosenRequirements) {
-            if (loosenRequirements) {
-                return dragon.distanceToSqr(dragon.getFlockingX(), dragon.getFlockingY(), dragon.getFlockingZ()) < 1.5*dragon.getRestrictRadius();
-            }
-            return dragon.distanceToSqr(dragon.getFlockingX(), dragon.getFlockingY(), dragon.getFlockingZ()) < dragon.getRestrictRadius();
-        }
-
-        @Override
-        public void stop() {
-            this.dragon.getNavigation().stop();
-            this.dragon.setFlockingX(0);
-            this.dragon.setFlockingY(0);
-            this.dragon.setFlockingZ(0);
-
-            this.abortGoal = false;
-            this.giveUpTimer = 0;
-        }
-    }
-
-    // =====================================================================
-    // F.3) Goal to stay in a flock together when not tamed.
-    // Also give this its own file if we get more flocking dragons
-    // =====================================================================
-    public class CanariReturnToFlockGoal extends Goal {
-
-        private EntityCanariWyvern farthestFlockMember;
-        private final EntityCanariWyvern dragon;
-        private int timer = 0;
-        private double distanceToFarthestFlockMember;
-        private int chance; // Has to trigger at a really specific frequency to look natural. 5/1000 to 15/1000 chance per tick seems good.
-
-        public CanariReturnToFlockGoal(EntityCanariWyvern dragon, int chance) {
-            setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
-            this.dragon = dragon;
-            this.farthestFlockMember = null;
-            this.distanceToFarthestFlockMember = 0;
-            this.chance = chance;
-        }
-
-        @Override
-        public boolean canUse() {
-            if (dragon.getRandom().nextInt(1000) > this.chance 
-                || dragon.getFlockingX() != 0 || dragon.getFlockingY() != 0 || dragon.getFlockingZ() != 0
-                || dragon.getThreateningTimer() > 0 || dragon.getTarget() != null || dragon.isTame() || dragon.isLeashed() || dragon.getSleeping())
-            {
-                return false;
-            }
-
-            for (EntityCanariWyvern mob : this.dragon.level.getEntitiesOfClass(EntityCanariWyvern.class, this.dragon.getBoundingBox().inflate(2*this.dragon.getRestrictRadius()), entity -> entity != this.dragon)) {
-                if (this.farthestFlockMember == null || this.dragon.distanceToSqr(mob) > this.distanceToFarthestFlockMember) {
-                    this.distanceToFarthestFlockMember = this.dragon.distanceToSqr(mob);
-                    this.farthestFlockMember = mob;
-                }
-            }
-            if (this.farthestFlockMember != null && this.distanceToFarthestFlockMember > dragon.getRestrictRadius()) {
-            }
-            return this.farthestFlockMember != null;
-        }
-
-        @Override
-        public void start() {
-            // Can get stuck in water, etc. Give it a shove into the air
-            if (this.dragon.dragonCanFly() && this.dragon.canLiftOff()) {
-                Vec3 direction = new Vec3(this.farthestFlockMember.getX(), this.farthestFlockMember.getY(), this.farthestFlockMember.getZ()).subtract(position()).normalize();
-                direction = new Vec3(direction.x, 1, direction.z);
-                setDeltaMovement(direction.scale(0.3));
-            }
-        }
-
-        @Override
-        public void tick() {
-            this.timer++;
-            dragon.getNavigation().moveTo(farthestFlockMember, 1f);
-        }
-
-        @Override
-        public boolean canContinueToUse() {
-            return this.timer < 400 && farthestFlockMember != null
-                && dragon.getFlockingX() == 0 && dragon.getFlockingY() == 0 && dragon.getFlockingZ() == 0
-                && dragon.getThreateningTimer() < 0 && dragon.getTarget() == null && ! dragon.isTame() && ! dragon.isLeashed();
-        }
-
-        @Override
-        public void stop() {
-            this.timer = 0;
-            this.farthestFlockMember = null;
-            this.dragon.getNavigation().stop();
-        }
-
-    }
-
-    // =====================================================================
-    //      F.4) Dance when jukebox plays
+    //      F.2) Dance when jukebox plays
     // =====================================================================
     class CanariDanceGoal extends AnimatedGoal
     {
@@ -1042,6 +841,8 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
 
         @Override
         public void start() {
+            System.out.println("CanariDanceGoal start");
+            this.dragon.setSleeping(false);
             if (checkJukebox() == 1) {
                 dragon.getNavigation().moveTo(this.jukeboxPos.getX(), this.jukeboxPos.getY(), this.jukeboxPos.getZ(), 1);
             } else {
@@ -1061,7 +862,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
                     dragon.getNavigation().moveTo(this.jukeboxPos.getX(), this.jukeboxPos.getY(), this.jukeboxPos.getZ(), 1.2);
                     break;
                 case 2:
-                    if (! dragon.getAnimationInOverride()) {
+                    if (! dragon.isInOverrideAnimation()) {
                         super.start("dance", AnimatedGoal.LOOP, 10); // 1-second animation loop
                     }
                     break;

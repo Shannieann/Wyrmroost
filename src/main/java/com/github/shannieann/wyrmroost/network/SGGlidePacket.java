@@ -35,7 +35,7 @@ public class SGGlidePacket
             Entity entity = reciever.getPassengers().get(0);
             if (entity instanceof EntitySilverGlider)
             {
-                ((EntitySilverGlider) entity).isGliding = gliding;
+                //((EntitySilverGlider) entity).isGliding = gliding; Looks like this class is unused. Commenting out for now
                 context.get().setPacketHandled(true);
                 return true;
             }

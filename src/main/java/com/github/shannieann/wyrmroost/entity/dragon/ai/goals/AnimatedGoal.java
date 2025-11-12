@@ -41,10 +41,9 @@ public abstract class AnimatedGoal extends Goal {
 
     public void start(String animationName, int animationType, int animationTime) {
         this.elapsedTime = 0;
-        this.entity.setAnimation(this.animationName = animationName);
+        this.entity.setOverrideAnimation(animationName);
         this.entity.setAnimationType(this.animationType = animationType);
         this.entity.setAnimationTime(this.animationTime = animationTime);
-        this.entity.setAnimationInOverride(true);
     }
 
     @Override
@@ -59,6 +58,11 @@ public abstract class AnimatedGoal extends Goal {
         //Once the animation has ran its course, we reset it, clearing up the entity to play new animations
         //We ensure we reset manualAnimationCall
         this.elapsedTime = 0;
-        this.entity.setAnimationInOverride(false);
+        this.animationName = null;
+        this.animationType = 0;
+        this.animationTime = 0;
+        this.entity.setOverrideAnimation("");
+        this.entity.setAnimationType(0);
+        this.entity.setAnimationTime(0);
     }
 }

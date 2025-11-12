@@ -15,6 +15,16 @@ public class WRRandomSwimmingGoal extends Goal {
     protected final double speed;
     protected int radius;
     protected int verticalDistance;
+    protected int goalCompleteDist;
+
+    public WRRandomSwimmingGoal(WRDragonEntity entity, double speedIn, int radius, int verticalDistance, int goalCompleteDist) {
+        this.entity = entity;
+        this.speed = speedIn;
+        this.setFlags(EnumSet.of(Goal.Flag.MOVE));
+        this.radius = radius;
+        this.verticalDistance = verticalDistance;
+        this.goalCompleteDist = goalCompleteDist;
+    }
 
     public WRRandomSwimmingGoal(WRDragonEntity entity, double speedIn, int radius, int verticalDistance) {
         this.entity = entity;
@@ -22,6 +32,7 @@ public class WRRandomSwimmingGoal extends Goal {
         this.setFlags(EnumSet.of(Goal.Flag.MOVE));
         this.radius = radius;
         this.verticalDistance = verticalDistance;
+        this.goalCompleteDist = 100;
     }
 
     @Override
@@ -74,7 +85,7 @@ public class WRRandomSwimmingGoal extends Goal {
     public boolean canContinueToUse()
     {
         //If it's close enough to assume it has reached the Goal
-        if (this.entity.distanceToSqr(this.x,this.y,this.z) < 100) {
+        if (this.entity.distanceToSqr(this.x,this.y,this.z) < this.goalCompleteDist) {
             return false;
         }
         if (!this.entity.isUsingSwimmingNavigator()) {

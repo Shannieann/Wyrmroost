@@ -1457,7 +1457,7 @@
 				}
 			}
 		},
-		"take_off": {
+		"takeoff": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 0.64,
 			"bones": {
@@ -4170,7 +4170,7 @@
 				}
 			}
 		},
-		"swim": {
+		"float": {
 			"loop": true,
 			"animation_length": 4,
 			"bones": {

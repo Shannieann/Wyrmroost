@@ -102,7 +102,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     // =====================
 
     @Override
-    public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
+    public <E extends IAnimatable> PlayState predicateAnimation(AnimationEvent<E> event) {
         // Check if the dragon is being ridden before running any code
         if (isVehicle()) {
             if (getDeltaMovement().length() >= 0.1f) {
@@ -119,7 +119,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
             }
         }
 
-        return super.predicateBasicLocomotion(event);
+        return super.predicateAnimation(event);
     }
 
     // Chest handling
@@ -257,7 +257,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
         setSprinting(targetExists);
 
         // TODO maybe an isAnimating() method in superclass?
-        if (targetExists && prev != target && target.getType() == EntityType.PLAYER && !isTame() && getAnimation().equals("base"))
+        if (targetExists && prev != target && target.getType() == EntityType.PLAYER && !isTame() && ! isInOverrideAnimation())
             shouldRoar = true;
     }
     // ====================================
@@ -573,8 +573,8 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     }
 
     @Override
-    protected <E extends WRDragonEntity> void locomotionSoundEvent(SoundKeyframeEvent<E> event, LocalPlayer player, String anim) {
-        super.locomotionSoundEvent(event, player, anim);
+    protected <E extends WRDragonEntity> void animationSoundEvent(SoundKeyframeEvent<E> event, LocalPlayer player, String anim) {
+        super.animationSoundEvent(event, player, anim);
         if ("buck".equals(anim)){
             player.clientLevel.playLocalSound(event.getEntity().getOnPos(), WRSounds.ENTITY_OWDRAKE_HURT.get(), SoundSource.NEUTRAL, 1.0f, 1.0f, false);
         } else if ("walk".equals(anim) || "walk_fast".equals(anim)){

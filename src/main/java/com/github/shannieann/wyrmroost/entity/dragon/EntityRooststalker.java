@@ -6,6 +6,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundMoveControl;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundNavigation;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import net.minecraft.core.BlockPos;
@@ -31,6 +32,7 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.LeapAtTargetGoal;
@@ -92,6 +94,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         super(rooststalker, level);
         // Cannot use any other navigation or move control
         this.setNavigator(NavigationType.GROUND);
+        ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true); // allow breaking and entering
         this.moveControl = new WRGroundMoveControl(this, 10.0f); // 10.0f is the default groundMaxYaw
     }
 
@@ -129,18 +132,75 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         return 4;
     }
 
-    // For special name "Sir"
+    // For special name "Sir" + simplify since it can't swim or fly
     @Override
-    public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
-        if (!this.getSitting()
-            && !this.getSleeping()
-            && this.getDeltaMovement().length() > 0.1
-            && !this.isAggressive()
-            && getName().getString().toLowerCase().equals("sir")) {
-                event.getController().setAnimation(new AnimationBuilder().addAnimation("sir", ILoopType.EDefaultLoopTypes.LOOP));
+    public <E extends IAnimatable> PlayState predicateAnimation(AnimationEvent<E> event) {
+
+        // Dragon riding player and breaching (???) use different animations depending on the dragon. Must be handled in subclasses!
+
+        // Every "override" animation should completely replace regular animations
+        // ex: rooststalker scavenge, canari threaten, canari dance
+        // UNLESS it is attack or idle, which can be played over regular animations
+        if (this.isInOverrideAnimation()) {
+            String currentAnim = this.getOverrideAnimation();
+            // Actually set the animation on the controller so it plays
+            if (currentAnim.contains("sit_down") || currentAnim.contains("lay_down")) {
+                System.out.println("adding base ground for special animation: " + currentAnim);
+                // This needs to be layered over base ground specifically
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
+            }
+            else if (!currentAnim.contains("idle") && !currentAnim.contains("attack")) {
+                // Everything except idle and attack animations uses regular bones and shouldn't be layered over anything
+                System.out.println("Playing regular bone special animation: " + currentAnim);
+                switch (this.getAnimationType()) {
+                    case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim, ILoopType.EDefaultLoopTypes.LOOP));
+                    case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim, ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+                    case 3 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim,ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
+                }
+                System.out.println("Animation override: " + currentAnim + " is not idle or attack, no layer");
+                return PlayState.CONTINUE;
+            }
+            else {
+                // Must be idle or attack animation. Choose regular bone animation as normal
+            }
         }
-        return super.predicateBasicLocomotion(event);
+
+        if (this.getSleeping()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("sleep", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+        if (this.getSitting()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("sit", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+
+
+        NavigationType navigationType = this.getNavigationType();
+        
+        /* Set animation thresholds differently based on move speed because for example, if I set the threshold to 0.1, the walk animation plays correctly 
+         * for fast walkers, but a dragon with slow walk speed won't have the animation play. If I set the threshold to 0.05, the animation plays correctly 
+         * for slow walkers, but fast walkers have the animation play when they're practically standing still.
+        */
+
+        if (navigationType == NavigationType.GROUND && this.getDeltaMovement().length() > (this.getMovementSpeed()/3)) {
+            if (getName().getString().toLowerCase().equals("sir")) {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("sir", ILoopType.EDefaultLoopTypes.LOOP));
+            } else if (this.isAggressive() || this.getDeltaMovement().length() > (this.getMovementSpeed()/1.5)) {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
+            } else {
+                event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
+            }
+            return PlayState.CONTINUE;
+        }
+
+        if (navigationType == NavigationType.GROUND) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
+        }
+
+        // Should never get here
+        return PlayState.STOP;
     }
 
     // ====================================
@@ -223,8 +283,8 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     @Override
     public String determineVariant() {
 
-        int color = getRandom().nextDouble() < 0.01 ? 40 : getRandom().nextInt(0, 4) * 10;
-        int pattern = getRandom().nextDouble() < 0.01 ? 5 : getRandom().nextInt(0, 5);
+        int color = getRandom().nextDouble() < 0.05 ? 40 : getRandom().nextInt(0, 4) * 10;
+        int pattern = getRandom().nextDouble() < 0.05 ? 5 : getRandom().nextInt(0, 5);
         return String.valueOf(color + pattern);
 
         /* Couldn't get new names to work
@@ -296,6 +356,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     @Override
     public void tick() {
         setScavengingCooldown(Math.max(getScavengingCooldown()-1,0));
+        ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true); // TODO: Does this actually let it work??
         super.tick();
     }
 
@@ -510,7 +571,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         goalSelector.addGoal(10, new RSGetDroppedFoodGoal(this));
         goalSelector.addGoal(11, new WRSleepGoal(this, true));
         goalSelector.addGoal(12, new WRIdleGoal(this));
-        goalSelector.addGoal(13, new WaterAvoidingRandomStrollGoal(this, 1));
+        goalSelector.addGoal(13, new WRRandomWalkingGoal(this, 1));
         goalSelector.addGoal(14, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
         goalSelector.addGoal(15, new RandomLookAroundGoal(this));
 
@@ -546,11 +607,11 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         private int stealFromSlot = -1;
         // cooldown vars
         private int navTime = 0;
-        private static final int giveUpTime = 600; // give up if can't reach chest in 30 seconds
+        private static final int giveUpTime = 300; // give up if can't reach chest in 30 seconds
         private int pathRecalcCooldown = 0;
         // path vars
         private Path currentPath;
-        private static final int PATH_RECALCULATION_INTERVAL = 20; // Recalculate path once per second
+        private static final int PATH_RECALCULATION_INTERVAL = 10; // Recalculate path once per second
 
         public RSScavengeGoal(EntityRooststalker rooststalker) {
             super(rooststalker);
@@ -665,6 +726,9 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
                 getNavigation().stop();
                 setDeltaMovement(Vec3.ZERO);
                 setYRot(this.facingDirection.getOpposite().toYRot());
+                // Technically since we're using the predicate non locomotion override, we could
+                // be playing this animation on top of a locomotion animation, which would look weird
+                // but setting deltamovement to 0 and ensuring no sit/sleep/whatever should prevent that
                 super.start("scavenge", 3, 40);
 
                 if (this.container instanceof ChestBlockEntity chest && chest.openersCounter.getOpenerCount() == 0) {
@@ -678,23 +742,14 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
                 }
             }
 
-            // THIRD PRIORITY: If not navigating (typically because too close to chest), shove it closer. pathfinding sucks
-            else if (this.openPos != null && (! getNavigation().isInProgress())) {
-                getNavigation().moveTo(this.openPos.x, this.openPos.y, this.openPos.z, 1.0F);
-                setYRot(this.facingDirection.getOpposite().toYRot());
-                Vec3 direction = this.openPos.subtract(position()).normalize();
-                direction = new Vec3(direction.x, 0, direction.z); // no vertical push so it doesn't get stuck climbing
-                setDeltaMovement(direction.scale(0.1));
-            }
-
-            // FOURTH PRIORITY: If not close enough to chest, move to chest
-            else {
+            // THIRD PRIORITY: If not close enough to chest, move to chest
+            else if (this.openPos != null && getNavigation().isInProgress()) {
                 // Caching path is more efficient, but path doesn't really work at <5 blocks distance
                 // Also path creation fails a lot for some reason
                 // This is how vanilla MoveToBlockGoal.class does it. Not sure why it casts so much.
                 // this.mob.getNavigation().moveTo((double)((float)this.blockPos.getX()) + 0.5, (double)(this.blockPos.getY() + 1), (double)((float)this.blockPos.getZ()) + 0.5, this.speedModifier);
 
-                // PRIORITY 4.1: If far away with no valid path, try to recalculate path
+                // PRIORITY 3.1: If far away with no valid path, try to recalculate path
                 if (this.openPos.distanceToSqr(position()) >= 25
                     && (this.pathRecalcCooldown <= 0 || this.currentPath == null || this.currentPath.isDone()))  // Try to recalc path
                 {
@@ -704,18 +759,27 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
                         getNavigation().moveTo(this.currentPath, 1.0F);
                     }
                 }
-                // PRIORITY 4.2: If far away with valid path, use cached path
+                // PRIORITY 3.2: If far away with valid path, use cached path
                 else if (this.openPos.distanceToSqr(position()) >= 25 && this.pathRecalcCooldown > 0 && this.currentPath != null && !this.currentPath.isDone()) {
                     this.pathRecalcCooldown--;
                 }
 
-                // PRIORITY 4.3: If 4.1 or 4.2 failed, or if close to chest, use moveTo
+                // PRIORITY 3.3: If 3.1 or 3.2 failed, or if close to chest, use moveTo
                 if (this.openPos.distanceToSqr(position()) < 25 || this.currentPath == null || this.currentPath.isDone()) { // Path failed or too close, use moveTo
                     this.currentPath = null;
                     this.pathRecalcCooldown--;
                     getNavigation().moveTo(this.openPos.x, this.openPos.y, this.openPos.z, 1.0F);
                 }
                 this.navTime++;
+            }
+
+            // FOURTH PRIORITY: If not navigating (typically because too close to chest), shove it closer. pathfinding sucks
+            else if (this.openPos != null) {
+                getNavigation().moveTo(this.openPos.x, this.openPos.y, this.openPos.z, 1.0F);
+                setYRot(this.facingDirection.getOpposite().toYRot());
+                Vec3 direction = this.openPos.subtract(position()).normalize();
+                direction = new Vec3(direction.x, 0, direction.z); // no vertical push so it doesn't get stuck climbing
+                setDeltaMovement(direction.scale(0.1));
             }
         }
 

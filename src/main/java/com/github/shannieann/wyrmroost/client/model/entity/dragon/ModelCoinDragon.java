@@ -8,8 +8,7 @@ import software.bernie.geckolib3.model.AnimatedGeoModel;
 public class ModelCoinDragon extends AnimatedGeoModel<EntityCoinDragon>
 {
     private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/coin_dragon/coin_dragon.geo.json");
-    private static final ResourceLocation TEXTURE_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/coin_dragon/body_0.png");
-    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/coin_dragon/coin_dragon.json");
+    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/coin_dragon/coin_dragon.animation.json");
 
     @Override
     public ResourceLocation getModelLocation(EntityCoinDragon object) {
@@ -18,17 +17,7 @@ public class ModelCoinDragon extends AnimatedGeoModel<EntityCoinDragon>
 
     @Override
     public ResourceLocation getTextureLocation(EntityCoinDragon object) {
-        // Use variant-based texture if available
-        String variant = object.getVariant();
-        if (variant != null && !variant.isEmpty()) {
-            try {
-                int variantIndex = Integer.parseInt(variant);
-                return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/coin_dragon/body_" + variantIndex + ".png");
-            } catch (NumberFormatException e) {
-                // use default body_0
-            }
-        }
-        return TEXTURE_RESOURCE;
+        return new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/coin_dragon/coin_dragon_" + object.getVariant() + ".png");
     }
 
     @Override

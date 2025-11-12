@@ -25,13 +25,8 @@ public class WREntitySpawning {
         if (biomeName == null) return;
         //TODO: Alphabetical Order
         ResourceKey<Biome> biomeKey = ResourceKey.create(ForgeRegistries.Keys.BIOMES, biomeName);
-        /*
-        if (WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig.biomeWhitelist, biomeKey)) {
-            registerEntityWorldSpawn(WREntityTypes.SILVER_GLIDER.get(), WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig, MobCategory.CREATURE, event);
-        }
 
-        /*
-
+/* 
         if (WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig.spawnRate.get() > 0 && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig.biomeTypes, WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig.biomeWhitelist, biomeKey)) {
             registerEntityWorldSpawn(WREntityTypes.ROYAL_RED.get(), WRServerConfig.SERVER.ENTITIES.ROYAL_RED.spawningConfig, MobCategory.CREATURE, event);
         }
@@ -82,6 +77,16 @@ public class WREntitySpawning {
 
             registerEntityWorldSpawn(WREntityTypes.ROOSTSTALKER.get(),
                 WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.spawningConfig,
+                MobCategory.CREATURE, event);
+        }
+
+        //Silver Glider
+        if (WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig.spawnRate.get() > 0
+            && isBiomeInConfig(WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig.biomeTypes,
+            WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig.biomeWhitelist, biomeKey)) {
+
+            registerEntityWorldSpawn(WREntityTypes.SILVER_GLIDER.get(),
+                WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.spawningConfig,
                 MobCategory.CREATURE, event);
         }
     }

@@ -137,6 +137,12 @@
     ],
     "subtitle": "subtitles.entity.canari_wyvern.death"
   },
+  "entity.canari_wyvern.tame": {
+    "sounds": [
+      "wyrmroost:entity/canari_wyvern/tame"
+    ],
+    "subtitle": "subtitles.entity.canari_wyvern.tame"
+  },
   "entity.dragonfruit_drake.idle": {
     "sounds": [
       "wyrmroost:entity/dragonfruit_drake/idle1",

@@ -97,10 +97,35 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
 
     // simplify because LDW can't sit, sleep, swim, or fly
     @Override
-    public <E extends IAnimatable> PlayState predicateBasicLocomotion(AnimationEvent<E> event) {
+    public <E extends IAnimatable> PlayState predicateAnimation(AnimationEvent<E> event) {
 
-        if (this.getAnimationInOverride()) {
-            return PlayState.STOP;
+        // Dragon riding player and breaching (???) use different animations depending on the dragon. Must be handled in subclasses!
+
+        // Every "override" animation should completely replace regular animations
+        // ex: rooststalker scavenge, canari threaten, canari dance
+        // UNLESS it is attack or idle, which can be played over regular animations
+        if (this.isInOverrideAnimation()) {
+            String currentAnim = this.getOverrideAnimation();
+            // Actually set the animation on the controller so it plays
+            if (!currentAnim.contains("idle") && !currentAnim.contains("attack")) {
+                // Everything except idle and attack animations uses regular bones and shouldn't be layered over anything
+                System.out.println("Playing regular bone special animation: " + currentAnim);
+                switch (this.getAnimationType()) {
+                    case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim, ILoopType.EDefaultLoopTypes.LOOP));
+                    case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim, ILoopType.EDefaultLoopTypes.PLAY_ONCE));
+                    case 3 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim,ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
+                }
+                System.out.println("Animation override: " + currentAnim + " is not idle or attack, no layer");
+                return PlayState.CONTINUE;
+            }
+            else {
+                // Must be idle or attack animation. Choose regular bone animation as normal
+            }
+        }
+
+        if (this.getBurrowed()) {
+            event.getController().setAnimation(new AnimationBuilder().addAnimation("base_burrowed", ILoopType.EDefaultLoopTypes.LOOP));
+            return PlayState.CONTINUE;
         }
 
         if (this.getDeltaMovement().length() > 0.05) { // lower threshold, it's slow
@@ -114,7 +139,6 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
         }
 
         event.getController().setAnimation(new AnimationBuilder().addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
-
         return PlayState.CONTINUE;
     }
 
@@ -231,11 +255,6 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
         if (!getBurrowed() && super.isPushable()) {
             super.doPush(entityIn);
         }
-    }
-
-    @Override
-    public ItemStack getPickedResult(HitResult target) {
-        return new ItemStack(ForgeSpawnEggItem.fromEntityType(getType()));
     }
 
     @Nullable
@@ -535,12 +554,11 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
     // =====================================================================
     //      F.2) Goal to stay burrowed (like WRSitGoal)
     // =====================================================================
-    public class LWDStayBurrowedGoal extends AnimatedGoal {
+    public class LWDStayBurrowedGoal extends Goal {
 
         private final EntityLesserDesertwyrm entity;
 
         public LWDStayBurrowedGoal(EntityLesserDesertwyrm entity) {
-            super(entity);
             this.entity = entity;
             // Use only MOVE flag so it can be interrupted by LWDAttackAboveGoal (which has MOVE, JUMP, LOOK)
             // This allows the attack goal to take control while keeping the burrowed state
@@ -565,7 +583,6 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
         public void start() {
             entity.getNavigation().stop();
             entity.setDeltaMovement(Vec3.ZERO);
-            super.start("base_burrowed", 1, 0);
         }
 
         @Override
@@ -580,7 +597,6 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
             if (!entity.isAboveSand() || !entity.getBurrowed()) {
                 entity.setBurrowed(false);
                 entity.setburrowEnterExitCooldown(BURROW_COOLDOWN_MAX);
-                super.stop();
             }
         }
     }
@@ -630,7 +646,7 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
                 // stop movement again just in case
                 dragon.setDeltaMovement(Vec3.ZERO);
                 dragon.getNavigation().stop();
-                super.start("base_burrowed", 1, 0); // start burrowed animation
+                // base_burrowed handled by predicate locomotion
             }
         }
     }
@@ -760,7 +776,6 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
                 return false;
             }
 
-            BlockPos dragonPos = dragon.blockPosition();
             BlockPos.MutableBlockPos mutablePos = new BlockPos.MutableBlockPos();
 
             for (int searchRadius = 0; searchRadius <= 10; searchRadius++) {

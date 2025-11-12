@@ -3,49 +3,34 @@ package com.github.shannieann.wyrmroost.client.model.entity.dragon;
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.entity.dragon.EntitySilverGlider;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
-import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.processor.IBone;
 import software.bernie.geckolib3.model.AnimatedGeoModel;
-import software.bernie.geckolib3.model.provider.data.EntityModelData;
 
 import static com.github.shannieann.wyrmroost.util.WRModUtils.TEXTURE_FOLDER;
 
 public class ModelSilverGlider<T extends EntitySilverGlider> extends AnimatedGeoModel<T> {
 
-    private static final ResourceLocation modelResource = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/silver_glider.geo.json");
-    private static final ResourceLocation animationResource = new ResourceLocation(Wyrmroost.MOD_ID, "animations/silver_glider.animation.json");
+    private static final ResourceLocation MODEL_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "geo/entity/dragon/silver_glider/silver_glider.geo.json");
+    private static final ResourceLocation ANIMATION_RESOURCE = new ResourceLocation(Wyrmroost.MOD_ID, "animations/entity/dragon/silver_glider/silver_glider.animation.json");
 
     @Override
     public ResourceLocation getModelLocation(T object) {
-        return modelResource;
+        return MODEL_RESOURCE;
     }
 
     @Override
     public ResourceLocation getTextureLocation(EntitySilverGlider dragon) {
-        if (dragon.hasCustomName() && dragon.getCustomName().getContents().equalsIgnoreCase("lady")){
-            return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "canari_wyvern/lady.png");
+        if (dragon.isAdult()) {
+            return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "silver_glider/" + dragon.getVariant() + ".png");
         }
-        String gender = dragon.getGender() == 1? "male" : "female";
-        String variant = dragon.getVariant();
-        return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "canari_wyvern/body_" + gender + variant + ".png");
-    }
-
-    @Override
-    public void setCustomAnimations(T animatable, int instanceId, AnimationEvent animationEvent) {
-        super.setCustomAnimations(animatable, instanceId, animationEvent);
-        IBone head = this.getAnimationProcessor().getBone("neck1");
-
-        EntityModelData extraData = (EntityModelData) animationEvent.getExtraDataOfType(EntityModelData.class).get(0);
-        if (head != null) {
-            head.setRotationX(extraData.headPitch * Mth.DEG_TO_RAD);
-            head.setRotationY(extraData.netHeadYaw * Mth.DEG_TO_RAD);
+        if (dragon.isGolden()) {
+            return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "silver_glider/spe_baby.png");
         }
+        return new ResourceLocation(Wyrmroost.MOD_ID, TEXTURE_FOLDER + "silver_glider/baby.png");
     }
 
     @Override
     public ResourceLocation getAnimationFileLocation(T animatable) {
-        return animationResource;
+        return ANIMATION_RESOURCE;
     }
 
 }

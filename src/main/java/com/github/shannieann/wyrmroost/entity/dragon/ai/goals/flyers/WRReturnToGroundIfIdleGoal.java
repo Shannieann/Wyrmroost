@@ -1,10 +1,8 @@
-package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
+package com.github.shannieann.wyrmroost.entity.dragon.ai.goals.flyers;
 
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.ai.util.LandRandomPos;
-import net.minecraft.world.phys.Vec3;
 
 import java.util.EnumSet;
 
@@ -25,7 +23,7 @@ public class WRReturnToGroundIfIdleGoal extends Goal
       // Needs small chance to trigger or it results in dragon getting stuck when stepping up on any block
         return entity.getRandom().nextDouble() < 0.01
             && entity.getNavigationType() == WRDragonEntity.NavigationType.FLYING && entity.getNavigation().isDone() && entity.getTarget() == null
-            && ! entity.getAnimationInOverride() && ! entity.isSleeping() && ! entity.getSitting() && ! entity.isLeashed()
+            && ! entity.isInOverrideAnimation() && ! entity.isSleeping() && ! entity.getSitting() && ! entity.isLeashed()
             && ! entity.isPassenger() && ! entity.isVehicle() && ! entity.isInWaterOrBubble();
     }
 

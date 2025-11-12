@@ -1,6 +1,10 @@
 package com.github.shannieann.wyrmroost.entity.dragon.ai.goals;
 
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.fly.WRFlyLookControl;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingLookControl;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.util.RandomPos;
@@ -35,7 +39,17 @@ public class WRMoveToHomeGoal extends Goal
     public void start()
     {
         // Don't completely clear AI, might have left boundary while defending home
+        dragon.jumping = false;
         dragon.getNavigation().stop();
+        if (dragon.getLookControl() instanceof WRGroundLookControl) {
+            ((WRGroundLookControl) dragon.getLookControl()).stopLooking();
+        }
+        if (dragon.getLookControl() instanceof WRSwimmingLookControl) {
+            ((WRSwimmingLookControl) dragon.getLookControl()).stopLooking();
+        }
+        if (dragon.getLookControl() instanceof WRFlyLookControl) {
+            ((WRFlyLookControl) dragon.getLookControl()).stopLooking();
+        }
     }
 
     @Override
