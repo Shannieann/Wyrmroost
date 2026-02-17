@@ -71,21 +71,16 @@ public class WRTemptGoal extends Goal {
       this.pRotX = (double)this.player.getXRot();
       this.pRotY = (double)this.player.getYRot();
       this.isRunning = true;
-      System.out.println("WRTemptGoal start: starting to tempt player ");
    }
 
    public boolean canContinueToUse() {
       if (this.canScare()) {
          if (this.mob.distanceToSqr(this.player) < 36.0) {
             if (this.player.distanceToSqr(this.px, this.py, this.pz) > 0.010000000000000002) {
-               System.out.println("WRTemptGoal canContinueToUse: player moved, stopping");
                return false;
             }
 
             if (Math.abs((double)this.player.getXRot() - this.pRotX) > 10.0 || Math.abs((double)this.player.getYRot() - this.pRotY) > 10.0) {
-               System.out.println("WRTemptGoal canContinueToUse: player xRot = " + this.player.getXRot() + " pRotX = " + this.pRotX);
-               System.out.println("WRTemptGoal canContinueToUse: player yRot = " + this.player.getYRot() + " pRotY = " + this.pRotY);
-               System.out.println("WRTemptGoal canContinueToUse: player rotated too fast, stopping");
                return false;
             }
          } else {
@@ -115,7 +110,6 @@ public class WRTemptGoal extends Goal {
       this.mob.getNavigation().stop();
       this.calmDown = reducedTickDelay(100);
       this.isRunning = false;
-      System.out.println("WRTemptGoal stop: stopped tempting player ");
    }
 
 }

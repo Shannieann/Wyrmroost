@@ -48,7 +48,6 @@ public class WRFollowOwnerGoal extends Goal
     @Override
     public void start()
     {
-        System.out.println("WRFollowOwnerGoal start");
         dragon.jumping = false;
         dragon.getNavigation().stop();
         if (dragon.getLookControl() instanceof WRGroundLookControl) {
@@ -93,7 +92,6 @@ public class WRFollowOwnerGoal extends Goal
     @Override
     public void stop()
     {
-        System.out.println("WRFollowOwnerGoal stop");
         this.dragon.getNavigation().stop();
         this.time = 0;
         this.owner = null;

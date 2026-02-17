@@ -4,17 +4,22 @@ buildscript {
         maven { url = 'https://maven.parchmentmc.org' }
         jcenter()
         mavenCentral()
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public/' }
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
         classpath 'org.parchmentmc:librarian:1.+'
+        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 
-apply plugin: 'java'
-apply plugin: 'idea'
+plugins {
+    id 'eclipse'
+    id 'maven-publish'
+}
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.parchmentmc.librarian.forgegradle'
+apply plugin: 'org.spongepowered.mixin'
 
 version = "$mc_version-$mod_version"
 group = 'com.github.Shannieann.wyrmroost'
@@ -24,13 +29,6 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 sourceSets {
     main.resources.srcDirs += 'src/main/generated_resources'
 }
-
-dependencies {
-    minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
-    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.18:3.0.55')
-    runtimeOnly fg.deobf("curse.maven:spark-361579:3824951")
-}
-
 
 repositories{
     maven { url 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
@@ -45,6 +43,9 @@ minecraft {
         client {
             workingDirectory project.file('run')
             args '--username', 'DevWyrmroost'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            arg "-mixin.config=mixins.wyrmroost.json"
 
             mods {
                 wyrmroost {
@@ -55,6 +56,9 @@ minecraft {
         client2 {
             workingDirectory project.file('run')
             args '--username', 'Dev###'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            arg "-mixin.config=mixins.wyrmroost.json"
 
             mods {
                 wyrmroost {
@@ -64,6 +68,9 @@ minecraft {
         }
         server {
             workingDirectory project.file('run')
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+            arg "-mixin.config=mixins.wyrmroost.json"
 
             mods {
                 wyrmroost {
@@ -74,6 +81,8 @@ minecraft {
 
         data {
             workingDirectory project.file('run')
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
 
             args '--mod', 'wyrmroost', '--server', '--client', '--dev', '--reports', '--validate', '--output', file('src/main/generated_resources/'), '--existing', file('src/main/resources/')
 
@@ -85,6 +94,35 @@ minecraft {
             }
         }
     }
+}
+
+mixin {
+    // MixinGradle Settings
+    add sourceSets.main, 'mixins.wyrmroost.refmap.json'
+    config 'mixins.wyrmroost.json'
+}
+
+// Copy refmap to resources so runClient finds it (dev run uses sources, not jar)
+tasks.named('compileJava') {
+    doLast {
+        def refmap = file("${buildDir}/tmp/compileJava/mixins.wyrmroost.refmap.json")
+        if (refmap.exists()) {
+            copy {
+                from refmap
+                into sourceSets.main.output.resourcesDir
+            }
+        }
+    }
+}
+
+dependencies {
+    minecraft "net.minecraftforge:forge:$mc_version-$forge_version"
+    implementation fg.deobf('software.bernie.geckolib:geckolib-forge-1.18:3.0.55')
+    runtimeOnly fg.deobf("curse.maven:spark-361579:3824951")
+
+    // Mixin dependencies
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    implementation 'org.spongepowered:mixin:0.8.5'
 }
 
 jar {

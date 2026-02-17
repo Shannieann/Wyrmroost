@@ -17,6 +17,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimming
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingMoveControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.swim.WRSwimmingNavigator;
 import com.github.shannieann.wyrmroost.item.DragonArmorItem;
+import com.github.shannieann.wyrmroost.api.IDragonVehicle;
 import com.github.shannieann.wyrmroost.registry.WREntityTypes;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.registry.WRKeybind;
@@ -58,7 +59,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.animal.Animal;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Inventory;
@@ -1271,6 +1271,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         // The angle calculation is correct, getXRot() returns what is expected, and the correct animation plays for each XRot, but the model isn't turning.
         // If I try setting yrot here, weirdly enough it works perfectly.
 
+        // Update: This is a known issue with Geckolib 3. Will have to come back to this when we do the Azurelib port.
+
         // X ROTATION
         if (speciesCanFly()) {
             if (this.getNavigationType() != NavigationType.FLYING) {
@@ -1713,17 +1715,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         float currXRot = this.getXRot();
 
         if (targetXRot > currXRot+cap) {
-            //System.out.println("[DEBUG] Setting xRot to " + (currXRot+cap));
             this.setXRot(currXRot+cap);
             this.xRotO = currXRot+cap;
         }
         else if (targetXRot < currXRot-cap) {
-            //System.out.println("[DEBUG] Setting xRot to " + (currXRot-cap));
             this.setXRot(currXRot-cap);
             this.xRotO = currXRot-cap;
         }
         else {
-            //System.out.println("[DEBUG] Setting xRot to " + targetXRot);
             this.setXRot(targetXRot);
             this.xRotO = targetXRot;
         }
@@ -1989,7 +1988,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
     // Subsection 1: Dragon riding player
     // Had to basically make my own riding system for this
-    // because vanilla forces the dragon to freeze in place for some reason
+    // because vanilla forces the dragon to freeze in place for some reason. It's probably a Geckolib issue
     // ====================================
 
     // Basically isPassenger but for my custom riding system
@@ -2000,9 +1999,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     public void startRidingPlayer(Player player) {
+        // Exit early if player is null
+        if (player == null) return;
 
         int ridePos = getPosToRideOnPlayer();
         if (ridePos != 0) {
+            // Add dragon to player's (unordered) passenger list using the IDragonRider interface
+            ((IDragonVehicle) player).addDragonPassenger(this);
+
             clearHome();
             clearAI();
             setNavigator(NavigationType.GROUND);
@@ -2014,6 +2018,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     public void stopRidingPlayer() {
+        // If dragon is riding a player, remove it from the player's passenger list
+        if (isRidingPlayer() && getOwner() != null &&getOwner() instanceof Player) {
+            ((IDragonVehicle) getOwner()).removeDragonPassenger(this);
+        }
         setPosOnPlayer(0);
     }
 
@@ -2032,26 +2040,32 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return 0;
         }
 
-        Player p = (Player) this.getOwner();
+        Player player = (Player) this.getOwner();
+        if (player == null) return 0;
+
+        // Use DragonRiderManager to get the list of dragon passengers
         boolean[] takenPos = new boolean[] {false, false, false}; // for positions 1, 2, 3
-        List<WRDragonEntity> list = p.level.getNearbyEntities(
-                WRDragonEntity.class,
-                TargetingConditions.forNonCombat().selector(e -> e instanceof WRDragonEntity && ((WRDragonEntity) e).getOwner() == p && ((WRDragonEntity) e).isRidingPlayer()),
-                p,
-                p.getBoundingBox().inflate(5));
-        for (WRDragonEntity d : list) {
-            takenPos[d.getPosOnPlayer() - 1] = true;
+
+        // Iterate through the dragon passengers using our new interface
+        for (WRDragonEntity dragon : ((IDragonVehicle) player).getDragonPassengers()) {
+            if (dragon != this && dragon.isRidingPlayer()) {
+                int pos = dragon.getPosOnPlayer();
+                if (pos >= 1 && pos <= 3) {
+                    takenPos[pos - 1] = true;
+                }
+            }
         }
-        if (! takenPos[1]) { // head not taken
+
+        if (!takenPos[1]) { // head not taken
             return 2;
         }
-        else if (! takenPos[0] && ! (this instanceof EntitySilverGlider)) { // left shoulder not taken (silver glider can only sit on head)
+        else if (!takenPos[0] && !(this instanceof EntitySilverGlider)) { // left shoulder not taken (silver glider can only sit on head)
             return 1;
         }
-        else if (! takenPos[2] && ! (this instanceof EntitySilverGlider)) { // right shoulder not taken (silver glider can only sit on head)
+        else if (!takenPos[2] && !(this instanceof EntitySilverGlider)) { // right shoulder not taken (silver glider can only sit on head)
             return 3;
         }
-        return 0; // No open positions to ride player
+        return 0; // all positions taken
     }
 
 /*
@@ -2232,7 +2246,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             this.setSitting(true);
             this.setHomePos(new BlockPos(this.position()));
             level.broadcastEntityEvent(this, HEART_PARTICLES_EVENT_ID);
-            System.out.println("WRDragonEntity attemptTame: tamed by " + tamer.getName().getString());
             return true;
         }
         return false;

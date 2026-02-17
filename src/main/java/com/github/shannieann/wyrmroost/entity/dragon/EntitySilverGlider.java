@@ -58,6 +58,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.ItemLike;
+import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Block;
@@ -73,7 +74,6 @@ import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 
 import javax.annotation.Nullable;
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Random;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
@@ -107,16 +107,15 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
 
         if (this.isRidingPlayer()) {
             if (this.isAdult() && this.getOwner().isFallFlying())  {
-                if (this.getOwner().jumping) {
-                    System.out.println("Boosting");
+                if (this.getOwner() != null && (this.getOwner().getDeltaMovement().length() > 1.1)) {
+                    // wing flapping animation when flying fast while riding player
                     event.getController().setAnimation(new AnimationBuilder().addAnimation("boost", ILoopType.EDefaultLoopTypes.LOOP));
                 } else {
-                    System.out.println("Player flying");
                     event.getController().setAnimation(new AnimationBuilder().addAnimation("player_fly", ILoopType.EDefaultLoopTypes.LOOP));
                 }
+                System.out.println("Movement speed: " + this.getOwner().getDeltaMovement().length());
             }
             else {
-                System.out.println("Perching");
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("perch", ILoopType.EDefaultLoopTypes.LOOP));
             }
             return PlayState.CONTINUE; // Absolutely nothing else should play while riding on player
@@ -280,6 +279,13 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
         entityData.set(IS_FLOCKING, isFlocking);
     }
 
+    public boolean silverGliderFlightTick(LivingEntity entity) {
+        if (!entity.level.isClientSide) {
+            entity.gameEvent(GameEvent.ELYTRA_FREE_FALL);
+        }
+        return true;
+    }
+
     @Override
     public int getHeadRotSpeed()
     {
@@ -358,18 +364,19 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
                 stopRidingPlayer();
                 return;
             }
-    
-            if (owner.isShiftKeyDown() && ! owner.isOnGround() && ! owner.getAbilities().flying) {
+
+            if (owner.isShiftKeyDown() && ! owner.isFallFlying() && ! owner.isOnGround() && ! owner.getAbilities().flying) {
                 stopRidingPlayer();
                 return;
             }
 
-            // Try to start player elytra flight
-            if (! owner.isOnGround() && ! owner.isFallFlying() && isAdult() && ! owner.isInWater() && ! owner.hasEffect(MobEffects.LEVITATION)) {
-                System.out.println("Starting fall flying");
+            // Try to start player elytra flight (mixin keeps it active while in air and clears when on ground).
+            // Disable if player already has creative flight (getAbilities().flying is true only when creative player is actively flying).
+            // Don't start if owner is barely moving (probably stuck in ground)
+            if (isAdult() &&! owner.isFallFlying() && ! owner.getAbilities().flying && ! owner.isOnGround()
+                && owner.getDeltaMovement().length() > 0.1 && ! owner.isInWater() && ! owner.hasEffect(MobEffects.LEVITATION)) {
                 owner.startFallFlying();
-                System.out.println("started fall flying:" + owner.isFallFlying());
-             }
+            }
 
     /*
     public boolean shouldGlide(Player player)
@@ -389,13 +396,12 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
             float yrot = owner.getYRot();
             this.setYRot(yrot);
             this.setYHeadRot(yrot);
-            System.out.println("XRot before setting: " + this.getXRot());
+            // Geckolib 3 has known issues with entity pitch rendering (xRot). Yaw works, pitch may not show visually.
             if (owner.isFallFlying()) {
                 this.safeSetCappedXRot((owner.getXRot() + 90), 360.0f);
             } else {
                 this.safeSetCappedXRot(90.0f, 360.0f);
             }
-            System.out.println("XRot after setting: " + this.getXRot());
         }
     }
 
@@ -409,6 +415,10 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
 
         if (owner.isShiftKeyDown() && ! owner.isFallFlying()) {
             offY -= 0.2;
+        }
+        else if (owner.isFallFlying() || owner.isSwimming()) {
+            offY -= 1.2d;
+            offZ = 0d;
         }
 
         // Rotate the offset based on the player's rotation
@@ -434,10 +444,8 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     @Override
     public boolean doHurtTarget(Entity entity)
     {
-        System.out.println("Silver Glider doHurtTarget: " + entity.getName().getString());
         boolean didHurt = super.doHurtTarget(entity);
         boolean hitFish = entity instanceof Cod || entity instanceof Salmon || entity instanceof TropicalFish;
-        System.out.println("Silver Glider did hurt: " + didHurt+ " hitFish: " + hitFish);
         if (didHurt && ! hitFish) {
             setTarget(null);
             setAggressive(false);
@@ -514,12 +522,10 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
         if (! isTame() && this.temptGoal != null && this.temptGoal.isRunning()
             && (stack.getItem() == Items.COD || stack.getItem() == Items.SALMON || stack.getItem() == Items.TROPICAL_FISH || stack.getItem() == Items.PUFFERFISH)
         ) {
-            System.out.println("Taming. Tempt goal is running: " + this.temptGoal.isRunning());
             eat(tamer.getLevel(), stack);
             float tameChance = (tamer.isCreative() || this.isHatchling()) ? 1.0f : 0.3f;
             boolean tamed = attemptTame(tameChance, tamer);
             if (tamed) {
-                System.out.println("Tamed");
                 this.playSound(SoundEvents.CAT_PURREOW, 2f, 1.5f);
                 getAttribute(MAX_HEALTH).setBaseValue(WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.dragonAttributesConfig.maxHealth.get());
                 heal((float)getAttribute(MAX_HEALTH).getBaseValue());
@@ -713,13 +719,11 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
                 || level.getFluidState(this.pos = level.getHeightmapPos(Heightmap.Types.WORLD_SURFACE, blockPosition()).below()).isEmpty()) {
                 return false;
             }
-            System.out.println("SwoopGoal canUse: " + (getY() - pos.getY() > 8));
             return getY() - pos.getY() > 8;
         }
 
         @Override
         public void start() {
-            System.out.println("SwoopGoal start");
             setIsFlocking(0);
         }
 
@@ -740,7 +744,6 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
 
         @Override
         public void stop() {
-            System.out.println("SwoopGoal stop");
             super.stop();
             pos = null;
         }

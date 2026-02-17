@@ -25,7 +25,6 @@ public class WRIdleGoal extends AnimatedGoal{
     @Override
     public void start(){
         int randInt = entity.getRandom().nextInt(this.entity.numIdleAnimationVariants());
-        System.out.println("Starting Idle animation: " + this.entity.getRandomIdleAnimation(randInt) + " for " + this.entity.getIdleAnimationTime(randInt) + " ticks");
         super.start(this.entity.getRandomIdleAnimation(randInt), 3, this.entity.getIdleAnimationTime(randInt));
     }
 

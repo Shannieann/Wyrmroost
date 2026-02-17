@@ -11,8 +11,11 @@ version="${file.jarVersion}"
 displayName="Wyrmroost"
 # logoFile="examplemod.png"
 #credits="Novacraft: Rooststalker Model and Textures"
-authors="WolfShotz, Kingdomall, Shannieann, Ukan"
+authors="WolfShotz, Kingdomall, Shannieann, Ukan, Sniffity, Airhorn"
 #description=''' '''
+
+# Mixin configuration
+mixinConfig="mixins.wyrmroost.json"
 
 [[dependencies.wyrmroost]]
     modId="geckolib3"
