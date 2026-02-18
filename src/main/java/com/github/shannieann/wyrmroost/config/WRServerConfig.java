@@ -57,12 +57,12 @@ public final class WRServerConfig {
             this.dragonGriefing = builder
                     .comment("If true and not respecting mob griefing rules (`respect_mob_griefing`),",
                             "Allow dragons to destroy blocks.",
-                            "Note: not all dragons destroy blocks and not all are as destructive as the next.")
+                            "Note: not all dragons destroy blocks and not all are equally destructive.")
                     .translation(LANG_PREFIX + "dragon_griefing")
                     .define("dragon_griefing", false);
             this.fireSpread = builder
                     .comment("If true dragon fire will spread",
-                            "Note: not all dragons set fire.")
+                            "Note: not all dragons make fire.")
                     .translation(LANG_PREFIX + "dragon_griefing")
                     .define("fire_spread", false);
             builder.pop();
@@ -252,7 +252,7 @@ public final class WRServerConfig {
             );
             dragonAttributesConfig = new DragonAttributesConfig(builder,
             12,
-            3,
+            2,
             10
         );
             dragonBreedingConfig = new DragonBreedingConfig(builder,
@@ -298,15 +298,15 @@ public final class WRServerConfig {
                     Collections.singletonList("")
             );
             dragonAttributesConfig = new DragonAttributesConfig(builder, // TODO: these values are all wrong??
-            40,
-            4,
-            15
-        );
+                30,
+                2,
+                10
+            );
             dragonBreedingConfig = new DragonBreedingConfig(builder,
-            2,
-            1800,
-            900,
-            5);
+                1,
+                1800,
+                900,
+                2);
             builder.pop();
         }
         public final SpawningConfig spawningConfig;
@@ -324,9 +324,15 @@ public final class WRServerConfig {
                     Collections.singletonList("SANDY,DRY,HOT"),
                     Collections.singletonList("")
             );
+            dragonAttributesConfig = new DragonAttributesConfig(builder, // TODO: these values are all wrong??
+                4,
+                1,
+                10
+            );
             builder.pop();
         }
         public final SpawningConfig spawningConfig;
+        public final DragonAttributesConfig dragonAttributesConfig;
     }
 
     public static class OverworldDrake {
@@ -342,7 +348,7 @@ public final class WRServerConfig {
             );
             dragonAttributesConfig = new DragonAttributesConfig(builder,
                     60,
-                    8,
+                    6,
                     15
             );
             builder.pop();
@@ -368,7 +374,7 @@ public final class WRServerConfig {
                     Collections.singletonList(""),
                     Collections.singletonList("minecraft:forest"));
             dragonAttributesConfig = new DragonAttributesConfig(builder,
-                    16,
+                    12,
                     2,
                     10
             );
@@ -409,8 +415,6 @@ public final class WRServerConfig {
         public final SpawningConfig spawningConfig;
         public final DragonAttributesConfig dragonAttributesConfig;
         public final DragonBreedingConfig dragonBreedingConfig;
-
-
     }
 
     public static class SilverGlider {
@@ -424,8 +428,8 @@ public final class WRServerConfig {
                     Collections.singletonList("")
             );
             dragonAttributesConfig = new DragonAttributesConfig(builder, // TODO: these values are all very wrong
-            10,
-            2,
+            6,
+            1,
             15
                 );
             dragonBreedingConfig = new DragonBreedingConfig(builder,

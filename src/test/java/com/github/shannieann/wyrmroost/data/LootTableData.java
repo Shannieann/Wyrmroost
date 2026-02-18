@@ -219,8 +219,7 @@ class LootTableData extends LootTableProvider
                     .withPool(singleRollPool().add(meat(WRItems.RAW_APEX_MEAT.get(), 4, 8, 3, 5))));
 
             add(WREntityTypes.COIN_DRAGON.get(), LootTable.lootTable().withPool(singleRollPool()
-                    .add(meat(WRItems.RAW_LOWTIER_MEAT.get(), 1, 1, 0, 1))
-                    .add(item(Items.GOLD_NUGGET, 4))));
+                    .add(item(Items.GOLD_NUGGET, 1))));
 
             add(WREntityTypes.ALPINE_DRAGON.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_COMMON_MEAT.get(), 3, 7, 2, 6)))

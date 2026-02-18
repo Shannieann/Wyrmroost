@@ -19,6 +19,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRRandomS
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRSwimToSurfaceGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.flyers.WRFlockFlyInCirclesGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.flyers.WRRandomLiftOffGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRAvoidPlayerGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRMoveToLandToSleepGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRTemptGoal;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
@@ -40,7 +41,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
@@ -49,7 +49,6 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
-import net.minecraft.world.entity.ai.util.DefaultRandomPos;
 import net.minecraft.world.entity.animal.Cod;
 import net.minecraft.world.entity.animal.Salmon;
 import net.minecraft.world.entity.animal.TropicalFish;
@@ -113,7 +112,6 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
                 } else {
                     event.getController().setAnimation(new AnimationBuilder().addAnimation("player_fly", ILoopType.EDefaultLoopTypes.LOOP));
                 }
-                System.out.println("Movement speed: " + this.getOwner().getDeltaMovement().length());
             }
             else {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("perch", ILoopType.EDefaultLoopTypes.LOOP));
@@ -272,6 +270,11 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     //      A.8) Entity Data: Miscellaneous
     // ====================================
 
+    @Override
+    public int getTier() {
+        return 0; // Low tier
+    }
+
     public int getIsFlocking() {
         return entityData.get(IS_FLOCKING);
     }
@@ -372,9 +375,11 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
 
             // Try to start player elytra flight (mixin keeps it active while in air and clears when on ground).
             // Disable if player already has creative flight (getAbilities().flying is true only when creative player is actively flying).
-            // Don't start if owner is barely moving (probably stuck in ground)
-            if (isAdult() &&! owner.isFallFlying() && ! owner.getAbilities().flying && ! owner.isOnGround()
-                && owner.getDeltaMovement().length() > 0.1 && ! owner.isInWater() && ! owner.hasEffect(MobEffects.LEVITATION)) {
+            // Don't start if owner is barely moving (probably stuck in ground) or not moving down fast (probably just jumping)
+            if (isAdult() && ! owner.isFallFlying() && ! owner.getAbilities().flying && ! owner.isOnGround()
+                && owner.getDeltaMovement().length() > 0.1 && owner.getDeltaMovement().y < -0.5
+                && ! owner.isInWater() && ! owner.hasEffect(MobEffects.LEVITATION))
+            {
                 owner.startFallFlying();
             }
 
@@ -660,21 +665,17 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
         goalSelector.addGoal(7, new WRSleepGoal(this));
         goalSelector.addGoal(8, new WRSitGoal(this));
         goalSelector.addGoal(9, new WRGetDroppedFoodGoal(this, 25, true, Items.BAKED_POTATO));
-
-        goalSelector.addGoal(10, new AvoidEntityGoal<Player>(this, Player.class, 10f, 1.0, 1.1, EntitySelector.NO_CREATIVE_OR_SPECTATOR::test) {
+        goalSelector.addGoal(10, new WRAvoidPlayerGoal(this, 10f, 1.0, 1.1, p -> true) {
             @Override
-            // Try to make escape pos in air so dragon flies away from players
             public boolean canUse() {
-                boolean canUse = super.canUse();
-                if (canUse && canLiftOff()) { // Make it fly away from player
+                if (!super.canUse()) return false;
+                if (canLiftOff()) {
                     setNavigator(NavigationType.FLYING);
                     setDeltaMovement(0, 0.2, 0);
-
-                    Vec3 pos = DefaultRandomPos.getPosAway(this.mob, 16, 7, this.toAvoid.position());
-                    this.path = this.pathNav.createPath(pos.x, pos.y+20, pos.z, 0);
-                    return this.path != null;
+                    path = pathNav.createPath(escapePos.x, escapePos.y + 20, escapePos.z, 0);
+                    return path != null;
                 }
-                return canUse;
+                return true;
             }
         });
         goalSelector.addGoal(11, new WRMoveToLandToSleepGoal(this, false));

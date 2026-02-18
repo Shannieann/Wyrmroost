@@ -1,0 +1,12 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "wyrmroost:item/coin_dragon0"
+  },
+  "overrides": [
+    { "predicate": { "wyrmroost:variant": 1 }, "model": "wyrmroost:item/coin_dragon1" },
+    { "predicate": { "wyrmroost:variant": 2 }, "model": "wyrmroost:item/coin_dragon2" },
+    { "predicate": { "wyrmroost:variant": 3 }, "model": "wyrmroost:item/coin_dragon3" },
+    { "predicate": { "wyrmroost:variant": 4 }, "model": "wyrmroost:item/coin_dragon4" }
+  ]
+}

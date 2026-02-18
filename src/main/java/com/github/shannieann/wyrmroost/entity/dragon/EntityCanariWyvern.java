@@ -25,7 +25,6 @@ import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.BodyRotationControl;
-import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
@@ -42,6 +41,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.TridentItem;
+import net.minecraft.world.Difficulty;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
@@ -243,6 +243,11 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     //      A.8) Entity Data: Miscellaneous
     // ====================================
 
+    @Override
+    public int getTier() {
+        return 0; // Low tier
+    }
+
     public int getThreateningTimer() {
         return entityData.get(THREATENING_TIMER);
     }
@@ -291,7 +296,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
                 return;
             }
 
-            if ((owner.isShiftKeyDown() && ! owner.isOnGround() && ! owner.getAbilities().flying) || owner.isFallFlying() || (! speciesCanSwim() && isInWater())) {
+            if ((owner.isShiftKeyDown() && ! owner.isOnGround() && ! owner.getAbilities().flying) || owner.isFallFlying() || isInWater()) {
                 stopRidingPlayer();
                 return;
             }
@@ -303,12 +308,13 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
             this.setYHeadRot(yrot);
         }
 
-        if (getThreateningTimer() < 0) {
+        if (! this.isTame() && getThreateningTimer() < 0) {
             if (this.checkJukeboxNearbyPlayersTimer >= CHECK_JUKEBOX_NEARBY_PLAYERS_INTERVAL) {
                 this.checkJukeboxNearbyPlayersTimer = 0;
 
                 // 10% chance per check (per second a player is nearby). Only check within 5 blocks, not entire 10-block restrict radius.
                 // They try to avoid players within 8 blocks, so if players are this close it's probably intentional.
+                // Peaceful/creative players can still trigger the threat/taming flow.
                 if (getRandom().nextDouble() < 0.1 && getThreatLookTargetPlayer(5) != null) {
                     setThreateningTimer(Integer.MAX_VALUE);
                 }
@@ -320,7 +326,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
         if (getThreateningTimer() == 0) {
             attackAfterThreat();
         }
-        // If flying and not dropping, drop to the ground for threat pose.
+        // If flying and not moving or dropping, drop to the ground for threat pose.
         else if (getThreateningTimer() > 0 && this.getNavigation().isDone() && getNavigationType() == NavigationType.FLYING && this.getDeltaMovement().y > -0.1d) {
             this.setDeltaMovement(0, -0.1, 0);
             this.setNavigator(WRDragonEntity.NavigationType.GROUND);
@@ -330,10 +336,11 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
         else if (getThreateningTimer() > 0 && isInWater()) {
             Vec3 landPos = LandRandomPos.getPos(this, 15, 7);
             if (landPos != null) {
-                this.getNavigation().moveTo(landPos.x, landPos.y, landPos.z, this.getAttributeValue(Attributes.MOVEMENT_SPEED)*1.5d);
+                this.getNavigation().moveTo(landPos.x, landPos.y, landPos.z, this.getAttributeValue(Attributes.MOVEMENT_SPEED)*2d);
             }
             // Also shove it out of water
-            setDeltaMovement(0, 0.2, 0);
+            setDeltaMovement(0, 0.6, 0);
+            setNavigator(WRDragonEntity.NavigationType.FLYING);
         }
         else if (getThreateningTimer() > 0 && isOnGround() && this.checkJukeboxNearbyPlayersTimer >= CHECK_JUKEBOX_NEARBY_PLAYERS_INTERVAL) {
             // Check and turn to face player every so often
@@ -347,23 +354,38 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
         }
     }
 
+    /**
+     * Finds the nearest player in range for threat display / taming flow only.
+     * Does not require canAttack (so peaceful and invulnerable/creative players still trigger threat and can tame).
+     * Excludes owner so tamed dragons don't threaten their owner.
+     */
+    @Nullable
     private Player getThreatLookTargetPlayer(Integer modifyRestrictRadius) {
-        return this.level.getNearestEntity(
-            Player.class,
-            THREATEN_CONDITIONS,
-            this,
-            this.getX(),
-            this.getEyeY(),
-            this.getZ(),
-            new AABB(this.blockPosition()).inflate(modifyRestrictRadius == null ? getRestrictRadius() : modifyRestrictRadius)
-        );
+        double radius = modifyRestrictRadius == null ? getRestrictRadius() : modifyRestrictRadius;
+        AABB aabb = new AABB(this.blockPosition()).inflate(radius);
+        List<Player> players = this.level.getEntitiesOfClass(Player.class, aabb);
+        Player nearest = null;
+        double nearestDistSq = Double.MAX_VALUE;
+        for (Player p : players) {
+            if (!p.isAlive() || isOwnedBy(p)) {
+                continue;
+            }
+            double distSq = this.distanceToSqr(p.getX(), p.getY(), p.getZ());
+            if (distSq < nearestDistSq) {
+                nearestDistSq = distSq;
+                nearest = p;
+            }
+        }
+        return nearest;
     }
 
     private void attackAfterThreat() {
-        // If any player is within restrict radius when timer runs out, jump them
+        // Only set target if not peaceful and target can be seen as enemy (not invisible/creative/spectator)
         Player target = getThreatLookTargetPlayer(null);
 
-        if (target != null) {
+        if (target != null
+                && this.level.getDifficulty() != Difficulty.PEACEFUL
+                && target.canBeSeenAsEnemy()) {
             this.setTarget(target);
         }
 
@@ -389,6 +411,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
             case 2:
                 offY = 1.83;
                 offZ = 0.15d;
+                break;
             case 3:
                 offX = -0.3;
                 offY = 1.4;
@@ -398,7 +421,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
                 return null;
         }
 
-        if (owner.isShiftKeyDown()) {
+        if (owner.isShiftKeyDown() && ! owner.getAbilities().flying) {
             offY -= 0.3;
         }
 
@@ -531,7 +554,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
             return InteractionResult.CONSUME;
         }
 
-        if (! isTame() && stack.is(Items.SWEET_BERRIES) && isInOverrideAnimation() && getOverrideAnimation().equals("taming")) {
+        if (! isTame() && stack.is(Items.SWEET_BERRIES) && getThreateningTimer() > 0 && getThreateningTimer() <= 120) {
             eat(tamer.getLevel(), stack);
             float tameChance = (tamer.isCreative() || this.isHatchling()) ? 1.0f : 0.3f;
             boolean tamed = attemptTame(tameChance, tamer);
@@ -544,8 +567,8 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
                 setFlockingY(0);
                 setFlockingZ(0);
             } else {
-                // give player 5 extra seconds for each fed berry
-                setThreateningTimer(getThreateningTimer()+100);
+                // reset 6-second timer after eating berry
+                setThreateningTimer(120);
             }
 
             return InteractionResult.SUCCESS;
@@ -655,7 +678,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
         goalSelector.addGoal(10, new WRSleepGoal(this));
         goalSelector.addGoal(11, new WRSitGoal(this));
         goalSelector.addGoal(12, new WRGetDroppedFoodGoal(this, 12, true));
-        goalSelector.addGoal(13, new AvoidEntityGoal<>(this, Player.class, THREATEN_PREDICATE, (isHatchling() ? 15f : 8f), 1.15D, 1.2D, entity -> true) {
+        goalSelector.addGoal(13, new WRAvoidPlayerGoal(this, (isHatchling() ? 15f : 8f), 1.15D, 1.2D, p -> true) {
             @Override
             public boolean canUse() {
                 return !isTame() && getThreateningTimer() == -1 && super.canUse();
@@ -720,20 +743,31 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
                     THREATEN_CONDITIONS,
                     this.dragon,
                     this.dragon.getBoundingBox().inflate(this.dragon.getRestrictRadius()));
+            
+            if (list.isEmpty()) {
+                // No player nearby, cancel threat
+                dragon.setThreateningTimer(-1);
+                return false;
+            }
 
             for (Player player : list) {
 
                 Item mainItem = player.getMainHandItem().getItem();
                 Item offhandItem = player.getOffhandItem().getItem();
 
+                System.out.println("[CanariWyvern] nice conditions: shift=" + player.isShiftKeyDown() + " mainItem=" + mainItem + " offhandItem=" + offhandItem);
                 if (! player.isShiftKeyDown()
                     || (mainItem != Items.SWEET_BERRIES && offhandItem != Items.SWEET_BERRIES)
                     || (mainItem instanceof SwordItem || mainItem instanceof AxeItem || mainItem instanceof BowItem || mainItem instanceof TridentItem)
                     || (offhandItem instanceof SwordItem || offhandItem instanceof AxeItem || offhandItem instanceof BowItem || offhandItem instanceof TridentItem))
                 {
                     // Some nearby player is scaring canari or just didn't get away in time, jump them
+                    System.out.println("[CanariWyvern] player is scaring canari");
                     dragon.setThreateningTimer(-1);
-                    dragon.setTarget(player);
+                    if (dragon.level.getDifficulty() != Difficulty.PEACEFUL && player.canBeSeenAsEnemy()) {
+                        System.out.println("[CanariWyvern] player is enemy, setting target");
+                        dragon.setTarget(player);
+                    }
                     return false;
                 }
             }
@@ -764,12 +798,12 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
                 firstHalfAnimationDone = true;
                 // before dropping threat a little, check if players aren't being scary
                 if (checkClosestPlayerBeingNice()) {
-                    // Player now has 6 seconds to tame wyvern or run away (+5 per sweet berry fed)
+                    // Player now has 6 seconds to tame wyvern or run away (reset on sweet berry fed)
                     dragon.setThreateningTimer(120);
                     dragon.playSound(WRSounds.ENTITY_CANARI_IDLE.get(), 2f, 1F);
                 } else {
-                    // checkClosestPlayerBeingNice will set target if it returns false
-                    super.stop();
+                    // checkClosestPlayerBeingNice will set target if it returns false, or cancel threat if no player
+                    this.stop();
                     return;
                 }
             }

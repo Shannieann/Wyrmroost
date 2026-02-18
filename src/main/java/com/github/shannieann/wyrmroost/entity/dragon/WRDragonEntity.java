@@ -1145,6 +1145,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         return size;
     }
 
+    /*
+    * 0 = low, 1 = common, 2 = apex, 3 = behemoth
+    */
+    public abstract int getTier();
+
     @Override
     protected int getExperienceReward(Player player)
     {
@@ -1471,14 +1476,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if ((this.dragonCanFly() && source == DamageSource.FALL) ||
             source == DamageSource.CACTUS ||
             source == DamageSource.FLY_INTO_WALL ||
+            source == DamageSource.IN_WALL ||
             source == DamageSource.HOT_FLOOR ||
             source == DamageSource.FREEZE ||
             source == DamageSource.SWEET_BERRY_BUSH ||
             source == DamageSource.STARVE ||
-            // TODO: In future, only make them fireproof above a certain tier?
-            source == DamageSource.IN_FIRE ||
-            source == DamageSource.LAVA ||
-            source == DamageSource.ON_FIRE) {
+            (getTier() >= 1 && source == DamageSource.IN_FIRE) ||
+            (getTier() >= 1 && source == DamageSource.LAVA) ||
+            (getTier() >= 1 && source == DamageSource.ON_FIRE)) {
             return false;
         }
 
@@ -2052,18 +2057,20 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 int pos = dragon.getPosOnPlayer();
                 if (pos >= 1 && pos <= 3) {
                     takenPos[pos - 1] = true;
+                    System.out.println("[WRDragonEntity] position " + pos + " taken by " + dragon.getName());
                 }
             }
         }
 
-        if (!takenPos[1]) { // head not taken
-            return 2;
-        }
-        else if (!takenPos[0] && !(this instanceof EntitySilverGlider)) { // left shoulder not taken (silver glider can only sit on head)
+        // Fill shoulders first (1 = left, 3 = right), then head (2)
+        if (!takenPos[0] && !(this instanceof EntitySilverGlider)) { // left shoulder not taken (silver glider can only sit on head)
             return 1;
         }
-        else if (!takenPos[2] && !(this instanceof EntitySilverGlider)) { // right shoulder not taken (silver glider can only sit on head)
+        if (!takenPos[2] && !(this instanceof EntitySilverGlider)) { // right shoulder not taken
             return 3;
+        }
+        if (!takenPos[1]) { // head not taken
+            return 2;
         }
         return 0; // all positions taken
     }
@@ -2443,7 +2450,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
     */
 
-
     // ====================================
     //      D.2) Taming: Breeding and Food
     // ====================================
@@ -2467,10 +2473,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @SuppressWarnings({ "ConstantConditions", "null" })
     public ItemStack eat(Level level, ItemStack stack) {
         Vec3 mouth = getApproximateMouthPos();
-        //ClientSide: Spawn Particles + sound
+        //ClientSide: sound only; no particles for normal eating (heal particles come from heal() when eating restores health)
         if (level.isClientSide) {
             WRModUtils.playLocalSound(level, new BlockPos(mouth), getEatingSound(stack), 1f, 1f);
-            level.addParticle(ParticleTypes.HAPPY_VILLAGER, mouth.x, mouth.y, mouth.z, 0, 0, 0);
         }
         else {
             //ServerSide: Heal

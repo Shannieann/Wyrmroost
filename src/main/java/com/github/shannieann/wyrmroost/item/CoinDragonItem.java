@@ -29,6 +29,25 @@ public class CoinDragonItem extends Item
     public static final String DATA_ENTITY = "CoinDragonData";
     public static final ResourceLocation VARIANT_OVERRIDE = Wyrmroost.id("variant");
 
+    /** Maps entity variant string (e.g. "blue") to item texture index 0–4. Must match EntityCoinDragon.VARIANTS order. */
+    public static int variantToItemIndex(String variant) {
+        return switch (variant) {
+            case "red" -> 0;
+            case "pink" -> 1;
+            case "yellow" -> 2;
+            case "black" -> 3;
+            case "green" -> 4;
+            case "blue" -> 4; // TODO temp, we are missing an image
+            default -> {
+                try {
+                    yield Integer.parseInt(variant) % 5;
+                } catch (NumberFormatException e) {
+                    yield 0;
+                }
+            }
+        };
+    }
+
     public CoinDragonItem()
     {
         super(WRItems.builder().stacksTo(1));
@@ -37,13 +56,9 @@ public class CoinDragonItem extends Item
                 CompoundTag entityData = s.getOrCreateTag().getCompound(DATA_ENTITY);
                 if (entityData.contains("Variant")) {
                     String variant = entityData.getString("Variant");
-                    try {
-                        return Integer.parseInt(variant) % 5;
-                    } catch (NumberFormatException e) {
-                        return 0; // default
-                    }
+                    return variantToItemIndex(variant);
                 }
-                return 0; // default
+                return 0;
             });
         }
     }
@@ -86,11 +101,9 @@ public class CoinDragonItem extends Item
     public static LootPoolEntryContainer.Builder<?> getLootEntry()
     {
         CompoundTag parent = new CompoundTag();
-        CompoundTag child = new CompoundTag(); // because the parent nbt gets merged with the stack, we need to nest a child within the one getting merged
-        // Variants placeholder: 0, 1, 2, 3, 4
-        String[] variants = new String[] {"body_0", "body_1", "body_2", "body_3", "body_4"};
-        String variant = variants[new Random().nextInt(5)];
-        child.putString("Variant", variant);
+        CompoundTag child = new CompoundTag();
+        String[] variants = new String[] {"blue", "yellow", "black", "green", "pink", "red"};
+        child.putString("Variant", variants[new Random().nextInt(variants.length)]);
         parent.put(DATA_ENTITY, child);
         return LootItem.lootTableItem(WRItems.COIN_DRAGON.get()).apply(SetNbtFunction.setTag(parent));
     }

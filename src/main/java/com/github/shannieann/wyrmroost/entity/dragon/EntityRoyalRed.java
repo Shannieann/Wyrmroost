@@ -237,6 +237,11 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     // ====================================
 
     @Override
+    public int getTier() {
+        return 2; // Apex tier
+    }
+
+    @Override
     public EntityDimensions getDimensions(Pose pose) {
         EntityDimensions size = getType().getDimensions().scale(getScale());
         if (isInSittingPose() || getSleeping()) size = size.scale(1, 0.5f);

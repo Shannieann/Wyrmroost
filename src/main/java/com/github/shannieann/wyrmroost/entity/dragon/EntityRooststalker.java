@@ -6,7 +6,6 @@ import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundMoveControl;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundNavigation;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import net.minecraft.core.BlockPos;
@@ -34,10 +33,8 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.util.DefaultRandomPos;
-import net.minecraft.world.entity.ai.goal.WaterAvoidingRandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.LeapAtTargetGoal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
-import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
 import net.minecraft.world.entity.animal.Chicken;
@@ -327,6 +324,11 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     //      A.8) Entity Data: Miscellaneous
     // ====================================
 
+    @Override
+    public int getTier() {
+        return 0; // Low tier
+    }
+
     public int getScavengingCooldown() {
         return entityData.get(SCAVENGING_COOLDOWN);
     }
@@ -553,8 +555,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         goalSelector.addGoal(1, new WRRunWhenLosingGoal(this, 0.2f, 8, 1.5f));
         goalSelector.addGoal(2, new LeapAtTargetGoal(this, 0.4F));
         goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.1d, true));
-        goalSelector.addGoal(4, new AvoidEntityGoal<>(this, Player.class, 7f, 1.15f, 1f,
-        EntitySelector.NO_CREATIVE_OR_SPECTATOR::test) {
+        goalSelector.addGoal(4, new WRAvoidPlayerGoal(this, 7f, 1.15f, 1f, p -> true) {
             @Override
             public boolean canUse() {
                 return !isTame() && !getHeldItem().isEmpty() && super.canUse();

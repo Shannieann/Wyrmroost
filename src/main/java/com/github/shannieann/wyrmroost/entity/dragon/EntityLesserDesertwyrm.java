@@ -1,6 +1,7 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.AnimatedGoal;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRAvoidPlayerGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRGetDroppedFoodGoal;
 import com.github.shannieann.wyrmroost.item.LDWyrmItem;
 import com.github.shannieann.wyrmroost.registry.WRItems;
@@ -21,7 +22,6 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.AvoidEntityGoal;
 import net.minecraft.world.entity.ai.goal.FloatGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
@@ -236,6 +236,11 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
     // ====================================
 
     @Override
+    public int getTier() {
+        return 0; // Low tier
+    }
+
+    @Override
     public boolean isPushable()
     {
         return !getBurrowed() && super.isPushable();
@@ -433,8 +438,7 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
         });
         goalSelector.addGoal(6, new LWDGetDroppedFoodGoal(this, 5, true));
         goalSelector.addGoal(7, new LWDBurrowGoal(this));
-        goalSelector.addGoal(8, new AvoidEntityGoal<>(this, LivingEntity.class, 6f, 0.4d, 0.4d,
-        EntitySelector.NO_CREATIVE_OR_SPECTATOR::test) {
+        goalSelector.addGoal(8, new WRAvoidPlayerGoal(this, 6f, 0.4d, 0.4d, p -> true) {
             @Override
             public boolean canUse() {
                 return !getBurrowed() && super.canUse();

@@ -280,6 +280,11 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IBreedab
     // ====================================
 
     @Override
+    public int getTier() {
+        return 2; // Apex tier
+    }
+
+    @Override
     public EntityDimensions getDimensions(Pose pose) {
         return getType().getDimensions().scale(getScale());
     }

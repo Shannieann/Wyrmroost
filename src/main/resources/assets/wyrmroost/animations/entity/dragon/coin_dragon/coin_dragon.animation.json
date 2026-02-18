@@ -635,7 +635,7 @@
 				}
 			}
 		},
-		"fly_transition": {
+		"takeoff": {
 			"loop": "hold_on_last_frame",
 			"animation_length": 2.25,
 			"bones": {

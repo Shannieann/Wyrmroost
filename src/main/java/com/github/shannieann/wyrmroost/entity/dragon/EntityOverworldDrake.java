@@ -201,6 +201,12 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     // ====================================
     //      A.7) Entity Data: Miscellaneous
     // ====================================
+
+    @Override
+    public int getTier() {
+        return 1; // Common tier
+    }
+
     @Override
     public EntityDimensions getDimensions(Pose pose)
     {

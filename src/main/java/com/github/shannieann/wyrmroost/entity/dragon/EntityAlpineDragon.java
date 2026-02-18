@@ -203,6 +203,15 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
 */
 
     // ====================================
+    //      A.8) Entity Data: Miscellaneous
+    // ====================================
+
+    @Override
+    public int getTier() {
+        return 1; // Common tier
+    }
+
+    // ====================================
     //      B.1) Tick and AI: Attack and Hurt
     // ====================================
 

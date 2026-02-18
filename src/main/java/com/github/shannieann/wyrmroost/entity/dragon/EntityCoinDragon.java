@@ -6,9 +6,6 @@ import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.syncher.EntityDataAccessor;
-import net.minecraft.network.syncher.EntityDataSerializers;
-import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -19,8 +16,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomLookAroundGoal;
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
-import net.minecraft.world.entity.ai.util.LandRandomPos;
 
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.AnimatedGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.WRMoveToHomeGoal;
@@ -55,7 +50,7 @@ public class EntityCoinDragon extends WRDragonEntity
     private static final float MOVEMENT_SPEED = 0.1f;
     private static final float MAX_HEALTH = 4.0f;
 
-    private static final String[] VARIANTS = {"blue", "gold", "gray", "green", "pink", "red"};
+    private static final String[] VARIANTS = {"blue", "yellow", "black", "green", "pink", "red"};
 
     public EntityCoinDragon(EntityType<? extends EntityCoinDragon> coindragon, Level level) {
         super(coindragon, level);
@@ -106,7 +101,7 @@ public class EntityCoinDragon extends WRDragonEntity
         NavigationType navigationType = this.getNavigationType();
 
         if (navigationType == NavigationType.GROUND) {
-            if (this.getDeltaMovement().length() > (this.getMovementSpeed()/3)) {
+            if (this.getDeltaMovement().length() > 0.1d) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
             } else {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
@@ -197,7 +192,7 @@ public class EntityCoinDragon extends WRDragonEntity
     @Override
     public ItemStack getPickedResult(HitResult target)
     {
-        return new ItemStack(WRItems.COIN_DRAGON.get());
+        return getItemStack();
     }
 
     @Override
@@ -244,12 +239,7 @@ public class EntityCoinDragon extends WRDragonEntity
 
     @Override
     public float initialBabyScale() {
-        return 0.5F;
-    }
-
-    @Override
-    public float baseRenderScale() {
-        return 0.5f;
+        return 1.0F;
     }
 
     // ====================================
@@ -279,6 +269,11 @@ public class EntityCoinDragon extends WRDragonEntity
     // ====================================
     //      A.8) Entity Data: Miscellaneous
     // ====================================
+
+    @Override
+    public int getTier() {
+        return 0; // Low tier
+    }
 
     @Override
     public boolean hasGender() {
@@ -464,7 +459,6 @@ public class EntityCoinDragon extends WRDragonEntity
                     && ! this.entity.isPassenger()
                     && super.canContinueToUse();
         }
-
     }
 
     // =====================================================================
@@ -492,8 +486,9 @@ public class EntityCoinDragon extends WRDragonEntity
         public void tick() {
             this.entity.setDeltaMovement(0, -0.05, 0);
             this.entity.setNavigator(NavigationType.GROUND);
+            System.out.println("[CoinDragonReturnToGroundGoal] returning to ground");
         }
-        
+
         @Override
         public boolean canContinueToUse() {
             return ! this.entity.isPassenger() && ! this.entity.isOnGround();
@@ -526,25 +521,30 @@ public class EntityCoinDragon extends WRDragonEntity
                     && !dragon.isPassenger()
                     && dragon.getNavigationType() == NavigationType.FLYING
                     && super.canContinueToUse()
-                    && dragon.getRandom().nextDouble() > 0.0005; // very small chance to randomly stop, just so this
-                                                                 // doesn't go on forever
+                    && dragon.getRandom().nextDouble() > 0.01; // very small chance to randomly stop, just so this
+                                                               // doesn't go on forever
         }
 
         @Override
         public void tick() {
             double yMot;
-            double altitiude = dragon.getAltitude();
-            if (altitiude < 1) {
+            double altitude = dragon.getAltitude();
+            if (dragon.isOnGround()) {
+                yMot = 1d;
+                dragon.setNavigator(NavigationType.FLYING);
+            } else if (altitude < 1) {
                 yMot = dragon.getFlyingSpeed();
-            } else if (altitiude > 2.5) {
+            } else if (altitude > 2.5) {
                 yMot = -dragon.getFlyingSpeed();
             } else {
                 yMot = Math.sin(dragon.tickCount * 0.1) * 0.0035;
             }
 
+            System.out.println("[CoinDragonBobUpAndDownGoal] altitude: " + altitude);
+            System.out.println("[CoinDragonBobUpAndDownGoal] yMot: " + yMot);
             dragon.setDeltaMovement(dragon.getDeltaMovement().add(0, yMot, 0));
-            dragon.move(MoverType.SELF, dragon.getDeltaMovement());
-            dragon.setDeltaMovement(dragon.getDeltaMovement().scale(0.91));
+            //dragon.move(MoverType.SELF, dragon.getDeltaMovement());
+            //dragon.setDeltaMovement(dragon.getDeltaMovement().scale(0.91));
         }
 
         @Override

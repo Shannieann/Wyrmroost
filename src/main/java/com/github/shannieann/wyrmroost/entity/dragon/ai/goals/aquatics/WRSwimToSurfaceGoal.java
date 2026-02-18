@@ -28,7 +28,7 @@ public class WRSwimToSurfaceGoal extends Goal {
     }
 
     @Override
-    public boolean canUse() { // Make it alwas trigger if almost out of breath, otherwise use provided probability
+    public boolean canUse() { // Make it always trigger if almost out of breath, otherwise use provided probability
         return entity.getTarget() == null && ((entity.getAirSupply() < 60 && !entity.canBreatheUnderwater())
                 || (entity.isInWater() && entity.getRandom().nextDouble() < probability));
     }
