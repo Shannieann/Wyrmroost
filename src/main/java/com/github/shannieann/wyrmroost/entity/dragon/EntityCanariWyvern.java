@@ -841,7 +841,6 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
 
         @Override
         public void start() {
-            System.out.println("CanariDanceGoal start");
             this.dragon.setSleeping(false);
             if (checkJukebox() == 1) {
                 dragon.getNavigation().moveTo(this.jukeboxPos.getX(), this.jukeboxPos.getY(), this.jukeboxPos.getZ(), 1);

@@ -53,7 +53,6 @@ public class WRSwimToSurfaceGoal extends Goal {
 
     @Override
     public void tick() {
-        System.out.println("WRSwimToSurfaceGoal tick");
         if (surfacePos != null && entity.getNavigation().isDone()) {
             entity.getNavigation().moveTo(surfacePos.getX(), surfacePos.getY(), surfacePos.getZ(), 1.0F);
         }
@@ -61,7 +60,6 @@ public class WRSwimToSurfaceGoal extends Goal {
             entity.setDeltaMovement(entity.getDeltaMovement().add(0, 0.1f, 0));
         }
         if (surfacePos != null && entity.distanceToSqr(surfacePos.getX(), surfacePos.getY(), surfacePos.getZ()) < 1.5F) {
-            System.out.println("WRSwimToSurfaceGoal reached surface pos");
             surfacePos = null;
         }
     }

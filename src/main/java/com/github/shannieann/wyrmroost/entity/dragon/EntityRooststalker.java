@@ -145,20 +145,17 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
             String currentAnim = this.getOverrideAnimation();
             // Actually set the animation on the controller so it plays
             if (currentAnim.contains("sit_down") || currentAnim.contains("lay_down")) {
-                System.out.println("adding base ground for special animation: " + currentAnim);
                 // This needs to be layered over base ground specifically
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("base_ground", ILoopType.EDefaultLoopTypes.LOOP));
                 return PlayState.CONTINUE;
             }
             else if (!currentAnim.contains("idle") && !currentAnim.contains("attack")) {
                 // Everything except idle and attack animations uses regular bones and shouldn't be layered over anything
-                System.out.println("Playing regular bone special animation: " + currentAnim);
                 switch (this.getAnimationType()) {
                     case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim, ILoopType.EDefaultLoopTypes.LOOP));
                     case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim, ILoopType.EDefaultLoopTypes.PLAY_ONCE));
                     case 3 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim,ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
                 }
-                System.out.println("Animation override: " + currentAnim + " is not idle or attack, no layer");
                 return PlayState.CONTINUE;
             }
             else {

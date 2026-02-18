@@ -47,7 +47,6 @@ public class WRSitGoal extends AnimatedGoal {
         }
         else {
             int sitDownTime = this.entity.getSitDownTime();
-            System.out.println("WRSitGoal start: sitting down for " + sitDownTime + " ticks");
             super.start("sit_down", 3, sitDownTime);
             this.sitDownDone = false;
         }
@@ -60,7 +59,6 @@ public class WRSitGoal extends AnimatedGoal {
             // Doesn't apply underwater
             super.stop();
             this.sitDownDone = true;
-            System.out.println("WRSitGoal stop: done sitting down");
         }
         else if (! this.sitDownDone) {
             super.tick();

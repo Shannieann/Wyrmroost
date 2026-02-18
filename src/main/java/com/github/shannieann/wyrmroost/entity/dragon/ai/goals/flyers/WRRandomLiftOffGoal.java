@@ -40,7 +40,6 @@ public class WRRandomLiftOffGoal extends AnimatedGoal
     public void start()
     {
         super.stop(); // clear float animation if that exists
-        System.out.println("WRRandomLiftOffGoal start");
         super.start("takeoff", AnimatedGoal.PLAY_ONCE, animationTimeTicks);
     }
 
@@ -61,12 +60,10 @@ public class WRRandomLiftOffGoal extends AnimatedGoal
 
         // Looks natural if we start moving up halfway through takeoff animation
         if (super.elapsedTime >= animationTimeTicks/2) {
-            System.out.println("WRRandomLiftOffGoal done takeoff, moving up");
             entity.setDeltaMovement(0, ascensionSpeed, 0);
             entity.setNavigator(WRDragonEntity.NavigationType.FLYING);
         }
         else {
-            System.out.println("WRRandomLiftOffGoal still taking off");
             entity.setDeltaMovement(Vec3.ZERO);
             entity.setNavigator(WRDragonEntity.NavigationType.GROUND);
         }

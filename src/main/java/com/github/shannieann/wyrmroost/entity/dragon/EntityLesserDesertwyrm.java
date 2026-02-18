@@ -109,13 +109,11 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
             // Actually set the animation on the controller so it plays
             if (!currentAnim.contains("idle") && !currentAnim.contains("attack")) {
                 // Everything except idle and attack animations uses regular bones and shouldn't be layered over anything
-                System.out.println("Playing regular bone special animation: " + currentAnim);
                 switch (this.getAnimationType()) {
                     case 1 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim, ILoopType.EDefaultLoopTypes.LOOP));
                     case 2 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim, ILoopType.EDefaultLoopTypes.PLAY_ONCE));
                     case 3 -> event.getController().setAnimation(new AnimationBuilder().addAnimation(currentAnim,ILoopType.EDefaultLoopTypes.HOLD_ON_LAST_FRAME));
                 }
-                System.out.println("Animation override: " + currentAnim + " is not idle or attack, no layer");
                 return PlayState.CONTINUE;
             }
             else {
