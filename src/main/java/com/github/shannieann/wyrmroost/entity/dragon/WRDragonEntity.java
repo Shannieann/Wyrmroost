@@ -392,11 +392,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return PlayState.CONTINUE;
         }
 
-        // Basic Locomotion: Riding Cases
-        if (this.isControlledByLocalInstance() && this.getDeltaMovement().length() > 0.05) {
-            return PlayState.CONTINUE; // predicateRiding(event);
-        }
-
         NavigationType navigationType = this.getNavigationType();
         Vec3 deltaMovement = this.getDeltaMovement();
 

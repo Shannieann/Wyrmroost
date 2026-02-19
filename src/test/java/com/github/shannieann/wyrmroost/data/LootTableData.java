@@ -194,8 +194,8 @@ class LootTableData extends LootTableProvider
 
             add(WREntityTypes.OVERWORLD_DRAKE.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(item(Items.LEATHER, 5, 10).apply(looting(1, 4))))
-                    .withPool(singleRollPool().add(meat(WRItems.RAW_COMMON_MEAT.get(), 1, 7, 2, 3)))
-                    .withPool(singleRollPool().add(item(WRItems.DRAKE_BACKPLATE.get(), 1)).when(LootItemKilledByPlayerCondition.killedByPlayer()).when(LootItemRandomChanceCondition.randomChance(0.15f)).apply(looting(0, 1))));
+                    .withPool(singleRollPool().add(meat(WRItems.RAW_COMMON_MEAT.get(), 1, 7, 3, 9)))
+                    .withPool(singleRollPool().add(item(WRItems.DRAKE_BACKPLATE.get(), 1)).when(LootItemKilledByPlayerCondition.killedByPlayer()).apply(looting(2, 3))));
 
             add(WREntityTypes.ROOSTSTALKER.get(), LootTable.lootTable()
                     .withPool(singleRollPool().add(meat(WRItems.RAW_LOWTIER_MEAT.get(), 0, 2, 1, 2)))

@@ -3,16 +3,17 @@ package com.github.shannieann.wyrmroost.entity.dragon;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
-import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundMoveControl;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.sounds.SoundEvent;
@@ -31,6 +32,7 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.NonTameRandomTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
+import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -59,10 +61,7 @@ import java.util.EnumSet;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 /*
 // TODO:
-    Tidy up class, remove unnecessary methods, make sure methods follow a logical order (probs best to do this after we organize BFL, follow the same format)
     WRReturnToLandGoal (should not be specific to OWDs) which makes land creatures find their way back to land...
-    For this one, we should try and use the GroundNavigator if possible...
-
 */
 
 public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, ITameable {
@@ -77,10 +76,13 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
 
     private static final float MOVEMENT_SPEED = 0.2125f;
 
-    @Override
-    public int numIdleAnimationVariants(){
-        return 3;
+    public EntityOverworldDrake(EntityType<? extends EntityOverworldDrake> drake, Level level) {
+        super(drake, level);
+        // Cannot use any other navigation or move control
+        this.setNavigator(NavigationType.GROUND);
+        this.moveControl = new WRGroundMoveControl(this, 10.0f); // 10.0f is the default groundMaxYaw
     }
+
     // Dragon Entity Data
     // Dragon Entity Animations
     public final LerpedFloat sitTimer = LerpedFloat.unit();
@@ -90,16 +92,39 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     // TODO this is clientside I believe, as all movement is. So we could pretty easily do a momentum bar at the bottom of the screen.
     public float momentum = 0.0f;
 
-    public EntityOverworldDrake(EntityType<? extends EntityOverworldDrake> drake, Level level)
-    {
-        super(drake, level);
+    // ====================================
+    //      Animations
+    // ====================================
+
+    @Override
+    public int numIdleAnimationVariants() {
+        return 3;
     }
 
+    @Override
+    public int getIdleAnimationTime(int index) {
+        int[] animationTimesInOrder = {38, 21, 12};
+        return animationTimesInOrder[index];
+    }
 
+    @Override
+    public int numAttackAnimationVariants() {
+        return 2;
+    }
 
-    // =====================
-    //      Animation Logic
-    // =====================
+    @Override
+    public int getAttackAnimationTime(int index) {
+        int[] animationTimesInOrder = {8, 8}; // TODO: Last one is totally a guess
+        return animationTimesInOrder[index];
+    }
+
+    public int getLieDownTime() { // It says 4 seconds but that can't be right
+        return 10;
+    }
+
+    public int getSitDownTime() { // It says 4 seconds but that can't be right
+        return 10;
+    }
 
     @Override
     public <E extends IAnimatable> PlayState predicateAnimation(AnimationEvent<E> event) {
@@ -123,7 +148,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     }
 
     // Chest handling
-    // Create a new predicate b/c this should be able to run even when other animations are running as well
+    // Create a new predicate b/c this should be able to run even when other animations are running as well, independent of override
     private boolean chestOpened = false;
     public <E extends IAnimatable> PlayState predicateChest(AnimationEvent<E> event){
         // If the main rider is a player
@@ -147,14 +172,11 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
         return PlayState.CONTINUE;
     }
 
-
     @Override
     public void registerControllers(AnimationData data) {
         super.registerControllers(data);
         data.addAnimationController(new AnimationController(this, "controllerChest", 0, this::predicateChest));
     }
-
-
 
     // ====================================
     //      A) Entity Data + Attributes
@@ -170,6 +192,29 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
                 .add(ATTACK_KNOCKBACK, 2.85)
                 .add(ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonAttributesConfig.attackDamage.get());
     }
+
+    @Override
+    public EntityDimensions getDimensions(Pose pose)
+    {
+        EntityDimensions size = getType().getDimensions().scale(getScale());
+        if (getSitting() || getSleeping()) size = size.scale(1, 0.75f);
+        return size;
+    }
+
+    // ====================================
+    //      A.1) Entity Data: AGE
+    // ====================================
+
+    @Override
+    public float ageProgressAmount() {
+        return WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonBreedingConfig.ageProgress.get()/100F;
+    }
+
+    @Override
+    public float initialBabyScale() {
+        return 0.2f;
+    }
+
     // ====================================
     //      A.4) Entity Data: HOME
     // ====================================
@@ -177,6 +222,12 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     @Override
     public boolean defendsHome() {
         return true;
+    }
+
+    @Override
+    public float getRestrictRadius() {
+        int radiusRoot = WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonAttributesConfig.homeRadius.get();
+        return radiusRoot * radiusRoot;
     }
 
     // ====================================
@@ -189,13 +240,18 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
         return "plains";
     }
 
+    // TODO: What is the red variant and how does it trigger
     @Override
-    public String determineVariant()
-    {
-        if (getRandom().nextDouble() < 0.008) return "special";
+    public String determineVariant() {
+        return getRandom().nextDouble() < 0.05
+            ? "special"
+            : ((Biome.getBiomeCategory(level.getBiome(blockPosition())) == Biome.BiomeCategory.SAVANNA)
+                ? "savanna"
+                : "plains");
+    }
 
-        if (Biome.getBiomeCategory(level.getBiome(blockPosition())) == Biome.BiomeCategory.SAVANNA) return "savanna";
-        return getDefaultVariant();
+    public boolean isAlbino() {
+        return getVariant().equals("special");
     }
 
     // ====================================
@@ -207,42 +263,14 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
         return 1; // Common tier
     }
 
-    @Override
-    public EntityDimensions getDimensions(Pose pose)
-    {
-        EntityDimensions size = getType().getDimensions().scale(getScale());
-        if (isInSittingPose() || getSleeping()) size = size.scale(1, 0.75f);
-        return size;
-    }
-    /*
-    @Override
-    public float getScale()
-    {
-        return getAgeScale(0.275f);
-    }
-
-     */
-
     // ====================================
     //      B) Tick and AI
     // ====================================
     @Override
-    public void aiStep()
-    {
+    public void aiStep() {
         super.aiStep();
-        // =====================
-        //       Update Timers
-        // =====================
 
-        sitTimer.add((isInSittingPose() || getSleeping())? 0.1f : -0.1f);
-        sleepTimer.add(getSleeping()? 0.04f : -0.06f);
-
-
-        // =====================
-        //       Throwing Passenger Off Logic
-        // =====================
-        if (thrownPassenger != null)
-        {
+        if (thrownPassenger != null) {
             thrownPassenger.setDeltaMovement(WRMathsUtility.nextDouble(getRandom()), 0.1 + getRandom().nextDouble(), WRMathsUtility.nextDouble(getRandom()));
             ((ServerChunkCache) level.getChunkSource()).broadcastAndSend(thrownPassenger, new ClientboundSetEntityMotionPacket(thrownPassenger)); // notify client
             thrownPassenger = null;
@@ -274,9 +302,9 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     boolean riderIsSprinting = false;
     @Override
     public void travel(Vec3 vec3d) {
-        if (isControlledByLocalInstance()){
+        if (isControlledByLocalInstance()) {
 
-            if (!this.isAlive()) {
+            if (! this.isAlive()) {
                 return;
             }
 
@@ -305,7 +333,6 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
                 setYRot((float) (this.yRot + (rider.yRot - this.yRot) * alphaValue));
             }
 
-
             riderIsSprinting = ClientEvents.getClient().options.keySprint.isDown(); // Set if we're sprinting
 
             float speed = lerpSpeed(getTravelSpeed()) * 0.8f; // Trying out a lower riding speed for OWDs (to try to give horses some spotlight too)
@@ -313,21 +340,20 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
 
             //System.out.println(momentum);
             if (riderIsSprinting){
-                if (momentum <= 0.12f) momentum += 0.001f;
+                if (momentum <= 0.12f) {
+                    momentum += 0.001f;
+                }
+            } else if (momentum > 0.0f) {
+                momentum -= 0.005f;
             }
-            else if (momentum > 0.0f) momentum -= 0.005f;
-
-
 
             if (forwardMotion < 0.0F) { // Huh? Ig I'll keep it here because it works
                 forwardMotion *= 0.25F; // Ohhh its like if you're going backward you're slower I guess.
             }
             if (this.isControlledByLocalInstance()){
-
                 handleGroundRiding(speed, sideMotion, forwardMotion, vec3d, rider);
             }
         }
-
     }
 
     // Smooth transition between speeds. Maybe extract to superclass if needed?
@@ -342,22 +368,13 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
 
         return toReturn;
     }
+
     @Override
     public float getTravelSpeed()
     {
         float speed = (float) getAttributeValue(Attributes.MOVEMENT_SPEED);
         //if (canBeControlledByRider()) speed += 0.15f;
         return speed + momentum;
-    }
-
-    @Override
-    public float ageProgressAmount() {
-        return 0.1f;
-    }
-
-    @Override
-    public float initialBabyScale() {
-        return 0.2f;
     }
 
     @Override
@@ -377,6 +394,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     public float getMovementSpeed() {
         return MOVEMENT_SPEED;
     }
+
     @Override
     public float getFlyingSpeed() { // Can't fly
         return -1;
@@ -394,7 +412,6 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     // ====================================
     //      C.2) Navigation and Control: Swimming
     // ====================================
-
 
     @Override
     public boolean speciesCanSwim() {
@@ -421,19 +438,13 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
 
         if (entity instanceof LivingEntity passenger)
         {
-            if (isTame()) setSprinting(passenger.isSprinting());
-            else if (!level.isClientSide && passenger instanceof Player player)
-            {
-                double rng = getRandom().nextDouble();
-
-
-                if (rng < 0.005) {
+            if (isTame()) {
+                setSprinting(passenger.isSprinting());
+            } else if (! level.isClientSide && passenger instanceof Player player) {
+                double rand = getRandom().nextDouble();
+                if (rand <= 0.005) {
                     tame(player);
-                    level.broadcastEntityEvent(this, (byte) 7); // heart particles
-                }
-
-                else if (rng <= 0.1)
-                {
+                } else if (! isTame() && rand <= 0.1) {
                     shouldBuck = true;
                 }
             }
@@ -444,6 +455,24 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     //      D) Taming
     // ====================================
 
+    @Override
+    public InteractionResult tameLogic(Player tamer, ItemStack stack) {
+        if (level.isClientSide) {
+            return InteractionResult.CONSUME;
+        }
+
+        if (! isJuvenile())
+            if (canAddPassenger(tamer)){
+                tamer.startRiding(this);
+            }
+            else if (stack.getItem() == Items.SADDLE) {
+                        //getInventory().insertItem(SADDLE_SLOT, stack.copy(), false); // TODO: use synced entity data
+                        stack.shrink(1);
+                return InteractionResult.SUCCESS;
+
+            }
+        return InteractionResult.PASS;
+    }
 
     // ====================================
     //      D.1) Taming: Inventory
@@ -456,23 +485,6 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     }
     */
 
-    public InteractionResult tameLogic(Player tamer, ItemStack stack) {
-        if (level.isClientSide) {
-            return InteractionResult.CONSUME;
-        }
-
-        if (!isJuvenile())
-            if (canAddPassenger(tamer)){
-                tamer.startRiding(this);
-            }
-            else if (stack.getItem() == Items.SADDLE) {
-                        //getInventory().insertItem(SADDLE_SLOT, stack.copy(), false); // TODO: use synced entity data
-                        stack.shrink(1);
-                return InteractionResult.SUCCESS;
-
-            }
-        return InteractionResult.PASS;
-    }
 /* TODO: use synced entity data
     @Override
     public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad) {
@@ -494,23 +506,6 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
         }
     }
 */
-
-    @Override
-    public Vec2 getTomeDepictionOffset() {
-        return switch (getVariant()) {
-            case "special" -> new Vec2(1,3);
-            default -> new Vec2(0,3);
-        };
-    }
-
-
-    @Override
-    public float getRestrictRadius() {
-        return WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonAttributesConfig.homeRadius.get() *
-                WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonAttributesConfig.homeRadius.get();
-    }
-
-
 
     @Override
     public boolean canEquipArmor() {
@@ -541,21 +536,61 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     // ====================================
 
     @Override
+    public InteractionResult breedLogic(Player breeder, ItemStack stack) {
+        if (level.isClientSide) {
+            return InteractionResult.CONSUME;
+        }
+
+        if (((this.isOnGround() && !this.isUnderWater()) && this.isAdult()) && isFood(stack)) {
+            setBreedingCooldown(getMaxBreedingCooldown());
+            setBreedingCount(getBreedingCount()+1);
+            return InteractionResult.SUCCESS;
+        }
+        return InteractionResult.PASS;
+    }
+
+    @Override
+    public int hatchTime() {
+        return WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonBreedingConfig.hatchTime.get();
+    }
+
+    @Override
+    public int getBreedingLimit() {
+        return WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonBreedingConfig.breedLimit.get();
+    }
+
+    @Override
+    public int getMaxBreedingCooldown() {
+        return WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonBreedingConfig.maxBreedingCooldown.get();
+    }
+
+    @Override
     public boolean isFood(ItemStack stack)
     {
         return stack.is(Tags.Items.CROPS_WHEAT);
     }
 
+    // ====================================
+    //      E) Client
+    // ====================================
     @Override
-    public int getMaxBreedingCooldown() {
-        return WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonBreedingConfig.maxBreedingCooldown.get();
+    public void doSpecialEffects() {
+        if (isAlbino() && tickCount % 25 == 0) {
+            double x = getX() + (WRMathsUtility.nextDouble(getRandom()) * 0.7d);
+            double y = getY() + (getRandom().nextDouble() * 0.5d);
+            double z = getZ() + (WRMathsUtility.nextDouble(getRandom()) * 0.7d);
+            level.addParticle(ParticleTypes.END_ROD, x, y, z, 0, 0.05f, 0);
+        }
+    }
+
+    @Override
+    public Vec2 getTomeDepictionOffset() {
+        return isAlbino()? new Vec2(1,3) : new Vec2(0,3);
     }
 
     // ====================================
     //      E.1) Client: Sounds
     // ====================================
-
-
 
     @Nullable
     @Override
@@ -592,7 +627,6 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     //      E.2) Client: Camera
     // ====================================
 
-
     @Override
     public float getMountCameraYOffset() {
         return -3.5f;
@@ -605,52 +639,31 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     protected void registerGoals() {
         super.registerGoals();
 
-        goalSelector.addGoal(0, new WRSleepGoal(this));
         goalSelector.addGoal(1, new OWDBuckGoal(this));
         goalSelector.addGoal(2, new OWDRoarGoal(this));
-        goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.2D, false));
-        goalSelector.addGoal(4, new WRMoveToHomeGoal(this));
-        goalSelector.addGoal(5, new ControlledAttackGoal(this, 1.425, true /*AnimationPacket.send(this, HORN_ATTACK_ANIMATION)*/));
-        goalSelector.addGoal(6, new WRFollowOwnerGoal(this));
-        //goalSelector.addGoal(7, new DragonBreedGoal(this));
-        goalSelector.addGoal(8, new OWDGrazeGoal(this));
-        goalSelector.addGoal(9, new WaterAvoidingRandomStrollGoal(this, 1));
-        goalSelector.addGoal(10, new LookAtPlayerGoal(this, LivingEntity.class, 10f));
-        goalSelector.addGoal(11, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.1d, true));
+        goalSelector.addGoal(4, new ControlledAttackGoal(this, 1.425, true /*AnimationPacket.send(this, HORN_ATTACK_ANIMATION)*/));
+        goalSelector.addGoal(5, new WRDragonBreedGoal<>(this));
+        goalSelector.addGoal(6, new WRMoveToHomeGoal(this));
+        goalSelector.addGoal(7, new WRFollowOwnerGoal(this));
+        goalSelector.addGoal(8, new WRSitGoal(this));
+        goalSelector.addGoal(9, new WRSleepGoal(this, true));
+        goalSelector.addGoal(10, new OWDGrazeGoal(this));
+        goalSelector.addGoal(11, new WRIdleGoal(this));
+        goalSelector.addGoal(12, new WRRandomWalkingGoal(this, 1));
+        goalSelector.addGoal(13, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
+        goalSelector.addGoal(14, new RandomLookAroundGoal(this));
 
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
-        targetSelector.addGoal(3, new WRDefendHomeGoal(this));
-        targetSelector.addGoal(4, new HurtByTargetGoal(this));
+        targetSelector.addGoal(3, new HurtByTargetGoal(this, new Class[0]) {
+            @Override
+            protected double getFollowDistance() {
+                return (double) getRestrictRadius();
+            }
+        }.setAlertOthers(new Class[0])); // Like wolves, alert friends if hurt
+        targetSelector.addGoal(4, new WRDefendHomeGoal(this));
         targetSelector.addGoal(5, new NonTameRandomTargetGoal<>(this, Player.class, true, EntitySelector.ENTITY_STILL_ALIVE::test));
-    }
-
-    @Override
-    public InteractionResult breedLogic(Player breeder, ItemStack stack) {
-        if (level.isClientSide) {
-            return InteractionResult.CONSUME;
-        }
-
-        if (((this.isOnGround() && !this.isUnderWater()) && this.isAdult()) && isFood(stack)) {
-            eat(this.level, stack);
-            setBreedingCooldown(6000);
-            setBreedingCount(getBreedingCount()+1);
-            setInLove(breeder);
-            return InteractionResult.SUCCESS;
-        }
-        return InteractionResult.PASS;
-
-    }
-
-    @Override
-    public int hatchTime() {
-        //Multiply by 20 to convert seconds to ticks
-        return WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonBreedingConfig.hatchTime.get()*20;
-    }
-
-    @Override
-    public int getBreedingLimit() {
-        return WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonBreedingConfig.breedLimit.get();
     }
 
     // ====================================
@@ -673,8 +686,6 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
             if (!level.getBlockState(grazeBlockPosition).is(Blocks.GRASS_BLOCK)){
                 return false;
             }
-            //ToDo: Once we implement config, we should check for WRCanGrief...
-
             //Only graze if no target, not sitting and not sleeping
             //Graze chance is higher when baby and when health is lower than max health
             return (!level.isClientSide && getTarget() == null
@@ -688,6 +699,8 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
             entity.clearAI();
             entity.setXRot(0);
             entity.getNavigation().stop();
+            // Play the idle anim once
+            super.start("graze", 2, 50);
         }
 
         @Override
@@ -696,13 +709,13 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
                 ((WRGroundLookControl) lookControl).stopLooking();
             }
             if (elapsedTime == 40) {
-                // Eat the block underneath
-                level.levelEvent(2001, grazeBlockPosition, Block.getId(Blocks.GRASS_BLOCK.defaultBlockState()));
-                level.setBlock(grazeBlockPosition, Blocks.DIRT.defaultBlockState(), 2);
+                if (WRServerConfig.SERVER.GRIEFING.dragonGriefing.get()) {
+                    // Eat the block underneath
+                    level.levelEvent(2001, grazeBlockPosition, Block.getId(Blocks.GRASS_BLOCK.defaultBlockState()));
+                    level.setBlock(grazeBlockPosition, Blocks.DIRT.defaultBlockState(), 2);
+                }
                 eatGrass();
             }
-            // Play the idle anim once
-            super.start("graze", 2, 50);
             super.tick();
         }
 
@@ -722,7 +735,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     }
 
     // ====================================
-    //      F.n) Goals: OWDRoarGoal
+    //      F.2) Goals: OWDRoarGoal
     // ====================================
 
     class OWDRoarGoal extends AnimatedGoal{
@@ -768,7 +781,6 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
                 return false;
             return super.canContinueToUse();
         }
-
 
         // This method is taken from the old code
         private void applyWeakness() {

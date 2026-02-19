@@ -315,7 +315,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         return getEyesTexture();
     }
 
-    public boolean isAlbino(){
+    public boolean isAlbino() {
         Integer variant = Integer.getInteger(getVariant());
         return variant != null && variant >= 40;
     }
@@ -355,7 +355,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     @Override
     public void tick() {
         setScavengingCooldown(Math.max(getScavengingCooldown()-1,0));
-        ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true); // TODO: Does this actually let it work??
+        ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true); // TODO: This doesn't work??
         super.tick();
     }
 
