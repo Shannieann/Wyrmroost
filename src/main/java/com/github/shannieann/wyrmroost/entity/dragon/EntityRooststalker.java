@@ -73,7 +73,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
 
     public static final EntityDataAccessor<Integer> SCAVENGING_COOLDOWN = SynchedEntityData.defineId(EntityRooststalker.class, EntityDataSerializers.INT);
 
-    private static final float MOVEMENT_SPEED = 0.285f;
+    private static final float RUN_SPEED = 0.285f;
 
     private static final ResourceLocation EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes.png");
     private static final ResourceLocation EYES_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_sp.png");
@@ -203,7 +203,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return (Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonAttributesConfig.maxHealth.get())
-                .add(Attributes.MOVEMENT_SPEED, EntityRooststalker.MOVEMENT_SPEED)
+                .add(Attributes.MOVEMENT_SPEED, EntityRooststalker.RUN_SPEED)
                 .add(Attributes.ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonAttributesConfig.maxHealth.get()));
     }
 
@@ -373,7 +373,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
 
     @Override
     public float getMovementSpeed() {
-        return MOVEMENT_SPEED;
+        return RUN_SPEED;
     }
     @Override
     public float getFlyingSpeed() { // Can't fly

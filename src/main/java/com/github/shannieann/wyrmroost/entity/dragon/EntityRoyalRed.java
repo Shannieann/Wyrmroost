@@ -53,7 +53,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITameable {
 
-    private static final float MOVEMENT_SPEED = 0.22f;
+    private static final float RUN_SPEED = 0.22f;
     private static final float FLYING_SPEED = 0.13f; // I'm assuming it's a good amount less than alpine?
 
     public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
@@ -158,7 +158,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.maxHealth.get())
-                .add(Attributes.MOVEMENT_SPEED, EntityRoyalRed.MOVEMENT_SPEED)
+                .add(MOVEMENT_SPEED, EntityRoyalRed.RUN_SPEED)
                 .add(Attributes.FLYING_SPEED, EntityRoyalRed.FLYING_SPEED)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.attackDamage.get())
@@ -434,7 +434,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
 
     @Override
     public float getMovementSpeed() {
-        return MOVEMENT_SPEED;
+        return RUN_SPEED;
     }
     @Override
     public float getFlyingSpeed() {

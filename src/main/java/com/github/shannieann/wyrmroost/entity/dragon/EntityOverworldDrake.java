@@ -4,6 +4,7 @@ import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
+import com.github.shannieann.wyrmroost.containers.RideableDragonInventoryContainer;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundMoveControl;
@@ -19,10 +20,14 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.ContainerListener;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -31,7 +36,13 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.HorseInventoryMenu;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -60,7 +71,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
     WRReturnToLandGoal (should not be specific to OWDs) which makes land creatures find their way back to land...
 */
 
-public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, ITameable {
+public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, ITameable, PlayerRideableJumping, ContainerListener {
     /*
     private static final EntitySerializer<EntityOverworldDrake> SERIALIZER = WRDragonEntity.SERIALIZER.concat(b -> b
             .track(EntitySerializer.STRING, "Gender", WRDragonEntity::getGender, WRDragonEntity::setGender));
@@ -70,7 +81,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     public static final int ARMOR_SLOT = 1;
     public static final int CHEST_SLOT = 2;
 
-    private static final float RUN_SPEED = 0.2125f;
+    private static final float RUN_SPEED = 0.22f;
 
     // Taming process only
     private int boardingCooldown = 0;
@@ -83,11 +94,19 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     // TODO this is clientside I believe, as all movement is. So we could pretty easily do a momentum bar at the bottom of the screen.
     public float momentum = 0.0f;
 
+    /** Donkey-like inventory: slot 0 = saddle, 1 = armor, 2–16 = chest (when chested). */
+    private SimpleContainer overworldDrakeInventory;
+    /** Donkey-like jump: power from client (0–1), applied in travel() when on ground. */
+    protected float playerJumpPendingScale = 0.0F;
+    public static final int INV_CHEST_SLOTS = 15;
+    public static final int INV_BASE_SIZE = 2;
+
     public EntityOverworldDrake(EntityType<? extends EntityOverworldDrake> drake, Level level) {
         super(drake, level);
         // Cannot use any other navigation or move control
         this.setNavigator(NavigationType.GROUND);
         this.moveControl = new WRGroundMoveControl(this, 10.0f); // 10.0f is the default groundMaxYaw
+        createDrakeInventory();
     }
 
     // ====================================
@@ -219,7 +238,10 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
                 .add(KNOCKBACK_RESISTANCE, 0.75)
                 .add(FOLLOW_RANGE, 20)
                 .add(ATTACK_KNOCKBACK, 2.85)
-                .add(ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonAttributesConfig.attackDamage.get());
+                .add(ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonAttributesConfig.attackDamage.get())
+                // Unlike horses, all OWD have the same jump strength.
+                // This should let them clear 2.5-block high jumps.
+                .add(Attributes.JUMP_STRENGTH, 0.7);
     }
 
     @Override
@@ -235,6 +257,60 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     }
     public int getBoardingCooldown() {
         return this.boardingCooldown;
+    }
+
+    @Override
+    public void addAdditionalSaveData(CompoundTag nbt) {
+        super.addAdditionalSaveData(nbt);
+        if (overworldDrakeInventory != null) {
+            if (!overworldDrakeInventory.getItem(SADDLE_SLOT).isEmpty()) {
+                nbt.put("SaddleItem", overworldDrakeInventory.getItem(SADDLE_SLOT).save(new CompoundTag()));
+            }
+            if (!overworldDrakeInventory.getItem(ARMOR_SLOT).isEmpty()) {
+                nbt.put("ArmorItem", overworldDrakeInventory.getItem(ARMOR_SLOT).save(new CompoundTag()));
+            }
+            if (isChested()) {
+                ListTag items = new ListTag();
+                for (int i = INV_BASE_SIZE; i < overworldDrakeInventory.getContainerSize(); i++) {
+                    ItemStack stack = overworldDrakeInventory.getItem(i);
+                    if (!stack.isEmpty()) {
+                        CompoundTag tag = new CompoundTag();
+                        tag.putByte("Slot", (byte) i);
+                        stack.save(tag);
+                        items.add(tag);
+                    }
+                }
+                nbt.put("ChestItems", items);
+            }
+        }
+    }
+
+    @Override
+    public void readAdditionalSaveData(CompoundTag nbt) {
+        super.readAdditionalSaveData(nbt);
+        createDrakeInventory();
+        if (overworldDrakeInventory != null) {
+            if (nbt.contains("SaddleItem", 10)) {
+                ItemStack saddle = ItemStack.of(nbt.getCompound("SaddleItem"));
+                if (saddle.is(Items.SADDLE)) {
+                    overworldDrakeInventory.setItem(SADDLE_SLOT, saddle);
+                }
+            }
+            if (nbt.contains("ArmorItem", 10)) {
+                overworldDrakeInventory.setItem(ARMOR_SLOT, ItemStack.of(nbt.getCompound("ArmorItem")));
+            }
+            if (isChested() && nbt.contains("ChestItems", 9)) {
+                ListTag items = nbt.getList("ChestItems", 10);
+                for (int i = 0; i < items.size(); i++) {
+                    CompoundTag tag = items.getCompound(i);
+                    int slot = tag.getByte("Slot") & 255;
+                    if (slot >= INV_BASE_SIZE && slot < overworldDrakeInventory.getContainerSize()) {
+                        overworldDrakeInventory.setItem(slot, ItemStack.of(tag));
+                    }
+                }
+            }
+            updateDrakeContainerEquipment();
+        }
     }
 
     // ====================================
@@ -366,6 +442,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
             float speed = lerpSpeed(getTravelSpeed()) * 0.8f; // Trying out a lower riding speed for OWDs (to try to give horses some spotlight too)
             // Handle momentum
 
+            // An unintended side effect of the "momentum" system is that when jumping while sprinting, they kind of lunge, which is pretty cool
             //System.out.println(momentum);
             if (riderIsSprinting){
                 if (momentum <= 0.12f) {
@@ -378,8 +455,22 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
             if (forwardMotion < 0.0F) { // Huh? Ig I'll keep it here because it works
                 forwardMotion *= 0.25F; // Ohhh its like if you're going backward you're slower I guess.
             }
+
+            // Donkey-like jump (PlayerRideableJumping): apply pending jump when on ground
+            if (this.playerJumpPendingScale > 0.0F && this.onGround) {
+                double jumpStrength = this.getAttributeValue(Attributes.JUMP_STRENGTH) * (double) this.playerJumpPendingScale * (double) this.getBlockJumpFactor();
+                Vec3 motion = this.getDeltaMovement();
+                this.setDeltaMovement(motion.x, jumpStrength, motion.z);
+                this.hasImpulse = true;
+                this.playerJumpPendingScale = 0.0F;
+            }
+
             if (this.isControlledByLocalInstance()){
                 handleGroundRiding(speed, sideMotion, forwardMotion, vec3d, rider);
+            }
+
+            if (this.onGround) {
+                this.playerJumpPendingScale = 0.0F;
             }
         } else {
             // Not being ridden: apply AI movement. Without this, OWD never moves on its own.
@@ -476,18 +567,136 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     @Override
     protected boolean canAddPassenger(Entity entity)
     {
-        if (! isJuvenile()) {
-            return false;
-        }
-        if (isOwnedBy((LivingEntity) entity)) {
-            return isSaddled();
-        }
-        return ! isTame() && getBoardingCooldown() == 0;
+        return isJuvenile() && (isOwnedBy((LivingEntity) entity) || (! isTame() && getBoardingCooldown() == 0));
     }
 
     @Override
     public boolean canBeControlledByRider() {
         return super.canBeControlledByRider() && isSaddled();
+    }
+
+    // ====================================
+    //      PlayerRideableJumping (horse-like jump bar)
+    // ====================================
+
+    @Override
+    public void onPlayerJump(int jumpPower) {
+        if (isSaddled()) {
+            if (jumpPower < 0) {
+                jumpPower = 0;
+            }
+            if (jumpPower >= 90) {
+                this.playerJumpPendingScale = 1.0F;
+            } else {
+                this.playerJumpPendingScale = 0.4F + 0.4F * (float) jumpPower / 90.0F;
+            }
+        }
+    }
+
+    @Override
+    public boolean canJump() {
+        return isSaddled();
+    }
+
+    @Override
+    public void handleStartJump(int jumpPower) {
+        this.playSound(SoundEvents.HORSE_JUMP, 0.4F, 1.0F);
+    }
+
+    @Override
+    public void handleStopJump() {
+    }
+
+    @Override
+    public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player) {
+        return new RideableDragonInventoryContainer(id, playerInv, this);
+    }
+
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand hand) {
+        InteractionResult result = super.mobInteract(player, hand);
+        if (result == InteractionResult.SUCCESS && isSaddled() && getOverworldDrakeInventory().getItem(SADDLE_SLOT).isEmpty()) {
+            getOverworldDrakeInventory().setItem(SADDLE_SLOT, new ItemStack(Items.SADDLE));
+        }
+        return result;
+    }
+
+    /**
+     * Size: 2 (saddle + armor) or 2 + 15 when chested, like AbstractChestedHorse.
+     */
+    protected int getDrakeInventorySize() {
+        return isChested() ? INV_BASE_SIZE + INV_CHEST_SLOTS : INV_BASE_SIZE;
+    }
+
+    private void createDrakeInventory() {
+        int newSize = getDrakeInventorySize();
+        SimpleContainer old = this.overworldDrakeInventory;
+        this.overworldDrakeInventory = new SimpleContainer(newSize);
+        if (old != null) {
+            old.removeListener(this);
+            int copy = Math.min(old.getContainerSize(), this.overworldDrakeInventory.getContainerSize());
+            for (int i = 0; i < copy; i++) {
+                ItemStack stack = old.getItem(i);
+                if (!stack.isEmpty()) {
+                    this.overworldDrakeInventory.setItem(i, stack.copy());
+                }
+            }
+        }
+        this.overworldDrakeInventory.addListener(this);
+        updateDrakeContainerEquipment();
+    }
+
+    private void updateDrakeContainerEquipment() {
+        if (!level.isClientSide) {
+            boolean hasSaddle = !overworldDrakeInventory.getItem(SADDLE_SLOT).isEmpty();
+            ItemStack armor = overworldDrakeInventory.getItem(ARMOR_SLOT);
+            setSaddled(hasSaddle);
+            setArmor(armor);
+        }
+    }
+
+    @Override
+    public void containerChanged(Container container) {
+        if (container == overworldDrakeInventory) {
+            boolean wasSaddled = isSaddled();
+            updateDrakeContainerEquipment();
+            if (tickCount > 20 && !wasSaddled && isSaddled()) {
+                playSound(SoundEvents.HORSE_SADDLE, 0.5F, 1.0F);
+            }
+        }
+    }
+
+    public SimpleContainer getOverworldDrakeInventory() {
+        return overworldDrakeInventory;
+    }
+
+    /**
+     * Ensures the drake inventory has the correct size for the given chested state.
+     * Called from the container when opening on the client: entity sync can set
+     * CHESTED
+     * without calling setChested(), so the client may have CHESTED=true but still
+     * a 2-slot inventory. We force entity data and createDrakeInventory() so the
+     * size matches.
+     */
+    public void ensureInventorySizeForMenu(boolean chested) {
+        int current = getOverworldDrakeInventory().getContainerSize();
+        int expected = chested ? INV_BASE_SIZE + INV_CHEST_SLOTS : INV_BASE_SIZE;
+        if (current != expected) {
+            super.setChested(chested);
+            createDrakeInventory();
+        }
+    }
+
+    /** Donkey-like: 5 columns for chest slots. */
+    public int getInventoryColumns() {
+        return 5;
+    }
+
+    /** Call when chest is added/removed to resize inventory. */
+    @Override
+    public void setChested(boolean chested) {
+        super.setChested(chested);
+        createDrakeInventory();
     }
 
     @Override
@@ -518,18 +727,11 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
             return InteractionResult.CONSUME;
         }
 
-        // Juvenile: can attempt to ride (taming by riding) or be saddled. Adult: can be saddled only.
-        if (isJuvenile()) {
-            if (canAddPassenger(tamer)) {
-                tamer.startRiding(this);
-                return InteractionResult.SUCCESS;
-            }
-        } else {
-            if (canAddPassenger(tamer)) {
-                tamer.startRiding(this);
-                return InteractionResult.SUCCESS;
-            }
+        if (isJuvenile() && canAddPassenger(tamer)) {
+            tamer.startRiding(this);
+            return InteractionResult.SUCCESS;
         }
+
         return InteractionResult.PASS;
     }
 
@@ -582,14 +784,39 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
     }
 
     @Override
-    public void dropStorage()
-    {
-        /* TODO: use synced entity data
-        DragonInventory inv = getInventory();
-        for (int i = CHEST_SLOT + 1; i < inv.getSlots(); i++)
-            spawnAtLocation(inv.extractItem(i, 65, false), getBbHeight() / 2f);
-        */
+    public void dropStorage() {
+        if (overworldDrakeInventory != null && isChested()) {
+            for (int i = INV_BASE_SIZE; i < overworldDrakeInventory.getContainerSize(); i++) {
+                ItemStack stack = overworldDrakeInventory.getItem(i);
+                if (!stack.isEmpty()) {
+                    spawnAtLocation(stack, getBbHeight() / 2f);
+                    overworldDrakeInventory.setItem(i, ItemStack.EMPTY);
+                }
+            }
+        }
     }
+
+    @Override
+    protected void dropEquipment() {
+        if (overworldDrakeInventory != null && !level.isClientSide) {
+            boolean wasChested = isChested();
+            for (int i = 0; i < overworldDrakeInventory.getContainerSize(); i++) {
+                ItemStack stack = overworldDrakeInventory.getItem(i);
+                if (!stack.isEmpty()) {
+                    spawnAtLocation(stack);
+                }
+            }
+            if (wasChested) {
+                spawnAtLocation(Blocks.CHEST);
+            }
+            setSaddled(false);
+            setChested(false);
+            setArmor(ItemStack.EMPTY);
+            createDrakeInventory();
+        }
+        super.dropEquipment();
+    }
+
     // ====================================
     //      D.2) Taming: Breeding and Food
     // ====================================
@@ -711,7 +938,7 @@ public class EntityOverworldDrake extends WRDragonEntity implements IBreedable, 
         goalSelector.addGoal(9, new WRSleepGoal(this, false));
         goalSelector.addGoal(10, new OWDGrazeGoal(this));
         goalSelector.addGoal(11, new WRIdleGoal(this));
-        goalSelector.addGoal(12, new WRRandomWalkingGoal(this, 1, 0.005F));
+        goalSelector.addGoal(12, new WRRandomWalkingGoal(this, 1, 0.01F));
         goalSelector.addGoal(13, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
         goalSelector.addGoal(14, new RandomLookAroundGoal(this));
 

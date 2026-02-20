@@ -47,7 +47,7 @@ public class EntityCoinDragon extends WRDragonEntity
 {
 
     private static final float FLYING_SPEED = 0.02f;
-    private static final float MOVEMENT_SPEED = 0.1f;
+    private static final float RUN_SPEED = 0.1f;
     private static final float MAX_HEALTH = 4.0f;
 
     private static final String[] VARIANTS = {"blue", "yellow", "black", "green", "pink", "red"};
@@ -158,7 +158,7 @@ public class EntityCoinDragon extends WRDragonEntity
     {
         return Mob.createMobAttributes()
                 .add(Attributes.FLYING_SPEED, EntityCoinDragon.FLYING_SPEED)
-                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
+                .add(Attributes.MOVEMENT_SPEED, EntityCoinDragon.RUN_SPEED)
                 .add(Attributes.MAX_HEALTH, MAX_HEALTH);
     }
 

@@ -622,7 +622,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             setAgeProgress(1f);
         }
 
-        System.out.println("FINALIZED SPAWN: "+getVariant()+" "+getGender());
         return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
     }
 
@@ -1424,13 +1423,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
         }
         super.tick();
-    }
-
-
-    @Override
-    public void aiStep() {
-        super.aiStep();
-        // Handle walk/sprint speeds being different
     }
 
     /**
@@ -2403,6 +2395,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return InteractionResult.PASS;
         }
 
+        // OWD ride for taming is handled here
         if (this instanceof ITameable && !isTame()) {
             return ((ITameable)this).tameLogic(player,stack); // overrides need to call attemptTame
         }
@@ -2463,8 +2456,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return InteractionResult.SUCCESS;
         }
 
-        if (isOwnedBy(player) && this.speciesCanBeRidden() && this.canAddPassenger(player)
-            || (this instanceof EntityOverworldDrake && !isTame() && isAdult() &&this.canAddPassenger(player))) // OWD taming process
+        if (isOwnedBy(player) && this.speciesCanBeRidden() && this.canAddPassenger(player))
         {
           player.startRiding(this);
           travelX0 = this.position().x;
@@ -2472,6 +2464,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
           travelZ0 = this.position().z;
         }
 
+        // Dragon rides player
         if (stack.isEmpty() && isOwnedBy(player) && canDragonRidePlayer()) {
             this.startRidingPlayer(player);
             return InteractionResult.SUCCESS;

@@ -79,7 +79,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     private static final Predicate<LivingEntity> THREATEN_PREDICATE = e -> e instanceof Player; // && ! ((Player)e).getAbilities().instabuild; Creative players should be allowed to begin taming process
     private static final TargetingConditions THREATEN_CONDITIONS = TargetingConditions.forCombat().selector(THREATEN_PREDICATE);
 
-    private static final float MOVEMENT_SPEED = 0.21f;
+    private static final float RUN_SPEED = 0.21f;
     private static final float FLYING_SPEED = 0.14f;
 
     // This timer is used to check two different complicated things only once per second, which helps prevent lag
@@ -145,8 +145,8 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return (Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.dragonAttributesConfig.maxHealth.get())
-                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
-                .add(Attributes.FLYING_SPEED, FLYING_SPEED)
+                .add(MOVEMENT_SPEED, EntityCanariWyvern.RUN_SPEED)
+                .add(Attributes.FLYING_SPEED, EntityCanariWyvern.FLYING_SPEED)
                 .add(Attributes.ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.CANARI_WYVERN.dragonAttributesConfig.attackDamage.get()));
     }
 
@@ -480,7 +480,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
 
     @Override
     public float getMovementSpeed() {
-        return MOVEMENT_SPEED;
+        return RUN_SPEED;
     }
     @Override
     public float getFlyingSpeed() {

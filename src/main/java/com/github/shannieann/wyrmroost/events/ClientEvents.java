@@ -1,6 +1,10 @@
 package com.github.shannieann.wyrmroost.events;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
+import com.github.shannieann.wyrmroost.client.screen.RideableDragonInventoryScreen;
+import com.github.shannieann.wyrmroost.entity.dragon.EntityOverworldDrake;
+import com.github.shannieann.wyrmroost.network.DrakeJumpPacket;
+import com.github.shannieann.wyrmroost.network.OpenRideableDragonInventoryPacket;
 import com.github.shannieann.wyrmroost.network.PacketKey;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
 import com.github.shannieann.wyrmroost.client.render.entity.dragon.*;
@@ -26,25 +30,24 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.client.renderer.entity.ThrownItemRenderer;
-import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import org.lwjgl.glfw.GLFW;
 import net.minecraft.world.item.DyeableLeatherItem;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.event.*;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.lwjgl.glfw.GLFW;
 
 import java.util.*;
 
@@ -264,12 +267,39 @@ public class ClientEvents {
 
     public static void onKeyInput(TickEvent.ClientTickEvent event) {
         Minecraft game = Minecraft.getInstance();
-        if (game.player != null) {
-                if (ClientEvents.KEY_TEST.isDown()) {
-                    Wyrmroost.NETWORK.sendToServer(new PacketKey());
+        if (game.player == null) return;
+        if (ClientEvents.KEY_TEST.isDown()) {
+            Wyrmroost.NETWORK.sendToServer(new PacketKey());
+        }
+        // Donkey-like: when riding tamed OWD, inventory key opens drake inventory instead of player inventory
+        Entity vehicle = game.player.getVehicle();
+        if (vehicle instanceof EntityOverworldDrake drake && drake.isTame() && game.options.keyInventory.consumeClick()) {
+            OpenRideableDragonInventoryPacket.send();
+        }
+        // Donkey-like jump when riding OWD (when screen is not open - screen has its own jump handling)
+        if (game.screen instanceof RideableDragonInventoryScreen) return;
+        if (vehicle instanceof EntityOverworldDrake drake && drake.canJump()) {
+            boolean jumpDown = game.options.keyJump.isDown();
+            if (jumpDown) {
+                if (!owdJumpKeyWasDown) owdJumpCharge = 0f;
+                owdJumpKeyWasDown = true;
+                owdJumpCharge = Math.min(owdJumpCharge + 0.05f, 1f);
+            } else {
+                if (owdJumpKeyWasDown && owdJumpCharge > 0f) {
+                    DrakeJumpPacket.send((int) (owdJumpCharge * 100f));
                 }
+                owdJumpKeyWasDown = false;
+                owdJumpCharge = 0f;
+            }
+        } else {
+            owdJumpKeyWasDown = false;
+            owdJumpCharge = 0f;
         }
     }
+
+    private static float owdJumpCharge;
+    private static boolean owdJumpKeyWasDown;
+
     public static void onRenderWorldLast(RenderLevelStageEvent event) {
 
         // Check if the current stage is AFTER_SOLID_BLOCKS

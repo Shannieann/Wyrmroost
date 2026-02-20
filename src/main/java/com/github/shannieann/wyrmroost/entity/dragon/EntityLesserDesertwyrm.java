@@ -55,7 +55,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class EntityLesserDesertwyrm extends WRDragonEntity {
 
-    private static final float MOVEMENT_SPEED = 0.4f;
+    private static final float RUN_SPEED = 0.4f; // Somehow this isn't very fast...
 
     public static final int BURROW_COOLDOWN_MAX = 200; // 10 seconds
 
@@ -178,7 +178,7 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
     {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, 4)
-                .add(Attributes.MOVEMENT_SPEED, EntityLesserDesertwyrm.MOVEMENT_SPEED)
+                .add(MOVEMENT_SPEED, EntityLesserDesertwyrm.RUN_SPEED)
                 .add(ATTACK_DAMAGE, 4);
     }
 
@@ -315,7 +315,7 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
 
     @Override
     public float getMovementSpeed() {
-        return MOVEMENT_SPEED;
+        return RUN_SPEED;
     }
     @Override
     public float getFlyingSpeed() { // Can't fly
