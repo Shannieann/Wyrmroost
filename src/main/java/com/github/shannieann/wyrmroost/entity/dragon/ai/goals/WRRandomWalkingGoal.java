@@ -24,6 +24,13 @@ public class WRRandomWalkingGoal extends RandomStrollGoal {
         this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
     }
 
+    public WRRandomWalkingGoal(WRDragonEntity pMob, double pSpeedModifier, float probability) {
+        super(pMob, pSpeedModifier);
+        this.probability = probability;
+        this.mob = pMob;
+        this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+    }
+
 
     @Override
     public boolean canUse()
@@ -37,8 +44,9 @@ public class WRRandomWalkingGoal extends RandomStrollGoal {
         if (this.mob.getTarget() != null)
             return false;
 
-        if (!this.mob.isUsingLandNavigator())
+        if (!this.mob.isUsingLandNavigator()) {
             return false;
+        }
 
         if (this.mob.getSleeping() || this.mob.getSitting() || this.mob.isRidingPlayer())
             return false;
@@ -46,19 +54,28 @@ public class WRRandomWalkingGoal extends RandomStrollGoal {
         Vec3 pos = this.getPosition();
         if (pos == null) {
             return false;
-        } else {
-            this.wantedX = pos.x;
-            this.wantedY = pos.y;
-            this.wantedZ = pos.z;
-            this.forceTrigger = false;
-            return true;
         }
+        this.wantedX = pos.x;
+        this.wantedY = pos.y;
+        this.wantedZ = pos.z;
+        this.forceTrigger = false;
+        return true;
+    }
+
+    /** LandRandomPos expects a linear block radius (e.g. 10–15).
+     * OWD (and others) store getRestrictRadius() as squared; use sqrt and cap so pathfinding can succeed.
+     */
+    private int getRandomWalkHorizontalRange() {
+        float r = this.mob.getRestrictRadius();
+        if (r <= 0) return 12;
+        int linear = (int) Math.sqrt(r);
+        return Math.min(24, Math.max(8, linear));
     }
 
     @Nullable
     protected Vec3 getPosition() {
-
-        Vec3 randomPos = LandRandomPos.getPos(this.mob, (int) this.mob.getRestrictRadius(), 7);
+        int range = getRandomWalkHorizontalRange();
+        Vec3 randomPos = LandRandomPos.getPos(this.mob, range, 7);
         int attemptCounter = 15;
         // Ensure randomPos is not null before checking restriction
         while (attemptCounter > 0 && randomPos != null 

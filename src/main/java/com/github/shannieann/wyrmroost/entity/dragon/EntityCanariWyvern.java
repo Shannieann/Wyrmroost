@@ -315,7 +315,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
                 // 10% chance per check (per second a player is nearby). Only check within 5 blocks, not entire 10-block restrict radius.
                 // They try to avoid players within 8 blocks, so if players are this close it's probably intentional.
                 // Peaceful/creative players can still trigger the threat/taming flow.
-                if (getRandom().nextDouble() < 0.1 && getThreatLookTargetPlayer(5) != null) {
+                if (getRandom().nextDouble() < 0.1 && getNearestNonOwnerPlayer(5) != null) {
                     setThreateningTimer(Integer.MAX_VALUE);
                 }
             }
@@ -345,7 +345,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
         else if (getThreateningTimer() > 0 && isOnGround() && this.checkJukeboxNearbyPlayersTimer >= CHECK_JUKEBOX_NEARBY_PLAYERS_INTERVAL) {
             // Check and turn to face player every so often
             this.checkJukeboxNearbyPlayersTimer = 0;
-            Player threatLookTarget = getThreatLookTargetPlayer(null);
+            Player threatLookTarget = getNearestNonOwnerPlayer(null);
             if (threatLookTarget != null) {
                 float angle = (float) Math.toDegrees(Math.atan2(threatLookTarget.getZ() - getZ(), threatLookTarget.getX() - getX()));
                 setYRot(angle);
@@ -354,34 +354,9 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
         }
     }
 
-    /**
-     * Finds the nearest player in range for threat display / taming flow only.
-     * Does not require canAttack (so peaceful and invulnerable/creative players still trigger threat and can tame).
-     * Excludes owner so tamed dragons don't threaten their owner.
-     */
-    @Nullable
-    private Player getThreatLookTargetPlayer(Integer modifyRestrictRadius) {
-        double radius = modifyRestrictRadius == null ? getRestrictRadius() : modifyRestrictRadius;
-        AABB aabb = new AABB(this.blockPosition()).inflate(radius);
-        List<Player> players = this.level.getEntitiesOfClass(Player.class, aabb);
-        Player nearest = null;
-        double nearestDistSq = Double.MAX_VALUE;
-        for (Player p : players) {
-            if (!p.isAlive() || isOwnedBy(p)) {
-                continue;
-            }
-            double distSq = this.distanceToSqr(p.getX(), p.getY(), p.getZ());
-            if (distSq < nearestDistSq) {
-                nearestDistSq = distSq;
-                nearest = p;
-            }
-        }
-        return nearest;
-    }
-
     private void attackAfterThreat() {
         // Only set target if not peaceful and target can be seen as enemy (not invisible/creative/spectator)
-        Player target = getThreatLookTargetPlayer(null);
+        Player target = getNearestNonOwnerPlayer(null);
 
         if (target != null
                 && this.level.getDifficulty() != Difficulty.PEACEFUL
@@ -430,6 +405,7 @@ public class EntityCanariWyvern extends WRDragonEntity implements IBreedable, IT
         return new Vec3(playerX + rotatedOffset.x, playerY + offY, playerZ + rotatedOffset.z);
     }
 
+    @Override
     public void aiStep() {
         super.aiStep();
         // Randomly shed feathers when tame

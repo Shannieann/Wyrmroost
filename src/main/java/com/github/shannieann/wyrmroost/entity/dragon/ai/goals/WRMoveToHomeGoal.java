@@ -68,7 +68,7 @@ public class WRMoveToHomeGoal extends Goal
         else if (dragon.getNavigation().isDone()) {
             BlockPos movePos = RandomPos.generateRandomPosTowardDirection(dragon, (int) (dragon.getRestrictRadius() / 10), new Random(), new BlockPos(home));
             if (movePos != null) {
-                dragon.getNavigation().moveTo(movePos.getX(), movePos.getY(), movePos.getY(), 1.1);
+                dragon.getNavigation().moveTo(movePos.getX(), movePos.getY(), movePos.getZ(), 1.1);
             }
 
         }

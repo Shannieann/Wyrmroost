@@ -127,7 +127,7 @@ public class EntityLesserDesertwyrm extends WRDragonEntity {
         }
 
         if (this.getDeltaMovement().length() > 0.05) { // lower threshold, it's slow
-            if (this.isAggressive()) {
+            if (this.isSprinting()) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
             } else {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));

@@ -180,7 +180,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         if (navigationType == NavigationType.GROUND && this.getDeltaMovement().length() > (this.getMovementSpeed()/3)) {
             if (getName().getString().toLowerCase().equals("sir")) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("sir", ILoopType.EDefaultLoopTypes.LOOP));
-            } else if (this.isAggressive() || this.getDeltaMovement().length() > (this.getMovementSpeed()/1.5)) {
+            } else if (this.isSprinting() || this.getDeltaMovement().length() > (this.getMovementSpeed()/1.5)) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
             } else {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));

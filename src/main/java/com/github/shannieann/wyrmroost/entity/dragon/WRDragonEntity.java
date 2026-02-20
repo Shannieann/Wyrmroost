@@ -404,7 +404,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
          // threshold of 3.05 is oddly specific but this prevents canaris from playing "walk" when standing still
         if (navigationType == NavigationType.GROUND && deltaMovement.length() > (this.getMovementSpeed() / 3.05)) {
-            if (this.isAggressive() || deltaMovement.length() > (this.getMovementSpeed() / 1.5)) {
+            if (this.isSprinting() || deltaMovement.length() > (this.getMovementSpeed() / 1.5)) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
             } else {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
@@ -414,7 +414,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         else if (navigationType == NavigationType.FLYING && deltaMovement.length() > (this.getFlyingSpeed() / 2)) {
             if (isDiving()) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("dive", ILoopType.EDefaultLoopTypes.LOOP));
-            } else if (this.isAggressive() || (deltaMovement.y >= 0 && deltaMovement.length() > 2*this.getFlyingSpeed())) {
+            } else if (this.isSprinting() || (deltaMovement.y >= 0 && deltaMovement.length() > 2*this.getFlyingSpeed())) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("fly_fast", ILoopType.EDefaultLoopTypes.LOOP));
             } else if (isGliding()) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("glide", ILoopType.EDefaultLoopTypes.LOOP));
@@ -424,7 +424,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return PlayState.CONTINUE;
         }
         else if (navigationType == NavigationType.SWIMMING && deltaMovement.length() > 0.1) {
-            if (this.isAggressive() || deltaMovement.length() > 0.15) {
+            if (this.isSprinting() || deltaMovement.length() > 0.15) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("swim_fast", ILoopType.EDefaultLoopTypes.LOOP));
             } else {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("swim", ILoopType.EDefaultLoopTypes.LOOP));
@@ -554,6 +554,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         nbt.putBoolean("Sleeping",getSleeping());
         nbt.putInt("SleepingCooldown",getSleepingCooldown());
 
+        nbt.putBoolean("Saddled", isSaddled());
+        nbt.putBoolean("Chested", isChested());
+
         nbt.putInt("EatingCooldown",getEatingCooldown());
         nbt.putInt("PosOnPlayer",getPosOnPlayer());
         nbt.putInt("BreedingCooldown",getBreedingCooldown());
@@ -577,6 +580,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         setSleeping(nbt.getBoolean("Sleeping"));
         setSleepingCooldown(nbt.getInt("SleepingCooldown"));
+
+        setSaddled(nbt.getBoolean("Saddled"));
+        setChested(nbt.getBoolean("Chested"));
 
         setEatingCooldown(nbt.getInt("EatingCooldown"));
         setPosOnPlayer(nbt.getInt("PosOnPlayer"));
@@ -615,6 +621,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if ((reason == MobSpawnType.COMMAND || reason == MobSpawnType.SPAWN_EGG)){
             setAgeProgress(1f);
         }
+
+        System.out.println("FINALIZED SPAWN: "+getVariant()+" "+getGender());
         return super.finalizeSpawn(level, difficulty, reason, data, dataTag);
     }
 
@@ -819,9 +827,23 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public boolean isSaddled() {
         return canEquipSaddle() && entityData.get(SADDLED);
     }
+
+    public void setSaddled(boolean saddled) {
+        if (hasEntityDataAccessor(SADDLED)) {
+            entityData.set(SADDLED, saddled);
+        }
+    }
+
     public boolean isChested() {
         return canEquipChest() && entityData.get(CHESTED);
     }
+
+    public void setChested(boolean chested) {
+        if (hasEntityDataAccessor(CHESTED)) {
+            entityData.set(CHESTED, chested);
+        }
+    }
+
     public boolean hasHeldItem() {
         return getHeldItem() != ItemStack.EMPTY;
     }
@@ -1404,10 +1426,37 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         super.tick();
     }
 
-    // Needs to be overridden by child classes!
-    public Vec3 getPosByDragonAndPlayer(Player owner) {
-        return owner.position();
+
+    @Override
+    public void aiStep() {
+        super.aiStep();
+        // Handle walk/sprint speeds being different
     }
+
+    /**
+     * Finds the nearest player in a certain range. Used for wild dragons that react to nearby players.
+     * Does not require canAttack (so peaceful and invulnerable/creative players still trigger this).
+     * Excludes owner so tamed dragons don't threaten their owner.
+     */
+        @Nullable
+        public Player getNearestNonOwnerPlayer(Integer optionalRadius) {
+            double radius = optionalRadius == null ? getRestrictRadius() : optionalRadius;
+            AABB aabb = new AABB(this.blockPosition()).inflate(radius);
+            List<Player> players = this.level.getEntitiesOfClass(Player.class, aabb);
+            Player nearest = null;
+            double nearestDistSq = Double.MAX_VALUE;
+            for (Player p : players) {
+                if (!p.isAlive() || this.isOwnedBy(p)) {
+                    continue;
+                }
+                double distSq = this.distanceToSqr(p.getX(), p.getY(), p.getZ());
+                if (distSq < nearestDistSq) {
+                    nearestDistSq = distSq;
+                    nearest = p;
+                }
+            }
+            return nearest;
+        }
 
     public void clearAI() {
         jumping = false;
@@ -1420,6 +1469,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
         setTarget(null);
         setSpeed(0);
+        setSprinting(false);
         setYya(0);
     }
 
@@ -1456,6 +1506,14 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
                 }
             }
         }
+    }
+
+    @Override
+    public void setTarget(@Nullable LivingEntity target)
+    {
+        super.setTarget(target);
+        boolean targetExists = getTarget() != null;
+        setSprinting(targetExists);
     }
 
     @Override
@@ -1755,7 +1813,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     protected void handleGroundRiding(float speed, float groundX, float groundZ, Vec3 vec3d, LivingEntity livingentity) {
-        // normal movement
         if (ClientEvents.getClient().options.keyJump.isDown() && getBlockStateOn().getMaterial().isSolid() && speciesCanFly()) {
             jumpFromGround(); // Jump when on the ground, for taking off.
         }
@@ -1996,6 +2053,11 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // just like when I try to use the vanilla riding system to make them ride players.
     public boolean isRidingPlayer() {
         return this.getPosOnPlayer() != 0;
+    }
+
+    // Needs to be overridden by child classes!
+    public Vec3 getPosByDragonAndPlayer(Player owner) {
+        return owner.position();
     }
 
     public void startRidingPlayer(Player player) {
@@ -2371,6 +2433,27 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
         }
 
+        // Saddle by right-clicking while holding saddle
+        if (isOwnedBy(player) && stack.getItem() == Items.SADDLE && canEquipSaddle()) {
+            if (!isSaddled()) {
+                setSaddled(true);
+                if (!player.getAbilities().instabuild) stack.shrink(1);
+                playSound(SoundEvents.HORSE_SADDLE, 1f, 1f);
+                return InteractionResult.SUCCESS;
+            }
+            return InteractionResult.PASS;
+        }
+
+        // Add chest by right-clicking while holding chest
+        if (isOwnedBy(player) && stack.getItem() == Items.CHEST && canEquipChest()) {
+            if (!isChested()) {
+                setChested(true);
+                if (!player.getAbilities().instabuild) stack.shrink(1);
+                playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1f, 1f);
+                return InteractionResult.SUCCESS;
+            }
+        }
+
         // if dragon not rideable, and dragon can equip held item, right click sets held item
         // at some point we're going to have a dragon that can hold things and be ridden and I'll have to change this
         if (isOwnedBy(player) && ! speciesCanBeRidden() && canEquipHeldItem() && (hasHeldItem() || ! stack.isEmpty())) {
@@ -2380,7 +2463,9 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             return InteractionResult.SUCCESS;
         }
 
-        if (isOwnedBy(player) && this.speciesCanBeRidden() && this.canAddPassenger(player)) {
+        if (isOwnedBy(player) && this.speciesCanBeRidden() && this.canAddPassenger(player)
+            || (this instanceof EntityOverworldDrake && !isTame() && isAdult() &&this.canAddPassenger(player))) // OWD taming process
+        {
           player.startRiding(this);
           travelX0 = this.position().x;
           travelY0 = this.position().y;
@@ -2390,11 +2475,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (stack.isEmpty() && isOwnedBy(player) && canDragonRidePlayer()) {
             this.startRidingPlayer(player);
             return InteractionResult.SUCCESS;
-        }
-
-        // Overworld Drake, start riding for taming process
-        if (!isTame() && isJuvenile() && canBeControlledByRider() && this.canAddPassenger(player)) {
-            player.startRiding(this);
         }
 
         return InteractionResult.PASS;
