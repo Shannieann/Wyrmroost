@@ -51,7 +51,7 @@ import java.util.Map;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITameable {
+public class EntityRoyalRed extends WRRideableDragonEntity implements IBreedable, ITameable {
 
     private static final float RUN_SPEED = 0.22f;
     private static final float FLYING_SPEED = 0.13f; // I'm assuming it's a good amount less than alpine?
@@ -96,7 +96,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     }
 */
 
-    public EntityRoyalRed(EntityType<? extends WRDragonEntity> type, Level worldIn) {
+    public EntityRoyalRed(EntityType<? extends WRRideableDragonEntity> type, Level worldIn) {
         super(type, worldIn);
         setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0);
         setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0);
@@ -187,11 +187,6 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     // ====================================
     //      A.2) Entity Data: INVENTORY
     // ====================================
-
-    @Override
-    public boolean canEquipSaddle() {
-        return true;
-    }
 
     @Override
     public boolean canEquipArmor() {

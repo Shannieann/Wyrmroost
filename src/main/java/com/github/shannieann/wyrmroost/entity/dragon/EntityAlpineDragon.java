@@ -42,7 +42,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBreedable {
+public class EntityAlpineDragon extends WRRideableDragonEntity implements ITameable, IBreedable {
 
     public static final int MAX_BREEDING_COOLDOWN = 12000; // 600 seconds, override
     private static final float RUN_SPEED = 0.22f;
@@ -52,7 +52,7 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
     // A. Entity Data + Attributes
     // =========================
 
-    public EntityAlpineDragon(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
+    public EntityAlpineDragon(EntityType<? extends WRRideableDragonEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.setNavigator(NavigationType.GROUND);
     }
@@ -123,11 +123,6 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
     // ====================================
     //      A.2) Entity Data: INVENTORY
     // ====================================
-
-    @Override
-    public boolean canEquipSaddle() {
-        return true;
-    }
 
     @Override
     public boolean canEquipArmor() {

@@ -127,10 +127,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public int WAKE_UP_ANIMATION_TIME;
     public int WAKE_UP_WATER_ANIMATION_TIME;
 
-    // Used in setting 1st person camera positions when flying but set in DragonRiderLayer & WRDragonRender
-    public Vector3f cameraRotVector = new Vector3f();
-    public Map<UUID, Vector3d> cameraBonePos = new HashMap<>();
-
     public enum NavigationType {
         GROUND,
         FLYING,
@@ -148,8 +144,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public final LerpedFloat sleepTimer = LerpedFloat.unit();
     public static final EntityDataAccessor<Float> AGE_PROGRESS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
-    public static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
-    public static final EntityDataAccessor<Boolean> CHESTED = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
     public static final EntityDataAccessor<Boolean> BREACHING = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> YAW_UNLOCK = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.BOOLEAN);
@@ -190,6 +184,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static int MAX_BREEDING_COOLDOWN; // must be overridden!
 
     protected float maxPitchAdjustment;
+
+    // Used in setting 1st person camera positions when flying but set in DragonRiderLayer & WRDragonRender
+    public Vector3f cameraRotVector = new Vector3f();
+    public Map<UUID, Vector3d> cameraBonePos = new HashMap<>();
 
     /**
      * ANIMATION_TYPE:
@@ -524,8 +522,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         entityData.define(POS_ON_PLAYER, 0);
 
         entityData.define(ARMOR, ItemStack.EMPTY);
-        entityData.define(SADDLED, false);
-        entityData.define(CHESTED, false);
 
         entityData.define(EATING_COOLDOWN, 0);
         entityData.define(SLEEPING_COOLDOWN, 0);
@@ -554,9 +550,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         nbt.putBoolean("Sleeping",getSleeping());
         nbt.putInt("SleepingCooldown",getSleepingCooldown());
 
-        nbt.putBoolean("Saddled", isSaddled());
-        nbt.putBoolean("Chested", isChested());
-
         nbt.putInt("EatingCooldown",getEatingCooldown());
         nbt.putInt("PosOnPlayer",getPosOnPlayer());
         nbt.putInt("BreedingCooldown",getBreedingCooldown());
@@ -580,9 +573,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
 
         setSleeping(nbt.getBoolean("Sleeping"));
         setSleepingCooldown(nbt.getInt("SleepingCooldown"));
-
-        setSaddled(nbt.getBoolean("Saddled"));
-        setChested(nbt.getBoolean("Chested"));
 
         setEatingCooldown(nbt.getInt("EatingCooldown"));
         setPosOnPlayer(nbt.getInt("PosOnPlayer"));
@@ -806,13 +796,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     // ====================================
 
     // All need to be overidden in subclasses
-    public boolean canEquipSaddle() {
-        return false;
-    }
     public boolean canEquipArmor() {
-        return false;
-    }
-    public boolean canEquipChest() {
         return false;
     }
     public boolean canEquipHeldItem() {
@@ -821,26 +805,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Nullable
     public Predicate<ItemStack> canEquipSpecialItem() {
         return null;
-    }
-
-    public boolean isSaddled() {
-        return canEquipSaddle() && entityData.get(SADDLED);
-    }
-
-    public void setSaddled(boolean saddled) {
-        if (hasEntityDataAccessor(SADDLED)) {
-            entityData.set(SADDLED, saddled);
-        }
-    }
-
-    public boolean isChested() {
-        return canEquipChest() && entityData.get(CHESTED);
-    }
-
-    public void setChested(boolean chested) {
-        if (hasEntityDataAccessor(CHESTED)) {
-            entityData.set(CHESTED, chested);
-        }
     }
 
     public boolean hasHeldItem() {
@@ -913,12 +877,6 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
 
         List<ItemStack> inv = new ArrayList<>();
-        if (isSaddled()) {
-            inv.add(new ItemStack(Items.SADDLE));
-        }
-        if (isChested()) {
-            inv.add(new ItemStack(Items.CHEST));
-        }
         if (hasHeldItem()) {
             inv.add(getHeldItem());
         }
@@ -931,6 +889,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
     }
 
+    // Empty but we need this for WRRideableDragonEntity to override
     public void dropStorage() {
     }
 
@@ -1670,61 +1629,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     //Handles travel methods for the DragonEntity. If needed, can be overriden in specific subclasses.
     @Override
     public void travel(Vec3 vec3d) {
-        // Check if the entity is a vehicle and can be controlled by the rider
-        if (this.isVehicle() && this.canBeControlledByRider()) {
-            // Return early if the entity is not alive
-            if (!this.isAlive()) return;
-
-            LivingEntity rider = (LivingEntity) this.getControllingPassenger();
-
-            // Store previous yaw value
-            this.yRotO = this.getYRot();
-
-            // While being ridden, entity's pitch = 0.5 of rider's pitch
-            this.setXRot(rider.getXRot() * 0.5F);
-
-            // While being ridden, entity's yaw = rider's yaw
-            this.setYRot(rider.getYRot());
-
-            // Client (rendering): Align body to entity direction
-            this.yBodyRot = this.getYRot();
-
-            // Client (rendering): Align head to body
-            this.yHeadRot = this.yBodyRot;
-
-            // This should allow for strafing
-            float sideMotion = rider.xxa * 0.5F;
-
-            // This allows for moving forward
-            float forwardMotion = rider.zza;
-
-            if (forwardMotion < 0.0F) { // Huh? Ig I'll keep it here because it works
-                forwardMotion *= 0.25F; // Ohhh it's like if you're going backward you're slower I guess.
-            }
-
-            // ToDo: What is this flying speed case?
-            this.flyingSpeed = this.getSpeed() * 0.1F;
-
-            // Handle movement based on navigator type
-            if (this.isControlledByLocalInstance()) {
-                float speed = getTravelSpeed();
-                if (isUsingFlyingNavigator()) {
-                    handleFreeFlyingRiding(speed, rider); // Free Flying (Diving, 180s, etc.)
-                    // else handleCombatFlyingMovement(speed, livingentity); // Combat flying (More controlled flight)
-                } else if (isUsingSwimmingNavigator()) {
-                    handleWaterRiding(5, sideMotion, 5, vec3d, rider);
-                } else {
-                    handleGroundRiding(speed, sideMotion, forwardMotion, vec3d, rider);
-                }
-            }
-
-            this.calculateEntityAnimation(this, isUsingFlyingNavigator());
-            this.tryCheckInsideBlocks();
-        } else {
-            // For non-vehicle entities, use default travel behavior
-            this.flyingSpeed = getTravelSpeed();
-            super.travel(vec3d);
-        }
+        // WRRideableDragonEntity handles vehicle dragons
+        // For non-vehicle entities, use default travel behavior
+        this.flyingSpeed = getTravelSpeed();
+        super.travel(vec3d);
     }
 
 
@@ -2324,14 +2232,8 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
      * @param container to add things to
      */
     public void applyTomeInfo(NewTarragonTomeContainer container){
-        if (canEquipSaddle()){
-            container.addSaddleSlot();
-        }
         if (canEquipArmor()){
             container.addArmorSlot();
-        }
-        if (canEquipChest()){
-            container.addChestSlot();
         }
         if (canEquipSpecialItem() != null){
             //container.addExtraSlot(canEquipSpecialItem()); // TODO: use synced entity data
@@ -2426,42 +2328,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
             }
         }
 
-        // Saddle by right-clicking while holding saddle
-        if (isOwnedBy(player) && stack.getItem() == Items.SADDLE && canEquipSaddle()) {
-            if (!isSaddled()) {
-                setSaddled(true);
-                if (!player.getAbilities().instabuild) stack.shrink(1);
-                playSound(SoundEvents.HORSE_SADDLE, 1f, 1f);
-                return InteractionResult.SUCCESS;
-            }
-            return InteractionResult.PASS;
-        }
-
-        // Add chest by right-clicking while holding chest
-        if (isOwnedBy(player) && stack.getItem() == Items.CHEST && canEquipChest()) {
-            if (!isChested()) {
-                setChested(true);
-                if (!player.getAbilities().instabuild) stack.shrink(1);
-                playSound(SoundEvents.ARMOR_EQUIP_GENERIC, 1f, 1f);
-                return InteractionResult.SUCCESS;
-            }
-        }
-
-        // if dragon not rideable, and dragon can equip held item, right click sets held item
-        // at some point we're going to have a dragon that can hold things and be ridden and I'll have to change this
-        if (isOwnedBy(player) && ! speciesCanBeRidden() && canEquipHeldItem() && (hasHeldItem() || ! stack.isEmpty())) {
+        // if dragon can equip held item, right click sets held item
+        if (isOwnedBy(player) && canEquipHeldItem() && (hasHeldItem() || ! stack.isEmpty())) {
             this.usePlayerItem(player, hand, stack);
             ItemStack stackOneItem = stack.split(1);
             swapHeldItem(stackOneItem);
             return InteractionResult.SUCCESS;
-        }
-
-        if (isOwnedBy(player) && this.speciesCanBeRidden() && this.canAddPassenger(player))
-        {
-          player.startRiding(this);
-          travelX0 = this.position().x;
-          travelY0 = this.position().y;
-          travelZ0 = this.position().z;
         }
 
         // Dragon rides player
