@@ -6,8 +6,6 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
 import com.github.shannieann.wyrmroost.containers.RideableDragonInventoryContainer;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
-import com.mojang.math.Vector3d;
-import com.mojang.math.Vector3f;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.core.BlockPos;
@@ -40,15 +38,13 @@ import software.bernie.geckolib3.core.builder.ILoopType;
 import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
 import software.bernie.geckolib3.core.manager.AnimationData;
-import java.util.*;
 
 // A lot of fields and methods in WRDragonEntity are specific to rideable dragons/dragons that can carry stuff in chests.
 // Moving riding-specific code here to keep WRDragonEntity and each dragon file cleaner/simpler. Kind of like AbstractHorse
 public abstract class WRRideableDragonEntity extends WRDragonEntity implements ContainerListener {
 
-    // Momentum is client-side like all movement. We could do a momentum bar at the bottom of the screen, but we already have a jump bar...
-    public float momentum = 0.0f;
-
+    /** Synced from server to client so both use the same value (avoids "moved wrongly"). Not saved to NBT. */
+    private static final EntityDataAccessor<Float> MOMENTUM = SynchedEntityData.defineId(WRRideableDragonEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<Boolean> SADDLED = SynchedEntityData.defineId(WRRideableDragonEntity.class, EntityDataSerializers.BOOLEAN);
     public static final EntityDataAccessor<Boolean> CHESTED = SynchedEntityData.defineId(WRRideableDragonEntity.class, EntityDataSerializers.BOOLEAN);
 
@@ -106,6 +102,7 @@ public abstract class WRRideableDragonEntity extends WRDragonEntity implements C
 
     @Override
     protected void defineSynchedData() {
+        entityData.define(MOMENTUM, 0f);
         entityData.define(SADDLED, false);
         entityData.define(CHESTED, false);
         super.defineSynchedData();
@@ -280,14 +277,15 @@ public abstract class WRRideableDragonEntity extends WRDragonEntity implements C
                 setYRot((float) (this.yRot + (rider.yRot - this.yRot) * alphaValue));
             }
 
-            // Gain momentum while moving, lose it all when stopped
-            if (deltaMovement.length() > 0.0f) {
-                if (momentum <= 0.12f) {
-                    momentum += 0.001f;
+            // Gain momentum while moving, lose it all when stopped.
+            if (!level.isClientSide) {
+                float mom = getMomentum();
+                if (deltaMovement.length() > 0.0f) {
+                    if (mom <= 0.12f) mom += 0.001f;
+                } else {
+                    mom = 0.0f;
                 }
-            } else {
-                //momentum -= 0.005f; this is from when we lose momentum while not sprinting
-                momentum = 0.0f;
+                setMomentum(mom);
             }
 
             if (forwardMotion < 0.0F) { // Huh? Ig I'll keep it here because it works
@@ -316,12 +314,20 @@ public abstract class WRRideableDragonEntity extends WRDragonEntity implements C
         }
     }
 
+    /** Current momentum (synced; server writes, client reads). */
+    protected final float getMomentum() {
+        return entityData.get(MOMENTUM);
+    }
+
+    /** Set momentum (server only; synced to client). */
+    protected final void setMomentum(float value) {
+        entityData.set(MOMENTUM, value);
+    }
+
     @Override
     public float getTravelSpeed()
     {
-        float speed = (float) getAttributeValue(MOVEMENT_SPEED);
-        //if (canBeControlledByRider()) speed += 0.15f;
-        return speed + momentum;
+        return (float) getAttributeValue(MOVEMENT_SPEED) + getMomentum();
     }
 
     // ====================================

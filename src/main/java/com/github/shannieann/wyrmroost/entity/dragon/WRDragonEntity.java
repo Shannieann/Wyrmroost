@@ -1713,7 +1713,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     }
 
     protected void handleGroundRiding(float speed, float groundX, float groundZ, Vec3 vec3d, LivingEntity livingentity) {
-        if (ClientEvents.getClient().options.keyJump.isDown() && getBlockStateOn().getMaterial().isSolid() && speciesCanFly()) {
+        if (level.isClientSide() && ClientEvents.getClient().options.keyJump.isDown() && getBlockStateOn().getMaterial().isSolid() && speciesCanFly()) {
             jumpFromGround(); // Jump when on the ground, for taking off.
         }
         if (dragonCanFly() && getAltitude() > getFlightThreshold() + 1) {
@@ -1721,10 +1721,12 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         }
         else {
             setSpeed(speed);
-            super.travel(new Vec3(groundX, vec3d.y, groundZ));
+            // Y=0 so we never re-apply vertical (jump is applied once in jumpFromGround()). Scale horizontal in air.
+            // If it looks like OWD flies too far with each jump, scale this down.
+            float scale = this.isOnGround() ? 1f : 0.33f;
+            super.travel(new Vec3(groundX * scale, 0, groundZ * scale));
         }
     }
-
 
     // Will be used for BFL, etc.
     protected void handleWaterRiding(float speed, float waterX, float waterZ, Vec3 vec3d,  LivingEntity livingentity){

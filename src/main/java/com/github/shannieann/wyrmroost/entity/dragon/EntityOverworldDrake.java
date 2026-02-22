@@ -4,14 +4,12 @@ import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
-import com.github.shannieann.wyrmroost.entity.dragon.WRRideableDragonEntity;
-import com.github.shannieann.wyrmroost.containers.RideableDragonInventoryContainer;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.aquatics.WRSwimToSurfaceGoal;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundLookControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.ground.WRGroundMoveControl;
 import com.github.shannieann.wyrmroost.registry.WRSounds;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
-import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -21,14 +19,10 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.SimpleContainer;
-import net.minecraft.world.ContainerListener;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -37,13 +31,7 @@ import net.minecraft.world.entity.ai.goal.target.HurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.HorseInventoryMenu;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
@@ -52,15 +40,12 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.Tags;
-import software.bernie.geckolib3.core.AnimationState;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
 import software.bernie.geckolib3.core.builder.AnimationBuilder;
 import software.bernie.geckolib3.core.builder.ILoopType;
-import software.bernie.geckolib3.core.controller.AnimationController;
 import software.bernie.geckolib3.core.event.SoundKeyframeEvent;
 import software.bernie.geckolib3.core.event.predicate.AnimationEvent;
-import software.bernie.geckolib3.core.manager.AnimationData;
 
 import javax.annotation.Nullable;
 
@@ -74,7 +59,7 @@ import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
 public class EntityOverworldDrake extends WRRideableDragonEntity implements IBreedable, ITameable, PlayerRideableJumping {
 
-    private static final float RUN_SPEED = 0.22f;
+    private static final float RUN_SPEED = 0.2125f;
 
     // Taming process only
     private int boardingCooldown = 0;
@@ -84,7 +69,7 @@ public class EntityOverworldDrake extends WRRideableDragonEntity implements IBre
     private static final int CHECK_NEARBY_PLAYERS_INTERVAL = 20;
     private int checkNearbyPlayersTimer;
 
-    /** Donkey-like jump: power from client (0–1), applied in travel() when on ground. */
+    /** Jump power 0–1 from client; applied in jumpFromGround(). */
     protected float playerJumpPendingScale = 0.0F;
 
     public EntityOverworldDrake(EntityType<? extends EntityOverworldDrake> drake, Level level) {
@@ -193,9 +178,8 @@ public class EntityOverworldDrake extends WRRideableDragonEntity implements IBre
                 .add(FOLLOW_RANGE, 20)
                 .add(ATTACK_KNOCKBACK, 2.85)
                 .add(ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.OVERWORLD_DRAKE.dragonAttributesConfig.attackDamage.get())
-                // Unlike horses, all OWD have the same jump strength.
-                // This should let them clear 2.5-block high jumps.
-                .add(Attributes.JUMP_STRENGTH, 0.7);
+                // All OWD have the jump strength of a below-average horse.
+                .add(Attributes.JUMP_STRENGTH, 0.55);
     }
 
     @Override
@@ -303,27 +287,27 @@ public class EntityOverworldDrake extends WRRideableDragonEntity implements IBre
     //      C) Navigation and Control
     // ====================================
 
+    @Override
+    public double getPassengersRidingOffset() {
+        return super.getPassengersRidingOffset() + (isJuvenile() ? 0.5 : 0);
+    }
+
     Float oldSpeed;
     boolean riderIsSprinting = false;
     // OWD has some special mechanics, can't just inherit from WRRideableDragonEntity
     @Override
     public void travel(Vec3 vec3d) {
-        if (isControlledByLocalInstance()) {
-            if (! this.isAlive()) {
-                return;
-            }
-
+        boolean riddenByControllingPassenger = this.isVehicle() && this.canBeControlledByRider() && this.getControllingPassenger() != null;
+        if (riddenByControllingPassenger) {
             LivingEntity rider = (LivingEntity) this.getControllingPassenger();
-            //Store previous yaw value
+            if (!this.isAlive() || rider == null) return;
+
+            // Align yrot with entity, head with body
             this.yRotO = this.getYRot();
-            //Client (rendering): Align body to entity direction
             this.yBodyRot = this.getYRot();
-            //Client (rendering): Align head to body
             this.yHeadRot = this.yBodyRot;
-            //Don't allow strafing
-            float sideMotion = 0F;
-            //This allows for moving forward
-            float forwardMotion = rider.zza;
+            float sideMotion = 0F; // Don't allow strafing
+            float forwardMotion = rider.zza; // Allows rider to move forward
 
             //If rider wants to turn sideways (yaw)...
             //Linear Interpolation system for changing the vehicle's yaw...
@@ -346,36 +330,25 @@ public class EntityOverworldDrake extends WRRideableDragonEntity implements IBre
 
             // An unintended side effect of the "momentum" system is that when jumping while sprinting, they kind of lunge, which is pretty cool
             //System.out.println(momentum);
-            if (riderIsSprinting){
-                if (momentum <= 0.12f) {
-                    momentum += 0.001f;
+            if (!level.isClientSide) {
+                float mom = getMomentum();
+                if (riderIsSprinting) {
+                    if (mom <= 0.12f) mom += 0.001f;
+                } else if (mom > 0.0f) {
+                    mom -= 0.005f;
                 }
-            } else if (momentum > 0.0f) {
-                momentum -= 0.005f;
+                setMomentum(mom);
             }
 
-            if (forwardMotion < 0.0F) { // Huh? Ig I'll keep it here because it works
-                forwardMotion *= 0.25F; // Ohhh its like if you're going backward you're slower I guess.
+            if (forwardMotion < 0.0F) {
+                forwardMotion *= 0.25F;
             }
 
-            // Donkey-like jump (PlayerRideableJumping): apply pending jump when on ground
             if (this.playerJumpPendingScale > 0.0F && this.onGround) {
-                double jumpStrength = this.getAttributeValue(Attributes.JUMP_STRENGTH) * (double) this.playerJumpPendingScale * (double) this.getBlockJumpFactor();
-                Vec3 motion = this.getDeltaMovement();
-                this.setDeltaMovement(motion.x, jumpStrength, motion.z);
-                this.hasImpulse = true;
-                this.playerJumpPendingScale = 0.0F;
+                jumpFromGround();
             }
-
-            if (this.isControlledByLocalInstance()){
-                handleGroundRiding(speed, sideMotion, forwardMotion, vec3d, rider);
-            }
-
-            if (this.onGround) {
-                this.playerJumpPendingScale = 0.0F;
-            }
+            handleGroundRiding(speed, sideMotion, forwardMotion, vec3d, rider);
         } else {
-            // Not being ridden: apply AI movement. Without this, OWD never moves on its own.
             super.travel(vec3d);
         }
     }
@@ -394,7 +367,7 @@ public class EntityOverworldDrake extends WRRideableDragonEntity implements IBre
                 this.shouldRoar = true;
             }
         }
-        if (! level.isClientSide && ! this.isTame() && this.isJuvenile() &&this.getControllingPassenger() instanceof Player player) {
+        if (! level.isClientSide && ! this.isTame() && this.isJuvenile() && this.getControllingPassenger() instanceof Player player) {
             double rand = getRandom().nextDouble();
             if (rand <= 0.004) {
                 tame(player);
@@ -411,16 +384,13 @@ public class EntityOverworldDrake extends WRRideableDragonEntity implements IBre
         else toReturn = Mth.lerp(0.02f, oldSpeed, newSpeed);
 
         if (toReturn != 0.0f) oldSpeed = toReturn;
-
         return toReturn;
     }
 
     @Override
     public float getTravelSpeed()
     {
-        float speed = (float) getAttributeValue(Attributes.MOVEMENT_SPEED);
-        //if (canBeControlledByRider()) speed += 0.15f;
-        return speed + momentum;
+        return (float) getAttributeValue(Attributes.MOVEMENT_SPEED) + getMomentum();
     }
 
     @Override
@@ -480,14 +450,27 @@ public class EntityOverworldDrake extends WRRideableDragonEntity implements IBre
     @Override
     public void onPlayerJump(int jumpPower) {
         if (isSaddled()) {
-            if (jumpPower < 0) {
-                jumpPower = 0;
-            }
+            if (jumpPower < 0) jumpPower = 0;
             if (jumpPower >= 90) {
                 this.playerJumpPendingScale = 1.0F;
             } else {
                 this.playerJumpPendingScale = 0.4F + 0.4F * (float) jumpPower / 90.0F;
             }
+            this.jumping = true;
+        }
+    }
+
+    @Override
+    public void jumpFromGround() {
+        if (this.playerJumpPendingScale > 0.0F && this.onGround) {
+            double jumpStrength = this.getAttributeValue(Attributes.JUMP_STRENGTH) * (double) this.playerJumpPendingScale * (double) this.getBlockJumpFactor();
+            Vec3 motion = this.getDeltaMovement();
+            this.setDeltaMovement(motion.x, jumpStrength, motion.z);
+            this.hasImpulse = true;
+            this.playerJumpPendingScale = 0.0F;
+            this.jumping = false;
+        } else {
+            super.jumpFromGround();
         }
     }
 
@@ -570,8 +553,6 @@ public class EntityOverworldDrake extends WRRideableDragonEntity implements IBre
         }
 
         if (((this.isOnGround() && !this.isUnderWater()) && this.isAdult()) && isFood(stack)) {
-            setBreedingCooldown(getMaxBreedingCooldown());
-            setBreedingCount(getBreedingCount()+1);
             return InteractionResult.SUCCESS;
         }
         return InteractionResult.PASS;
@@ -670,19 +651,21 @@ public class EntityOverworldDrake extends WRRideableDragonEntity implements IBre
         goalSelector.addGoal(0, new WRPlayerVehicleGoal(this));
         goalSelector.addGoal(1, new OWDBuckGoal(this));
         goalSelector.addGoal(2, new OWDRoarGoal(this));
-        goalSelector.addGoal(3, new MeleeAttackGoal(this, 1.1d, true));
-        goalSelector.addGoal(4, new ControlledAttackGoal(this, 1.425, true /*AnimationPacket.send(this, HORN_ATTACK_ANIMATION)*/));
-        goalSelector.addGoal(5, new WRDragonBreedGoal<>(this));
-        goalSelector.addGoal(6, new WRMoveToHomeGoal(this));
-        goalSelector.addGoal(7, new WRFollowOwnerGoal(this));
-        goalSelector.addGoal(8, new WRSitGoal(this));
-        goalSelector.addGoal(8, new WRReturnToFlockGoal(this, 10, false));
-        goalSelector.addGoal(9, new WRSleepGoal(this, false));
-        goalSelector.addGoal(10, new OWDGrazeGoal(this));
-        goalSelector.addGoal(11, new WRIdleGoal(this));
-        goalSelector.addGoal(12, new WRRandomWalkingGoal(this, 1, 0.01F));
-        goalSelector.addGoal(13, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
-        goalSelector.addGoal(14, new RandomLookAroundGoal(this));
+        goalSelector.addGoal(3, new FloatGoal(this));
+        goalSelector.addGoal(4, new WRSwimToSurfaceGoal(this, 1));
+        goalSelector.addGoal(5, new MeleeAttackGoal(this, 1.1d, true));
+        goalSelector.addGoal(6, new ControlledAttackGoal(this, 1.425, true /*AnimationPacket.send(this, HORN_ATTACK_ANIMATION)*/));
+        goalSelector.addGoal(7, new WRDragonBreedGoal<>(this));
+        goalSelector.addGoal(8, new WRMoveToHomeGoal(this));
+        goalSelector.addGoal(9, new WRFollowOwnerGoal(this));
+        goalSelector.addGoal(10, new WRSitGoal(this));
+        goalSelector.addGoal(11, new WRReturnToFlockGoal(this, 10, false));
+        goalSelector.addGoal(12, new WRSleepGoal(this, false));
+        goalSelector.addGoal(13, new OWDGrazeGoal(this));
+        goalSelector.addGoal(14, new WRIdleGoal(this));
+        goalSelector.addGoal(15, new WRRandomWalkingGoal(this, 1, 0.015F));
+        goalSelector.addGoal(16, new LookAtPlayerGoal(this, LivingEntity.class, 5f));
+        goalSelector.addGoal(17, new RandomLookAroundGoal(this));
 
         targetSelector.addGoal(1, new OwnerHurtByTargetGoal(this));
         targetSelector.addGoal(2, new OwnerHurtTargetGoal(this));
@@ -705,7 +688,7 @@ public class EntityOverworldDrake extends WRRideableDragonEntity implements IBre
         public OWDGrazeGoal(EntityOverworldDrake entity)
         {
             super(entity);
-            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK, Goal.Flag.JUMP));
+            this.setFlags(EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
         }
 
         @Override
