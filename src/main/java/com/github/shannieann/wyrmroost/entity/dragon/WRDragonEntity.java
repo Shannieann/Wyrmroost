@@ -4,7 +4,11 @@ import com.github.shannieann.wyrmroost.entity.dragon.ai.movement.fly.WRFlyLookCo
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.Wyrmroost;
+import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
+import com.github.shannieann.wyrmroost.item.book.action.BookActions;
+import com.github.shannieann.wyrmroost.registry.WRIO;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.WRBodyControl;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.AnimatedGoal;
@@ -81,7 +85,11 @@ import net.minecraft.world.phys.Vec2;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.client.event.EntityViewRenderEvent;
 import net.minecraftforge.common.ForgeSpawnEggItem;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.event.ForgeEventFactory;
+import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib3.core.IAnimatable;
 import software.bernie.geckolib3.core.PlayState;
@@ -140,7 +148,7 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     public static final byte SHIELD_PARTICLES_EVENT_ID = 9;
 
     @Deprecated // https://github.com/MinecraftForge/MinecraftForge/issues/7622
-    //public final LazyOptional<DragonInventory> inventory; Unused?
+    public final LazyOptional<DragonInventory> inventory;
     public final LerpedFloat sleepTimer = LerpedFloat.unit();
     public static final EntityDataAccessor<Float> AGE_PROGRESS = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.FLOAT);
     public static final EntityDataAccessor<ItemStack> ARMOR = SynchedEntityData.defineId(WRDragonEntity.class, EntityDataSerializers.ITEM_STACK);
@@ -205,8 +213,13 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         super(pEntityType, pLevel);
         this.noCulling = true;
         // Below are unused?
-        //DragonInventory inv = createInv();
-        //inventory = LazyOptional.of(inv == null? null : () -> inv);
+        DragonInventory inv = createInv();
+        this.inventory = inv != null ? LazyOptional.of(() -> inv) : LazyOptional.empty();
+    }
+
+    /** Override in subclasses that have accessory slots (e.g. EntityOverworldDrake, EntityRoyalRed). */
+    public DragonInventory createInv() {
+        return null;
     }
 
     // =========================================================================================================
@@ -896,7 +909,10 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory playersInv, Player player)
     {
-        //System.out.println(new BookContainer(id, playersInv, this));
+        if (createInv() != null) {
+            System.out.println("[Wyrmroost WRDragonEntity] createMenu BookContainer for " + this);
+            return new BookContainer(id, playersInv, this);
+        }
         return new NewTarragonTomeContainer(id, playersInv, this);
     }
 
@@ -2240,6 +2256,22 @@ public abstract class WRDragonEntity extends TamableAnimal implements IAnimatabl
         if (canEquipSpecialItem() != null){
             //container.addExtraSlot(canEquipSpecialItem()); // TODO: use synced entity data
         }
+    }
+
+    /** Called by BookContainer when opening DragonControlScreen. Override in subclasses to add slots/actions. */
+    public void applyStaffInfo(BookContainer container) {
+        container.addAction(BookActions.HOME, BookActions.SIT)
+                .addTooltip(getName());
+        if (hasEntityDataAccessor(GENDER)) {
+            String gender = getGenderString();
+            boolean isMale = "male".equals(gender);
+            container.addTooltip(new TranslatableComponent("entity.wyrmroost.dragons.gender." + gender)
+                    .withStyle(isMale ? ChatFormatting.DARK_AQUA : ChatFormatting.RED));
+        }
+    }
+
+    public DragonInventory getInventory() {
+        return inventory.orElseThrow(() -> new NoSuchElementException("Dragon has no DragonInventory"));
     }
 
     /*{

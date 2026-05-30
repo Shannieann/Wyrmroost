@@ -1,4 +1,4 @@
-/*package com.github.shannieann.wyrmroost.client.screen.widgets;
+package com.github.shannieann.wyrmroost.client.screen.widgets;
 
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.AbstractButton;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 
 public class PinButton extends AbstractButton
@@ -20,9 +21,9 @@ public class PinButton extends AbstractButton
     @Override
     public void renderButton(PoseStack ms, int mouseX, int mouseY, float partialTicks)
     {
-        ClientEvents.getClient().getTextureManager().bindForSetup(DragonControlScreen.SPRITES);
+        RenderSystem.setShaderTexture(0, DragonControlScreen.SPRITES);
         RenderSystem.clearColor(1f, 1f, 1f, 1f);
-        blit(ms, x, y, isHovered? 230 : 212, pinned? 18 : 0, width, height);
+        blit(ms, x, y, this.isHovered ? 230 : 212, pinned ? 18 : 0, width, height);
     }
 
     @Override
@@ -46,7 +47,12 @@ public class PinButton extends AbstractButton
         return pinned;
     }
 
+    /** Expose for DragonControlScreen.renderBg */
+    public boolean getIsHovered() {
+        return this.isHovered;
+    }
+
     @Override
     public void updateNarration(NarrationElementOutput p_169152_) {
     }
-}*/
+}

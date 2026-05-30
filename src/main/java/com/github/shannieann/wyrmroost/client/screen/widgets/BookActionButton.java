@@ -1,13 +1,13 @@
-/*package com.github.shannieann.wyrmroost.client.screen.widgets;
+package com.github.shannieann.wyrmroost.client.screen.widgets;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
-import com.github.shannieann.wyrmroost.items.book.TarragonTomeItem;
-import com.github.shannieann.wyrmroost.items.book.action.BookAction;
+import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
+import com.github.shannieann.wyrmroost.item.book.action.BookAction;
 import com.github.shannieann.wyrmroost.network.BookActionPacket;
 import com.github.shannieann.wyrmroost.registry.WRItems;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
-import com.github.shannieann.wyrmroost.util.ModUtils;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -38,11 +38,12 @@ public class BookActionButton extends AbstractButton
     public void onPress()
     {
         Player player = Minecraft.getInstance().player;
-        ItemStack stack = ModUtils.getHeldStack(player, WRItems.TARRAGON_TOME.get());
-        if (stack != null)
-        {
+        ItemStack stack = WRModUtils.getHeldStack(player, WRItems.TARRAGON_TOME.get());
+        if (stack != null && !stack.isEmpty()) {
             TarragonTomeItem.setAction(action, player, stack);
             Wyrmroost.NETWORK.sendToServer(new BookActionPacket(action));
+        } else {
+            System.out.println("[Wyrmroost BookActionButton] onPress: no tome in hand, action=" + action.getTranslateKey(null));
         }
         Minecraft.getInstance().setScreen(null);
     }
@@ -60,7 +61,7 @@ public class BookActionButton extends AbstractButton
         if (wasHovered != isHovered) onFocusedChanged(wasHovered = isHovered);
 
         float time = 0.5f * partialTicks; // adjust speed for framerate
-        focusTime.add(isHovered? time : -time);
+        focusTime.add(isHovered ? time : -time);
         float amount = focusTime.get(partialTicks) * 6;
         drawCenteredString(ms,
                 Minecraft.getInstance().font,
@@ -87,4 +88,4 @@ public class BookActionButton extends AbstractButton
     public void updateNarration(NarrationElementOutput p_169152_) {
 
     }
-}*/
+}

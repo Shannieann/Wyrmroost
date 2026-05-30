@@ -1,14 +1,15 @@
-/*package com.github.shannieann.wyrmroost.client.screen;
+package com.github.shannieann.wyrmroost.client.screen;
 
-import com.github.shannieann.wyrmroost.Wyrmroost;
 import com.github.shannieann.wyrmroost.client.screen.widgets.BookActionButton;
 import com.github.shannieann.wyrmroost.client.screen.widgets.CollapsibleWidget;
 import com.github.shannieann.wyrmroost.client.screen.widgets.PinButton;
+import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.containers.util.Slot3D;
-import com.github.shannieann.wyrmroost.entities.dragon.WRDragonEntity;
-import com.github.shannieann.wyrmroost.items.book.action.BookAction;
+import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entity.dragon.WRRideableDragonEntity;
+import com.github.shannieann.wyrmroost.item.book.action.BookAction;
 import com.github.shannieann.wyrmroost.util.LerpedFloat;
-import com.github.shannieann.wyrmroost.util.Mafs;
+import com.github.shannieann.wyrmroost.util.WRMathsUtility;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Quaternion;
@@ -16,10 +17,9 @@ import com.mojang.math.Vector3f;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.MobEffectTextureManager;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class DragonControlScreen extends AbstractContainerScreen<BookContainer> implements BookScreen {
-    public static final ResourceLocation SPRITES = Wyrmroost.id("textures/gui/container/dragon_inventory.png");
+    public static final ResourceLocation SPRITES = com.github.shannieann.wyrmroost.Wyrmroost.id("textures/gui/container/dragon_inventory.png");
     public static final Vec2 SADDLE_UV = new Vec2(194, 18);
     public static final Vec2 ARMOR_UV = new Vec2(194, 34);
     public static final Vec2 CHEST_UV = new Vec2(194, 50);
@@ -59,6 +59,7 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
         this.imageHeight = 97;
         this.dragX = -150;
         this.dragY = 10;
+        System.out.println("[Wyrmroost DragonControlScreen] created for dragon=" + container.dragon);
     }
 
     @Override
@@ -73,6 +74,7 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
         pin.x = centerX - 107;
 
         menu.collapsibles.forEach(this::addWidget);
+        System.out.println("[Wyrmroost DragonControlScreen] init collapsibles=" + menu.collapsibles.size() + " actions=" + menu.actions.size());
 
         initButtons();
     }
@@ -116,6 +118,7 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
             renderComponentTooltip(ms, menu.toolTips, mouseX, mouseY);
             renderEffects(ms, menu.dragon.getActiveEffects().stream().filter(e -> e.isVisible() && e.getDuration() > 0).collect(Collectors.toList()), mouseX - 124, mouseY - 16);
         }
+        ms.popPose();
     }
 
     private void renderEffects(PoseStack ms, List<MobEffectInstance> effects, int x, int y) {
@@ -124,12 +127,12 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
         ms.pushPose();
         ms.translate(0, 0, 400);
 
-        // multiple for loops to avoid binding textures many more times than needed. annoying af but w/e
-        minecraft.getTextureManager().bindForSetup(SPRITES);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.setShaderTexture(0, SPRITES);
 
         // backgrounds and labels
         for (int i = 0; i < effects.size(); i++) {
-            RenderSystem.clearColor(1f, 1f, 1f, 1f);
             int yOff = y + (i * 33);
             blit(ms, x, yOff, 122, 174, 120, 32);
         }
@@ -148,14 +151,14 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
             }
         }
 
-        MobEffectTextureManager sheet = minecraft.getMobEffectTextures();
+        var sheet = minecraft.getMobEffectTextures();
 
         // icons
         for (int i = 0; i < effects.size(); i++) {
             MobEffect effect = effects.get(i).getEffect();
-            TextureAtlasSprite atlas = sheet.get(effect);
+            var atlas = sheet.get(effect);
             int yOff = y + (i * 32);
-            minecraft.getTextureManager().bindForSetup(atlas.atlas().location());
+            RenderSystem.setShaderTexture(0, atlas.atlas().location());
             blit(ms, x + 6, yOff + 7, getBlitOffset(), 18, 18, atlas);
         }
         ms.popPose();
@@ -163,9 +166,29 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
 
     @Override
     protected void renderBg(PoseStack ms, float partialTicks, int mouseX, int mouseY) {
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        RenderSystem.setShaderTexture(0, SPRITES);
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+
+        // Draw main book panels so the texture is always present (avoids purple missing-texture bars)
+        int mainW = imageWidth;
+        int mainH = imageHeight;
+        int bottomPanelX = centerX - mainW / 2;
+        int bottomPanelY = height - mainH;
+        blit(ms, bottomPanelX, bottomPanelY, 0, 0, mainW, mainH);
+
+        boolean chested = menu.dragon instanceof WRRideableDragonEntity r && r.isChested();
+        if (chested) {
+            int chestW = 121;
+            int chestH = 75;
+            blit(ms, centerX - chestW / 2, 0, 0, 174, chestW, chestH);
+        }
+
         float time = collapsedTime.get(partialTicks);
         float speed = 0.35f * partialTicks;
-        boolean flag = pin.pinned() || pin.isHovered || hoveringWidget();
+        boolean flag = pin.pinned() || pin.getIsHovered() || hoveringWidget();
 
         collapsedTime.add(flag ? speed : -speed);
         pin.y = (int) (height - (time * 28));
@@ -191,10 +214,11 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
     public void renderSlot(PoseStack ms, Slot slot) {
         boolean flag = false;
         if (slot instanceof Slot3D) {
+            ms.pushPose();
             Slot3D uiSlot = (Slot3D) slot;
             double scale = this.scale / 22f;
-            float xRot = (dragX + 270f) / 180f * Mafs.PI;
-            float yRot = (dragY + 270f) / 180f * Mafs.PI;
+            float xRot = (dragX + 270f) / 180f * WRMathsUtility.PI;
+            float yRot = (dragY + 270f) / 180f * WRMathsUtility.PI;
             Vec3 vector = new Vec3(uiSlot.anchorY, uiSlot.anchorZ, uiSlot.anchorX)
                     .scale(scale)
                     .xRot(xRot)
@@ -208,7 +232,8 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
             if (!slot.hasItem() && uiSlot.iconUV != null) {
                 RenderSystem.setShaderColor(colZ, colZ, colZ, 1.0f);
                 setBlitOffset(250);
-                getMinecraft().getTextureManager().bindForSetup(SPRITES);
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.setShaderTexture(0, SPRITES);
                 uiSlot.blitBackgroundIcon(this, ms, uiSlot.x, uiSlot.y);
             }
         }
@@ -301,5 +326,3 @@ public class DragonControlScreen extends AbstractContainerScreen<BookContainer> 
         return (mouseX < pointX + boundaryX && mouseX > pointX - boundaryX) && (mouseY < pointY + boundaryY && mouseY > pointY - boundaryY);
     }
 }
-
-*/

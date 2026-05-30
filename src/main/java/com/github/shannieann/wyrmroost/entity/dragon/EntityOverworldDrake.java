@@ -1,5 +1,12 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
+import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
+import com.github.shannieann.wyrmroost.client.screen.widgets.CollapsibleWidget;
+import com.github.shannieann.wyrmroost.containers.BookContainer;
+import com.github.shannieann.wyrmroost.containers.util.DynamicSlot;
+import com.github.shannieann.wyrmroost.item.DragonArmorItem;
+import com.github.shannieann.wyrmroost.item.book.action.BookActions;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
@@ -32,7 +39,10 @@ import net.minecraft.world.entity.ai.goal.target.OwnerHurtByTargetGoal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraft.world.level.block.ChestBlock;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
@@ -891,25 +901,24 @@ public class EntityOverworldDrake extends WRRideableDragonEntity implements IBre
         }
     }*/ // TODO RE-ADD
 
-
-
-
-    /*@Override
+    @Override
     public void applyStaffInfo(BookContainer container)
     {
         super.applyStaffInfo(container);
 
-        DragonInventory i = getInventory();
-        CollapsibleWidget chestWidget = BookContainer.collapsibleWidget( 0, 174, 121, 75, CollapsibleWidget.TOP)
-                .condition(this::hasChest);
-        ModUtils.createContainerSlots(i, 3, 17, 12, 5, 3, DynamicSlot::new, chestWidget::addSlot);
-
+        IItemHandler i = container.getAccessoryHandler();
+        // Accessory slots: when not chested, rideable inv has size 2 (saddle, armor only). Do not add chest slot or chest widget.
         container.slot(BookContainer.accessorySlot(i, ARMOR_SLOT, 15, -11, 22, DragonControlScreen.ARMOR_UV).only(DragonArmorItem.class))
-                .slot(BookContainer.accessorySlot(i, CHEST_SLOT, -15, -11, 22, DragonControlScreen.CHEST_UV).only(ChestBlock.class).limit(1).canTake(p -> i.isEmptyAfter(CHEST_SLOT)))
-                .slot(BookContainer.accessorySlot(i, SADDLE_SLOT, 0, -15, -7, DragonControlScreen.SADDLE_UV).only(Items.SADDLE))
-                .addAction(BookActions.TARGET)
-                .addCollapsible(chestWidget);
-    }*/
+                .slot(BookContainer.accessorySlot(i, SADDLE_SLOT, 0, -15, -7, DragonControlScreen.SADDLE_UV).only(Items.SADDLE));
+        if (isChested()) {
+            CollapsibleWidget chestWidget = BookContainer.collapsibleWidget(0, 174, 121, 75, CollapsibleWidget.TOP)
+                    .condition(this::isChested);
+            WRModUtils.createContainerSlots(i, 3, 17, 12, 5, 3, DynamicSlot::new, chestWidget::addSlot);
+            container.slot(BookContainer.accessorySlot(i, WRRideableDragonEntity.CHEST_SLOT, -15, -11, 22, DragonControlScreen.CHEST_UV).only(ChestBlock.class).limit(1).canTake(p -> container.canTakeFromChestSlot()))
+                    .addCollapsible(chestWidget);
+        }
+        container.addAction(BookActions.TARGET);
+    }
 
 
 

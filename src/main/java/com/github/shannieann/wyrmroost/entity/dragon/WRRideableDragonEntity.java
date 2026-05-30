@@ -4,7 +4,7 @@ import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
-import com.github.shannieann.wyrmroost.containers.RideableDragonInventoryContainer;
+import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.gui.screens.inventory.EffectRenderingInventoryScreen;
@@ -476,7 +476,8 @@ public abstract class WRRideableDragonEntity extends WRDragonEntity implements C
 
     @Override
     public AbstractContainerMenu createMenu(int id, Inventory playerInv, Player player) {
-        return new RideableDragonInventoryContainer(id, playerInv, this);
+        System.out.println("[Wyrmroost WRRideableDragonEntity] createMenu BookContainer id=" + id);
+        return new BookContainer(id, playerInv, this);
     }
 
     private void createRideableDragonInventory() {

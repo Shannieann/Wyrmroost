@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.events;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.client.screen.RideableDragonInventoryScreen;
+import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.entity.dragon.EntityOverworldDrake;
 import com.github.shannieann.wyrmroost.network.DrakeJumpPacket;
 import com.github.shannieann.wyrmroost.network.OpenRideableDragonInventoryPacket;
@@ -277,7 +277,7 @@ public class ClientEvents {
             OpenRideableDragonInventoryPacket.send();
         }
         // Donkey-like jump when riding OWD (when screen is not open - screen has its own jump handling)
-        if (game.screen instanceof RideableDragonInventoryScreen) return;
+        if (game.screen instanceof DragonControlScreen) return;
         if (vehicle instanceof EntityOverworldDrake drake && drake.canJump()) {
             boolean jumpDown = game.options.keyJump.isDown();
             if (jumpDown) {
