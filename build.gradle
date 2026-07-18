@@ -10,6 +10,9 @@ group = mod_group_id
 
 repositories {
     mavenLocal()
+    flatDir() {
+        dir 'libs'
+    }
 }
 
 base {
@@ -72,7 +75,9 @@ neoForge {
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 
-dependencies {}
+dependencies {
+    jarJar(implementation("dev.elifian.chaoslib:chaoslib-neoforge:${project.minecraft_version}-${project.chaoslib_version}"))
+}
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
     var replaceProperties = [minecraft_version      : minecraft_version,
