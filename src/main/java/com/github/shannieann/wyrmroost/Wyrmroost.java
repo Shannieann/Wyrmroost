@@ -75,6 +75,8 @@ public class Wyrmroost
         network.messageBuilder(SGGlidePacket.class, ++index, NetworkDirection.PLAY_TO_SERVER).encoder(SGGlidePacket::encode).decoder(SGGlidePacket::new).consumer(SGGlidePacket::handle).add();
         network.messageBuilder(AddPassengerPacket.class, ++index, NetworkDirection.PLAY_TO_CLIENT).encoder(AddPassengerPacket::encode).decoder(AddPassengerPacket::new).consumer(AddPassengerPacket::handle).add();
         network.messageBuilder(PacketKey.class, ++index, NetworkDirection.PLAY_TO_SERVER).encoder(PacketKey::encode).decoder(PacketKey::new).consumer(PacketKey::handle).add();
+        network.messageBuilder(DrakeJumpPacket.class, ++index, NetworkDirection.PLAY_TO_SERVER).encoder(DrakeJumpPacket::encode).decoder(DrakeJumpPacket::new).consumer(DrakeJumpPacket::handle).add();
+        network.messageBuilder(OpenRideableDragonInventoryPacket.class, ++index, NetworkDirection.PLAY_TO_SERVER).encoder(OpenRideableDragonInventoryPacket::encode).decoder(OpenRideableDragonInventoryPacket::new).consumer(OpenRideableDragonInventoryPacket::handle).add();
         NETWORK = network;
     }
 }

@@ -2329,7 +2329,7 @@
 				}
 			}
 		},
-		"attack_land1": {
+		"attack1": {
 			"loop": true,
 			"animation_length": 0.8,
 			"bones": {
@@ -2399,7 +2399,7 @@
 				}
 			}
 		},
-		"attack_land2": {
+		"attack2": {
 			"loop": true,
 			"bones": {
 				"ineck1": {

@@ -73,7 +73,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
 
     public static final EntityDataAccessor<Integer> SCAVENGING_COOLDOWN = SynchedEntityData.defineId(EntityRooststalker.class, EntityDataSerializers.INT);
 
-    private static final float MOVEMENT_SPEED = 0.285f;
+    private static final float RUN_SPEED = 0.285f;
 
     private static final ResourceLocation EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes.png");
     private static final ResourceLocation EYES_SPECIAL = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/rooststalker/rooststalker_eyes_sp.png");
@@ -180,7 +180,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         if (navigationType == NavigationType.GROUND && this.getDeltaMovement().length() > (this.getMovementSpeed()/3)) {
             if (getName().getString().toLowerCase().equals("sir")) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("sir", ILoopType.EDefaultLoopTypes.LOOP));
-            } else if (this.isAggressive() || this.getDeltaMovement().length() > (this.getMovementSpeed()/1.5)) {
+            } else if (this.isSprinting() || this.getDeltaMovement().length() > (this.getMovementSpeed()/1.5)) {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("walk_fast", ILoopType.EDefaultLoopTypes.LOOP));
             } else {
                 event.getController().setAnimation(new AnimationBuilder().addAnimation("walk", ILoopType.EDefaultLoopTypes.LOOP));
@@ -203,7 +203,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return (Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonAttributesConfig.maxHealth.get())
-                .add(Attributes.MOVEMENT_SPEED, EntityRooststalker.MOVEMENT_SPEED)
+                .add(Attributes.MOVEMENT_SPEED, EntityRooststalker.RUN_SPEED)
                 .add(Attributes.ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.ROOSTSTALKER.dragonAttributesConfig.maxHealth.get()));
     }
 
@@ -315,7 +315,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
         return getEyesTexture();
     }
 
-    public boolean isAlbino(){
+    public boolean isAlbino() {
         Integer variant = Integer.getInteger(getVariant());
         return variant != null && variant >= 40;
     }
@@ -355,7 +355,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
     @Override
     public void tick() {
         setScavengingCooldown(Math.max(getScavengingCooldown()-1,0));
-        ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true); // TODO: Does this actually let it work??
+        ((GroundPathNavigation)this.getNavigation()).setCanOpenDoors(true); // TODO: This doesn't work??
         super.tick();
     }
 
@@ -373,7 +373,7 @@ public class EntityRooststalker extends WRDragonEntity implements ITameable, IBr
 
     @Override
     public float getMovementSpeed() {
-        return MOVEMENT_SPEED;
+        return RUN_SPEED;
     }
     @Override
     public float getFlyingSpeed() { // Can't fly

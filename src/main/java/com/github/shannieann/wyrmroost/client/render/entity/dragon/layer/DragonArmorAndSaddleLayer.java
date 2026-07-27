@@ -1,7 +1,7 @@
 package com.github.shannieann.wyrmroost.client.render.entity.dragon.layer;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
-import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entity.dragon.WRRideableDragonEntity;
 import com.github.shannieann.wyrmroost.item.DragonArmorItem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -11,7 +11,7 @@ import software.bernie.geckolib3.renderers.geo.GeoLayerRenderer;
 import software.bernie.geckolib3.renderers.geo.IGeoRenderer;
 
 // Merged into one layer
-public class DragonArmorAndSaddleLayer<T extends WRDragonEntity> extends GeoLayerRenderer<T> {
+public class DragonArmorAndSaddleLayer<T extends WRRideableDragonEntity> extends GeoLayerRenderer<T> {
     private final boolean renderSaddle;
     public DragonArmorAndSaddleLayer(IGeoRenderer<T> entityRendererIn, boolean renderSaddle) {
         super(entityRendererIn);

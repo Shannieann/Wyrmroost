@@ -2,7 +2,9 @@ package com.github.shannieann.wyrmroost.item.book.action;
 
 import com.github.shannieann.wyrmroost.events.ClientEvents;
 import com.github.shannieann.wyrmroost.client.render.RenderHelper;
+import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.containers.NewTarragonTomeContainer;
+import com.github.shannieann.wyrmroost.entity.dragon.WRRideableDragonEntity;
 import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
 import com.github.shannieann.wyrmroost.item.book.TarragonTomeItem;
 import com.github.shannieann.wyrmroost.util.WRMathsUtility;
@@ -28,9 +30,14 @@ public class DefaultBookAction implements BookAction
         boolean client = player.getLevel().isClientSide();
         if (dragon != null && !client)
         {
-            NewTarragonTomeContainer.open((ServerPlayer) player, dragon);
-
-
+            // Use dragon book UI for rideable dragons (OWD) or dragons with DragonInventory (e.g. Royal Red)
+            if (dragon instanceof WRRideableDragonEntity || dragon.createInv() != null) {
+                System.out.println("[Wyrmroost DefaultBookAction] opening dragon book (tome) for dragon=" + dragon);
+                BookContainer.open((ServerPlayer) player, dragon, stack);
+            } else {
+                System.out.println("[Wyrmroost DefaultBookAction] opening NewTarragonTomeContainer fallback for dragon=" + dragon);
+                NewTarragonTomeContainer.open((ServerPlayer) player, dragon);
+            }
         }
         else if ((dragon = clip(player)) != null)
         {

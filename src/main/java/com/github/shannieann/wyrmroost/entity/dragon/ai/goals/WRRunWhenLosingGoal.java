@@ -60,6 +60,14 @@ public class WRRunWhenLosingGoal extends Goal {
 
     @Override
     public void start() {
+        dragon.setSprinting(true);
         dragon.getNavigation().moveTo(this.path, this.speed);
+        super.start();
+    }
+
+    @Override
+    public void stop() {
+        dragon.setSprinting(false);
+        super.stop();
     }
 }

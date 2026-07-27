@@ -1,26 +1,84 @@
 package com.github.shannieann.wyrmroost.containers;
 
-/*public class BookContainer extends AbstractContainerMenu
+import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
+import com.github.shannieann.wyrmroost.containers.util.DynamicSlot;
+import com.github.shannieann.wyrmroost.containers.util.Slot3D;
+import com.github.shannieann.wyrmroost.entity.dragon.WRDragonEntity;
+import com.github.shannieann.wyrmroost.entity.dragon.WRRideableDragonEntity;
+import com.github.shannieann.wyrmroost.events.ClientEvents;
+import com.github.shannieann.wyrmroost.item.book.action.BookAction;
+import com.github.shannieann.wyrmroost.registry.WRIO;
+import com.github.shannieann.wyrmroost.util.WRModUtils;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffect;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.Slot;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec2;
+import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.wrapper.InvWrapper;
+import net.minecraftforge.network.NetworkHooks;
+
+import javax.annotation.Nonnull;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.github.shannieann.wyrmroost.client.screen.widgets.CollapsibleWidget;
+
+/**
+ * Container for the "dragon book" UI — the same UI as the tarragon tome (dragon info, actions, inventory).
+ *   Tarragon tome = the item that opens this UI (right-click on a tamed dragon). Not yet in the game??
+ *   Dragon book = this UI (BookContainer + DragonControlScreen).
+ * Opened when: right-click with tarragon tome on a dragon, or (2) inventory key while riding a tamed dragon (e.g. OWD).
+ * Layout differs for chested vs non-chested (chest slots appear when the dragon has a chest).
+ */
+public class BookContainer extends AbstractContainerMenu
 {
     public final WRDragonEntity dragon;
     public final Inventory playerInv;
+    private final IItemHandler accessoryHandler;
     public final List<BookAction> actions = new ArrayList<>();
     public final List<Component> toolTips = new ArrayList<>();
     public final List<CollapsibleWidget> collapsibles = new ArrayList<>();
 
     public BookContainer(int id, Inventory playerInv, WRDragonEntity dragon)
     {
-        super(WRIO.TARRAGON_TOME.get(), id);
+        super(WRIO.DRAGON_BOOK.get(), id);
         this.dragon = dragon;
         this.playerInv = playerInv;
+        this.accessoryHandler = dragon instanceof WRRideableDragonEntity rideable
+                ? new InvWrapper(rideable.getRideableDragonInventory())
+                : dragon.getInventory();
+        System.out.println("[Wyrmroost BookContainer] init id=" + id + " dragon=" + dragon + " rideable=" + (dragon instanceof WRRideableDragonEntity));
 
         CollapsibleWidget playerView = collapsibleWidget(0, 0, 193, 97, CollapsibleWidget.BOTTOM);
-        ModUtils.createPlayerContainerSlots(playerInv, 17, 12, DynamicSlot::new, playerView::addSlot);
+        WRModUtils.createPlayerContainerSlots(playerInv, 17, 12, DynamicSlot::new, playerView::addSlot);
         addCollapsible(playerView);
 
         dragon.applyStaffInfo(this);
     }
 
+    public IItemHandler getAccessoryHandler() {
+        return accessoryHandler;
+    }
+
+    public boolean canTakeFromChestSlot() {
+        if (dragon instanceof WRRideableDragonEntity rideable) {
+            net.minecraft.world.Container inv = rideable.getRideableDragonInventory();
+            for (int i = WRRideableDragonEntity.CHEST_SLOT + 1; i < inv.getContainerSize(); i++) {
+                if (!inv.getItem(i).isEmpty()) return false;
+            }
+            return true;
+        }
+        return dragon.getInventory().isEmptyAfter(WRRideableDragonEntity.CHEST_SLOT);
+    }
 
     @Override
     public boolean stillValid(Player player)
@@ -59,10 +117,10 @@ package com.github.shannieann.wyrmroost.containers;
         return this;
     }
 
-    public static Slot3D accessorySlot(DragonInventory i, int index, int x, int y, int z, @Nonnull Vec2 iconUV)
+    public static Slot3D accessorySlot(IItemHandler i, int index, int x, int y, int z, @Nonnull Vec2 iconUV)
     {
         return (Slot3D) new Slot3D(i, index, x, y, z)
-                .condition(() -> getClient().screen instanceof DragonControlScreen && ((DragonControlScreen) getClient().screen).showAccessories())
+                .condition(() -> ClientEvents.getClient().screen instanceof DragonControlScreen && ((DragonControlScreen) ClientEvents.getClient().screen).showAccessories())
                 .iconUV(iconUV);
     }
 
@@ -73,12 +131,13 @@ package com.github.shannieann.wyrmroost.containers;
 
     public static BookContainer factory(int id, Inventory playerInv, FriendlyByteBuf buf)
     {
+        System.out.println("[Wyrmroost BookContainer] factory id=" + id + " (client building container from packet)");
         return new BookContainer(id, playerInv, fromBytes(buf));
     }
 
     public static void open(ServerPlayer player, WRDragonEntity dragon, ItemStack stack)
     {
-
+        System.out.println("[Wyrmroost BookContainer] open player=" + player.getName().getString() + " dragon=" + dragon);
         NetworkHooks.openGui(player, dragon, b -> toBytes(dragon, b));
     }
 
@@ -108,7 +167,12 @@ package com.github.shannieann.wyrmroost.containers;
     @SuppressWarnings("ConstantConditions")
     private static WRDragonEntity fromBytes(FriendlyByteBuf buf)
     {
-        WRDragonEntity dragon = (WRDragonEntity) ClientEvents.getLevel().getEntity(buf.readVarInt());
+        int entityId = buf.readVarInt();
+        WRDragonEntity dragon = (WRDragonEntity) ClientEvents.getLevel().getEntity(entityId);
+        if (dragon == null) {
+            System.out.println("[Wyrmroost BookContainer] fromBytes WARNING entity id=" + entityId + " not found in level (client may desync)");
+            throw new IllegalStateException("Dragon entity " + entityId + " not found on client");
+        }
         dragon.getActiveEffectsMap().clear();
 
         int series = buf.readVarInt();
@@ -128,5 +192,4 @@ package com.github.shannieann.wyrmroost.containers;
 
         return dragon;
     }
-
-}*/
+}

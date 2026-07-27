@@ -1,11 +1,16 @@
 package com.github.shannieann.wyrmroost.entity.dragon;
 
 import com.github.shannieann.wyrmroost.Wyrmroost;
+import com.github.shannieann.wyrmroost.client.screen.DragonControlScreen;
 import com.github.shannieann.wyrmroost.config.WRServerConfig;
+import com.github.shannieann.wyrmroost.containers.BookContainer;
 import com.github.shannieann.wyrmroost.events.ClientEvents;
+import com.github.shannieann.wyrmroost.item.DragonArmorItem;
+import com.github.shannieann.wyrmroost.item.book.action.BookActions;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.IBreedable;
 import com.github.shannieann.wyrmroost.entity.dragon.interfaces.ITameable;
 import com.github.shannieann.wyrmroost.entity.dragon_egg.WRDragonEggEntity;
+import com.github.shannieann.wyrmroost.entity.dragon.ai.DragonInventory;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.*;
 import com.github.shannieann.wyrmroost.entity.dragon.ai.goals.flyers.WRRandomFlyWalkGoal;
 import com.github.shannieann.wyrmroost.entity.projectile.breath.FireBreathEntity;
@@ -51,9 +56,9 @@ import java.util.Map;
 
 import static net.minecraft.world.entity.ai.attributes.Attributes.*;
 
-public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITameable {
+public class EntityRoyalRed extends WRRideableDragonEntity implements IBreedable, ITameable {
 
-    private static final float MOVEMENT_SPEED = 0.22f;
+    private static final float RUN_SPEED = 0.22f;
     private static final float FLYING_SPEED = 0.13f; // I'm assuming it's a good amount less than alpine?
 
     public static final EntityDataAccessor<Boolean> BREATHING_FIRE = SynchedEntityData.defineId(EntityRoyalRed.class, EntityDataSerializers.BOOLEAN);
@@ -96,7 +101,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     }
 */
 
-    public EntityRoyalRed(EntityType<? extends WRDragonEntity> type, Level worldIn) {
+    public EntityRoyalRed(EntityType<? extends WRRideableDragonEntity> type, Level worldIn) {
         super(type, worldIn);
         setPathfindingMalus(BlockPathTypes.DANGER_FIRE, 0);
         setPathfindingMalus(BlockPathTypes.DAMAGE_FIRE, 0);
@@ -158,7 +163,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.maxHealth.get())
-                .add(Attributes.MOVEMENT_SPEED, EntityRoyalRed.MOVEMENT_SPEED)
+                .add(MOVEMENT_SPEED, EntityRoyalRed.RUN_SPEED)
                 .add(Attributes.FLYING_SPEED, EntityRoyalRed.FLYING_SPEED)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.ROYAL_RED.dragonAttributesConfig.attackDamage.get())
@@ -187,11 +192,6 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     // ====================================
     //      A.2) Entity Data: INVENTORY
     // ====================================
-
-    @Override
-    public boolean canEquipSaddle() {
-        return true;
-    }
 
     @Override
     public boolean canEquipArmor() {
@@ -434,7 +434,7 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
 
     @Override
     public float getMovementSpeed() {
-        return MOVEMENT_SPEED;
+        return RUN_SPEED;
     }
     @Override
     public float getFlyingSpeed() {
@@ -525,13 +525,13 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     //      D) Taming
     // ====================================
 
-    /*@Override
+    @Override
     public void applyStaffInfo(BookContainer container) {
         super.applyStaffInfo(container);
 
-        container.slot(BookContainer.accessorySlot(getInventory(), ARMOR_SLOT, 0, -15, -15, DragonControlScreen.ARMOR_UV).only(DragonArmorItem.class))
+        container.slot(BookContainer.accessorySlot(container.getAccessoryHandler(), ARMOR_SLOT, 0, -15, -15, DragonControlScreen.ARMOR_UV).only(DragonArmorItem.class))
                 .addAction(BookActions.TARGET);
-    }*/
+    }
 
     /*
     @Override
@@ -590,17 +590,10 @@ public class EntityRoyalRed extends WRDragonEntity implements IBreedable, ITamea
     //      D.1) Taming: Inventory
     // ====================================
 
-    /* TODO: use synced entity data
-    @Override
-    public void onInvContentsChanged(int slot, ItemStack stack, boolean onLoad) {
-        if (slot == ARMOR_SLOT) setArmor(stack);
-    }
-
     @Override
     public DragonInventory createInv() {
         return new DragonInventory(this, 1);
     }
-    */
 
     @Override
     public Vec2 getTomeDepictionOffset() {

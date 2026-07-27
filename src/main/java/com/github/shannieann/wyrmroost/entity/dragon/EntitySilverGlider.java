@@ -83,7 +83,7 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     // 0 = not flocking, 1 = flock follower, 2 = flock leader
     public static final EntityDataAccessor<Integer> IS_FLOCKING = SynchedEntityData.defineId(EntitySilverGlider.class, EntityDataSerializers.INT);
 
-    private static final float MOVEMENT_SPEED = 0.23f;
+    private static final float RUN_SPEED = 0.23f;
     private static final float FLYING_SPEED = 0.12f;
 
     private static final ResourceLocation EYES = new ResourceLocation(Wyrmroost.MOD_ID, "textures/entity/dragon/silver_glider/eyes.png");
@@ -157,7 +157,7 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return (Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.dragonAttributesConfig.maxHealth.get())
-                .add(Attributes.MOVEMENT_SPEED, MOVEMENT_SPEED)
+                .add(MOVEMENT_SPEED, EntitySilverGlider.RUN_SPEED)
                 .add(Attributes.FLYING_SPEED, FLYING_SPEED)
                 .add(Attributes.ATTACK_DAMAGE,
                         WRServerConfig.SERVER.ENTITIES.SILVER_GLIDER.dragonAttributesConfig.attackDamage.get()));
@@ -480,7 +480,7 @@ public class EntitySilverGlider extends WRDragonEntity implements IBreedable, IT
 
     @Override
     public float getMovementSpeed() {
-        return MOVEMENT_SPEED;
+        return RUN_SPEED;
     }
     @Override
     public float getFlyingSpeed() {

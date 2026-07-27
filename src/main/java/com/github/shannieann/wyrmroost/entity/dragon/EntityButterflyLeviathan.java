@@ -105,7 +105,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IBreedab
     public static final int WATER_ATTACK_QUEUE_TIME_2 = 6;
     public final int idleAnimation1Time = 80;
 
-    private static final float MOVEMENT_SPEED = 0.10f;
+    private static final float RUN_SPEED = 0.10f;
 
     public EntityButterflyLeviathan(EntityType<? extends WRDragonEntity> entityType, Level level) {
         super(entityType, level);
@@ -168,7 +168,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IBreedab
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonAttributesConfig.maxHealth.get())
-                .add(Attributes.MOVEMENT_SPEED, EntityButterflyLeviathan.MOVEMENT_SPEED)
+                .add(MOVEMENT_SPEED, EntityButterflyLeviathan.RUN_SPEED)
                 .add(ForgeMod.SWIM_SPEED.get(), 0.15F)
                 .add(KNOCKBACK_RESISTANCE, 1)
                 .add(ATTACK_DAMAGE, WRServerConfig.SERVER.ENTITIES.BUTTERFLY_LEVIATHAN.dragonAttributesConfig.attackDamage.get())
@@ -450,7 +450,7 @@ public class EntityButterflyLeviathan extends WRDragonEntity implements IBreedab
 
     @Override
     public float getMovementSpeed() {
-        return MOVEMENT_SPEED;
+        return RUN_SPEED;
     }
     @Override
     public float getFlyingSpeed() { // Can't fly

@@ -42,17 +42,17 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
-public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBreedable {
+public class EntityAlpineDragon extends WRRideableDragonEntity implements ITameable, IBreedable {
 
     public static final int MAX_BREEDING_COOLDOWN = 12000; // 600 seconds, override
-    private static final float MOVEMENT_SPEED = 0.22f;
+    private static final float RUN_SPEED = 0.22f;
     private static final float FLYING_SPEED = 0.185f;
 
     // =========================
     // A. Entity Data + Attributes
     // =========================
 
-    public EntityAlpineDragon(EntityType<? extends TamableAnimal> pEntityType, Level pLevel) {
+    public EntityAlpineDragon(EntityType<? extends WRRideableDragonEntity> pEntityType, Level pLevel) {
         super(pEntityType, pLevel);
         this.setNavigator(NavigationType.GROUND);
     }
@@ -98,7 +98,7 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
     public static AttributeSupplier.Builder getAttributeSupplier() {
         return Mob.createMobAttributes()
                 .add(MAX_HEALTH, WRServerConfig.SERVER.ENTITIES.ALPINE_DRAGON.dragonAttributesConfig.maxHealth.get())
-                .add(Attributes.MOVEMENT_SPEED, EntityAlpineDragon.MOVEMENT_SPEED)
+                .add(MOVEMENT_SPEED, EntityAlpineDragon.RUN_SPEED)
                 .add(Attributes.FLYING_SPEED, EntityAlpineDragon.FLYING_SPEED)
                 .add(ForgeMod.SWIM_SPEED.get(), 0.15F)
                 .add(KNOCKBACK_RESISTANCE, 1)
@@ -123,11 +123,6 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
     // ====================================
     //      A.2) Entity Data: INVENTORY
     // ====================================
-
-    @Override
-    public boolean canEquipSaddle() {
-        return true;
-    }
 
     @Override
     public boolean canEquipArmor() {
@@ -246,7 +241,7 @@ public class EntityAlpineDragon extends WRDragonEntity implements ITameable, IBr
 
     @Override
     public float getMovementSpeed() {
-        return MOVEMENT_SPEED;
+        return RUN_SPEED;
     }
     @Override
     public float getFlyingSpeed() {

@@ -121,6 +121,7 @@ public class WRGetDroppedFoodGoal extends Goal {
             if (this.dragon.getNavigation().getPath() == null) {
                 this.dragon.getNavigation().moveTo(this.targetItemEntity, 1.1D);
             }
+            this.dragon.setSprinting(true);
         }
     }
 
@@ -198,6 +199,7 @@ public class WRGetDroppedFoodGoal extends Goal {
     @Override
     public void stop() {
         this.dragon.getNavigation().stop();
+        this.dragon.setSprinting(false);
         this.searchRadius = 0;
         this.targetItemEntity = null;
         this.itemAt = null;
