@@ -1,4 +1,4 @@
-package com.java.shannieann.wyrmroost.world;
+package com.java.shannieann.wyrmroost.world.feature;
 
 import com.mojang.serialization.MapCodec;
 

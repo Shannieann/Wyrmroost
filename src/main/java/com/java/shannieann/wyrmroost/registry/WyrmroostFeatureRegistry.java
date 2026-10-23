@@ -1,6 +1,7 @@
 package com.java.shannieann.wyrmroost.registry;
 
-import com.java.shannieann.wyrmroost.world.FeatureSalBush;
+import com.java.shannieann.wyrmroost.Wyrmroost;
+import com.java.shannieann.wyrmroost.world.feature.FeatureSalBush;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.registries.Registries;
@@ -12,7 +13,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 
 public final class WyrmroostFeatureRegistry {
     public static final DeferredRegister<MapCodec<? extends Feature>> FEATURE_TYPES =
-            DeferredRegister.create(Registries.FEATURE_TYPE, "wyrmroost");
+            DeferredRegister.create(Registries.FEATURE_TYPE, Wyrmroost.MODID);
 
     // Becomes the type id "wyrmroost:sal_bush"
     public static final DeferredHolder<MapCodec<? extends Feature>, MapCodec<FeatureSalBush>> SAL_BUSH =
