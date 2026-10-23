@@ -27,32 +27,32 @@ public class FeatureSalBush implements Feature {
 
     //ARCH NUMBER
     private static final int MIN_ARCHES = 3;
-    private static final int MAX_ARCHES = 7;
+    private static final int MAX_ARCHES = 5;
 
     //ARCH SCALING FACTORS
     private static final float SCALE_AT_MIN_ARCHES = 0.6F;
     private static final float SCALE_AT_MAX_ARCHES = 1.0F;
 
     //LARGE ARCH PARAMETERS
-    private static final int LARGE_ARCH_MIN_WIDTH = 7;
-    private static final int LARGE_ARCH_MAX_WIDTH = 15;
-    private static final int LARGE_ARCH_MIN_HEIGHT = 7;
-    private static final int LARGE_ARCH_MAX_HEIGHT = 21;
+    private static final int LARGE_ARCH_MIN_WIDTH = 12;
+    private static final int LARGE_ARCH_MAX_WIDTH = 16;
+    private static final int LARGE_ARCH_MIN_HEIGHT = 8;
+    private static final int LARGE_ARCH_MAX_HEIGHT = 9;
 
     //CHAINING
     private static final int MAXIMUM_GENERATIONS = 5;
-    private static final float GENERATIONAL_SHRINK_FACTOR = 0.90F;
-    private static final float CHAIN_CHANCE = 0.8F;
+    private static final float GENERATIONAL_SHRINK_FACTOR = 0.80F;
+    private static final float CHAIN_CHANCE = 0.60F;
 
     //LIMITS
-    private static final int ABSOLUTE_MAX_HEIGHT = 30;
+    private static final int ABSOLUTE_MAX_HEIGHT = 9;
     private static final int MIN_WIDTH = 2;
     private static final int MIN_HEIGHT = 2;
-    private static final float MAX_HEIGHT_TO_WIDTH_RATIO = 3.0F;
+    private static final float MAX_HEIGHT_TO_WIDTH_RATIO = 0.75F;
 
     //ANGLES
-    private static final float ARCH_ANGLE_RANGE_DEG = 50F;
-    private static final float CHAIN_ANGLE_RANGE_DEG = 30.0F;
+    private static final float ARCH_ANGLE_RANGE_DEG = 15.0F;
+    private static final float CHAIN_ANGLE_RANGE_DEG = 25.0F;
 
     // =============
     //  PROCEDURAL GENERATION
