@@ -1,5 +1,5 @@
 {
-  "type": "wyrmroost:wyrmdim",
+  "type": "wyrmroost:wyrmdim_dimension_type",
   "generator": {
     "type": "minecraft:flat",
     "settings": {
