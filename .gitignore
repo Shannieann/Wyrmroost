@@ -1,49 +1,40 @@
-# eclipse
-bin
-*.launch
-.settings
-.metadata
-.classpath
-.project
+### Gradle ###
+.gradle
+build/
+!gradle/wrapper/gradle-wrapper.jar
+!**/src/**/build/
 
-# idea
-out
-*.ipr
+### IntelliJ IDEA ###
+.idea/
 *.iws
 *.iml
-.idea
+*.ipr
+out/
+!**/src/**/out/
 
-# gradle
-build
-.gradle
+.run/
 
-# other
-eclipse
-run
-*.txt
+### Eclipse ###
+.apt_generated
+.classpath
+.eclipse/
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+bin/
+!**/src/**/bin/
 
-# Files from Forge MDK
-forge*changelog.txt
+### VS Code ###
+.vscode/
 
-# Generated Resources cache
-/src/main/generated_resources/.cache
+### Mac OS ###
+.DS_Store
 
-# Other Shit
-extra_assets
-logs
-src/main/resources/assets/minecraft/textures/misc/vignette.png.mcmeta
-src/main/resources/assets/minecraft/textures/misc/vignette.png
-src/main/resources/assets/minecraft/textures/misc/underwater.png
-src/main/resources/assets/minecraft/textures/block/water_still.png.mcmeta
-src/main/resources/assets/minecraft/textures/block/water_still.png
-src/main/resources/assets/minecraft/textures/block/water_overlay.png
-src/main/resources/assets/minecraft/textures/block/water_flow.png.mcmeta
-src/main/resources/assets/minecraft/textures/block/water_flow.png
-src/main/resources/assets/minecraft/textures/misc/vignette.png.mcmeta
-src/main/resources/assets/minecraft/textures/misc/vignette.png
-src/main/resources/assets/minecraft/textures/misc/underwater.png
-src/main/resources/assets/minecraft/textures/block/water_still.png.mcmeta
-src/main/resources/assets/minecraft/textures/block/water_still.png
-src/main/resources/assets/minecraft/textures/block/water_overlay.png
-src/main/resources/assets/minecraft/textures/block/water_flow.png.mcmeta
-src/main/resources/assets/minecraft/textures/block/water_flow.png
+### Minecraft Modding ###
+run/
+!**/src/**/run/
+**/src/generated/**/.cache/
+repo/
+!**/src/**/repo/

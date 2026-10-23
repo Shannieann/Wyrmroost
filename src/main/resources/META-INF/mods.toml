@@ -1,36 +1,25 @@
-modLoader="javafml"
-loaderVersion="[35,)"
-license="All Rights Reserved (See Github)"
-
-issueTrackerURL="https://github.com/WolfShotz/Wyrmroost/issues"
+license="${mod_license}"
+issueTrackerURL="https://github.com/Shannieann/Wyrmroost"
 
 [[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="---"
+description='''
+WIP
+'''
 
-modId="wyrmroost"
-version="${file.jarVersion}"
-displayName="Wyrmroost"
-# logoFile="examplemod.png"
-#credits="Novacraft: Rooststalker Model and Textures"
-authors="WolfShotz, Kingdomall, Shannieann, Ukan"
-#description=''' '''
+[[dependencies.${mod_id}]]
+modId="neoforge"
+type="required"
+versionRange="[${neo_version},)"
+ordering="NONE"
+side="BOTH"
 
-[[dependencies.wyrmroost]]
-    modId="geckolib3"
-    mandatory=true
-    versionRange="[3.0.52,)"
-    ordering="BEFORE"
-    side="BOTH"
-
-[[dependencies.wyrmroost]]
-    modId="forge"
-    mandatory=true
-    versionRange="[35.1.4,)"
-    ordering="NONE"
-    side="BOTH"
-
-[[dependencies.wyrmroost]]
-    modId="minecraft"
-    mandatory=true
-    versionRange="[1.18, 1.19)"
-    ordering="NONE"
-    side="BOTH"
+[[dependencies.${mod_id}]]
+modId="minecraft"
+type="required"
+versionRange="${minecraft_version_range}"
+ordering="NONE"
+side="BOTH"
