@@ -14,7 +14,7 @@ import net.neoforged.neoforge.registries.DeferredRegister;
 public final class WyrmroostFeatureRegistry {
     public static final DeferredRegister<MapCodec<? extends Feature>> FEATURE_TYPES =
             DeferredRegister.create(Registries.FEATURE_TYPE, Wyrmroost.MODID);
-    
+
     public static final DeferredHolder<MapCodec<? extends Feature>, MapCodec<FeatureSalBush>> SAL_BUSH =
             FEATURE_TYPES.register("sal_bush", () -> FeatureSalBush.CODEC);
 
