@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/template_shelf_center",
+  "textures": {
+    "all": "wyrmroost:block/sal_bush_shelf",
+    "particle": "wyrmroost:block/stripped_sal_bush_log"
+  }
+}

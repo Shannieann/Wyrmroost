@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_uv_locked_x",
+  "textures": {
+    "end": "wyrmroost:block/sal_bush_log_top",
+    "side": "wyrmroost:block/sal_bush_log"
+  }
+}

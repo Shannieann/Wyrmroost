@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_bottom_right",
+  "textures": {
+    "bottom": "wyrmroost:block/sal_bush_door_bottom",
+    "top": "wyrmroost:block/sal_bush_door_top"
+  }
+}

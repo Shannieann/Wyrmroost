@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/template_fence_gate_wall_open",
+  "texture": {
+    "texture": "wyrmroost:block/sal_bush_planks"
+  }
+}
