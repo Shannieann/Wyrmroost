@@ -1,0 +1,52 @@
+{
+  "values": {
+    "wyrmroost:sal_bush_log": {
+      "burn_odds": 5,
+      "ignite_odds": 5
+    },
+    "wyrmroost:sal_bush_wood": {
+      "burn_odds": 5,
+      "ignite_odds": 5
+    },
+    "wyrmroost:stripped_sal_bush_log": {
+      "burn_odds": 5,
+      "ignite_odds": 5
+    },
+    "wyrmroost:stripped_sal_bush_wood": {
+      "burn_odds": 5,
+      "ignite_odds": 5
+    },
+    "wyrmroost:sal_bush_planks": {
+      "burn_odds": 20,
+      "ignite_odds": 5
+    },
+    "wyrmroost:sal_bush_stairs": {
+      "burn_odds": 20,
+      "ignite_odds": 5
+    },
+    "wyrmroost:sal_bush_slab": {
+      "burn_odds": 20,
+      "ignite_odds": 5
+    },
+    "wyrmroost:sal_bush_fence": {
+      "burn_odds": 20,
+      "ignite_odds": 5
+    },
+    "wyrmroost:sal_bush_fence_gate": {
+      "burn_odds": 20,
+      "ignite_odds": 5
+    },
+    "wyrmroost:sal_bush_shelf": {
+      "burn_odds": 20,
+      "ignite_odds": 30
+    },
+    "wyrmroost:sal_bush_leaves": {
+      "burn_odds": 60,
+      "ignite_odds": 30
+    },
+    "wyrmroost:sal_bush_vine": {
+      "burn_odds": 100,
+      "ignite_odds": 15
+    }
+  }
+}
