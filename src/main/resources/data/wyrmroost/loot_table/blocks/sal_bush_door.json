@@ -1,0 +1,25 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": {
+        "type": "minecraft:survives_explosion"
+      },
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "condition": {
+            "type": "minecraft:match_block",
+            "blocks": "wyrmroost:sal_bush_door",
+            "state": {
+              "half": "lower"
+            }
+          },
+          "name": "wyrmroost:sal_bush_door"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "wyrmroost:blocks/sal_bush_door"
+}

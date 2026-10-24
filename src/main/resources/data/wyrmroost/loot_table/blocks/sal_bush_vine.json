@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "condition": "minecraft:tool/can_shear",
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "wyrmroost:sal_bush_vine"
+        }
+      ],
+      "rolls": 1
+    }
+  ],
+  "random_sequence": "wyrmroost:blocks/sal_bush_vine"
+}
