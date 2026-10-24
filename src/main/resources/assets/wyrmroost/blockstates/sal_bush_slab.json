@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "wyrmroost:block/sal_bush_slab"
+    },
+    "type=double": {
+      "model": "wyrmroost:block/sal_bush_planks"
+    },
+    "type=top": {
+      "model": "wyrmroost:block/sal_bush_slab_top"
+    }
+  }
+}
