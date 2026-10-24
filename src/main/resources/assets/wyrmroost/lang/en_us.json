@@ -1,2 +1,20 @@
 {
+  "block.wyrmroost.sal_bush_log": "Sal Bush Log",
+  "block.wyrmroost.sal_bush_wood": "Sal Bush Wood",
+  "block.wyrmroost.stripped_sal_bush_log": "Stripped Sal Bush Log",
+  "block.wyrmroost.stripped_sal_bush_wood": "Stripped Sal Bush Wood",
+  "block.wyrmroost.sal_bush_planks": "Sal Bush Planks",
+  "block.wyrmroost.sal_bush_stairs": "Sal Bush Stairs",
+  "block.wyrmroost.sal_bush_slab": "Sal Bush Slab",
+  "block.wyrmroost.sal_bush_fence": "Sal Bush Fence",
+  "block.wyrmroost.sal_bush_fence_gate": "Sal Bush Fence Gate",
+  "block.wyrmroost.sal_bush_door": "Sal Bush Door",
+  "block.wyrmroost.sal_bush_trapdoor": "Sal Bush Trapdoor",
+  "block.wyrmroost.sal_bush_pressure_plate": "Sal Bush Pressure Plate",
+  "block.wyrmroost.sal_bush_button": "Sal Bush Button",
+  "block.wyrmroost.sal_bush_shelf": "Sal Bush Shelf",
+  "block.wyrmroost.sal_bush_leaves": "Sal Bush Leaves",
+  "block.wyrmroost.sal_bush_vine": "Sal Bush Vine",
+  "block.wyrmroost.sal_bush_sapling": "Sal Bush Sapling",
+  "block.wyrmroost.potted_sal_bush_sapling": "Potted Sal Bush Sapling"
 }
