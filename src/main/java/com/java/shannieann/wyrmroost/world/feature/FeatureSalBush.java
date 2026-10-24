@@ -1,21 +1,19 @@
 package com.java.shannieann.wyrmroost.world.feature;
 
-import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.Codec;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.feature.Feature;
+import net.minecraft.world.level.levelgen.feature.FeaturePlaceContext;
+import net.minecraft.world.level.levelgen.feature.configurations.NoneFeatureConfiguration;
 
 
-public class FeatureSalBush implements Feature {
-    //TODO: Confirm with Shan
-    public static final FeatureSalBush INSTANCE = new FeatureSalBush();
-    public static final MapCodec<FeatureSalBush> CODEC = MapCodec.unit(INSTANCE);
+public class FeatureSalBush extends Feature<NoneFeatureConfiguration> {
 
     // =============
     //  PARAMETERS
@@ -57,13 +55,15 @@ public class FeatureSalBush implements Feature {
     // =============
     //  PROCEDURAL GENERATION
     // =============
-    @Override
-    public MapCodec<? extends Feature> codec() {
-        return CODEC;
+    public FeatureSalBush(Codec<NoneFeatureConfiguration> codec) {
+        super(codec);
     }
 
     @Override
-    public boolean place(WorldGenLevel level, ChunkGenerator generator, RandomSource random, BlockPos origin) {
+    public boolean place(FeaturePlaceContext<NoneFeatureConfiguration> context) {
+        WorldGenLevel level = context.level();
+        RandomSource random = context.random();
+        BlockPos origin = context.origin();
         int chunkX = origin.getX() >> 4;
         int chunkZ = origin.getZ() >> 4;
 
