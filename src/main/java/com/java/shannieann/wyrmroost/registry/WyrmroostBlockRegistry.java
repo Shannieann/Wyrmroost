@@ -45,7 +45,6 @@ public final class WyrmroostBlockRegistry {
     }
 
     //TODO: Double and triple check every wood item variant is present
-    //TODO: Verify Wolf's code
     private static final MapColor SAL_BUSH_WOOD_COLOUR = MapColor.WOOD;
     private static final MapColor SAL_BUSH_BARK_COLOUR = MapColor.PODZOL;
 
@@ -61,6 +60,10 @@ public final class WyrmroostBlockRegistry {
             RotatedPillarBlock::new, () -> BlockBehaviour.Properties.of()
                     .mapColor(state -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? SAL_BUSH_WOOD_COLOUR : SAL_BUSH_WOOD_COLOUR)
                     .instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava());
+    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_SAL_BUSH_WOOD = BLOCKS.registerBlock("stripped_sal_bush_wood",
+            RotatedPillarBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(state -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? SAL_BUSH_WOOD_COLOUR : SAL_BUSH_WOOD_COLOUR)
+                    .instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava());
     public static final DeferredBlock<Block> SAL_BUSH_PLANKS = BLOCKS.registerBlock("sal_bush_planks",
             Block::new, () -> BlockBehaviour.Properties.of()
                     .mapColor(SAL_BUSH_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD).ignitedByLava());
@@ -73,6 +76,21 @@ public final class WyrmroostBlockRegistry {
     public static final DeferredBlock<FenceBlock> SAL_BUSH_FENCE = BLOCKS.registerBlock("sal_bush_fence",
             FenceBlock::new, () -> BlockBehaviour.Properties.of()
                     .mapColor(SAL_BUSH_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD).ignitedByLava().forceSolidOn());
+    public static final DeferredBlock<FenceGateBlock> SAL_BUSH_FENCE_GATE = BLOCKS.registerBlock("sal_bush_fence_gate",
+            properties -> new FenceGateBlock(WyrmroostWoodTypes.SAL_BUSH, properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(SAL_BUSH_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).ignitedByLava().forceSolidOn().strength(2.0F, 3.0F));
+    public static final DeferredBlock<DoorBlock> SAL_BUSH_DOOR = BLOCKS.registerBlock("sal_bush_door",
+            properties -> new DoorBlock(WyrmroostWoodTypes.SAL_BUSH_SET, properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(SAL_BUSH_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(3.0F).noOcclusion().pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<TrapDoorBlock> SAL_BUSH_TRAPDOOR = BLOCKS.registerBlock("sal_bush_trapdoor",
+            properties -> new TrapDoorBlock(WyrmroostWoodTypes.SAL_BUSH_SET, properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(SAL_BUSH_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(3.0F).noOcclusion());
+    public static final DeferredBlock<PressurePlateBlock> SAL_BUSH_PRESSURE_PLATE = BLOCKS.registerBlock("sal_bush_pressure_plate",
+            properties -> new PressurePlateBlock(WyrmroostWoodTypes.SAL_BUSH_SET, properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(SAL_BUSH_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).ignitedByLava().forceSolidOn().noCollision().strength(0.5F).pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<ButtonBlock> SAL_BUSH_BUTTON = BLOCKS.registerBlock("sal_bush_button",
+            properties -> new ButtonBlock(WyrmroostWoodTypes.SAL_BUSH_SET, 30, properties), () -> BlockBehaviour.Properties.of()
+                    .noCollision().strength(0.5F).pushReaction(PushReaction.POPPED));
     public static final DeferredBlock<ShelfBlock> SAL_BUSH_SHELF = BLOCKS.registerBlock("sal_bush_shelf",
             ShelfBlock::new, () -> BlockBehaviour.Properties.of()
                     .mapColor(SAL_BUSH_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).sound(SoundType.SHELF).ignitedByLava().strength(2.0F, 3.0F));
@@ -82,10 +100,17 @@ public final class WyrmroostBlockRegistry {
                     .isValidSpawn((state, level, pos, entityType) -> entityType == EntityTypes.OCELOT || entityType == EntityTypes.PARROT).isSuffocating((state, level, pos) -> false)
                     .isViewBlocking((state, level, pos, argument) -> false).ignitedByLava().pushReaction(PushReaction.POPPED)
                     .isRedstoneConductor((state, level, pos) -> false));
+    public static final DeferredBlock<VineBlock> SAL_BUSH_VINE = BLOCKS.registerBlock("sal_bush_vine",
+            VineBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).replaceable().noCollision().randomTicks().strength(0.2F).sound(SoundType.GRASS)
+                    .ignitedByLava().pushReaction(PushReaction.POPPED));
     //TODO: Sapling behaviour! See Shan conv on Disc
     public static final DeferredBlock<BlockSalBushSapling> SAL_BUSH_SAPLING = BLOCKS.registerBlock("sal_bush_sapling",
             BlockSalBushSapling::new, () -> BlockBehaviour.Properties.of()
                     .mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.POPPED));
+    public static final DeferredBlock<FlowerPotBlock> POTTED_SAL_BUSH_SAPLING = BLOCKS.registerBlock("potted_sal_bush_sapling",
+            properties -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, SAL_BUSH_SAPLING, properties), () -> BlockBehaviour.Properties.of()
+                    .instabreak().noOcclusion().pushReaction(PushReaction.POPPED));
 
     //TODO: Confirm Shelf Behaviour
     private static void addBlockEntityBlocks(BlockEntityTypeAddBlocksEvent event) {
