@@ -38,13 +38,13 @@ public final class WyrmroostBlockRegistry {
     // =============
     //  SAL BUSH WOOD
     // =============
+    //TODO: Ladders
 
     public static void register(IEventBus modEventBus) {
         BLOCKS.register(modEventBus);
         modEventBus.addListener(WyrmroostBlockRegistry::addBlockEntityBlocks);
     }
 
-    //TODO: Double and triple check every wood item variant is present
     private static final MapColor SAL_BUSH_WOOD_COLOUR = MapColor.WOOD;
     private static final MapColor SAL_BUSH_BARK_COLOUR = MapColor.PODZOL;
 

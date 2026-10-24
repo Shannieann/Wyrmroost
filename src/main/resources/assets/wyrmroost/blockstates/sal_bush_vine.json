@@ -23,7 +23,7 @@
     {
       "apply": {
         "model": "wyrmroost:block/sal_bush_vine",
-        "uvlock": true
+        "uvlock": true,
         "y": 90
       },
       "when": {

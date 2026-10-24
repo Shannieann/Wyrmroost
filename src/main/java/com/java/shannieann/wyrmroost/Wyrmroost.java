@@ -29,13 +29,10 @@ public class Wyrmroost {
         WyrmroostItemRegistry.register(modEventBus);
         WyrmroostFeatureRegistry.register(modEventBus);
         WyrmroostCreativeTab.register(modEventBus);
-        modEventBus.addListener(Wyrmroost::addBlockEntityBlocks);
         //TODO: Log
         LOGGER.info("Wyrmroost: Testing...");
     }
 
-    private static void addBlockEntityBlocks(BlockEntityTypeAddBlocksEvent event) {
-        event.modify(BlockEntityTypes.SHELF, WyrmroostBlockRegistry.SAL_BUSH_SHELF.get());
-    }
+
 
 }
