@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "wyrmroost:block/sal_bush_sapling"
+  }
+}
