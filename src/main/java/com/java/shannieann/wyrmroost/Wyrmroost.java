@@ -8,15 +8,9 @@ import org.slf4j.Logger;
 
 import com.mojang.logging.LogUtils;
 
-import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.level.block.entity.BlockEntityTypes;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.BlockEntityTypeAddBlocksEvent;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
-
-import static com.java.shannieann.wyrmroost.registry.WyrmroostItemRegistry.*;
 
 @Mod(Wyrmroost.MODID)
 public class Wyrmroost {
