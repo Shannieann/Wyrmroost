@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "group": "shelf",
+  "key": {
+    "#": "wyrmroost:stripped_sal_bush_log"
+  },
+  "pattern": [
+    "###",
+    "   ",
+    "###"
+  ],
+  "result": {
+    "count": 6,
+    "id": "wyrmroost:sal_bush_shelf"
+  }
+}

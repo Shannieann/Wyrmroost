@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "planks",
+  "ingredients": [
+    "#wyrmroost:sal_bush_logs"
+  ],
+  "result": {
+    "count": 4,
+    "id": "wyrmroost:sal_bush_planks"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "group": "wooden_button",
+  "ingredients": [
+    "wyrmroost:sal_bush_planks"
+  ],
+  "result": {
+    "id": "wyrmroost:sal_bush_button"
+  }
+}
