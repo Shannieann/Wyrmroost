@@ -1,0 +1,6 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "wyrmroost:block/sal_shelf_inventory"
+  }
+}
