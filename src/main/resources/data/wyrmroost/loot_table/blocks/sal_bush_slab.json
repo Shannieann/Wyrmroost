@@ -2,29 +2,33 @@
   "type": "minecraft:block",
   "pools": [
     {
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:item",
-          "modifier": [
+          "functions": [
             {
-              "type": "minecraft:set_count",
-              "condition": {
-                "type": "minecraft:match_block",
-                "blocks": "wyrmroost:sal_bush_slab",
-                "state": {
-                  "type": "double"
+              "add": false,
+              "conditions": [
+                {
+                  "block": "wyrmroost:sal_bush_slab",
+                  "condition": "minecraft:block_state_property",
+                  "properties": {
+                    "type": "double"
+                  }
                 }
-              },
-              "count": 2
+              ],
+              "count": 2.0,
+              "function": "minecraft:set_count"
             },
             {
-              "type": "minecraft:explosion_decay"
+              "function": "minecraft:explosion_decay"
             }
           ],
           "name": "wyrmroost:sal_bush_slab"
         }
       ],
-      "rolls": 1
+      "rolls": 1.0
     }
   ],
   "random_sequence": "wyrmroost:blocks/sal_bush_slab"

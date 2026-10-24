@@ -2,14 +2,22 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "condition": "minecraft:tool/can_shear",
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:match_tool",
+          "predicate": {
+            "items": "minecraft:shears"
+          }
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
           "name": "wyrmroost:sal_bush_vine"
         }
       ],
-      "rolls": 1
+      "rolls": 1.0
     }
   ],
   "random_sequence": "wyrmroost:blocks/sal_bush_vine"

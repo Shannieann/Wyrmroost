@@ -2,23 +2,28 @@
   "type": "minecraft:block",
   "pools": [
     {
-      "condition": {
-        "type": "minecraft:survives_explosion"
-      },
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
       "entries": [
         {
           "type": "minecraft:item",
-          "condition": {
-            "type": "minecraft:match_block",
-            "blocks": "wyrmroost:sal_bush_door",
-            "state": {
-              "half": "lower"
+          "conditions": [
+            {
+              "block": "wyrmroost:sal_bush_door",
+              "condition": "minecraft:block_state_property",
+              "properties": {
+                "half": "lower"
+              }
             }
-          },
+          ],
           "name": "wyrmroost:sal_bush_door"
         }
       ],
-      "rolls": 1
+      "rolls": 1.0
     }
   ],
   "random_sequence": "wyrmroost:blocks/sal_bush_door"

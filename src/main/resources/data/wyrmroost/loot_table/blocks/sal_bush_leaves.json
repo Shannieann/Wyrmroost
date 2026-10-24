@@ -2,90 +2,134 @@
   "type": "minecraft:block",
   "pools": [
     {
+      "bonus_rolls": 0.0,
       "entries": [
         {
           "type": "minecraft:alternatives",
           "children": [
             {
               "type": "minecraft:item",
-              "condition": {
-                "type": "minecraft:any_of",
-                "terms": [
-                  "minecraft:tool/can_shear",
-                  "minecraft:tool/can_silk_touch"
-                ]
-              },
+              "conditions": [
+                {
+                  "condition": "minecraft:any_of",
+                  "terms": [
+                    {
+                      "condition": "minecraft:match_tool",
+                      "predicate": {
+                        "items": "minecraft:shears"
+                      }
+                    },
+                    {
+                      "condition": "minecraft:match_tool",
+                      "predicate": {
+                        "predicates": {
+                          "minecraft:enchantments": [
+                            {
+                              "enchantments": "minecraft:silk_touch",
+                              "levels": {
+                                "min": 1
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    }
+                  ]
+                }
+              ],
               "name": "wyrmroost:sal_bush_leaves"
             },
             {
               "type": "minecraft:item",
-              "condition": {
-                "type": "minecraft:all_of",
-                "terms": [
-                  {
-                    "type": "minecraft:survives_explosion"
-                  },
-                  {
-                    "type": "minecraft:table_bonus",
-                    "chances": [
-                      0.05,
-                      0.0625,
-                      0.083333336,
-                      0.1
-                    ],
-                    "enchantment": "minecraft:fortune"
-                  }
-                ]
-              },
+              "conditions": [
+                {
+                  "condition": "minecraft:survives_explosion"
+                },
+                {
+                  "chances": [
+                    0.05,
+                    0.0625,
+                    0.083333336,
+                    0.1
+                  ],
+                  "condition": "minecraft:table_bonus",
+                  "enchantment": "minecraft:fortune"
+                }
+              ],
               "name": "wyrmroost:sal_bush_sapling"
             }
           ]
         }
       ],
-      "rolls": 1
+      "rolls": 1.0
     },
     {
-      "condition": {
-        "type": "minecraft:inverted",
-        "term": {
-          "type": "minecraft:any_of",
-          "terms": [
-            "minecraft:tool/can_shear",
-            "minecraft:tool/can_silk_touch"
-          ]
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:inverted",
+          "term": {
+            "condition": "minecraft:any_of",
+            "terms": [
+              {
+                "condition": "minecraft:match_tool",
+                "predicate": {
+                  "items": "minecraft:shears"
+                }
+              },
+              {
+                "condition": "minecraft:match_tool",
+                "predicate": {
+                  "predicates": {
+                    "minecraft:enchantments": [
+                      {
+                        "enchantments": "minecraft:silk_touch",
+                        "levels": {
+                          "min": 1
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
         }
-      },
+      ],
       "entries": [
         {
           "type": "minecraft:item",
-          "condition": {
-            "type": "minecraft:table_bonus",
-            "chances": [
-              0.02,
-              0.022222223,
-              0.025,
-              0.033333335,
-              0.1
-            ],
-            "enchantment": "minecraft:fortune"
-          },
-          "modifier": [
+          "conditions": [
             {
-              "type": "minecraft:set_count",
+              "chances": [
+                0.02,
+                0.022222223,
+                0.025,
+                0.033333335,
+                0.1
+              ],
+              "condition": "minecraft:table_bonus",
+              "enchantment": "minecraft:fortune"
+            }
+          ],
+          "functions": [
+            {
+              "add": false,
               "count": {
                 "type": "minecraft:uniform",
-                "max": 2,
-                "min": 1
-              }
+                "max": 2.0,
+                "min": 1.0
+              },
+              "function": "minecraft:set_count"
             },
             {
-              "type": "minecraft:explosion_decay"
+              "function": "minecraft:explosion_decay"
             }
           ],
           "name": "minecraft:stick"
         }
       ],
-      "rolls": 1
+      "rolls": 1.0
     }
   ],
   "random_sequence": "wyrmroost:blocks/sal_bush_leaves"

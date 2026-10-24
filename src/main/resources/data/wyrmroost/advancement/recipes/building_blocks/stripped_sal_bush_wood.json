@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "wyrmroost:stripped_sal_bush_wood"
+        "recipe": "wyrmroost:stripped_sal_bush_wood"
       },
       "trigger": "minecraft:recipe_unlocked"
     }

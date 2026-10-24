@@ -16,7 +16,7 @@
         16,
         0.8
       ],
-      "shade_direction_override": "up",
+      "shade": false,
       "faces": {
         "north": {
           "uv": [

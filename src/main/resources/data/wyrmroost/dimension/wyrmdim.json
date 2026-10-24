@@ -8,12 +8,8 @@
       "lakes": false,
       "layers": [
         {
-          "block": "minecraft:sulfur",
-          "height": 128
-        },
-        {
-          "block": "minecraft:polished_cinnabar",
-          "height": 1
+          "block": "minecraft:netherrack",
+          "height": 129
         }
       ],
       "structure_overrides": []

@@ -1,0 +1,49 @@
+{
+  "values": {
+    "wyrmroost:sal_bush_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:sal_bush_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_sal_bush_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_sal_bush_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:sal_bush_planks": {
+      "burn_time": 300
+    },
+    "wyrmroost:sal_bush_stairs": {
+      "burn_time": 300
+    },
+    "wyrmroost:sal_bush_slab": {
+      "burn_time": 150
+    },
+    "wyrmroost:sal_bush_fence": {
+      "burn_time": 300
+    },
+    "wyrmroost:sal_bush_fence_gate": {
+      "burn_time": 300
+    },
+    "wyrmroost:sal_bush_door": {
+      "burn_time": 200
+    },
+    "wyrmroost:sal_bush_trapdoor": {
+      "burn_time": 300
+    },
+    "wyrmroost:sal_bush_pressure_plate": {
+      "burn_time": 300
+    },
+    "wyrmroost:sal_bush_button": {
+      "burn_time": 100
+    },
+    "wyrmroost:sal_bush_shelf": {
+      "burn_time": 300
+    },
+    "wyrmroost:sal_bush_sapling": {
+      "burn_time": 100
+    }
+  }
+}

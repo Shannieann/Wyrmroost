@@ -1,0 +1,13 @@
+{
+  "values": {
+    "wyrmroost:sal_bush_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:sal_bush_sapling": {
+      "chance": 0.3
+    },
+    "wyrmroost:sal_bush_vine": {
+      "chance": 0.5
+    }
+  }
+}

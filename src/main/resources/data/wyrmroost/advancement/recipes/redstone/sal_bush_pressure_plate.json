@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipes": "wyrmroost:sal_bush_pressure_plate"
+        "recipe": "wyrmroost:sal_bush_pressure_plate"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
