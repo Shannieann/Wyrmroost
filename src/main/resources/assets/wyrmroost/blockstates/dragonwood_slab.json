@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "wyrmroost:block/dragonwood_slab"
+    },
+    "type=double": {
+      "model": "wyrmroost:block/dragonwood_planks"
+    },
+    "type=top": {
+      "model": "wyrmroost:block/dragonwood_slab_top"
+    }
+  }
+}

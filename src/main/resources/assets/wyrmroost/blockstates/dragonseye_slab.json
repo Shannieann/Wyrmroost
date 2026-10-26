@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "wyrmroost:block/dragonseye_slab"
+    },
+    "type=double": {
+      "model": "wyrmroost:block/dragonseye_planks"
+    },
+    "type=top": {
+      "model": "wyrmroost:block/dragonseye_slab_top"
+    }
+  }
+}

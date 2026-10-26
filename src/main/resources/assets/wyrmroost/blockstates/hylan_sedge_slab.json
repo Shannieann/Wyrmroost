@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "wyrmroost:block/hylan_sedge_slab"
+    },
+    "type=double": {
+      "model": "wyrmroost:block/hylan_sedge_planks"
+    },
+    "type=top": {
+      "model": "wyrmroost:block/hylan_sedge_slab_top"
+    }
+  }
+}

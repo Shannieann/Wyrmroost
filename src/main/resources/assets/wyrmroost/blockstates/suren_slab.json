@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "wyrmroost:block/suren_slab"
+    },
+    "type=double": {
+      "model": "wyrmroost:block/suren_planks"
+    },
+    "type=top": {
+      "model": "wyrmroost:block/suren_slab_top"
+    }
+  }
+}

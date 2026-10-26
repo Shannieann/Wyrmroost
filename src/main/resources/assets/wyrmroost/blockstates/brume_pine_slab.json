@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "wyrmroost:block/brume_pine_slab"
+    },
+    "type=double": {
+      "model": "wyrmroost:block/brume_pine_planks"
+    },
+    "type=top": {
+      "model": "wyrmroost:block/brume_pine_slab_top"
+    }
+  }
+}

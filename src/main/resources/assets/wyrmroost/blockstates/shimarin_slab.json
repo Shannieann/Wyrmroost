@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "wyrmroost:block/shimarin_slab"
+    },
+    "type=double": {
+      "model": "wyrmroost:block/shimarin_planks"
+    },
+    "type=top": {
+      "model": "wyrmroost:block/shimarin_slab_top"
+    }
+  }
+}

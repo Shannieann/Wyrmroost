@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "type=bottom": {
+      "model": "wyrmroost:block/kaliburn_slab"
+    },
+    "type=double": {
+      "model": "wyrmroost:block/kaliburn_planks"
+    },
+    "type=top": {
+      "model": "wyrmroost:block/kaliburn_slab_top"
+    }
+  }
+}

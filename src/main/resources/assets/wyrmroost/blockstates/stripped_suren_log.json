@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "wyrmroost:block/stripped_suren_log_x"
+    },
+    "axis=y": {
+      "model": "wyrmroost:block/stripped_suren_log_y"
+    },
+    "axis=z": {
+      "model": "wyrmroost:block/stripped_suren_log_z"
+    }
+  }
+}

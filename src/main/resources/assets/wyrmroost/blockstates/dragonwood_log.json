@@ -1,0 +1,47 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "axis": "y"
+      },
+      "apply": {
+        "model": "wyrmroost:block/dragonwood_log"
+      }
+    },
+    {
+      "when": {
+        "axis": "z"
+      },
+      "apply": {
+        "model": "wyrmroost:block/dragonwood_log",
+        "x": 90
+      }
+    },
+    {
+      "when": {
+        "axis": "x"
+      },
+      "apply": {
+        "model": "wyrmroost:block/dragonwood_log",
+        "x": 90,
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "leaves": "small"
+      },
+      "apply": {
+        "model": "wyrmroost:block/dragonwood_small_leaves"
+      }
+    },
+    {
+      "when": {
+        "leaves": "large"
+      },
+      "apply": {
+        "model": "wyrmroost:block/dragonwood_large_leaves"
+      }
+    }
+  ]
+}
