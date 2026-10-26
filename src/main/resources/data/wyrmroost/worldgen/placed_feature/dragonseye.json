@@ -1,0 +1,8 @@
+{
+  "feature": "wyrmroost:dragonseye",
+  "placement": [
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

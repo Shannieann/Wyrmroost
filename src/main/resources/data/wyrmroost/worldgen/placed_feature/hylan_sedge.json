@@ -1,0 +1,8 @@
+{
+  "feature": "wyrmroost:hylan_sedge",
+  "placement": [
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

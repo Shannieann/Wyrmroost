@@ -1,0 +1,8 @@
+{
+  "feature": "wyrmroost:dragonwood",
+  "placement": [
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

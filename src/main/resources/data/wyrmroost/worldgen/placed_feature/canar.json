@@ -1,0 +1,8 @@
+{
+  "feature": "wyrmroost:canar",
+  "placement": [
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

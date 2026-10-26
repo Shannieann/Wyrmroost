@@ -1,0 +1,8 @@
+{
+  "feature": "wyrmroost:brume_pine",
+  "placement": [
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "feature": "wyrmroost:shimarin",
+  "placement": [
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

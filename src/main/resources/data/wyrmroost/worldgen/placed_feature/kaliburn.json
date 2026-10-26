@@ -1,0 +1,8 @@
+{
+  "feature": "wyrmroost:kaliburn",
+  "placement": [
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "feature": "wyrmroost:suren",
+  "placement": [
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}
