@@ -8,7 +8,7 @@
       "lakes": false,
       "layers": [
         {
-          "block": "minecraft:netherrack",
+          "block": "minecraft:sculk",
           "height": 129
         }
       ],
