@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_stripped_hylan_sedge_log": {
+      "conditions": {
+        "items": [
+          {
+            "items": "wyrmroost:stripped_hylan_sedge_log"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "wyrmroost:hylan_sedge_shelf"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_stripped_hylan_sedge_log"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "wyrmroost:hylan_sedge_shelf"
+    ]
+  }
+}

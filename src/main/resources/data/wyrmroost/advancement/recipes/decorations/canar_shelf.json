@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_stripped_canar_log": {
+      "conditions": {
+        "items": [
+          {
+            "items": "wyrmroost:stripped_canar_log"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "wyrmroost:canar_shelf"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_the_recipe",
+      "has_stripped_canar_log"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "wyrmroost:canar_shelf"
+    ]
+  }
+}
