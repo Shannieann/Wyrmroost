@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "group": "wooden_button",
+  "ingredients": [
+    "wyrmroost:canar_planks"
+  ],
+  "result": {
+    "id": "wyrmroost:canar_button"
+  }
+}

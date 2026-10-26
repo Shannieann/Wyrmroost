@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "group": "wooden_button",
+  "ingredients": [
+    "wyrmroost:hylan_sedge_planks"
+  ],
+  "result": {
+    "id": "wyrmroost:hylan_sedge_button"
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "planks",
+  "ingredients": [
+    "#wyrmroost:dragonseye_logs"
+  ],
+  "result": {
+    "count": 4,
+    "id": "wyrmroost:dragonseye_planks"
+  }
+}

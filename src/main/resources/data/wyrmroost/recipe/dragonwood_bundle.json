@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "wyrmroost:dragonwood_log",
+    "wyrmroost:dragonwood_log",
+    "wyrmroost:dragonwood_log",
+    "wyrmroost:dragonwood_log",
+    "wyrmroost:dragonwood_log",
+    "wyrmroost:dragonwood_log",
+    "wyrmroost:dragonwood_log",
+    "wyrmroost:dragonwood_log",
+    "wyrmroost:dragonwood_log"
+  ],
+  "result": {
+    "id": "wyrmroost:dragonwood_bundle"
+  }
+}

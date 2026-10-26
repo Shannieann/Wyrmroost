@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "redstone",
+  "group": "wooden_pressure_plate",
+  "key": {
+    "#": "wyrmroost:dragonseye_planks"
+  },
+  "pattern": [
+    "##"
+  ],
+  "result": {
+    "id": "wyrmroost:dragonseye_pressure_plate"
+  }
+}

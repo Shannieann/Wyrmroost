@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "redstone",
+  "group": "wooden_button",
+  "ingredients": [
+    "wyrmroost:brume_pine_planks"
+  ],
+  "result": {
+    "id": "wyrmroost:brume_pine_button"
+  }
+}
