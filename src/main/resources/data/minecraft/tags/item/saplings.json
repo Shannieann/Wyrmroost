@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_sapling"
+    "wyrmroost:sal_bush_sapling",
+    "wyrmroost:kaliburn_sapling",
+    "wyrmroost:dragonseye_sapling",
+    "wyrmroost:dragonwood_sapling",
+    "wyrmroost:shimarin_sapling",
+    "wyrmroost:brume_pine_sapling",
+    "wyrmroost:canar_sapling",
+    "wyrmroost:suren_sapling",
+    "wyrmroost:hylan_sedge_sapling"
   ]
 }

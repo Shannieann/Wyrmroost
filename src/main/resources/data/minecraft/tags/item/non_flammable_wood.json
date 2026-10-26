@@ -1,0 +1,19 @@
+{
+  "replace": false,
+  "values": [
+    "wyrmroost:kaliburn_log",
+    "wyrmroost:kaliburn_wood",
+    "wyrmroost:stripped_kaliburn_log",
+    "wyrmroost:stripped_kaliburn_wood",
+    "wyrmroost:kaliburn_planks",
+    "wyrmroost:kaliburn_slab",
+    "wyrmroost:kaliburn_pressure_plate",
+    "wyrmroost:kaliburn_fence",
+    "wyrmroost:kaliburn_trapdoor",
+    "wyrmroost:kaliburn_fence_gate",
+    "wyrmroost:kaliburn_stairs",
+    "wyrmroost:kaliburn_button",
+    "wyrmroost:kaliburn_door",
+    "wyrmroost:kaliburn_shelf"
+  ]
+}

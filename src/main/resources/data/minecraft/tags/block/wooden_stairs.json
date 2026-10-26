@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_stairs"
+    "wyrmroost:sal_bush_stairs",
+    "wyrmroost:kaliburn_stairs",
+    "wyrmroost:dragonseye_stairs",
+    "wyrmroost:dragonwood_stairs",
+    "wyrmroost:shimarin_stairs",
+    "wyrmroost:brume_pine_stairs",
+    "wyrmroost:canar_stairs",
+    "wyrmroost:suren_stairs",
+    "wyrmroost:hylan_sedge_stairs"
   ]
 }

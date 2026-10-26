@@ -1,6 +1,13 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_leaves"
+    "wyrmroost:sal_bush_leaves",
+    "wyrmroost:dragonseye_leaves",
+    "wyrmroost:dragonwood_leaves",
+    "wyrmroost:shimarin_leaves",
+    "wyrmroost:brume_pine_leaves",
+    "wyrmroost:canar_leaves",
+    "wyrmroost:suren_leaves",
+    "wyrmroost:hylan_sedge_leaves"
   ]
 }

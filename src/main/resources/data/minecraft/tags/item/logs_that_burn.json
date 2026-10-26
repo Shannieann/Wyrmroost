@@ -1,6 +1,13 @@
 {
   "replace": false,
   "values": [
-    "#wyrmroost:sal_bush_logs"
+    "#wyrmroost:sal_bush_logs",
+    "#wyrmroost:dragonseye_logs",
+    "#wyrmroost:dragonwood_logs",
+    "#wyrmroost:shimarin_logs",
+    "#wyrmroost:brume_pine_logs",
+    "#wyrmroost:canar_logs",
+    "#wyrmroost:suren_logs",
+    "#wyrmroost:hylan_sedge_logs"
   ]
 }

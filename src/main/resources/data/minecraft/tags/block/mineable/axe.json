@@ -1,6 +1,7 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_vine"
+    "wyrmroost:sal_bush_vine",
+    "wyrmroost:dragonwood_bundle"
   ]
 }

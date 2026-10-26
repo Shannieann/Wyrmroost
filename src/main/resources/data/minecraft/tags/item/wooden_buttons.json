@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_button"
+    "wyrmroost:sal_bush_button",
+    "wyrmroost:kaliburn_button",
+    "wyrmroost:dragonseye_button",
+    "wyrmroost:dragonwood_button",
+    "wyrmroost:shimarin_button",
+    "wyrmroost:brume_pine_button",
+    "wyrmroost:canar_button",
+    "wyrmroost:suren_button",
+    "wyrmroost:hylan_sedge_button"
   ]
 }

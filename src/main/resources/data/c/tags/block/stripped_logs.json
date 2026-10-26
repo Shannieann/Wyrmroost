@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:stripped_sal_bush_log"
+    "wyrmroost:stripped_sal_bush_log",
+    "wyrmroost:stripped_kaliburn_log",
+    "wyrmroost:stripped_dragonseye_log",
+    "wyrmroost:stripped_dragonwood_log",
+    "wyrmroost:stripped_shimarin_log",
+    "wyrmroost:stripped_brume_pine_log",
+    "wyrmroost:stripped_canar_log",
+    "wyrmroost:stripped_suren_log",
+    "wyrmroost:stripped_hylan_sedge_log"
   ]
 }

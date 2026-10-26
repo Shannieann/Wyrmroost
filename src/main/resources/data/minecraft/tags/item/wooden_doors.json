@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_door"
+    "wyrmroost:sal_bush_door",
+    "wyrmroost:kaliburn_door",
+    "wyrmroost:dragonseye_door",
+    "wyrmroost:dragonwood_door",
+    "wyrmroost:shimarin_door",
+    "wyrmroost:brume_pine_door",
+    "wyrmroost:canar_door",
+    "wyrmroost:suren_door",
+    "wyrmroost:hylan_sedge_door"
   ]
 }

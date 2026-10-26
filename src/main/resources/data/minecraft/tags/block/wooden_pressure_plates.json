@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_pressure_plate"
+    "wyrmroost:sal_bush_pressure_plate",
+    "wyrmroost:kaliburn_pressure_plate",
+    "wyrmroost:dragonseye_pressure_plate",
+    "wyrmroost:dragonwood_pressure_plate",
+    "wyrmroost:shimarin_pressure_plate",
+    "wyrmroost:brume_pine_pressure_plate",
+    "wyrmroost:canar_pressure_plate",
+    "wyrmroost:suren_pressure_plate",
+    "wyrmroost:hylan_sedge_pressure_plate"
   ]
 }

@@ -44,6 +44,321 @@
     },
     "wyrmroost:sal_bush_sapling": {
       "burn_time": 100
+    },
+    "wyrmroost:dragonseye_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonseye_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_dragonseye_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_dragonseye_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonseye_planks": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonseye_stairs": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonseye_slab": {
+      "burn_time": 150
+    },
+    "wyrmroost:dragonseye_fence": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonseye_fence_gate": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonseye_door": {
+      "burn_time": 200
+    },
+    "wyrmroost:dragonseye_trapdoor": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonseye_pressure_plate": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonseye_button": {
+      "burn_time": 100
+    },
+    "wyrmroost:dragonseye_shelf": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonseye_sapling": {
+      "burn_time": 100
+    },
+    "wyrmroost:dragonwood_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonwood_bundle": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_dragonwood_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_dragonwood_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonwood_planks": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonwood_stairs": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonwood_slab": {
+      "burn_time": 150
+    },
+    "wyrmroost:dragonwood_fence": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonwood_fence_gate": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonwood_door": {
+      "burn_time": 200
+    },
+    "wyrmroost:dragonwood_trapdoor": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonwood_pressure_plate": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonwood_button": {
+      "burn_time": 100
+    },
+    "wyrmroost:dragonwood_shelf": {
+      "burn_time": 300
+    },
+    "wyrmroost:dragonwood_sapling": {
+      "burn_time": 100
+    },
+    "wyrmroost:shimarin_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:shimarin_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_shimarin_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_shimarin_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:shimarin_planks": {
+      "burn_time": 300
+    },
+    "wyrmroost:shimarin_stairs": {
+      "burn_time": 300
+    },
+    "wyrmroost:shimarin_slab": {
+      "burn_time": 150
+    },
+    "wyrmroost:shimarin_fence": {
+      "burn_time": 300
+    },
+    "wyrmroost:shimarin_fence_gate": {
+      "burn_time": 300
+    },
+    "wyrmroost:shimarin_door": {
+      "burn_time": 200
+    },
+    "wyrmroost:shimarin_trapdoor": {
+      "burn_time": 300
+    },
+    "wyrmroost:shimarin_pressure_plate": {
+      "burn_time": 300
+    },
+    "wyrmroost:shimarin_button": {
+      "burn_time": 100
+    },
+    "wyrmroost:shimarin_shelf": {
+      "burn_time": 300
+    },
+    "wyrmroost:shimarin_sapling": {
+      "burn_time": 100
+    },
+    "wyrmroost:brume_pine_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:brume_pine_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_brume_pine_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_brume_pine_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:brume_pine_planks": {
+      "burn_time": 300
+    },
+    "wyrmroost:brume_pine_stairs": {
+      "burn_time": 300
+    },
+    "wyrmroost:brume_pine_slab": {
+      "burn_time": 150
+    },
+    "wyrmroost:brume_pine_fence": {
+      "burn_time": 300
+    },
+    "wyrmroost:brume_pine_fence_gate": {
+      "burn_time": 300
+    },
+    "wyrmroost:brume_pine_door": {
+      "burn_time": 200
+    },
+    "wyrmroost:brume_pine_trapdoor": {
+      "burn_time": 300
+    },
+    "wyrmroost:brume_pine_pressure_plate": {
+      "burn_time": 300
+    },
+    "wyrmroost:brume_pine_button": {
+      "burn_time": 100
+    },
+    "wyrmroost:brume_pine_shelf": {
+      "burn_time": 300
+    },
+    "wyrmroost:brume_pine_sapling": {
+      "burn_time": 100
+    },
+    "wyrmroost:canar_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:canar_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_canar_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_canar_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:canar_planks": {
+      "burn_time": 300
+    },
+    "wyrmroost:canar_stairs": {
+      "burn_time": 300
+    },
+    "wyrmroost:canar_slab": {
+      "burn_time": 150
+    },
+    "wyrmroost:canar_fence": {
+      "burn_time": 300
+    },
+    "wyrmroost:canar_fence_gate": {
+      "burn_time": 300
+    },
+    "wyrmroost:canar_door": {
+      "burn_time": 200
+    },
+    "wyrmroost:canar_trapdoor": {
+      "burn_time": 300
+    },
+    "wyrmroost:canar_pressure_plate": {
+      "burn_time": 300
+    },
+    "wyrmroost:canar_button": {
+      "burn_time": 100
+    },
+    "wyrmroost:canar_shelf": {
+      "burn_time": 300
+    },
+    "wyrmroost:canar_sapling": {
+      "burn_time": 100
+    },
+    "wyrmroost:suren_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:suren_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_suren_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_suren_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:suren_planks": {
+      "burn_time": 300
+    },
+    "wyrmroost:suren_stairs": {
+      "burn_time": 300
+    },
+    "wyrmroost:suren_slab": {
+      "burn_time": 150
+    },
+    "wyrmroost:suren_fence": {
+      "burn_time": 300
+    },
+    "wyrmroost:suren_fence_gate": {
+      "burn_time": 300
+    },
+    "wyrmroost:suren_door": {
+      "burn_time": 200
+    },
+    "wyrmroost:suren_trapdoor": {
+      "burn_time": 300
+    },
+    "wyrmroost:suren_pressure_plate": {
+      "burn_time": 300
+    },
+    "wyrmroost:suren_button": {
+      "burn_time": 100
+    },
+    "wyrmroost:suren_shelf": {
+      "burn_time": 300
+    },
+    "wyrmroost:suren_sapling": {
+      "burn_time": 100
+    },
+    "wyrmroost:hylan_sedge_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:hylan_sedge_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_hylan_sedge_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_hylan_sedge_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:hylan_sedge_planks": {
+      "burn_time": 300
+    },
+    "wyrmroost:hylan_sedge_stairs": {
+      "burn_time": 300
+    },
+    "wyrmroost:hylan_sedge_slab": {
+      "burn_time": 150
+    },
+    "wyrmroost:hylan_sedge_fence": {
+      "burn_time": 300
+    },
+    "wyrmroost:hylan_sedge_fence_gate": {
+      "burn_time": 300
+    },
+    "wyrmroost:hylan_sedge_door": {
+      "burn_time": 200
+    },
+    "wyrmroost:hylan_sedge_trapdoor": {
+      "burn_time": 300
+    },
+    "wyrmroost:hylan_sedge_pressure_plate": {
+      "burn_time": 300
+    },
+    "wyrmroost:hylan_sedge_button": {
+      "burn_time": 100
+    },
+    "wyrmroost:hylan_sedge_shelf": {
+      "burn_time": 300
+    },
+    "wyrmroost:hylan_sedge_sapling": {
+      "burn_time": 100
     }
   }
 }

@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_slab"
+    "wyrmroost:sal_bush_slab",
+    "wyrmroost:kaliburn_slab",
+    "wyrmroost:dragonseye_slab",
+    "wyrmroost:dragonwood_slab",
+    "wyrmroost:shimarin_slab",
+    "wyrmroost:brume_pine_slab",
+    "wyrmroost:canar_slab",
+    "wyrmroost:suren_slab",
+    "wyrmroost:hylan_sedge_slab"
   ]
 }

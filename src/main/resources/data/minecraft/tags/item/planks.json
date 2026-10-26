@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_planks"
+    "wyrmroost:sal_bush_planks",
+    "wyrmroost:kaliburn_planks",
+    "wyrmroost:dragonseye_planks",
+    "wyrmroost:dragonwood_planks",
+    "wyrmroost:shimarin_planks",
+    "wyrmroost:brume_pine_planks",
+    "wyrmroost:canar_planks",
+    "wyrmroost:suren_planks",
+    "wyrmroost:hylan_sedge_planks"
   ]
 }

@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_shelf"
+    "wyrmroost:sal_bush_shelf",
+    "wyrmroost:kaliburn_shelf",
+    "wyrmroost:dragonseye_shelf",
+    "wyrmroost:dragonwood_shelf",
+    "wyrmroost:shimarin_shelf",
+    "wyrmroost:brume_pine_shelf",
+    "wyrmroost:canar_shelf",
+    "wyrmroost:suren_shelf",
+    "wyrmroost:hylan_sedge_shelf"
   ]
 }

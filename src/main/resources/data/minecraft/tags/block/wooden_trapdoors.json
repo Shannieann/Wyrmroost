@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_trapdoor"
+    "wyrmroost:sal_bush_trapdoor",
+    "wyrmroost:kaliburn_trapdoor",
+    "wyrmroost:dragonseye_trapdoor",
+    "wyrmroost:dragonwood_trapdoor",
+    "wyrmroost:shimarin_trapdoor",
+    "wyrmroost:brume_pine_trapdoor",
+    "wyrmroost:canar_trapdoor",
+    "wyrmroost:suren_trapdoor",
+    "wyrmroost:hylan_sedge_trapdoor"
   ]
 }

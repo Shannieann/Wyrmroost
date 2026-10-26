@@ -8,6 +8,54 @@
     },
     "wyrmroost:sal_bush_vine": {
       "chance": 0.5
+    },
+    "wyrmroost:kaliburn_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:kaliburn_sapling": {
+      "chance": 0.3
+    },
+    "wyrmroost:dragonseye_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:dragonseye_sapling": {
+      "chance": 0.3
+    },
+    "wyrmroost:dragonwood_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:dragonwood_sapling": {
+      "chance": 0.3
+    },
+    "wyrmroost:shimarin_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:shimarin_sapling": {
+      "chance": 0.3
+    },
+    "wyrmroost:brume_pine_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:brume_pine_sapling": {
+      "chance": 0.3
+    },
+    "wyrmroost:canar_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:canar_sapling": {
+      "chance": 0.3
+    },
+    "wyrmroost:suren_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:suren_sapling": {
+      "chance": 0.3
+    },
+    "wyrmroost:hylan_sedge_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:hylan_sedge_sapling": {
+      "chance": 0.3
     }
   }
 }

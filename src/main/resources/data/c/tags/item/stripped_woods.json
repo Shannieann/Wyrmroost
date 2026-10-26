@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:stripped_sal_bush_wood"
+    "wyrmroost:stripped_sal_bush_wood",
+    "wyrmroost:stripped_kaliburn_wood",
+    "wyrmroost:stripped_dragonseye_wood",
+    "wyrmroost:stripped_dragonwood_wood",
+    "wyrmroost:stripped_shimarin_wood",
+    "wyrmroost:stripped_brume_pine_wood",
+    "wyrmroost:stripped_canar_wood",
+    "wyrmroost:stripped_suren_wood",
+    "wyrmroost:stripped_hylan_sedge_wood"
   ]
 }

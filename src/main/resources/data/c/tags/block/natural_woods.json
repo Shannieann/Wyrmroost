@@ -1,6 +1,13 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_wood"
+    "wyrmroost:sal_bush_wood",
+    "wyrmroost:kaliburn_wood",
+    "wyrmroost:dragonseye_wood",
+    "wyrmroost:shimarin_wood",
+    "wyrmroost:brume_pine_wood",
+    "wyrmroost:canar_wood",
+    "wyrmroost:suren_wood",
+    "wyrmroost:hylan_sedge_wood"
   ]
 }

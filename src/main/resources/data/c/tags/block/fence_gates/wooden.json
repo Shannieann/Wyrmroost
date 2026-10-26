@@ -1,6 +1,14 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_fence_gate"
+    "wyrmroost:sal_bush_fence_gate",
+    "wyrmroost:kaliburn_fence_gate",
+    "wyrmroost:dragonseye_fence_gate",
+    "wyrmroost:dragonwood_fence_gate",
+    "wyrmroost:shimarin_fence_gate",
+    "wyrmroost:brume_pine_fence_gate",
+    "wyrmroost:canar_fence_gate",
+    "wyrmroost:suren_fence_gate",
+    "wyrmroost:hylan_sedge_fence_gate"
   ]
 }

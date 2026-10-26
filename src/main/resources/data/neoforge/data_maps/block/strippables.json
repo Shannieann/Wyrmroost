@@ -5,6 +5,51 @@
     },
     "wyrmroost:sal_bush_wood": {
       "stripped_block": "wyrmroost:stripped_sal_bush_wood"
+    },
+    "wyrmroost:kaliburn_log": {
+      "stripped_block": "wyrmroost:stripped_kaliburn_log"
+    },
+    "wyrmroost:kaliburn_wood": {
+      "stripped_block": "wyrmroost:stripped_kaliburn_wood"
+    },
+    "wyrmroost:dragonseye_log": {
+      "stripped_block": "wyrmroost:stripped_dragonseye_log"
+    },
+    "wyrmroost:dragonseye_wood": {
+      "stripped_block": "wyrmroost:stripped_dragonseye_wood"
+    },
+    "wyrmroost:dragonwood_log": {
+      "stripped_block": "wyrmroost:stripped_dragonwood_log"
+    },
+    "wyrmroost:shimarin_log": {
+      "stripped_block": "wyrmroost:stripped_shimarin_log"
+    },
+    "wyrmroost:shimarin_wood": {
+      "stripped_block": "wyrmroost:stripped_shimarin_wood"
+    },
+    "wyrmroost:brume_pine_log": {
+      "stripped_block": "wyrmroost:stripped_brume_pine_log"
+    },
+    "wyrmroost:brume_pine_wood": {
+      "stripped_block": "wyrmroost:stripped_brume_pine_wood"
+    },
+    "wyrmroost:canar_log": {
+      "stripped_block": "wyrmroost:stripped_canar_log"
+    },
+    "wyrmroost:canar_wood": {
+      "stripped_block": "wyrmroost:stripped_canar_wood"
+    },
+    "wyrmroost:suren_log": {
+      "stripped_block": "wyrmroost:stripped_suren_log"
+    },
+    "wyrmroost:suren_wood": {
+      "stripped_block": "wyrmroost:stripped_suren_wood"
+    },
+    "wyrmroost:hylan_sedge_log": {
+      "stripped_block": "wyrmroost:stripped_hylan_sedge_log"
+    },
+    "wyrmroost:hylan_sedge_wood": {
+      "stripped_block": "wyrmroost:stripped_hylan_sedge_wood"
     }
   }
 }
