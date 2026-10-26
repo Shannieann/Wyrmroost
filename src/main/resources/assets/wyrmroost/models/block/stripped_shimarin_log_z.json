@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column_uv_locked_z",
+  "textures": {
+    "end": "wyrmroost:block/stripped_shimarin_log_top",
+    "side": "wyrmroost:block/stripped_shimarin_log"
+  }
+}

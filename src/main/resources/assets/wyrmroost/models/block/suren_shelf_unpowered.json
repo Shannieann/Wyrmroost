@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/template_shelf_unpowered",
+  "textures": {
+    "all": "wyrmroost:block/suren_shelf",
+    "particle": "wyrmroost:block/stripped_suren_log"
+  }
+}

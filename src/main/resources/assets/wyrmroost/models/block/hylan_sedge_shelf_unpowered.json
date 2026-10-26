@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/template_shelf_unpowered",
+  "textures": {
+    "all": "wyrmroost:block/hylan_sedge_shelf",
+    "particle": "wyrmroost:block/stripped_hylan_sedge_log"
+  }
+}

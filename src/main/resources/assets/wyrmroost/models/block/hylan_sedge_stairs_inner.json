@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/inner_stairs",
+  "textures": {
+    "bottom": "wyrmroost:block/hylan_sedge_planks",
+    "side": "wyrmroost:block/hylan_sedge_planks",
+    "top": "wyrmroost:block/hylan_sedge_planks"
+  }
+}

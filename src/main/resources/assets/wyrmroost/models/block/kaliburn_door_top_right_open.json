@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_top_right_open",
+  "textures": {
+    "bottom": "wyrmroost:block/kaliburn_door_bottom",
+    "top": "wyrmroost:block/kaliburn_door_top"
+  }
+}

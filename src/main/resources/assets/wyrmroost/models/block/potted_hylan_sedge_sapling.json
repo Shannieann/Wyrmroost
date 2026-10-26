@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/flower_pot_cross",
+  "textures": {
+    "plant": "wyrmroost:block/hylan_sedge_sapling"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "wyrmroost:block/dragonwood_bundle",
+    "side": "wyrmroost:block/dragonwood_bundle"
+  }
+}

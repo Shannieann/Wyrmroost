@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/leaves",
+  "textures": {
+    "all": "wyrmroost:block/hylan_sedge_leaves"
+  }
+}

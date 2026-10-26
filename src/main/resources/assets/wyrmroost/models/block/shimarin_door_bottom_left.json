@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_bottom_left",
+  "textures": {
+    "bottom": "wyrmroost:block/shimarin_door_bottom",
+    "top": "wyrmroost:block/shimarin_door_top"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "wyrmroost:block/canar_planks",
+    "side": "wyrmroost:block/canar_planks",
+    "top": "wyrmroost:block/canar_planks"
+  }
+}

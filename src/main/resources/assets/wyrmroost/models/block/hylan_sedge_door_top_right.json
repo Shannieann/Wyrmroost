@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_top_right",
+  "textures": {
+    "bottom": "wyrmroost:block/hylan_sedge_door_bottom",
+    "top": "wyrmroost:block/hylan_sedge_door_top"
+  }
+}

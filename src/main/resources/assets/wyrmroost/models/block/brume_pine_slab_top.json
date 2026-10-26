@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "wyrmroost:block/brume_pine_planks",
+    "side": "wyrmroost:block/brume_pine_planks",
+    "top": "wyrmroost:block/brume_pine_planks"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/cube_column",
+  "textures": {
+    "end": "wyrmroost:block/hylan_sedge_log",
+    "side": "wyrmroost:block/hylan_sedge_log"
+  }
+}

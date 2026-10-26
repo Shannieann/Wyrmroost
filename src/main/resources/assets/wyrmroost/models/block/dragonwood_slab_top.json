@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/slab_top",
+  "textures": {
+    "bottom": "wyrmroost:block/dragonwood_planks",
+    "side": "wyrmroost:block/dragonwood_planks",
+    "top": "wyrmroost:block/dragonwood_planks"
+  }
+}

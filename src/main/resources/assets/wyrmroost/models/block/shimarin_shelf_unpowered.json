@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/template_shelf_unpowered",
+  "textures": {
+    "all": "wyrmroost:block/shimarin_shelf",
+    "particle": "wyrmroost:block/stripped_shimarin_log"
+  }
+}

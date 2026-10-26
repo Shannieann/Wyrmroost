@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/outer_stairs",
+  "textures": {
+    "bottom": "wyrmroost:block/dragonseye_planks",
+    "side": "wyrmroost:block/dragonseye_planks",
+    "top": "wyrmroost:block/dragonseye_planks"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_bottom_right",
+  "textures": {
+    "bottom": "wyrmroost:block/canar_door_bottom",
+    "top": "wyrmroost:block/canar_door_top"
+  }
+}

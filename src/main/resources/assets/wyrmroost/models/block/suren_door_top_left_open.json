@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/door_top_left_open",
+  "textures": {
+    "bottom": "wyrmroost:block/suren_door_bottom",
+    "top": "wyrmroost:block/suren_door_top"
+  }
+}

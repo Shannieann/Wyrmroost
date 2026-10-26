@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/template_fence_gate_wall",
   "textures": {
-    "textures": "wyrmroost:block/sal_bush_planks"
+    "texture": "wyrmroost:block/sal_bush_planks"
   }
 }
