@@ -8,8 +8,12 @@
       "lakes": false,
       "layers": [
         {
-          "block": "minecraft:sculk",
-          "height": 129
+          "block": "minecraft:dirt",
+          "height": 128
+        },
+        {
+          "block": "minecraft:grass_block",
+          "height": 1
         }
       ],
       "structure_overrides": []

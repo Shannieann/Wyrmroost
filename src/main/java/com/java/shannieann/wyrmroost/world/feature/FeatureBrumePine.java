@@ -69,6 +69,10 @@ public class FeatureBrumePine extends Feature<NoneFeatureConfiguration> {
     //LEAVES
     private static final float FINGER_LEAF_CHANCE = 0.5F;
     private static final int MAX_FINGER_TIP = 2;
+    private static final float SPIRAL_TOP_CHANCE = 0.95F;
+    private static final float SPIRAL_BOTTOM_CHANCE = 0.5F;
+    private static final float SPIRAL_THICK_CHANCE = 0.4F;
+    private static final float SPIRAL_GAP = 0.6F;
 
     // =============
     //  PROCEDURAL GENERATION
@@ -86,6 +90,9 @@ public class FeatureBrumePine extends Feature<NoneFeatureConfiguration> {
         int chunkZ = origin.getZ() >> 4;
 
         //TODO: Actual Placement
+        if (!TreeRegions.isRegionFor(chunkX, chunkZ, TreeRegions.BRUME_PINE)) {
+            return false;
+        }
         if (random.nextFloat() >= TREE_CHANCE) {
             return false;
         }
@@ -107,9 +114,11 @@ public class FeatureBrumePine extends Feature<NoneFeatureConfiguration> {
             twist = -twist;
         }
         double rotation = random.nextFloat() * Math.PI * 2.0;
+        double[] layerAngles = new double[height];
         for (int y = 0; y < height; y++) {
             double radius = radiusAt(y, height, trunkRadius);
             placeTrunkLayer(level, corner, base.above(y), radius, strands, rotation);
+            layerAngles[y] = rotation;
             rotation += twist / radius;
         }
         BlockPos top = base.above(height - 1);
@@ -125,6 +134,23 @@ public class FeatureBrumePine extends Feature<NoneFeatureConfiguration> {
         }
 
         BlockState leaves = WyrmroostBlockRegistry.BRUME_PINE_LEAVES.get().defaultBlockState().setValue(LeavesBlock.PERSISTENT, true);
+        for (int y = height - 1; y >= 0; y--) {
+            float t = (float) y / (height - 1);
+            float chance = SPIRAL_BOTTOM_CHANCE + (SPIRAL_TOP_CHANCE - SPIRAL_BOTTOM_CHANCE) * t;
+            double distance = radiusAt(y, height, trunkRadius) * (STRAND_OFFSET + STRAND_THICKNESS) + SPIRAL_GAP;
+            for (int i = 0; i < strands; i++) {
+                if (random.nextFloat() >= chance) {
+                    continue;
+                }
+                double angle = layerAngles[y] + Math.PI * 2.0 / strands * i;
+                BlockPos pos = base.offset((int) Math.round(Math.cos(angle) * distance), y, (int) Math.round(Math.sin(angle) * distance));
+                placeLeaves(level, corner, pos, leaves);
+                if (random.nextFloat() < SPIRAL_THICK_CHANCE) {
+                    double side = angle + (random.nextBoolean() ? 1.0 : -1.0) / distance;
+                    placeLeaves(level, corner, base.offset((int) Math.round(Math.cos(side) * distance), y, (int) Math.round(Math.sin(side) * distance)), leaves);
+                }
+            }
+        }
 
         int fingers = randomBetween(random, MIN_FINGERS, MAX_FINGERS);
         double handRotation = random.nextFloat() * Math.PI * 2.0;

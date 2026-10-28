@@ -53,9 +53,9 @@ public class FeatureSuren extends Feature<NoneFeatureConfiguration> {
     private static final float SPLIT_ANGLE_RANGE_DEG = 25.0F;
 
     //CANOPY
-    private static final int MIN_CANOPY_RADIUS = 4;
-    private static final int MAX_CANOPY_RADIUS = 5;
-    private static final float LEAF_EDGE_CHANCE = 0.5F;
+    private static final int MIN_CANOPY_RADIUS = 5;
+    private static final int MAX_CANOPY_RADIUS = 6;
+    private static final float LEAF_EDGE_CHANCE = 0.7F;
 
     // =============
     //  PROCEDURAL GENERATION
@@ -73,6 +73,9 @@ public class FeatureSuren extends Feature<NoneFeatureConfiguration> {
         int chunkZ = origin.getZ() >> 4;
 
         //TODO: Actual Placement
+        if (!TreeRegions.isRegionFor(chunkX, chunkZ, TreeRegions.SUREN)) {
+            return false;
+        }
         if (random.nextFloat() >= TREE_CHANCE) {
             return false;
         }

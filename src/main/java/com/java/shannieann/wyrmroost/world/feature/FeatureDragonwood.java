@@ -64,6 +64,9 @@ public class FeatureDragonwood extends Feature<NoneFeatureConfiguration> {
         int chunkZ = origin.getZ() >> 4;
 
         //TODO: Actual Placement
+        if (!TreeRegions.isRegionFor(chunkX, chunkZ, TreeRegions.DRAGONWOOD)) {
+            return false;
+        }
         if (random.nextFloat() >= GROVE_CHANCE) {
             return false;
         }

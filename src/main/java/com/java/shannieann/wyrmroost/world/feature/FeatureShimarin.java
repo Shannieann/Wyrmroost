@@ -27,49 +27,57 @@ public class FeatureShimarin extends Feature<NoneFeatureConfiguration> {
     // =============
 
     //PLACEMENT
-    private static final float TREE_CHANCE = 0.3F;
+    private static final float TREE_CHANCE = 0.25F;
     private static final int CENTRE_MARGIN = 4;
     private static final int AREA_SIZE = 48;
 
     //TRUNK
-    private static final int MIN_HEIGHT = 16;
-    private static final int MAX_HEIGHT = 22;
-    private static final int MIN_FLARE = 2;
-    private static final int MAX_FLARE = 5;
-    private static final int BARE_TOP = 2;
+    private static final int MIN_TRUNK_HEIGHT = 10;
+    private static final int MAX_TRUNK_HEIGHT = 15;
+    private static final float MIN_TRUNK_RADIUS = 2.5F;
+    private static final float MAX_TRUNK_RADIUS = 3.5F;
+    private static final float TAPER = 0.35F;
+    private static final int MIN_FLUTES = 5;
+    private static final int MAX_FLUTES = 8;
+    private static final float FLUTE_DEPTH = 0.35F;
+    private static final float FLUTE_TWIST_DEG = 4.0F;
+    private static final float FLARE = 0.6F;
+    private static final int FLARE_HEIGHT = 4;
 
-    //ROOTS
-    private static final int MIN_ROOTS = 3;
-    private static final int MAX_ROOTS = 6;
-    private static final int MIN_ROOT_LENGTH = 2;
-    private static final int MAX_ROOT_LENGTH = 4;
-    private static final float ROOT_ANGLE_RANGE_DEG = 20.0F;
+    //LEADERS
+    private static final int MIN_LEADERS = 2;
+    private static final int MAX_LEADERS = 4;
+    private static final float LEADER_ANGLE_RANGE_DEG = 30.0F;
+    private static final int MIN_LEADER_LENGTH = 8;
+    private static final int MAX_LEADER_LENGTH = 13;
+    private static final float MIN_LEADER_LEAN_DEG = 10.0F;
+    private static final float MAX_LEADER_LEAN_DEG = 30.0F;
+    private static final float LEADER_TWIST_DEG = 20.0F;
+    private static final float THICK_LEADER_PART = 0.6F;
 
-    //BRANCHES
-    private static final float BRANCH_START = 0.3F;
-    private static final int MIN_BRANCH_GAP = 1;
-    private static final int MAX_BRANCH_GAP = 2;
-    private static final int MIN_BRANCH_LENGTH = 2;
-    private static final int MAX_BRANCH_LENGTH = 5;
-    private static final float BRANCH_TURN_DEG = 137.5F;
-    private static final float BRANCH_ANGLE_RANGE_DEG = 30.0F;
-    private static final float STEP_RISE_CHANCE = 0.4F;
-    private static final int MIN_HOOK = 1;
-    private static final int MAX_HOOK = 2;
-    private static final float TWIG_CHANCE = 0.5F;
-    private static final float TWIG_ANGLE_DEG = 45.0F;
+    //LIMBS
+    private static final int MIN_LIMBS = 2;
+    private static final int MAX_LIMBS = 4;
+    private static final float LIMB_START = 0.45F;
+    private static final float LIMB_END = 0.7F;
+    private static final int MIN_LIMB_LENGTH = 5;
+    private static final int MAX_LIMB_LENGTH = 9;
+    private static final float LIMB_TURN_DEG = 20.0F;
+    private static final float LIMB_WANDER_CHANCE = 0.35F;
+    private static final float LIMB_DROOP_CHANCE = 0.5F;
+    private static final int MAX_LIMB_DROP = 2;
+    private static final float THICK_LIMB_PART = 0.5F;
+    private static final float DEAD_LIMB_CHANCE = 0.45F;
 
-    //DRAPES
-    private static final float DRAPE_CHANCE = 0.6F;
-    private static final float DRAPE_COVER_CHANCE = 0.5F;
-    private static final int MIN_DRAPE = 2;
-    private static final int MAX_DRAPE = 6;
-    private static final int DRAPE_GROUND_GAP = 2;
-
-    //LEAF POOL
-    private static final float MIN_POOL_RADIUS = 2.5F;
-    private static final float MAX_POOL_RADIUS = 4.0F;
-    private static final float POOL_DENSITY = 0.6F;
+    //FOLIAGE
+    private static final float MIN_CLUMP_RADIUS = 2.5F;
+    private static final float MAX_CLUMP_RADIUS = 4.0F;
+    private static final float CLUMP_FLATTEN = 0.6F;
+    private static final int MIN_SUB_CLUMPS = 1;
+    private static final int MAX_SUB_CLUMPS = 3;
+    private static final int LEADER_CLUMP_SPACING = 3;
+    private static final float LEADER_CLUMP_CHANCE = 0.6F;
+    private static final float LEAF_EDGE_CHANCE = 0.5F;
 
     // =============
     //  PROCEDURAL GENERATION
@@ -87,6 +95,9 @@ public class FeatureShimarin extends Feature<NoneFeatureConfiguration> {
         int chunkZ = origin.getZ() >> 4;
 
         //TODO: Actual Placement
+        if (!TreeRegions.isRegionFor(chunkX, chunkZ, TreeRegions.SHIMARIN)) {
+            return false;
+        }
         if (random.nextFloat() >= TREE_CHANCE) {
             return false;
         }
@@ -100,148 +111,151 @@ public class FeatureShimarin extends Feature<NoneFeatureConfiguration> {
             return false;
         }
 
-        int height = randomBetween(random, MIN_HEIGHT, MAX_HEIGHT);
+        int height = randomBetween(random, MIN_TRUNK_HEIGHT, MAX_TRUNK_HEIGHT);
+        float trunkRadius = MIN_TRUNK_RADIUS + random.nextFloat() * (MAX_TRUNK_RADIUS - MIN_TRUNK_RADIUS);
+        int flutes = randomBetween(random, MIN_FLUTES, MAX_FLUTES);
+        double flutePhase = random.nextFloat() * Math.PI * 2.0;
+        double fluteTwist = Math.toRadians(FLUTE_TWIST_DEG) * (random.nextBoolean() ? 1.0 : -1.0);
         for (int y = 0; y < height; y++) {
-            placeLog(level, corner, base.above(y), Direction.Axis.Y);
+            placeTrunkLayer(level, corner, base.above(y), radiusAt(y, height, trunkRadius), flutes, flutePhase + fluteTwist * y);
         }
+        BlockPos top = base.above(height - 1);
+        double topRadius = radiusAt(height - 1, height, trunkRadius);
 
-        for (Direction direction : Direction.Plane.HORIZONTAL) {
-            int flare = randomBetween(random, MIN_FLARE, MAX_FLARE);
-            for (int y = 0; y < flare; y++) {
-                placeLog(level, corner, base.relative(direction).above(y), Direction.Axis.Y);
-            }
-            int diagonal = random.nextInt(MIN_FLARE + 1);
-            for (int y = 0; y < diagonal; y++) {
-                placeLog(level, corner, base.relative(direction).relative(direction.getClockWise()).above(y), Direction.Axis.Y);
-            }
-        }
-
-        int roots = randomBetween(random, MIN_ROOTS, MAX_ROOTS);
+        List<BlockPos> clumps = new ArrayList<>();
+        int leaders = randomBetween(random, MIN_LEADERS, MAX_LEADERS);
         double rotation = random.nextFloat() * Math.PI * 2.0;
-        double rootStep = Math.PI * 2.0 / roots;
-        for (int i = 0; i < roots; i++) {
-            double angle = rotation + rootStep * i + angleVariation(random, ROOT_ANGLE_RANGE_DEG);
-            growRoot(level, random, corner, base, angle);
+        for (int i = 0; i < leaders; i++) {
+            double angle = rotation + Math.PI * 2.0 / leaders * i + angleVariation(random, LEADER_ANGLE_RANGE_DEG);
+            BlockPos start = top.offset((int) Math.round(Math.cos(angle) * topRadius * 0.5), 0, (int) Math.round(Math.sin(angle) * topRadius * 0.5));
+            growLeader(level, random, corner, start, angle, clumps);
         }
 
-        List<BlockPos> branchBlocks = new ArrayList<>();
-        int firstBranch = Math.round(height * BRANCH_START);
-        int lastBranch = height - 1 - BARE_TOP;
-        double angle = random.nextFloat() * Math.PI * 2.0;
-        for (int y = firstBranch; y <= lastBranch; y += randomBetween(random, MIN_BRANCH_GAP, MAX_BRANCH_GAP)) {
-            float t = (float) (y - firstBranch) / Math.max(1, lastBranch - firstBranch);
-            double shape = Math.sin(Math.PI * (0.2 + 0.8 * t));
-            int length = MIN_BRANCH_LENGTH + (int) Math.round((MAX_BRANCH_LENGTH - MIN_BRANCH_LENGTH) * shape) + random.nextInt(2) - 1;
-            length = Math.max(1, length);
-
-            angle += Math.toRadians(BRANCH_TURN_DEG) + angleVariation(random, BRANCH_ANGLE_RANGE_DEG);
-            BlockPos start = base.above(y);
-            BlockPos tip = growBranch(level, random, corner, start, angle, length, branchBlocks);
-            hook(level, random, corner, tip);
-
-            if (length >= 3 && random.nextFloat() < TWIG_CHANCE) {
-                BlockPos middle = branchBlocks.get(branchBlocks.size() - 1 - length / 2);
-                double twigAngle = angle + (random.nextBoolean() ? 1 : -1) * Math.toRadians(TWIG_ANGLE_DEG);
-                BlockPos twigTip = growBranch(level, random, corner, middle, twigAngle, randomBetween(random, 1, 2), branchBlocks);
-                hook(level, random, corner, twigTip);
-            }
+        int limbs = randomBetween(random, MIN_LIMBS, MAX_LIMBS);
+        double limbRotation = random.nextFloat() * Math.PI * 2.0;
+        for (int i = 0; i < limbs; i++) {
+            int y = randomBetween(random, Math.round(height * LIMB_START), Math.round(height * LIMB_END));
+            double angle = limbRotation + Math.PI * 2.0 / limbs * i + angleVariation(random, LEADER_ANGLE_RANGE_DEG);
+            growLimb(level, random, corner, base.above(y), angle, (int) Math.ceil(radiusAt(y, height, trunkRadius)), clumps);
         }
 
         BlockState leaves = WyrmroostBlockRegistry.SHIMARIN_LEAVES.get().defaultBlockState().setValue(LeavesBlock.PERSISTENT, true);
-        int drape = randomBetween(random, MIN_DRAPE, MAX_DRAPE);
-        for (BlockPos pos : branchBlocks) {
-            if (random.nextFloat() >= DRAPE_CHANCE) {
-                continue;
-            }
-            if (random.nextFloat() < DRAPE_COVER_CHANCE) {
-                placeLeaves(level, corner, pos.above(), leaves);
-            }
-            int strand = Math.max(1, drape + random.nextInt(3) - 1);
-            for (int i = 1; i <= strand; i++) {
-                BlockPos below = pos.below(i);
-                if (!level.getBlockState(below).isAir() || !level.getBlockState(below.below(DRAPE_GROUND_GAP)).isAir()) {
-                    break;
-                }
-                placeLeaves(level, corner, below, leaves);
+        for (BlockPos clump : clumps) {
+            float radius = MIN_CLUMP_RADIUS + random.nextFloat() * (MAX_CLUMP_RADIUS - MIN_CLUMP_RADIUS);
+            placeClump(level, random, corner, clump, radius, leaves);
+            int subClumps = randomBetween(random, MIN_SUB_CLUMPS, MAX_SUB_CLUMPS);
+            for (int i = 0; i < subClumps; i++) {
+                int reach = (int) Math.ceil(radius / 2.0);
+                BlockPos offset = clump.offset(random.nextInt(reach * 2 + 1) - reach, random.nextInt(3) - 1, random.nextInt(reach * 2 + 1) - reach);
+                placeClump(level, random, corner, offset, radius * 0.7F, leaves);
             }
         }
-
-        placePool(level, random, corner, base, leaves);
         return true;
     }
 
 
-    private static void growRoot(WorldGenLevel level, RandomSource random, BlockPos corner, BlockPos base, double angle) {
-        double dx = Math.cos(angle);
-        double dz = Math.sin(angle);
-        double x = base.getX() + 0.5 + dx;
-        double z = base.getZ() + 0.5 + dz;
-        int y = base.getY() + randomBetween(random, 1, 2);
-        BlockPos previous = new BlockPos((int) Math.floor(x), y, (int) Math.floor(z));
-        placeLog(level, corner, previous, Direction.Axis.Y);
+    private static double radiusAt(int y, int height, float trunkRadius) {
+        double radius = trunkRadius * (1.0 - TAPER * y / (height - 1));
+        if (y < FLARE_HEIGHT) {
+            radius *= 1.0 + FLARE * (FLARE_HEIGHT - y) / FLARE_HEIGHT;
+        }
+        return radius;
+    }
 
-        int length = randomBetween(random, MIN_ROOT_LENGTH, MAX_ROOT_LENGTH);
-        for (int i = 0; i < length; i++) {
-            x += dx;
-            z += dz;
-            if (y > base.getY()) {
-                y--;
+    private static void placeTrunkLayer(WorldGenLevel level, BlockPos corner, BlockPos centre, double radius, int flutes, double phase) {
+        BlockState wood = WyrmroostBlockRegistry.SHIMARIN_WOOD.get().defaultBlockState();
+        int reach = (int) Math.ceil(radius) + 1;
+
+        for (int x = -reach; x <= reach; x++) {
+            for (int z = -reach; z <= reach; z++) {
+                double edge = radius * (1.0 - FLUTE_DEPTH * (0.5 + 0.5 * Math.cos(flutes * Math.atan2(z, x) + phase)));
+                BlockPos pos = centre.offset(x, 0, z);
+                if ((x == 0 && z == 0) || Math.sqrt(x * x + z * z) <= edge) {
+                    if (isInsideArea(corner, pos) && level.getBlockState(pos).isAir()) {
+                        level.setBlock(pos, wood, 2);
+                    }
+                }
             }
-            BlockPos next = new BlockPos((int) Math.floor(x), y, (int) Math.floor(z));
-            connectBlocks(level, corner, previous, next);
-            previous = next;
         }
     }
 
-    private static BlockPos growBranch(WorldGenLevel level, RandomSource random, BlockPos corner, BlockPos start,
-                                       double angle, int length, List<BlockPos> branchBlocks) {
-        double dx = Math.cos(angle);
-        double dz = Math.sin(angle);
+    private static void growLeader(WorldGenLevel level, RandomSource random, BlockPos corner, BlockPos start, double angle, List<BlockPos> clumps) {
+        int length = randomBetween(random, MIN_LEADER_LENGTH, MAX_LEADER_LENGTH);
+        double lean = Math.tan(Math.toRadians(MIN_LEADER_LEAN_DEG + random.nextFloat() * (MAX_LEADER_LEAN_DEG - MIN_LEADER_LEAN_DEG)));
+        double x = start.getX() + 0.5;
+        double z = start.getZ() + 0.5;
+        BlockPos previous = start;
+
+        for (int i = 1; i <= length; i++) {
+            angle += angleVariation(random, LEADER_TWIST_DEG);
+            x += Math.cos(angle) * lean;
+            z += Math.sin(angle) * lean;
+            BlockPos next = new BlockPos((int) Math.floor(x), start.getY() + i, (int) Math.floor(z));
+            connectBlocks(level, corner, previous, next, i <= length * THICK_LEADER_PART);
+            if (i > length / 3 && i % LEADER_CLUMP_SPACING == 0 && random.nextFloat() < LEADER_CLUMP_CHANCE) {
+                clumps.add(next);
+            }
+            previous = next;
+        }
+        clumps.add(previous.above());
+    }
+
+    private static void growLimb(WorldGenLevel level, RandomSource random, BlockPos corner, BlockPos start, double angle, int trunkReach,
+                                 List<BlockPos> clumps) {
+        int length = trunkReach + randomBetween(random, MIN_LIMB_LENGTH, MAX_LIMB_LENGTH);
+        boolean dead = random.nextFloat() < DEAD_LIMB_CHANCE;
         double x = start.getX() + 0.5;
         double z = start.getZ() + 0.5;
         int y = start.getY();
         BlockPos previous = start;
 
         for (int i = 1; i <= length; i++) {
-            x += dx;
-            z += dz;
-            if (i > 1 && random.nextFloat() < STEP_RISE_CHANCE) {
-                y++;
+            if (i > trunkReach) {
+                angle += angleVariation(random, LIMB_TURN_DEG);
+                if (random.nextFloat() < LIMB_WANDER_CHANCE) {
+                    y += random.nextFloat() < LIMB_DROOP_CHANCE ? -1 : 1;
+                    y = Math.max(y, start.getY() - MAX_LIMB_DROP);
+                }
             }
+            x += Math.cos(angle);
+            z += Math.sin(angle);
             BlockPos next = new BlockPos((int) Math.floor(x), y, (int) Math.floor(z));
-            connectBlocks(level, corner, previous, next);
-            branchBlocks.add(next);
+            connectBlocks(level, corner, previous, next, i <= trunkReach + (length - trunkReach) * THICK_LIMB_PART);
+            if (!dead && i == trunkReach + (length - trunkReach) / 2) {
+                clumps.add(next.above());
+            }
             previous = next;
         }
-        return previous;
+
+        if (dead) {
+            connectBlocks(level, corner, previous, previous.above(randomBetween(random, 1, 2)), false);
+        } else {
+            clumps.add(previous.above());
+        }
     }
 
-    private static void hook(WorldGenLevel level, RandomSource random, BlockPos corner, BlockPos tip) {
-        int hook = randomBetween(random, MIN_HOOK, MAX_HOOK);
-        connectBlocks(level, corner, tip, tip.above(hook));
-    }
-
-    private static void placePool(WorldGenLevel level, RandomSource random, BlockPos corner, BlockPos base, BlockState leaves) {
-        float radius = MIN_POOL_RADIUS + random.nextFloat() * (MAX_POOL_RADIUS - MIN_POOL_RADIUS);
-        int reach = (int) Math.ceil(radius) + 1;
+    private static void placeClump(WorldGenLevel level, RandomSource random, BlockPos corner, BlockPos centre, float radius, BlockState leaves) {
+        float radiusY = Math.max(1.0F, radius * CLUMP_FLATTEN);
+        int reach = (int) Math.ceil(radius);
+        int reachY = (int) Math.ceil(radiusY);
 
         for (int x = -reach; x <= reach; x++) {
-            for (int z = -reach; z <= reach; z++) {
-                double distance = Math.sqrt(x * x + z * z) + random.nextFloat() - 0.5;
-                float chance = distance <= radius - 1.0 ? POOL_DENSITY : POOL_DENSITY / 2.0F;
-                if (distance > radius || random.nextFloat() >= chance) {
-                    continue;
-                }
-                BlockPos pos = base.offset(x, 0, z);
-                BlockState ground = level.getBlockState(pos.below());
-                if (level.getBlockState(pos).isAir() && !ground.isAir() && ground.getFluidState().isEmpty()) {
-                    placeLeaves(level, corner, pos, leaves);
+            for (int y = -reachY; y <= reachY; y++) {
+                for (int z = -reach; z <= reach; z++) {
+                    double distance = (x * x + z * z) / (radius * radius) + (y * y) / (radiusY * radiusY);
+                    if (distance > 1.2 || (distance > 0.8 && random.nextFloat() >= LEAF_EDGE_CHANCE)) {
+                        continue;
+                    }
+                    BlockPos pos = centre.offset(x, y, z);
+                    if (isInsideArea(corner, pos) && level.getBlockState(pos).isAir()) {
+                        level.setBlock(pos, leaves, 2);
+                    }
                 }
             }
         }
     }
 
-    private static void connectBlocks(WorldGenLevel level, BlockPos corner, BlockPos from, BlockPos to) {
+    private static void connectBlocks(WorldGenLevel level, BlockPos corner, BlockPos from, BlockPos to, boolean thick) {
         int currentX = from.getX();
         int currentY = from.getY();
         int currentZ = from.getZ();
@@ -263,7 +277,17 @@ public class FeatureShimarin extends Feature<NoneFeatureConfiguration> {
                 axis = Direction.Axis.Z;
             }
 
-            placeLog(level, corner, new BlockPos(currentX, currentY, currentZ), axis);
+            BlockPos pos = new BlockPos(currentX, currentY, currentZ);
+            if (thick) {
+                placeWood(level, corner, pos);
+                for (Direction side : Direction.values()) {
+                    if (side.getAxis() != axis) {
+                        placeWood(level, corner, pos.relative(side));
+                    }
+                }
+            } else {
+                placeLog(level, corner, pos, axis);
+            }
         }
     }
 
@@ -279,10 +303,15 @@ public class FeatureShimarin extends Feature<NoneFeatureConfiguration> {
         level.setBlock(pos, log, 2);
     }
 
-    private static void placeLeaves(WorldGenLevel level, BlockPos corner, BlockPos pos, BlockState leaves) {
-        if (isInsideArea(corner, pos) && level.getBlockState(pos).isAir()) {
-            level.setBlock(pos, leaves, 2);
+    private static void placeWood(WorldGenLevel level, BlockPos corner, BlockPos pos) {
+        if (!isInsideArea(corner, pos)) {
+            return;
         }
+        BlockState current = level.getBlockState(pos);
+        if (!current.isAir() && !current.is(WyrmroostBlockRegistry.SHIMARIN_LEAVES.get())) {
+            return;
+        }
+        level.setBlock(pos, WyrmroostBlockRegistry.SHIMARIN_WOOD.get().defaultBlockState(), 2);
     }
 
     private static boolean isInsideArea(BlockPos corner, BlockPos pos) {

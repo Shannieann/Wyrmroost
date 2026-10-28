@@ -87,6 +87,8 @@ public class FeatureDragonsEye extends Feature<NoneFeatureConfiguration> {
     private static final int MIN_LEAF_RADIUS = 2;
     private static final int MAX_LEAF_RADIUS = 3;
     private static final float LEAF_EDGE_CHANCE = 0.5F;
+    private static final int MAX_EXTRA_LEAF_RADIUS = 2;
+    private static final int MAX_EXTRA_LEAF_BALLS = 3;
 
     // =============
     //  PROCEDURAL GENERATION
@@ -104,6 +106,9 @@ public class FeatureDragonsEye extends Feature<NoneFeatureConfiguration> {
         int chunkZ = origin.getZ() >> 4;
 
         //TODO: Actual Placement
+        if (!TreeRegions.isRegionFor(chunkX, chunkZ, TreeRegions.DRAGONSEYE)) {
+            return false;
+        }
         if (Math.floorMod(chunkX, CHUNKS) != 0 || Math.floorMod(chunkZ, CHUNKS) != 0 || random.nextFloat() >= TREE_CHANCE) {
             return false;
         }
@@ -134,6 +139,9 @@ public class FeatureDragonsEye extends Feature<NoneFeatureConfiguration> {
         placeButtresses(level, random, corner, centre, baseRadius, phaseA, phaseB, den, logs);
 
         int topY = centre.getY() + height - 1;
+        float leafiness = random.nextFloat();
+        int extraRadius = Math.round(leafiness * MAX_EXTRA_LEAF_RADIUS);
+        int extraBalls = Math.round(leafiness * MAX_EXTRA_LEAF_BALLS);
         int branches = randomBetween(random, MIN_BRANCHES, MAX_BRANCHES);
         double rotation = random.nextFloat() * Math.PI * 2.0;
         double step = Math.PI * 2.0 / branches;
@@ -142,10 +150,19 @@ public class FeatureDragonsEye extends Feature<NoneFeatureConfiguration> {
             int startY = topY - randomBetween(random, 1, MAX_BRANCH_DROP);
             int trunkRadius = (int) Math.round(taperAt(startY - centre.getY(), height, baseRadius, narrowFrom));
             int length = trunkRadius + randomBetween(random, MIN_BRANCH_LENGTH, MAX_BRANCH_LENGTH);
-            BlockPos end = growBranch(level, random, corner, centre.atY(startY), angle, length, logs);
-            placeLeaves(level, random, corner, end.above(), randomBetween(random, MIN_LEAF_RADIUS, MAX_LEAF_RADIUS));
+            BlockPos start = centre.atY(startY);
+            BlockPos end = growBranch(level, random, corner, start, angle, length, logs);
+            placeLeaves(level, random, corner, end.above(), randomBetween(random, MIN_LEAF_RADIUS, MAX_LEAF_RADIUS) + extraRadius);
+            for (int ball = 0; ball < extraBalls; ball++) {
+                float along = 0.4F + random.nextFloat() * 0.5F;
+                BlockPos pos = new BlockPos(
+                        start.getX() + (int) Math.round((end.getX() - start.getX()) * along),
+                        start.getY() + (int) Math.round((end.getY() - start.getY()) * along) + 1,
+                        start.getZ() + (int) Math.round((end.getZ() - start.getZ()) * along));
+                placeLeaves(level, random, corner, pos, randomBetween(random, MIN_LEAF_RADIUS, MAX_LEAF_RADIUS));
+            }
         }
-        placeLeaves(level, random, corner, centre.atY(topY + 1), MAX_LEAF_RADIUS + 1);
+        placeLeaves(level, random, corner, centre.atY(topY + 1), MAX_LEAF_RADIUS + 1 + extraRadius);
         removeLooseLogs(level, centre, logs);
         return true;
     }

@@ -82,6 +82,9 @@ public class FeatureKaliburn extends Feature<NoneFeatureConfiguration> {
         int chunkZ = origin.getZ() >> 4;
 
         //TODO: Actual Placement
+        if (!TreeRegions.isRegionFor(chunkX, chunkZ, TreeRegions.KALIBURN)) {
+            return false;
+        }
         if (Math.floorMod(chunkX, CHUNKS) != 0 || Math.floorMod(chunkZ, CHUNKS) != 0 || random.nextFloat() >= TREE_CHANCE) {
             return false;
         }

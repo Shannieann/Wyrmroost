@@ -34,6 +34,7 @@ public class FeatureHylanSedge extends Feature<NoneFeatureConfiguration> {
     private static final int MIN_LEAN = 3;
     private static final int MAX_LEAN = 5;
     private static final int STUMP_HEIGHT = 2;
+    private static final float EARLY_LEAN = 0.5F;
 
     //BRANCHES
     private static final int MIN_BRANCHES = 1;
@@ -43,11 +44,11 @@ public class FeatureHylanSedge extends Feature<NoneFeatureConfiguration> {
     private static final float BRANCH_ANGLE_RANGE_DEG = 35.0F;
 
     //CANOPY
-    private static final float MIN_CANOPY_LENGTH = 3.5F;
-    private static final float MAX_CANOPY_LENGTH = 5.0F;
-    private static final float CANOPY_WIDTH = 2.5F;
-    private static final float CANOPY_DEPTH = 1.5F;
-    private static final float LEAF_EDGE_CHANCE = 0.5F;
+    private static final float MIN_CANOPY_LENGTH = 4.5F;
+    private static final float MAX_CANOPY_LENGTH = 6.0F;
+    private static final float CANOPY_WIDTH = 3.0F;
+    private static final float CANOPY_DEPTH = 2.0F;
+    private static final float LEAF_EDGE_CHANCE = 0.7F;
     private static final int TUFT_RADIUS = 1;
 
     // =============
@@ -66,6 +67,9 @@ public class FeatureHylanSedge extends Feature<NoneFeatureConfiguration> {
         int chunkZ = origin.getZ() >> 4;
 
         //TODO: Actual Placement, only on the highest level of the Shattered Plains
+        if (!TreeRegions.isRegionFor(chunkX, chunkZ, TreeRegions.HYLAN_SEDGE)) {
+            return false;
+        }
         if (random.nextFloat() >= TREE_CHANCE) {
             return false;
         }
@@ -120,7 +124,7 @@ public class FeatureHylanSedge extends Feature<NoneFeatureConfiguration> {
 
     private static double bendAt(int y, int height, int lean) {
         double t = (double) y / height;
-        return lean * t * t;
+        return lean * (EARLY_LEAN * t + (1.0 - EARLY_LEAN) * t * t);
     }
 
     private static void placeCanopy(WorldGenLevel level, RandomSource random, BlockPos corner, BlockPos start,

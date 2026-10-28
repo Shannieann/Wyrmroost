@@ -48,9 +48,9 @@ public class FeatureCanar extends Feature<NoneFeatureConfiguration> {
     private static final int MIN_FORK_LENGTH = 2;
 
     //LEAVES
-    private static final float MIN_LEAF_RADIUS = 1.5F;
-    private static final float MAX_LEAF_RADIUS = 2.5F;
-    private static final float LEAF_EDGE_CHANCE = 0.5F;
+    private static final float MIN_LEAF_RADIUS = 2.0F;
+    private static final float MAX_LEAF_RADIUS = 3.0F;
+    private static final float LEAF_EDGE_CHANCE = 0.7F;
 
     // =============
     //  PROCEDURAL GENERATION
@@ -68,6 +68,9 @@ public class FeatureCanar extends Feature<NoneFeatureConfiguration> {
         int chunkZ = origin.getZ() >> 4;
 
         //TODO: Actual Placement
+        if (!TreeRegions.isRegionFor(chunkX, chunkZ, TreeRegions.CANAR)) {
+            return false;
+        }
         if (random.nextFloat() >= TREE_CHANCE) {
             return false;
         }
