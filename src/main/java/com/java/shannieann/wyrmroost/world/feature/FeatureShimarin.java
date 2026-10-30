@@ -69,7 +69,7 @@ public class FeatureShimarin extends Feature<NoneFeatureConfiguration> {
     private static final float THICK_LIMB_PART = 0.5F;
     private static final float DEAD_LIMB_CHANCE = 0.45F;
 
-    //FOLIAGE
+    //LEAVES
     private static final float MIN_CLUMP_RADIUS = 2.5F;
     private static final float MAX_CLUMP_RADIUS = 4.0F;
     private static final float CLUMP_FLATTEN = 0.6F;

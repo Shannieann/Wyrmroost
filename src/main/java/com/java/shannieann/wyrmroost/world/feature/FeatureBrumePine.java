@@ -69,9 +69,11 @@ public class FeatureBrumePine extends Feature<NoneFeatureConfiguration> {
     //LEAVES
     private static final float FINGER_LEAF_CHANCE = 0.5F;
     private static final int MAX_FINGER_TIP = 2;
-    private static final float SPIRAL_TOP_CHANCE = 0.95F;
-    private static final float SPIRAL_BOTTOM_CHANCE = 0.5F;
-    private static final float SPIRAL_THICK_CHANCE = 0.4F;
+    private static final float SPIRAL_TOP_CHANCE = 1.0F;
+    private static final float SPIRAL_BOTTOM_CHANCE = 0.7F;
+    private static final int SPIRAL_HALF_WIDTH = 2;
+    private static final int SPIRAL_DEPTH = 2;
+    private static final float SPIRAL_EDGE_CHANCE = 0.6F;
     private static final float SPIRAL_GAP = 0.6F;
 
     // =============
@@ -143,11 +145,16 @@ public class FeatureBrumePine extends Feature<NoneFeatureConfiguration> {
                     continue;
                 }
                 double angle = layerAngles[y] + Math.PI * 2.0 / strands * i;
-                BlockPos pos = base.offset((int) Math.round(Math.cos(angle) * distance), y, (int) Math.round(Math.sin(angle) * distance));
-                placeLeaves(level, corner, pos, leaves);
-                if (random.nextFloat() < SPIRAL_THICK_CHANCE) {
-                    double side = angle + (random.nextBoolean() ? 1.0 : -1.0) / distance;
-                    placeLeaves(level, corner, base.offset((int) Math.round(Math.cos(side) * distance), y, (int) Math.round(Math.sin(side) * distance)), leaves);
+                for (int across = -SPIRAL_HALF_WIDTH; across <= SPIRAL_HALF_WIDTH; across++) {
+                    for (int out = 0; out < SPIRAL_DEPTH; out++) {
+                        boolean edge = Math.abs(across) == SPIRAL_HALF_WIDTH || out == SPIRAL_DEPTH - 1;
+                        if (edge && random.nextFloat() >= SPIRAL_EDGE_CHANCE) {
+                            continue;
+                        }
+                        double reach = distance + out;
+                        double side = angle + across / reach;
+                        placeLeaves(level, corner, base.offset((int) Math.round(Math.cos(side) * reach), y, (int) Math.round(Math.sin(side) * reach)), leaves);
+                    }
                 }
             }
         }
