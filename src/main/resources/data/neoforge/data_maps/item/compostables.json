@@ -56,6 +56,66 @@
     },
     "wyrmroost:hylan_sedge_sapling": {
       "chance": 0.3
+    },
+    "wyrmroost:oseri_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:oseri_sapling": {
+      "chance": 0.3
+    },
+    "wyrmroost:blue_oseri_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:blue_oseri_sapling": {
+      "chance": 0.3
+    },
+    "wyrmroost:golden_oseri_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:golden_oseri_sapling": {
+      "chance": 0.3
+    },
+    "wyrmroost:pink_oseri_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:pink_oseri_sapling": {
+      "chance": 0.3
+    },
+    "wyrmroost:purple_oseri_leaves": {
+      "chance": 0.3
+    },
+    "wyrmroost:purple_oseri_sapling": {
+      "chance": 0.3
+    },
+    "wyrmroost:oseri_vines": {
+      "chance": 0.5
+    },
+    "wyrmroost:oseri_flooring": {
+      "chance": 0.3
+    },
+    "wyrmroost:blue_oseri_vines": {
+      "chance": 0.5
+    },
+    "wyrmroost:blue_oseri_flooring": {
+      "chance": 0.3
+    },
+    "wyrmroost:golden_oseri_vines": {
+      "chance": 0.5
+    },
+    "wyrmroost:golden_oseri_flooring": {
+      "chance": 0.3
+    },
+    "wyrmroost:pink_oseri_vines": {
+      "chance": 0.5
+    },
+    "wyrmroost:pink_oseri_flooring": {
+      "chance": 0.3
+    },
+    "wyrmroost:purple_oseri_vines": {
+      "chance": 0.5
+    },
+    "wyrmroost:purple_oseri_flooring": {
+      "chance": 0.3
     }
   }
 }

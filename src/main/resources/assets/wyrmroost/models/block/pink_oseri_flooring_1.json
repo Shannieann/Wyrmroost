@@ -1,0 +1,6 @@
+{
+  "parent": "wyrmroost:block/template_oseri_flooring_1",
+  "textures": {
+    "texture": "wyrmroost:block/pink_oseri_flooring"
+  }
+}

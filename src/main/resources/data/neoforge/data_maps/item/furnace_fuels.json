@@ -359,6 +359,51 @@
     },
     "wyrmroost:hylan_sedge_sapling": {
       "burn_time": 100
+    },
+    "wyrmroost:oseri_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:oseri_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_oseri_log": {
+      "burn_time": 300
+    },
+    "wyrmroost:stripped_oseri_wood": {
+      "burn_time": 300
+    },
+    "wyrmroost:oseri_planks": {
+      "burn_time": 300
+    },
+    "wyrmroost:oseri_stairs": {
+      "burn_time": 300
+    },
+    "wyrmroost:oseri_slab": {
+      "burn_time": 150
+    },
+    "wyrmroost:oseri_fence": {
+      "burn_time": 300
+    },
+    "wyrmroost:oseri_fence_gate": {
+      "burn_time": 300
+    },
+    "wyrmroost:oseri_door": {
+      "burn_time": 200
+    },
+    "wyrmroost:oseri_trapdoor": {
+      "burn_time": 300
+    },
+    "wyrmroost:oseri_pressure_plate": {
+      "burn_time": 300
+    },
+    "wyrmroost:oseri_button": {
+      "burn_time": 100
+    },
+    "wyrmroost:oseri_shelf": {
+      "burn_time": 300
+    },
+    "wyrmroost:oseri_sapling": {
+      "burn_time": 100
     }
   }
 }

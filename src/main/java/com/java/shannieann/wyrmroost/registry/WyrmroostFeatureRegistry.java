@@ -10,6 +10,7 @@ import com.java.shannieann.wyrmroost.world.feature.FeatureBrumePine;
 import com.java.shannieann.wyrmroost.world.feature.FeatureCanar;
 import com.java.shannieann.wyrmroost.world.feature.FeatureSuren;
 import com.java.shannieann.wyrmroost.world.feature.FeatureHylanSedge;
+import com.java.shannieann.wyrmroost.world.feature.FeatureOseri;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.feature.Feature;
@@ -41,6 +42,8 @@ public final class WyrmroostFeatureRegistry {
             FEATURES.register("suren", () -> new FeatureSuren(NoneFeatureConfiguration.CODEC));
     public static final DeferredHolder<Feature<?>, FeatureHylanSedge> HYLAN_SEDGE =
             FEATURES.register("hylan_sedge", () -> new FeatureHylanSedge(NoneFeatureConfiguration.CODEC));
+    public static final DeferredHolder<Feature<?>, FeatureOseri> OSERI =
+            FEATURES.register("oseri", () -> new FeatureOseri(NoneFeatureConfiguration.CODEC));
 
     public static void register(IEventBus modEventBus) {
         FEATURES.register(modEventBus);

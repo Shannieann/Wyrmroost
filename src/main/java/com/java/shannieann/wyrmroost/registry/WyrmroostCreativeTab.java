@@ -115,6 +115,17 @@ public final class WyrmroostCreativeTab {
             event.accept(HYLAN_SEDGE_TRAPDOOR_ITEM);
             event.accept(HYLAN_SEDGE_PRESSURE_PLATE_ITEM);
             event.accept(HYLAN_SEDGE_BUTTON_ITEM);
+            event.accept(OSERI_LOG_ITEM);
+            event.accept(OSERI_WOOD_ITEM);
+            event.accept(OSERI_PLANKS_ITEM);
+            event.accept(OSERI_STAIRS_ITEM);
+            event.accept(OSERI_SLAB_ITEM);
+            event.accept(OSERI_FENCE_ITEM);
+            event.accept(OSERI_FENCE_GATE_ITEM);
+            event.accept(OSERI_DOOR_ITEM);
+            event.accept(OSERI_TRAPDOOR_ITEM);
+            event.accept(OSERI_PRESSURE_PLATE_ITEM);
+            event.accept(OSERI_BUTTON_ITEM);
         } else if (event.getTabKey() == CreativeModeTabs.NATURAL_BLOCKS) {
             event.accept(SAL_BUSH_LOG_ITEM);
             event.accept(SAL_BUSH_LEAVES_ITEM);
@@ -144,6 +155,27 @@ public final class WyrmroostCreativeTab {
             event.accept(HYLAN_SEDGE_LOG_ITEM);
             event.accept(HYLAN_SEDGE_LEAVES_ITEM);
             event.accept(HYLAN_SEDGE_SAPLING_ITEM);
+            event.accept(OSERI_LOG_ITEM);
+            event.accept(OSERI_LEAVES_ITEM);
+            event.accept(OSERI_SAPLING_ITEM);
+            event.accept(BLUE_OSERI_LEAVES_ITEM);
+            event.accept(BLUE_OSERI_SAPLING_ITEM);
+            event.accept(GOLDEN_OSERI_LEAVES_ITEM);
+            event.accept(GOLDEN_OSERI_SAPLING_ITEM);
+            event.accept(PINK_OSERI_LEAVES_ITEM);
+            event.accept(PINK_OSERI_SAPLING_ITEM);
+            event.accept(PURPLE_OSERI_LEAVES_ITEM);
+            event.accept(PURPLE_OSERI_SAPLING_ITEM);
+            event.accept(OSERI_VINES_ITEM);
+            event.accept(BLUE_OSERI_VINES_ITEM);
+            event.accept(GOLDEN_OSERI_VINES_ITEM);
+            event.accept(PINK_OSERI_VINES_ITEM);
+            event.accept(PURPLE_OSERI_VINES_ITEM);
+            event.accept(OSERI_FLOORING_ITEM);
+            event.accept(BLUE_OSERI_FLOORING_ITEM);
+            event.accept(GOLDEN_OSERI_FLOORING_ITEM);
+            event.accept(PINK_OSERI_FLOORING_ITEM);
+            event.accept(PURPLE_OSERI_FLOORING_ITEM);
             //TODO: Stripped logs and wood for every tree except Sal Bush
         } else if (event.getTabKey() == CreativeModeTabs.FUNCTIONAL_BLOCKS) {
             event.accept(SAL_BUSH_SHELF_ITEM);
@@ -155,6 +187,7 @@ public final class WyrmroostCreativeTab {
             event.accept(CANAR_SHELF_ITEM);
             event.accept(SUREN_SHELF_ITEM);
             event.accept(HYLAN_SEDGE_SHELF_ITEM);
+            event.accept(OSERI_SHELF_ITEM);
         }
     }
 

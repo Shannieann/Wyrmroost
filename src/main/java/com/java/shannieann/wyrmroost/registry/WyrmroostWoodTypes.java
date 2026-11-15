@@ -24,6 +24,8 @@ public final class WyrmroostWoodTypes {
     public static final WoodType SUREN = WoodType.register(new WoodType(Wyrmroost.MODID + "_suren", SUREN_SET));
     public static final BlockSetType HYLAN_SEDGE_SET = BlockSetType.register(new BlockSetType(Wyrmroost.MODID + ":hylan_sedge"));
     public static final WoodType HYLAN_SEDGE = WoodType.register(new WoodType(Wyrmroost.MODID + "_hylan_sedge", HYLAN_SEDGE_SET));
+    public static final BlockSetType OSERI_SET = BlockSetType.register(new BlockSetType(Wyrmroost.MODID + ":oseri"));
+    public static final WoodType OSERI = WoodType.register(new WoodType(Wyrmroost.MODID + "_oseri", OSERI_SET));
 
     private WyrmroostWoodTypes() {}
 }

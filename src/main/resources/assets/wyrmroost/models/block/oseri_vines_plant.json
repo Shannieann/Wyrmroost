@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "wyrmroost:block/oseri_vines_plant"
+  }
+}

@@ -1,6 +1,16 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_vine"
+    "wyrmroost:sal_bush_vine",
+    "wyrmroost:oseri_vines",
+    "wyrmroost:oseri_vines_plant",
+    "wyrmroost:blue_oseri_vines",
+    "wyrmroost:blue_oseri_vines_plant",
+    "wyrmroost:golden_oseri_vines",
+    "wyrmroost:golden_oseri_vines_plant",
+    "wyrmroost:pink_oseri_vines",
+    "wyrmroost:pink_oseri_vines_plant",
+    "wyrmroost:purple_oseri_vines",
+    "wyrmroost:purple_oseri_vines_plant"
   ]
 }

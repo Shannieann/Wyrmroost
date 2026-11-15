@@ -1,0 +1,8 @@
+{
+  "feature": "wyrmroost:oseri",
+  "placement": [
+    {
+      "type": "minecraft:biome"
+    }
+  ]
+}

@@ -12,6 +12,9 @@ import com.java.shannieann.wyrmroost.block.BlockShimarinSapling;
 import com.java.shannieann.wyrmroost.block.BlockSulphuricFire;
 import com.java.shannieann.wyrmroost.block.BlockBrumePineSapling;
 import com.java.shannieann.wyrmroost.block.BlockCanarSapling;
+import com.java.shannieann.wyrmroost.block.BlockOseriSapling;
+import com.java.shannieann.wyrmroost.block.BlockOseriVines;
+import com.java.shannieann.wyrmroost.block.BlockOseriVinesPlant;
 import com.java.shannieann.wyrmroost.block.BlockSurenSapling;
 import com.java.shannieann.wyrmroost.block.BlockHylanSedgeSapling;
 
@@ -25,6 +28,7 @@ import net.minecraft.world.level.block.FenceBlock;
 import net.minecraft.world.level.block.FenceGateBlock;
 import net.minecraft.world.level.block.FireBlock;
 import net.minecraft.world.level.block.FlowerPotBlock;
+import net.minecraft.world.level.block.LeafLitterBlock;
 import net.minecraft.world.level.block.PressurePlateBlock;
 import net.minecraft.world.level.block.RotatedPillarBlock;
 import net.minecraft.world.level.block.ShelfBlock;
@@ -651,6 +655,164 @@ public final class WyrmroostBlockRegistry {
             properties -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, HYLAN_SEDGE_SAPLING, properties), () -> BlockBehaviour.Properties.of()
                     .instabreak().noOcclusion().pushReaction(PushReaction.DESTROY));
 
+    // =============
+    //  OSERI WOOD
+    // =============
+    private static final MapColor OSERI_WOOD_COLOUR = MapColor.WOOD;
+    private static final MapColor OSERI_BARK_COLOUR = MapColor.PODZOL;
+
+    public static final DeferredBlock<RotatedPillarBlock> OSERI_LOG = BLOCKS.registerBlock("oseri_log",
+            RotatedPillarBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(state -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? OSERI_WOOD_COLOUR : OSERI_BARK_COLOUR)
+                    .instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava());
+    public static final DeferredBlock<RotatedPillarBlock> OSERI_WOOD = BLOCKS.registerBlock("oseri_wood",
+            RotatedPillarBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(state -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? OSERI_BARK_COLOUR : OSERI_BARK_COLOUR)
+                    .instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava());
+    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_OSERI_LOG = BLOCKS.registerBlock("stripped_oseri_log",
+            RotatedPillarBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(state -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? OSERI_WOOD_COLOUR : OSERI_WOOD_COLOUR)
+                    .instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava());
+    public static final DeferredBlock<RotatedPillarBlock> STRIPPED_OSERI_WOOD = BLOCKS.registerBlock("stripped_oseri_wood",
+            RotatedPillarBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(state -> state.getValue(RotatedPillarBlock.AXIS) == Direction.Axis.Y ? OSERI_WOOD_COLOUR : OSERI_WOOD_COLOUR)
+                    .instrument(NoteBlockInstrument.BASS).strength(2.0F).sound(SoundType.WOOD).ignitedByLava());
+    public static final DeferredBlock<Block> OSERI_PLANKS = BLOCKS.registerBlock("oseri_planks",
+            Block::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(OSERI_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD).ignitedByLava());
+    public static final DeferredBlock<StairBlock> OSERI_STAIRS = BLOCKS.registerBlock("oseri_stairs",
+            properties -> new StairBlock(OSERI_PLANKS.get().defaultBlockState(), properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(OSERI_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD).ignitedByLava());
+    public static final DeferredBlock<SlabBlock> OSERI_SLAB = BLOCKS.registerBlock("oseri_slab",
+            SlabBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(OSERI_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD).ignitedByLava());
+    public static final DeferredBlock<FenceBlock> OSERI_FENCE = BLOCKS.registerBlock("oseri_fence",
+            FenceBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(OSERI_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).strength(2.0F, 3.0F).sound(SoundType.WOOD).ignitedByLava().forceSolidOn());
+    public static final DeferredBlock<FenceGateBlock> OSERI_FENCE_GATE = BLOCKS.registerBlock("oseri_fence_gate",
+            properties -> new FenceGateBlock(WyrmroostWoodTypes.OSERI, properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(OSERI_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).ignitedByLava().forceSolidOn().strength(2.0F, 3.0F));
+    public static final DeferredBlock<DoorBlock> OSERI_DOOR = BLOCKS.registerBlock("oseri_door",
+            properties -> new DoorBlock(WyrmroostWoodTypes.OSERI_SET, properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(OSERI_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(3.0F).noOcclusion().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<TrapDoorBlock> OSERI_TRAPDOOR = BLOCKS.registerBlock("oseri_trapdoor",
+            properties -> new TrapDoorBlock(WyrmroostWoodTypes.OSERI_SET, properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(OSERI_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).ignitedByLava().strength(3.0F).noOcclusion());
+    public static final DeferredBlock<PressurePlateBlock> OSERI_PRESSURE_PLATE = BLOCKS.registerBlock("oseri_pressure_plate",
+            properties -> new PressurePlateBlock(WyrmroostWoodTypes.OSERI_SET, properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(OSERI_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).ignitedByLava().forceSolidOn().noCollision().strength(0.5F).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<ButtonBlock> OSERI_BUTTON = BLOCKS.registerBlock("oseri_button",
+            properties -> new ButtonBlock(WyrmroostWoodTypes.OSERI_SET, 30, properties), () -> BlockBehaviour.Properties.of()
+                    .noCollision().strength(0.5F).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<ShelfBlock> OSERI_SHELF = BLOCKS.registerBlock("oseri_shelf",
+            ShelfBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(OSERI_WOOD_COLOUR).instrument(NoteBlockInstrument.BASS).sound(SoundType.SHELF).ignitedByLava().strength(2.0F, 3.0F));
+    public static final DeferredBlock<TintedParticleLeavesBlock> OSERI_LEAVES = BLOCKS.registerBlock("oseri_leaves",
+            properties -> new TintedParticleLeavesBlock(0.01F, properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).strength(0.2F).randomTicks().sound(SoundType.GRASS).noOcclusion()
+                    .isValidSpawn((state, level, pos, entityType) -> entityType == EntityType.OCELOT || entityType == EntityType.PARROT).isSuffocating((state, level, pos) -> false)
+                    .isViewBlocking((state, level, pos) -> false).ignitedByLava().pushReaction(PushReaction.DESTROY)
+                    .isRedstoneConductor((state, level, pos) -> false));
+    public static final DeferredBlock<BlockOseriSapling> OSERI_SAPLING = BLOCKS.registerBlock("oseri_sapling",
+            BlockOseriSapling::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<FlowerPotBlock> POTTED_OSERI_SAPLING = BLOCKS.registerBlock("potted_oseri_sapling",
+            properties -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, OSERI_SAPLING, properties), () -> BlockBehaviour.Properties.of()
+                    .instabreak().noOcclusion().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<TintedParticleLeavesBlock> BLUE_OSERI_LEAVES = BLOCKS.registerBlock("blue_oseri_leaves",
+            properties -> new TintedParticleLeavesBlock(0.01F, properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).strength(0.2F).randomTicks().sound(SoundType.GRASS).noOcclusion()
+                    .isValidSpawn((state, level, pos, entityType) -> entityType == EntityType.OCELOT || entityType == EntityType.PARROT).isSuffocating((state, level, pos) -> false)
+                    .isViewBlocking((state, level, pos) -> false).ignitedByLava().pushReaction(PushReaction.DESTROY)
+                    .isRedstoneConductor((state, level, pos) -> false));
+    public static final DeferredBlock<BlockOseriSapling> BLUE_OSERI_SAPLING = BLOCKS.registerBlock("blue_oseri_sapling",
+            BlockOseriSapling::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<FlowerPotBlock> POTTED_BLUE_OSERI_SAPLING = BLOCKS.registerBlock("potted_blue_oseri_sapling",
+            properties -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, BLUE_OSERI_SAPLING, properties), () -> BlockBehaviour.Properties.of()
+                    .instabreak().noOcclusion().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<TintedParticleLeavesBlock> GOLDEN_OSERI_LEAVES = BLOCKS.registerBlock("golden_oseri_leaves",
+            properties -> new TintedParticleLeavesBlock(0.01F, properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).strength(0.2F).randomTicks().sound(SoundType.GRASS).noOcclusion()
+                    .isValidSpawn((state, level, pos, entityType) -> entityType == EntityType.OCELOT || entityType == EntityType.PARROT).isSuffocating((state, level, pos) -> false)
+                    .isViewBlocking((state, level, pos) -> false).ignitedByLava().pushReaction(PushReaction.DESTROY)
+                    .isRedstoneConductor((state, level, pos) -> false));
+    public static final DeferredBlock<BlockOseriSapling> GOLDEN_OSERI_SAPLING = BLOCKS.registerBlock("golden_oseri_sapling",
+            BlockOseriSapling::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<FlowerPotBlock> POTTED_GOLDEN_OSERI_SAPLING = BLOCKS.registerBlock("potted_golden_oseri_sapling",
+            properties -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, GOLDEN_OSERI_SAPLING, properties), () -> BlockBehaviour.Properties.of()
+                    .instabreak().noOcclusion().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<TintedParticleLeavesBlock> PINK_OSERI_LEAVES = BLOCKS.registerBlock("pink_oseri_leaves",
+            properties -> new TintedParticleLeavesBlock(0.01F, properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).strength(0.2F).randomTicks().sound(SoundType.GRASS).noOcclusion()
+                    .isValidSpawn((state, level, pos, entityType) -> entityType == EntityType.OCELOT || entityType == EntityType.PARROT).isSuffocating((state, level, pos) -> false)
+                    .isViewBlocking((state, level, pos) -> false).ignitedByLava().pushReaction(PushReaction.DESTROY)
+                    .isRedstoneConductor((state, level, pos) -> false));
+    public static final DeferredBlock<BlockOseriSapling> PINK_OSERI_SAPLING = BLOCKS.registerBlock("pink_oseri_sapling",
+            BlockOseriSapling::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<FlowerPotBlock> POTTED_PINK_OSERI_SAPLING = BLOCKS.registerBlock("potted_pink_oseri_sapling",
+            properties -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, PINK_OSERI_SAPLING, properties), () -> BlockBehaviour.Properties.of()
+                    .instabreak().noOcclusion().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<TintedParticleLeavesBlock> PURPLE_OSERI_LEAVES = BLOCKS.registerBlock("purple_oseri_leaves",
+            properties -> new TintedParticleLeavesBlock(0.01F, properties), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).strength(0.2F).randomTicks().sound(SoundType.GRASS).noOcclusion()
+                    .isValidSpawn((state, level, pos, entityType) -> entityType == EntityType.OCELOT || entityType == EntityType.PARROT).isSuffocating((state, level, pos) -> false)
+                    .isViewBlocking((state, level, pos) -> false).ignitedByLava().pushReaction(PushReaction.DESTROY)
+                    .isRedstoneConductor((state, level, pos) -> false));
+    public static final DeferredBlock<BlockOseriSapling> PURPLE_OSERI_SAPLING = BLOCKS.registerBlock("purple_oseri_sapling",
+            BlockOseriSapling::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<FlowerPotBlock> POTTED_PURPLE_OSERI_SAPLING = BLOCKS.registerBlock("potted_purple_oseri_sapling",
+            properties -> new FlowerPotBlock(() -> (FlowerPotBlock) Blocks.FLOWER_POT, PURPLE_OSERI_SAPLING, properties), () -> BlockBehaviour.Properties.of()
+                    .instabreak().noOcclusion().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<BlockOseriVines> OSERI_VINES = BLOCKS.registerBlock("oseri_vines",
+            properties -> new BlockOseriVines(properties, () -> WyrmroostBlockRegistry.OSERI_VINES_PLANT.get()), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).randomTicks().noCollision().instabreak().sound(SoundType.GRASS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<BlockOseriVinesPlant> OSERI_VINES_PLANT = BLOCKS.registerBlock("oseri_vines_plant",
+            properties -> new BlockOseriVinesPlant(properties, () -> WyrmroostBlockRegistry.OSERI_VINES.get()), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<BlockOseriVines> BLUE_OSERI_VINES = BLOCKS.registerBlock("blue_oseri_vines",
+            properties -> new BlockOseriVines(properties, () -> WyrmroostBlockRegistry.BLUE_OSERI_VINES_PLANT.get()), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).randomTicks().noCollision().instabreak().sound(SoundType.GRASS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<BlockOseriVinesPlant> BLUE_OSERI_VINES_PLANT = BLOCKS.registerBlock("blue_oseri_vines_plant",
+            properties -> new BlockOseriVinesPlant(properties, () -> WyrmroostBlockRegistry.BLUE_OSERI_VINES.get()), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<BlockOseriVines> GOLDEN_OSERI_VINES = BLOCKS.registerBlock("golden_oseri_vines",
+            properties -> new BlockOseriVines(properties, () -> WyrmroostBlockRegistry.GOLDEN_OSERI_VINES_PLANT.get()), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).randomTicks().noCollision().instabreak().sound(SoundType.GRASS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<BlockOseriVinesPlant> GOLDEN_OSERI_VINES_PLANT = BLOCKS.registerBlock("golden_oseri_vines_plant",
+            properties -> new BlockOseriVinesPlant(properties, () -> WyrmroostBlockRegistry.GOLDEN_OSERI_VINES.get()), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<BlockOseriVines> PINK_OSERI_VINES = BLOCKS.registerBlock("pink_oseri_vines",
+            properties -> new BlockOseriVines(properties, () -> WyrmroostBlockRegistry.PINK_OSERI_VINES_PLANT.get()), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).randomTicks().noCollision().instabreak().sound(SoundType.GRASS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<BlockOseriVinesPlant> PINK_OSERI_VINES_PLANT = BLOCKS.registerBlock("pink_oseri_vines_plant",
+            properties -> new BlockOseriVinesPlant(properties, () -> WyrmroostBlockRegistry.PINK_OSERI_VINES.get()), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<BlockOseriVines> PURPLE_OSERI_VINES = BLOCKS.registerBlock("purple_oseri_vines",
+            properties -> new BlockOseriVines(properties, () -> WyrmroostBlockRegistry.PURPLE_OSERI_VINES_PLANT.get()), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).randomTicks().noCollision().instabreak().sound(SoundType.GRASS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<BlockOseriVinesPlant> PURPLE_OSERI_VINES_PLANT = BLOCKS.registerBlock("purple_oseri_vines_plant",
+            properties -> new BlockOseriVinesPlant(properties, () -> WyrmroostBlockRegistry.PURPLE_OSERI_VINES.get()), () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noCollision().instabreak().sound(SoundType.GRASS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<LeafLitterBlock> OSERI_FLOORING = BLOCKS.registerBlock("oseri_flooring",
+            LeafLitterBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noOcclusion().replaceable().noCollision().sound(SoundType.PINK_PETALS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<LeafLitterBlock> BLUE_OSERI_FLOORING = BLOCKS.registerBlock("blue_oseri_flooring",
+            LeafLitterBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noOcclusion().replaceable().noCollision().sound(SoundType.PINK_PETALS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<LeafLitterBlock> GOLDEN_OSERI_FLOORING = BLOCKS.registerBlock("golden_oseri_flooring",
+            LeafLitterBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noOcclusion().replaceable().noCollision().sound(SoundType.PINK_PETALS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<LeafLitterBlock> PINK_OSERI_FLOORING = BLOCKS.registerBlock("pink_oseri_flooring",
+            LeafLitterBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noOcclusion().replaceable().noCollision().sound(SoundType.PINK_PETALS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+    public static final DeferredBlock<LeafLitterBlock> PURPLE_OSERI_FLOORING = BLOCKS.registerBlock("purple_oseri_flooring",
+            LeafLitterBlock::new, () -> BlockBehaviour.Properties.of()
+                    .mapColor(MapColor.PLANT).noOcclusion().replaceable().noCollision().sound(SoundType.PINK_PETALS).ignitedByLava().pushReaction(PushReaction.DESTROY));
+
     //TODO: Confirm Shelf Behaviour
     //TODO: Shelf textures for every tree
     private static void addBlockEntityBlocks(BlockEntityTypeAddBlocksEvent event) {
@@ -663,7 +825,8 @@ public final class WyrmroostBlockRegistry {
                 BRUME_PINE_SHELF.get(),
                 CANAR_SHELF.get(),
                 SUREN_SHELF.get(),
-                HYLAN_SEDGE_SHELF.get());
+                HYLAN_SEDGE_SHELF.get(),
+                OSERI_SHELF.get());
     }
 
     private static void addFlammableBlocks(FMLCommonSetupEvent event) {
@@ -758,6 +921,34 @@ public final class WyrmroostBlockRegistry {
             fire.setFlammable(HYLAN_SEDGE_FENCE_GATE.get(), 5, 20);
             fire.setFlammable(HYLAN_SEDGE_SHELF.get(), 30, 20);
             fire.setFlammable(HYLAN_SEDGE_LEAVES.get(), 30, 60);
+            fire.setFlammable(OSERI_LOG.get(), 5, 5);
+            fire.setFlammable(OSERI_WOOD.get(), 5, 5);
+            fire.setFlammable(OSERI_PLANKS.get(), 5, 20);
+            fire.setFlammable(OSERI_STAIRS.get(), 5, 20);
+            fire.setFlammable(OSERI_SLAB.get(), 5, 20);
+            fire.setFlammable(OSERI_FENCE.get(), 5, 20);
+            fire.setFlammable(OSERI_FENCE_GATE.get(), 5, 20);
+            fire.setFlammable(OSERI_SHELF.get(), 30, 20);
+            fire.setFlammable(OSERI_LEAVES.get(), 30, 60);
+            fire.setFlammable(BLUE_OSERI_LEAVES.get(), 30, 60);
+            fire.setFlammable(GOLDEN_OSERI_LEAVES.get(), 30, 60);
+            fire.setFlammable(PINK_OSERI_LEAVES.get(), 30, 60);
+            fire.setFlammable(PURPLE_OSERI_LEAVES.get(), 30, 60);
+            fire.setFlammable(OSERI_VINES.get(), 15, 100);
+            fire.setFlammable(OSERI_VINES_PLANT.get(), 15, 100);
+            fire.setFlammable(BLUE_OSERI_VINES.get(), 15, 100);
+            fire.setFlammable(BLUE_OSERI_VINES_PLANT.get(), 15, 100);
+            fire.setFlammable(GOLDEN_OSERI_VINES.get(), 15, 100);
+            fire.setFlammable(GOLDEN_OSERI_VINES_PLANT.get(), 15, 100);
+            fire.setFlammable(PINK_OSERI_VINES.get(), 15, 100);
+            fire.setFlammable(PINK_OSERI_VINES_PLANT.get(), 15, 100);
+            fire.setFlammable(PURPLE_OSERI_VINES.get(), 15, 100);
+            fire.setFlammable(PURPLE_OSERI_VINES_PLANT.get(), 15, 100);
+            fire.setFlammable(OSERI_FLOORING.get(), 60, 100);
+            fire.setFlammable(BLUE_OSERI_FLOORING.get(), 60, 100);
+            fire.setFlammable(GOLDEN_OSERI_FLOORING.get(), 60, 100);
+            fire.setFlammable(PINK_OSERI_FLOORING.get(), 60, 100);
+            fire.setFlammable(PURPLE_OSERI_FLOORING.get(), 60, 100);
         });
     }
 

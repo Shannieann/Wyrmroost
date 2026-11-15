@@ -50,6 +50,12 @@
     },
     "wyrmroost:hylan_sedge_wood": {
       "stripped_block": "wyrmroost:stripped_hylan_sedge_wood"
+    },
+    "wyrmroost:oseri_log": {
+      "stripped_block": "wyrmroost:stripped_oseri_log"
+    },
+    "wyrmroost:oseri_wood": {
+      "stripped_block": "wyrmroost:stripped_oseri_wood"
     }
   }
 }

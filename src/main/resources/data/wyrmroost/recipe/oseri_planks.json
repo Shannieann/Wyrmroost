@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "group": "planks",
+  "ingredients": [
+    "#wyrmroost:oseri_logs"
+  ],
+  "result": {
+    "count": 4,
+    "id": "wyrmroost:oseri_planks"
+  }
+}

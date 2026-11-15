@@ -210,5 +210,44 @@ public final class WyrmroostItemRegistry {
     public static final DeferredItem<BlockItem> HYLAN_SEDGE_LEAVES_ITEM = ITEMS.registerSimpleBlockItem("hylan_sedge_leaves", HYLAN_SEDGE_LEAVES);
     public static final DeferredItem<BlockItem> HYLAN_SEDGE_SAPLING_ITEM = ITEMS.registerSimpleBlockItem("hylan_sedge_sapling", HYLAN_SEDGE_SAPLING);
 
+    // =============
+    //  OSERI
+    // =============
+    public static final DeferredItem<BlockItem> OSERI_LOG_ITEM = ITEMS.registerSimpleBlockItem("oseri_log", OSERI_LOG);
+    public static final DeferredItem<BlockItem> OSERI_WOOD_ITEM = ITEMS.registerSimpleBlockItem("oseri_wood", OSERI_WOOD);
+    public static final DeferredItem<BlockItem> STRIPPED_OSERI_LOG_ITEM = ITEMS.registerSimpleBlockItem("stripped_oseri_log", STRIPPED_OSERI_LOG);
+    public static final DeferredItem<BlockItem> STRIPPED_OSERI_WOOD_ITEM = ITEMS.registerSimpleBlockItem("stripped_oseri_wood", STRIPPED_OSERI_WOOD);
+    public static final DeferredItem<BlockItem> OSERI_PLANKS_ITEM = ITEMS.registerSimpleBlockItem("oseri_planks", OSERI_PLANKS);
+    public static final DeferredItem<BlockItem> OSERI_STAIRS_ITEM = ITEMS.registerSimpleBlockItem("oseri_stairs", OSERI_STAIRS);
+    public static final DeferredItem<BlockItem> OSERI_SLAB_ITEM = ITEMS.registerSimpleBlockItem("oseri_slab", OSERI_SLAB);
+    public static final DeferredItem<BlockItem> OSERI_FENCE_ITEM = ITEMS.registerSimpleBlockItem("oseri_fence", OSERI_FENCE);
+    public static final DeferredItem<BlockItem> OSERI_FENCE_GATE_ITEM = ITEMS.registerSimpleBlockItem("oseri_fence_gate", OSERI_FENCE_GATE);
+    public static final DeferredItem<BlockItem> OSERI_DOOR_ITEM = ITEMS.registerSimpleBlockItem("oseri_door", OSERI_DOOR);
+    public static final DeferredItem<BlockItem> OSERI_TRAPDOOR_ITEM = ITEMS.registerSimpleBlockItem("oseri_trapdoor", OSERI_TRAPDOOR);
+    public static final DeferredItem<BlockItem> OSERI_PRESSURE_PLATE_ITEM = ITEMS.registerSimpleBlockItem("oseri_pressure_plate", OSERI_PRESSURE_PLATE);
+    public static final DeferredItem<BlockItem> OSERI_BUTTON_ITEM = ITEMS.registerSimpleBlockItem("oseri_button", OSERI_BUTTON);
+    public static final DeferredItem<BlockItem> OSERI_SHELF_ITEM = ITEMS.registerSimpleBlockItem("oseri_shelf", OSERI_SHELF,
+            properties -> properties.component(DataComponents.CONTAINER, ItemContainerContents.EMPTY));
+    public static final DeferredItem<BlockItem> OSERI_LEAVES_ITEM = ITEMS.registerSimpleBlockItem("oseri_leaves", OSERI_LEAVES);
+    public static final DeferredItem<BlockItem> OSERI_SAPLING_ITEM = ITEMS.registerSimpleBlockItem("oseri_sapling", OSERI_SAPLING);
+    public static final DeferredItem<BlockItem> BLUE_OSERI_LEAVES_ITEM = ITEMS.registerSimpleBlockItem("blue_oseri_leaves", BLUE_OSERI_LEAVES);
+    public static final DeferredItem<BlockItem> BLUE_OSERI_SAPLING_ITEM = ITEMS.registerSimpleBlockItem("blue_oseri_sapling", BLUE_OSERI_SAPLING);
+    public static final DeferredItem<BlockItem> GOLDEN_OSERI_LEAVES_ITEM = ITEMS.registerSimpleBlockItem("golden_oseri_leaves", GOLDEN_OSERI_LEAVES);
+    public static final DeferredItem<BlockItem> GOLDEN_OSERI_SAPLING_ITEM = ITEMS.registerSimpleBlockItem("golden_oseri_sapling", GOLDEN_OSERI_SAPLING);
+    public static final DeferredItem<BlockItem> PINK_OSERI_LEAVES_ITEM = ITEMS.registerSimpleBlockItem("pink_oseri_leaves", PINK_OSERI_LEAVES);
+    public static final DeferredItem<BlockItem> PINK_OSERI_SAPLING_ITEM = ITEMS.registerSimpleBlockItem("pink_oseri_sapling", PINK_OSERI_SAPLING);
+    public static final DeferredItem<BlockItem> PURPLE_OSERI_LEAVES_ITEM = ITEMS.registerSimpleBlockItem("purple_oseri_leaves", PURPLE_OSERI_LEAVES);
+    public static final DeferredItem<BlockItem> PURPLE_OSERI_SAPLING_ITEM = ITEMS.registerSimpleBlockItem("purple_oseri_sapling", PURPLE_OSERI_SAPLING);
+    public static final DeferredItem<BlockItem> OSERI_VINES_ITEM = ITEMS.registerSimpleBlockItem("oseri_vines", OSERI_VINES);
+    public static final DeferredItem<BlockItem> BLUE_OSERI_VINES_ITEM = ITEMS.registerSimpleBlockItem("blue_oseri_vines", BLUE_OSERI_VINES);
+    public static final DeferredItem<BlockItem> GOLDEN_OSERI_VINES_ITEM = ITEMS.registerSimpleBlockItem("golden_oseri_vines", GOLDEN_OSERI_VINES);
+    public static final DeferredItem<BlockItem> PINK_OSERI_VINES_ITEM = ITEMS.registerSimpleBlockItem("pink_oseri_vines", PINK_OSERI_VINES);
+    public static final DeferredItem<BlockItem> PURPLE_OSERI_VINES_ITEM = ITEMS.registerSimpleBlockItem("purple_oseri_vines", PURPLE_OSERI_VINES);
+    public static final DeferredItem<BlockItem> OSERI_FLOORING_ITEM = ITEMS.registerSimpleBlockItem("oseri_flooring", OSERI_FLOORING);
+    public static final DeferredItem<BlockItem> BLUE_OSERI_FLOORING_ITEM = ITEMS.registerSimpleBlockItem("blue_oseri_flooring", BLUE_OSERI_FLOORING);
+    public static final DeferredItem<BlockItem> GOLDEN_OSERI_FLOORING_ITEM = ITEMS.registerSimpleBlockItem("golden_oseri_flooring", GOLDEN_OSERI_FLOORING);
+    public static final DeferredItem<BlockItem> PINK_OSERI_FLOORING_ITEM = ITEMS.registerSimpleBlockItem("pink_oseri_flooring", PINK_OSERI_FLOORING);
+    public static final DeferredItem<BlockItem> PURPLE_OSERI_FLOORING_ITEM = ITEMS.registerSimpleBlockItem("purple_oseri_flooring", PURPLE_OSERI_FLOORING);
+
     private WyrmroostItemRegistry() {}
 }
