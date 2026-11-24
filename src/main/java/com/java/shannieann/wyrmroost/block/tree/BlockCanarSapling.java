@@ -1,4 +1,4 @@
-package com.java.shannieann.wyrmroost.block;
+package com.java.shannieann.wyrmroost.block.tree;
 
 import java.util.Optional;
 
@@ -14,13 +14,13 @@ import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 
-public class BlockDragonsEyeSapling extends SaplingBlock {
+public class BlockCanarSapling extends SaplingBlock {
     //TODO: Implementation
-    private static final ResourceKey<ConfiguredFeature<?, ?>> DRAGONSEYE_FEATURE =
-            ResourceKey.create(Registries.CONFIGURED_FEATURE, Identifier.fromNamespaceAndPath(Wyrmroost.MODID, "dragonseye"));
+    private static final ResourceKey<ConfiguredFeature<?, ?>> CANAR_FEATURE =
+            ResourceKey.create(Registries.CONFIGURED_FEATURE, Identifier.fromNamespaceAndPath(Wyrmroost.MODID, "canar"));
 
     //TODO: Confirm method correct
-    public static final TreeGrower DRAGONSEYE_GROWER = new TreeGrower(Wyrmroost.MODID + ":dragonseye", 0.0F,
+    public static final TreeGrower CANAR_GROWER = new TreeGrower(Wyrmroost.MODID + ":canar", 0.0F,
             Optional.empty(),
             Optional.empty(),
             Optional.empty(),
@@ -28,8 +28,8 @@ public class BlockDragonsEyeSapling extends SaplingBlock {
             Optional.empty(),
             Optional.empty());
 
-    public BlockDragonsEyeSapling(Properties properties) {
-        super(DRAGONSEYE_GROWER, properties);
+    public BlockCanarSapling(Properties properties) {
+        super(CANAR_GROWER, properties);
     }
 
     //TODO: Implementation

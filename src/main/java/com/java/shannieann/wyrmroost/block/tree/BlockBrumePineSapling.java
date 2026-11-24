@@ -1,4 +1,4 @@
-package com.java.shannieann.wyrmroost.block;
+package com.java.shannieann.wyrmroost.block.tree;
 
 import java.util.Optional;
 
@@ -14,13 +14,13 @@ import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 
-public class BlockCanarSapling extends SaplingBlock {
+public class BlockBrumePineSapling extends SaplingBlock {
     //TODO: Implementation
-    private static final ResourceKey<ConfiguredFeature<?, ?>> CANAR_FEATURE =
-            ResourceKey.create(Registries.CONFIGURED_FEATURE, Identifier.fromNamespaceAndPath(Wyrmroost.MODID, "canar"));
+    private static final ResourceKey<ConfiguredFeature<?, ?>> BRUME_PINE_FEATURE =
+            ResourceKey.create(Registries.CONFIGURED_FEATURE, Identifier.fromNamespaceAndPath(Wyrmroost.MODID, "brume_pine"));
 
     //TODO: Confirm method correct
-    public static final TreeGrower CANAR_GROWER = new TreeGrower(Wyrmroost.MODID + ":canar", 0.0F,
+    public static final TreeGrower BRUME_PINE_GROWER = new TreeGrower(Wyrmroost.MODID + ":brume_pine", 0.0F,
             Optional.empty(),
             Optional.empty(),
             Optional.empty(),
@@ -28,8 +28,8 @@ public class BlockCanarSapling extends SaplingBlock {
             Optional.empty(),
             Optional.empty());
 
-    public BlockCanarSapling(Properties properties) {
-        super(CANAR_GROWER, properties);
+    public BlockBrumePineSapling(Properties properties) {
+        super(BRUME_PINE_GROWER, properties);
     }
 
     //TODO: Implementation

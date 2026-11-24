@@ -1,4 +1,4 @@
-package com.java.shannieann.wyrmroost.block;
+package com.java.shannieann.wyrmroost.block.tree;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;

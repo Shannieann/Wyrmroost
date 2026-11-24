@@ -1,4 +1,4 @@
-package com.java.shannieann.wyrmroost.block;
+package com.java.shannieann.wyrmroost.block.tree;
 
 import com.java.shannieann.wyrmroost.registry.WyrmroostBlockRegistry;
 

@@ -1,4 +1,4 @@
-package com.java.shannieann.wyrmroost.block;
+package com.java.shannieann.wyrmroost.block.tree;
 
 import java.util.Optional;
 
@@ -14,13 +14,13 @@ import net.minecraft.world.level.block.grower.TreeGrower;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.feature.ConfiguredFeature;
 
-public class BlockShimarinSapling extends SaplingBlock {
+public class BlockOseriSapling extends SaplingBlock {
     //TODO: Implementation
-    private static final ResourceKey<ConfiguredFeature<?, ?>> SHIMARIN_FEATURE =
-            ResourceKey.create(Registries.CONFIGURED_FEATURE, Identifier.fromNamespaceAndPath(Wyrmroost.MODID, "shimarin"));
+    private static final ResourceKey<ConfiguredFeature<?, ?>> OSERI_FEATURE =
+            ResourceKey.create(Registries.CONFIGURED_FEATURE, Identifier.fromNamespaceAndPath(Wyrmroost.MODID, "oseri"));
 
     //TODO: Confirm method correct
-    public static final TreeGrower SHIMARIN_GROWER = new TreeGrower(Wyrmroost.MODID + ":shimarin", 0.0F,
+    public static final TreeGrower OSERI_GROWER = new TreeGrower(Wyrmroost.MODID + ":oseri", 0.0F,
             Optional.empty(),
             Optional.empty(),
             Optional.empty(),
@@ -28,8 +28,8 @@ public class BlockShimarinSapling extends SaplingBlock {
             Optional.empty(),
             Optional.empty());
 
-    public BlockShimarinSapling(Properties properties) {
-        super(SHIMARIN_GROWER, properties);
+    public BlockOseriSapling(Properties properties) {
+        super(OSERI_GROWER, properties);
     }
 
     //TODO: Implementation
