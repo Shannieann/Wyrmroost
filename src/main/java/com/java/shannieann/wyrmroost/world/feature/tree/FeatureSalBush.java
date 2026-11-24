@@ -1,4 +1,4 @@
-package com.java.shannieann.wyrmroost.world.feature;
+package com.java.shannieann.wyrmroost.world.feature.tree;
 
 import java.util.ArrayList;
 import java.util.List;

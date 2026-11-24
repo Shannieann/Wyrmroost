@@ -1,4 +1,4 @@
-package com.java.shannieann.wyrmroost.world.feature;
+package com.java.shannieann.wyrmroost.world.feature.tree;
 
 import com.java.shannieann.wyrmroost.registry.WyrmroostBlockRegistry;
 import com.mojang.serialization.Codec;

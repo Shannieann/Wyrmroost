@@ -1,4 +1,4 @@
-package com.java.shannieann.wyrmroost.world.feature;
+package com.java.shannieann.wyrmroost.world.feature.tree;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
