@@ -1,5 +1,6 @@
 package com.java.shannieann.wyrmroost.block.plant;
 
+import com.java.shannieann.wyrmroost.block.plant.ground.TriplePart;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
@@ -26,8 +27,8 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class BlockWyrmTriplePlant extends VegetationBlock {
     public static final MapCodec<BlockWyrmTriplePlant> CODEC = simpleCodec(BlockWyrmTriplePlant::new);
-    public static final EnumProperty<TriplePart> PART = EnumProperty.create("part", TriplePart.class);
-    private static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 16.0D, 14.0D);
+    public static final EnumProperty<TriplePart>       PART  = EnumProperty.create("part", TriplePart.class);
+    private static final VoxelShape                    SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 16.0D, 14.0D);
 
     public BlockWyrmTriplePlant(Properties properties) {
         super(properties);

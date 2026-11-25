@@ -1,7 +1,7 @@
 package com.java.shannieann.wyrmroost.world.feature.plant.ground;
 
 import com.java.shannieann.wyrmroost.block.plant.BlockWyrmTriplePlant;
-import com.java.shannieann.wyrmroost.block.plant.TriplePart;
+import com.java.shannieann.wyrmroost.block.plant.ground.TriplePart;
 import com.java.shannieann.wyrmroost.world.feature.plant.patch.FeaturePlantPatch;
 import com.mojang.serialization.Codec;
 
