@@ -16,10 +16,6 @@ import java.lang.Math;
 public class BlockGillaVine extends BlockWyrmPlant {
     public static final MapCodec<BlockGillaVine> CODEC = simpleCodec(BlockGillaVine::new);
 
-    // =============
-    //  PARAMETERS
-    // =============
-
     //THORNS
     private static final float THORN_DAMAGE = 1.0F;
     private static final double SLOWDOWN = 0.8D;
