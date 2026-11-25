@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "wyrmroost:block/tall_pale_fern_bottom"
+    },
+    "half=upper": {
+      "model": "wyrmroost:block/tall_pale_fern_top"
+    }
+  }
+}

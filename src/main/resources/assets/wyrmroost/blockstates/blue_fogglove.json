@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "wyrmroost:block/blue_fogglove"
+    },
+    "facing=down": {
+      "model": "wyrmroost:block/blue_fogglove",
+      "x": 180
+    },
+    "facing=north": {
+      "model": "wyrmroost:block/blue_fogglove",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "wyrmroost:block/blue_fogglove",
+      "x": 90,
+      "y": 180
+    },
+    "facing=east": {
+      "model": "wyrmroost:block/blue_fogglove",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west": {
+      "model": "wyrmroost:block/blue_fogglove",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "wyrmroost:block/dead_dwarf_petalis"
+    },
+    "facing=east": {
+      "model": "wyrmroost:block/dead_dwarf_petalis",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "wyrmroost:block/dead_dwarf_petalis",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "wyrmroost:block/dead_dwarf_petalis",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "wyrmroost:block/dead_dwarf_petalis"
+    },
+    "facing=down": {
+      "model": "wyrmroost:block/dead_dwarf_petalis"
+    }
+  }
+}

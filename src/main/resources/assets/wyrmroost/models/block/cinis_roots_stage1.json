@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/crop",
+  "textures": {
+    "crop": "wyrmroost:block/cinis_roots_stage1"
+  }
+}

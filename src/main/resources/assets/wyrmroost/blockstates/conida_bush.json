@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "wyrmroost:block/conida_bush_bottom"
+    },
+    "half=upper": {
+      "model": "wyrmroost:block/conida_bush_top"
+    }
+  }
+}

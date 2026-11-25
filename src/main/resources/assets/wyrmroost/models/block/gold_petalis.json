@@ -1,0 +1,231 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "coral": "wyrmroost:block/gold_petalis",
+    "particle": "wyrmroost:block/gold_petalis"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        11,
+        0
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            4.0,
+            4.5,
+            8.0,
+            5.75
+          ],
+          "texture": "#coral"
+        },
+        "east": {
+          "uv": [
+            0.0,
+            4.5,
+            4.0,
+            5.75
+          ],
+          "texture": "#coral"
+        },
+        "south": {
+          "uv": [
+            12.0,
+            4.5,
+            16.0,
+            5.75
+          ],
+          "texture": "#coral"
+        },
+        "west": {
+          "uv": [
+            8.0,
+            4.5,
+            12.0,
+            5.75
+          ],
+          "texture": "#coral"
+        },
+        "up": {
+          "uv": [
+            8.0,
+            4.5,
+            4.0,
+            0.5
+          ],
+          "texture": "#coral"
+        },
+        "down": {
+          "uv": [
+            12.0,
+            0.5,
+            8.0,
+            4.5
+          ],
+          "texture": "#coral"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        16
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            8.0,
+            7.5,
+            12.0,
+            11.5
+          ],
+          "texture": "#coral"
+        },
+        "east": {
+          "uv": [
+            8.0,
+            7.5,
+            8.0,
+            11.5
+          ],
+          "texture": "#coral"
+        },
+        "south": {
+          "uv": [
+            12.0,
+            7.5,
+            16.0,
+            11.5
+          ],
+          "texture": "#coral"
+        },
+        "west": {
+          "uv": [
+            12.0,
+            7.5,
+            12.0,
+            11.5
+          ],
+          "texture": "#coral"
+        },
+        "up": {
+          "uv": [
+            12.0,
+            7.5,
+            8.0,
+            7.5
+          ],
+          "texture": "#coral"
+        },
+        "down": {
+          "uv": [
+            16.0,
+            7.5,
+            12.0,
+            7.5
+          ],
+          "texture": "#coral"
+        }
+      },
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          0,
+          0,
+          16
+        ]
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        16
+      ],
+      "to": [
+        16,
+        16,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0.0,
+            7.5,
+            4.0,
+            11.5
+          ],
+          "texture": "#coral"
+        },
+        "east": {
+          "uv": [
+            0.0,
+            7.5,
+            0.0,
+            11.5
+          ],
+          "texture": "#coral"
+        },
+        "south": {
+          "uv": [
+            4.0,
+            7.5,
+            8.0,
+            11.5
+          ],
+          "texture": "#coral"
+        },
+        "west": {
+          "uv": [
+            4.0,
+            7.5,
+            4.0,
+            11.5
+          ],
+          "texture": "#coral"
+        },
+        "up": {
+          "uv": [
+            4.0,
+            7.5,
+            0.0,
+            7.5
+          ],
+          "texture": "#coral"
+        },
+        "down": {
+          "uv": [
+            8.0,
+            7.5,
+            4.0,
+            7.5
+          ],
+          "texture": "#coral"
+        }
+      },
+      "rotation": {
+        "angle": -45,
+        "axis": "y",
+        "origin": [
+          16,
+          0,
+          16
+        ]
+      }
+    }
+  ]
+}

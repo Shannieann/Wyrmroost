@@ -1,0 +1,44 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "wyrmroost:block/larn_weed_stalk"
+      },
+      "when": {
+        "segment": "stalk"
+      }
+    },
+    {
+      "apply": {
+        "model": "wyrmroost:block/larn_weed_transition"
+      },
+      "when": {
+        "segment": "transition"
+      }
+    },
+    {
+      "apply": {
+        "model": "wyrmroost:block/larn_weed_bleached"
+      },
+      "when": {
+        "segment": "bleached"
+      }
+    },
+    {
+      "apply": {
+        "model": "wyrmroost:block/larn_weed_small_leaves"
+      },
+      "when": {
+        "leaves": "small"
+      }
+    },
+    {
+      "apply": {
+        "model": "wyrmroost:block/larn_weed_large_leaves"
+      },
+      "when": {
+        "leaves": "large"
+      }
+    }
+  ]
+}

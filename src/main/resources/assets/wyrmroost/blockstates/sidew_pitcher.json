@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "filled=false": {
+      "model": "wyrmroost:block/sidew_pitcher"
+    },
+    "filled=true": {
+      "model": "wyrmroost:block/sidew_pitcher"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/tinted_cross",
+  "textures": {
+    "cross": "wyrmroost:block/extra_tall_grass_top"
+  }
+}

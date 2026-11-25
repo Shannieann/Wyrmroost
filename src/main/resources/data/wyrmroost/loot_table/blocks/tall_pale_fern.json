@@ -1,0 +1,31 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "condition": "minecraft:match_tool",
+          "predicate": {
+            "items": "minecraft:shears"
+          }
+        },
+        {
+          "block": "wyrmroost:tall_pale_fern",
+          "condition": "minecraft:block_state_property",
+          "properties": {
+            "half": "lower"
+          }
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "wyrmroost:tall_pale_fern"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "wyrmroost:blocks/tall_pale_fern"
+}

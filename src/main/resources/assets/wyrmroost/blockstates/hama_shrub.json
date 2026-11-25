@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "wyrmroost:block/hama_shrub_bottom"
+    },
+    "half=upper": {
+      "model": "wyrmroost:block/hama_shrub_top"
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "cracking=false": {
+      "model": "wyrmroost:block/dying_tilan_algae"
+    },
+    "cracking=true": {
+      "model": "wyrmroost:block/dying_tilan_algae"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "wyrmroost:block/dead_tured_coral"
+  }
+}

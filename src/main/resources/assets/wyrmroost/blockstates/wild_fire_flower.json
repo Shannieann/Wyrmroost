@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "lit=false": {
+      "model": "wyrmroost:block/wild_fire_flower"
+    },
+    "lit=true": {
+      "model": "wyrmroost:block/wild_fire_flower"
+    }
+  }
+}

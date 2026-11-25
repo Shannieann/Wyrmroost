@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "": {
+      "model": "wyrmroost:block/silver_moss",
+      "x": 180
+    }
+  }
+}

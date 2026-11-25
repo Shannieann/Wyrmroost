@@ -1,0 +1,12 @@
+{
+  "model": {
+    "type": "minecraft:model",
+    "model": "wyrmroost:item/ashen_karpo_bush",
+    "tints": [
+      {
+        "type": "minecraft:constant",
+        "value": -7584203
+      }
+    ]
+  }
+}

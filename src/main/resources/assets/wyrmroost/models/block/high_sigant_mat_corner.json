@@ -1,0 +1,173 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "mat": "wyrmroost:block/high_sigant_mat_corner",
+    "particle": "wyrmroost:block/high_sigant_mat"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        8
+      ],
+      "to": [
+        8,
+        4,
+        16
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            4.25,
+            4.0,
+            2.25,
+            0.0
+          ],
+          "texture": "#mat"
+        },
+        "down": {
+          "uv": [
+            6.25,
+            0.0,
+            4.25,
+            4.0
+          ],
+          "texture": "#mat"
+        },
+        "east": {
+          "uv": [
+            0.25,
+            4.0,
+            2.25,
+            6.0
+          ],
+          "texture": "#mat"
+        },
+        "north": {
+          "uv": [
+            2.25,
+            4.0,
+            4.25,
+            6.0
+          ],
+          "texture": "#mat"
+        },
+        "west": {
+          "uv": [
+            4.25,
+            4.0,
+            6.25,
+            6.0
+          ],
+          "texture": "#mat"
+        },
+        "south": {
+          "uv": [
+            6.25,
+            4.0,
+            8.25,
+            6.0
+          ],
+          "texture": "#mat"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        4,
+        12
+      ],
+      "to": [
+        8,
+        9,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0.25,
+            7.0,
+            2.25,
+            9.5
+          ],
+          "texture": "#mat"
+        },
+        "south": {
+          "uv": [
+            0.25,
+            7.0,
+            2.25,
+            9.5
+          ],
+          "texture": "#mat"
+        }
+      }
+    },
+    {
+      "from": [
+        4,
+        4,
+        8
+      ],
+      "to": [
+        4,
+        9,
+        16
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            0.25,
+            12.0,
+            2.25,
+            14.5
+          ],
+          "texture": "#mat"
+        },
+        "west": {
+          "uv": [
+            0.25,
+            12.0,
+            2.25,
+            14.5
+          ],
+          "texture": "#mat"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        4,
+        8
+      ],
+      "to": [
+        2,
+        12,
+        16
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            7.0,
+            7.0,
+            9.0,
+            11.0
+          ],
+          "texture": "#mat"
+        },
+        "west": {
+          "uv": [
+            7.0,
+            7.0,
+            9.0,
+            11.0
+          ],
+          "texture": "#mat"
+        }
+      }
+    }
+  ]
+}

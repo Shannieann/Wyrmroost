@@ -1,0 +1,13 @@
+{
+  "variants": {
+    "part=lower": {
+      "model": "wyrmroost:block/extra_tall_grass_bottom"
+    },
+    "part=middle": {
+      "model": "wyrmroost:block/extra_tall_grass_bottom"
+    },
+    "part=upper": {
+      "model": "wyrmroost:block/extra_tall_grass_top"
+    }
+  }
+}

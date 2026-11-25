@@ -1,0 +1,25 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "wyrmroost:block/green_dwarf_petalis"
+    },
+    "facing=east": {
+      "model": "wyrmroost:block/green_dwarf_petalis",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "wyrmroost:block/green_dwarf_petalis",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "wyrmroost:block/green_dwarf_petalis",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "wyrmroost:block/green_dwarf_petalis"
+    },
+    "facing=down": {
+      "model": "wyrmroost:block/green_dwarf_petalis"
+    }
+  }
+}

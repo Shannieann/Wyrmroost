@@ -1,0 +1,304 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "top": "wyrmroost:block/sidew_pitcher_top",
+    "stem": "wyrmroost:block/sidew_pitcher_stem",
+    "side": "wyrmroost:block/sidew_pitcher_side",
+    "tip": "wyrmroost:block/sidew_pitcher_tip",
+    "particle": "wyrmroost:block/sidew_pitcher_top"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        15,
+        0
+      ],
+      "to": [
+        16,
+        15,
+        16
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#top"
+        },
+        "down": {
+          "uv": [
+            0,
+            16,
+            16,
+            0
+          ],
+          "texture": "#top"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        11,
+        0
+      ],
+      "to": [
+        16,
+        15,
+        0.002
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ],
+          "texture": "#tip"
+        },
+        "south": {
+          "uv": [
+            16,
+            0,
+            0,
+            4
+          ],
+          "texture": "#tip"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        11,
+        0
+      ],
+      "to": [
+        0.002,
+        15,
+        16
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            16,
+            0,
+            0,
+            4
+          ],
+          "texture": "#side"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ],
+          "texture": "#side"
+        }
+      }
+    },
+    {
+      "from": [
+        15.998,
+        11,
+        0
+      ],
+      "to": [
+        16,
+        15,
+        16
+      ],
+      "faces": {
+        "east": {
+          "uv": [
+            16,
+            0,
+            0,
+            4
+          ],
+          "texture": "#side"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ],
+          "texture": "#side"
+        }
+      }
+    },
+    {
+      "from": [
+        5,
+        7,
+        12
+      ],
+      "to": [
+        14,
+        15,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            0,
+            16,
+            9
+          ],
+          "texture": "#stem"
+        },
+        "south": {
+          "uv": [
+            16,
+            0,
+            3,
+            9
+          ],
+          "texture": "#stem"
+        }
+      },
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          8,
+          12
+        ]
+      }
+    },
+    {
+      "from": [
+        3,
+        7,
+        12
+      ],
+      "to": [
+        12,
+        15,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            16,
+            0,
+            3,
+            8
+          ],
+          "texture": "#stem"
+        },
+        "south": {
+          "uv": [
+            3,
+            0,
+            16,
+            8
+          ],
+          "texture": "#stem"
+        }
+      },
+      "rotation": {
+        "angle": -45,
+        "axis": "y",
+        "origin": [
+          8,
+          8,
+          12
+        ]
+      }
+    },
+    {
+      "from": [
+        3,
+        0,
+        12
+      ],
+      "to": [
+        12,
+        7,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            16,
+            8,
+            3,
+            16
+          ],
+          "texture": "#stem"
+        },
+        "south": {
+          "uv": [
+            3,
+            8,
+            16,
+            16
+          ],
+          "texture": "#stem"
+        }
+      },
+      "rotation": {
+        "angle": -45,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          12
+        ]
+      }
+    },
+    {
+      "from": [
+        5,
+        0,
+        12
+      ],
+      "to": [
+        14,
+        7,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            8,
+            16,
+            16
+          ],
+          "texture": "#stem"
+        },
+        "south": {
+          "uv": [
+            16,
+            8,
+            3,
+            16
+          ],
+          "texture": "#stem"
+        }
+      },
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          12
+        ]
+      }
+    }
+  ]
+}

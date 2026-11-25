@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "wyrmroost:block/frost_gown_bottom"
+    },
+    "half=upper": {
+      "model": "wyrmroost:block/frost_gown_top"
+    }
+  }
+}

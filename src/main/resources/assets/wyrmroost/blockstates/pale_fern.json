@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "touched=false": {
+      "model": "wyrmroost:block/pale_fern"
+    },
+    "touched=true": {
+      "model": "wyrmroost:block/pale_fern_dipped"
+    }
+  }
+}

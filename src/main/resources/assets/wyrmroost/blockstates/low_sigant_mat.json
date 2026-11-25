@@ -1,0 +1,67 @@
+{
+  "variants": {
+    "facing=north,shape=centre": {
+      "model": "wyrmroost:block/low_sigant_mat"
+    },
+    "facing=east,shape=centre": {
+      "model": "wyrmroost:block/low_sigant_mat",
+      "y": 90
+    },
+    "facing=south,shape=centre": {
+      "model": "wyrmroost:block/low_sigant_mat",
+      "y": 180
+    },
+    "facing=west,shape=centre": {
+      "model": "wyrmroost:block/low_sigant_mat",
+      "y": 270
+    },
+    "facing=up,shape=centre": {
+      "model": "wyrmroost:block/low_sigant_mat"
+    },
+    "facing=down,shape=centre": {
+      "model": "wyrmroost:block/low_sigant_mat"
+    },
+    "facing=north,shape=edge": {
+      "model": "wyrmroost:block/low_sigant_mat_edge"
+    },
+    "facing=east,shape=edge": {
+      "model": "wyrmroost:block/low_sigant_mat_edge",
+      "y": 90
+    },
+    "facing=south,shape=edge": {
+      "model": "wyrmroost:block/low_sigant_mat_edge",
+      "y": 180
+    },
+    "facing=west,shape=edge": {
+      "model": "wyrmroost:block/low_sigant_mat_edge",
+      "y": 270
+    },
+    "facing=up,shape=edge": {
+      "model": "wyrmroost:block/low_sigant_mat_edge"
+    },
+    "facing=down,shape=edge": {
+      "model": "wyrmroost:block/low_sigant_mat_edge"
+    },
+    "facing=north,shape=corner": {
+      "model": "wyrmroost:block/low_sigant_mat_corner"
+    },
+    "facing=east,shape=corner": {
+      "model": "wyrmroost:block/low_sigant_mat_corner",
+      "y": 90
+    },
+    "facing=south,shape=corner": {
+      "model": "wyrmroost:block/low_sigant_mat_corner",
+      "y": 180
+    },
+    "facing=west,shape=corner": {
+      "model": "wyrmroost:block/low_sigant_mat_corner",
+      "y": 270
+    },
+    "facing=up,shape=corner": {
+      "model": "wyrmroost:block/low_sigant_mat_corner"
+    },
+    "facing=down,shape=corner": {
+      "model": "wyrmroost:block/low_sigant_mat_corner"
+    }
+  }
+}

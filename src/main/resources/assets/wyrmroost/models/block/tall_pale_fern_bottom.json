@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:block/cross",
+  "textures": {
+    "cross": "wyrmroost:block/tall_pale_fern_bottom"
+  }
+}
