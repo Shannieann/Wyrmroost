@@ -17,7 +17,7 @@ public class BlockHamaShrub extends BlockWyrmTallPlant {
     //WARMTH
     private static final int THAW_PER_TICK = 3;
 
-    //TODO: Hide players from Glacial Skulkers
+    //TODO: Hide from Glacial Skulkers
     public BlockHamaShrub(Properties properties) {
         super(properties);
     }

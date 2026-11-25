@@ -32,7 +32,7 @@ public final class CoralDeath {
     }
 
     public static void scheduleCheck(ScheduledTickAccess tickAccess, BlockPos pos, Block block, RandomSource random) {
-        tickAccess.scheduleTick(pos, block, MIN_DEATH_DELAY + random.nextInt(MAX_DEATH_DELAY - MIN_DEATH_DELAY + 1));
+        tickAccess.scheduleTick(pos, block, deathDelay(random));
     }
 
     public static int deathDelay(RandomSource random) {

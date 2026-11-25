@@ -101,14 +101,13 @@ public abstract class BlockAttachedPlant extends Block implements SimpleWaterlog
 
     protected static VoxelShape[] makeShapes(double inset, double depth) {
         VoxelShape[] shapes = new VoxelShape[6];
-        double low = inset;
         double high = 16.0D - inset;
-        shapes[Direction.UP.get3DDataValue()] = Block.box(low, 0.0D, low, high, depth, high);
-        shapes[Direction.DOWN.get3DDataValue()] = Block.box(low, 16.0D - depth, low, high, 16.0D, high);
-        shapes[Direction.NORTH.get3DDataValue()] = Block.box(low, low, 16.0D - depth, high, high, 16.0D);
-        shapes[Direction.SOUTH.get3DDataValue()] = Block.box(low, low, 0.0D, high, high, depth);
-        shapes[Direction.WEST.get3DDataValue()] = Block.box(16.0D - depth, low, low, 16.0D, high, high);
-        shapes[Direction.EAST.get3DDataValue()] = Block.box(0.0D, low, low, depth, high, high);
+        shapes[Direction.UP.get3DDataValue()] = Block.box(inset, 0.0D, inset, high, depth, high);
+        shapes[Direction.DOWN.get3DDataValue()] = Block.box(inset, 16.0D - depth, inset, high, 16.0D, high);
+        shapes[Direction.NORTH.get3DDataValue()] = Block.box(inset, inset, 16.0D - depth, high, high, 16.0D);
+        shapes[Direction.SOUTH.get3DDataValue()] = Block.box(inset, inset, 0.0D, high, high, depth);
+        shapes[Direction.WEST.get3DDataValue()] = Block.box(16.0D - depth, inset, inset, 16.0D, high, high);
+        shapes[Direction.EAST.get3DDataValue()] = Block.box(0.0D, inset, inset, depth, high, high);
         return shapes;
     }
 }

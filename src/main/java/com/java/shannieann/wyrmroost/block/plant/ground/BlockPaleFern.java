@@ -22,7 +22,7 @@ public class BlockPaleFern extends BlockWyrmPlant {
 
     private static final int RECOVER_TICKS = 40;
 
-    //TODO: Alert nearby dragons when touched
+    //TODO: Alert dragons
     public BlockPaleFern(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(TOUCHED, false));

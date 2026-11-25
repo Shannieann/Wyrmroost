@@ -39,7 +39,7 @@ public class BlockSidewPitcher extends BlockWyrmPlant {
     //DRIPS
     private static final int SPLASH_CHANCE = 6;
 
-    //TODO: Growth stages, once there are textures for them
+    //TODO: Growth stages
     public BlockSidewPitcher(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FILLED, false));
@@ -94,9 +94,10 @@ public class BlockSidewPitcher extends BlockWyrmPlant {
 
     @Override
     public void attack(BlockState state, Level level, BlockPos pos, Player player) {
-        if (!(level instanceof ServerLevel serverLevel)) {
+        if (!(level instanceof ServerLevel)) {
             return;
         }
+        ServerLevel serverLevel = (ServerLevel) level;
         bubble(serverLevel, pos, state.getValue(FILLED) ? FULL_BUBBLES : EMPTY_BUBBLES);
         for (BlockPos nearby : BlockPos.betweenClosed(pos.offset(-PATCH_RADIUS, -1, -PATCH_RADIUS), pos.offset(PATCH_RADIUS, 1, PATCH_RADIUS))) {
             if (nearby.equals(pos)) {

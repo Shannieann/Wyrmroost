@@ -51,8 +51,8 @@ public class BlockCrevasseCotton extends BlockAttachedPlant {
         if (!(entity instanceof Projectile) || entity.getDeltaMovement().lengthSqr() < MIN_PROJECTILE_SPEED * MIN_PROJECTILE_SPEED) {
             return;
         }
-        if (level instanceof ServerLevel serverLevel) {
-            serverLevel.sendParticles(ParticleTypes.POOF, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
+        if (level instanceof ServerLevel) {
+            ((ServerLevel) level).sendParticles(ParticleTypes.POOF, pos.getX() + 0.5D, pos.getY() + 0.5D, pos.getZ() + 0.5D,
                     PUFF_PARTICLES, PUFF_SPREAD, PUFF_SPREAD, PUFF_SPREAD, PUFF_SPEED);
         }
     }

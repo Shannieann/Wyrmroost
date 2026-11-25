@@ -41,7 +41,7 @@ public class BlockVarishCoral extends DoublePlantBlock implements SimpleWaterlog
     private static final float TOUCH_DAMAGE = 2.0F;
     private static final float BREAK_DAMAGE = 5.0F;
 
-    //TODO: Dead varish coral, once there are textures for it
+    //TODO: Dead varish coral
     public BlockVarishCoral(Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(HALF, DoubleBlockHalf.LOWER).setValue(WATERLOGGED, true));

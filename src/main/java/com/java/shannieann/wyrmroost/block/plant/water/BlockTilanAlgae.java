@@ -32,7 +32,7 @@ public class BlockTilanAlgae extends BlockWyrmPlant {
         return SHAPE;
     }
 
-    //TODO: Caustic water instead of water
+    //TODO: Caustic water
     @Override
     protected boolean mayPlaceOn(BlockState state, BlockGetter level, BlockPos pos) {
         FluidState below = level.getFluidState(pos);

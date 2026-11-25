@@ -59,8 +59,8 @@ public class BlockLarnWeed extends Block implements SimpleWaterloggedBlock {
     private final Supplier<Item> shoot;
     private final MapCodec<BlockLarnWeed> codec;
 
-    //TODO: Suds should also bleach the stalk
-    //TODO: Caustic water instead of water
+    //TODO: Suds
+    //TODO: Caustic water
     public BlockLarnWeed(Properties properties, Supplier<Item> shoot) {
         super(properties);
         this.shoot = shoot;

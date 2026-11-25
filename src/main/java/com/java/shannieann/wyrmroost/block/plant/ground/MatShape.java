@@ -18,9 +18,4 @@ public enum MatShape implements StringRepresentable {
     public String getSerializedName() {
         return name;
     }
-
-    @Override
-    public String toString() {
-        return name;
-    }
 }

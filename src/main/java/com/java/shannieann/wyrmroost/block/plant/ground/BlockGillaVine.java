@@ -21,7 +21,7 @@ public class BlockGillaVine extends BlockWyrmPlant {
     private static final double SLOWDOWN = 0.8D;
     private static final double MOVING_THRESHOLD = 0.003D;
 
-    //TODO: Gilla berries, once there is an item texture for them
+    //TODO: Gilla berries
     public BlockGillaVine(Properties properties) {
         super(properties);
     }
