@@ -25,7 +25,7 @@ import net.minecraft.world.phys.BlockHitResult;
 public class BlockWildFireFlower extends BlockWyrmPlant {
     public static final MapCodec<BlockWildFireFlower> CODEC = simpleCodec(BlockWildFireFlower::new);
     public static final BooleanProperty LIT = BooleanProperty.create("lit");
-    
+
     //BURNING
     private static final int BURN_TICKS = 40;
     private static final int IGNITE_SECONDS = 3;
