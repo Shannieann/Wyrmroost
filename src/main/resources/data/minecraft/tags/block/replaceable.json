@@ -1,6 +1,13 @@
 {
   "replace": false,
   "values": [
-    "wyrmroost:sal_bush_vine"
+    "wyrmroost:sal_bush_vine",
+    "wyrmroost:extra_tall_grass",
+    "wyrmroost:riskagrass",
+    "wyrmroost:tall_riskagrass",
+    "wyrmroost:pale_fern",
+    "wyrmroost:tall_pale_fern",
+    "wyrmroost:moss_vine",
+    "wyrmroost:stygian_vines"
   ]
 }
