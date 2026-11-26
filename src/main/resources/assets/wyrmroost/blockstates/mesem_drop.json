@@ -1,28 +1,54 @@
 {
   "variants": {
-    "facing=up": {
+    "facing=up,ripe=true": {
       "model": "wyrmroost:block/mesem_drop",
       "x": 180
     },
-    "facing=down": {
+    "facing=up,ripe=false": {
+      "model": "wyrmroost:block/mesem_drop_picked",
+      "x": 180
+    },
+    "facing=down,ripe=true": {
       "model": "wyrmroost:block/mesem_drop"
     },
-    "facing=north": {
+    "facing=down,ripe=false": {
+      "model": "wyrmroost:block/mesem_drop_picked"
+    },
+    "facing=north,ripe=true": {
       "model": "wyrmroost:block/mesem_drop",
       "x": 270
     },
-    "facing=south": {
+    "facing=north,ripe=false": {
+      "model": "wyrmroost:block/mesem_drop_picked",
+      "x": 270
+    },
+    "facing=south,ripe=true": {
       "model": "wyrmroost:block/mesem_drop",
       "x": 270,
       "y": 180
     },
-    "facing=east": {
+    "facing=south,ripe=false": {
+      "model": "wyrmroost:block/mesem_drop_picked",
+      "x": 270,
+      "y": 180
+    },
+    "facing=east,ripe=true": {
       "model": "wyrmroost:block/mesem_drop",
       "x": 270,
       "y": 90
     },
-    "facing=west": {
+    "facing=east,ripe=false": {
+      "model": "wyrmroost:block/mesem_drop_picked",
+      "x": 270,
+      "y": 90
+    },
+    "facing=west,ripe=true": {
       "model": "wyrmroost:block/mesem_drop",
+      "x": 270,
+      "y": 270
+    },
+    "facing=west,ripe=false": {
+      "model": "wyrmroost:block/mesem_drop_picked",
       "x": 270,
       "y": 270
     }

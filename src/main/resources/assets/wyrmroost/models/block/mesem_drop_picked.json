@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:block/cross",
   "textures": {
-    "cross": "wyrmroost:block/lutala_plant"
+    "cross": "wyrmroost:block/mesem_drop_picked"
   }
 }

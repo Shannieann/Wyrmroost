@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "half=lower": {
+      "model": "wyrmroost:block/dead_varish_coral_bottom"
+    },
+    "half=upper": {
+      "model": "wyrmroost:block/dead_varish_coral_top"
+    }
+  }
+}

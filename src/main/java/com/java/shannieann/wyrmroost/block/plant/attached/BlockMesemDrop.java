@@ -1,5 +1,6 @@
 package com.java.shannieann.wyrmroost.block.plant.attached;
 
+import com.java.shannieann.wyrmroost.registry.WyrmroostItemRegistry;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
@@ -28,7 +29,6 @@ public class BlockMesemDrop extends BlockAttachedPlant {
     private static final int MIN_DROPS = 1;
     private static final int MAX_DROPS = 2;
 
-    //TODO: Unripe texture vs Ripe Texture
     public BlockMesemDrop(Properties properties) {
         super(properties);
         this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.DOWN).setValue(RIPE, true));
@@ -62,7 +62,7 @@ public class BlockMesemDrop extends BlockAttachedPlant {
         }
         if (!level.isClientSide()) {
             int drops = MIN_DROPS + level.getRandom().nextInt(MAX_DROPS - MIN_DROPS + 1);
-            popResource(level, pos, new ItemStack(this, drops));
+            popResource(level, pos, new ItemStack(WyrmroostItemRegistry.MESEM_GEM_ITEM.get(), drops));
             level.setBlock(pos, state.setValue(RIPE, false), 3);
         }
         return InteractionResult.SUCCESS;

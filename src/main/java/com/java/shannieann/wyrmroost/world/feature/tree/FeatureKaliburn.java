@@ -3,8 +3,8 @@ package com.java.shannieann.wyrmroost.world.feature.tree;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.java.shannieann.wyrmroost.block.BlockKaliburnLeaves;
-import com.java.shannieann.wyrmroost.block.BlockKaliburnLog;
+import com.java.shannieann.wyrmroost.block.tree.BlockKaliburnLeaves;
+import com.java.shannieann.wyrmroost.block.tree.BlockKaliburnLog;
 import com.java.shannieann.wyrmroost.registry.WyrmroostBlockRegistry;
 import com.mojang.serialization.Codec;
 

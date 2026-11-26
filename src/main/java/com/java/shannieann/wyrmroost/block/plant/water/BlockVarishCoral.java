@@ -1,9 +1,11 @@
 package com.java.shannieann.wyrmroost.block.plant.water;
 
 import com.mojang.serialization.MapCodec;
+import java.util.function.Supplier;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -33,7 +35,6 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 
 
 public class BlockVarishCoral extends DoublePlantBlock implements SimpleWaterloggedBlock {
-    public static final MapCodec<BlockVarishCoral> CODEC = simpleCodec(BlockVarishCoral::new);
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
     private static final VoxelShape SHAPE = Block.box(2.0D, 0.0D, 2.0D, 14.0D, 16.0D, 14.0D);
 
@@ -41,15 +42,23 @@ public class BlockVarishCoral extends DoublePlantBlock implements SimpleWaterlog
     private static final float TOUCH_DAMAGE = 2.0F;
     private static final float BREAK_DAMAGE = 5.0F;
 
-    //TODO: Dead varish coral
-    public BlockVarishCoral(Properties properties) {
+    private final Supplier<Block> deadBlock;
+    private final MapCodec<BlockVarishCoral> codec;
+
+    public BlockVarishCoral(Properties properties, Supplier<Block> deadBlock) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(HALF, DoubleBlockHalf.LOWER).setValue(WATERLOGGED, true));
+        this.deadBlock = deadBlock;
+        this.codec = simpleCodec(newProperties -> new BlockVarishCoral(newProperties, deadBlock));
+        this.registerDefaultState(this.stateDefinition.any().setValue(HALF, DoubleBlockHalf.LOWER).setValue(WATERLOGGED, deadBlock != null));
     }
 
     @Override
     public MapCodec<BlockVarishCoral> codec() {
-        return CODEC;
+        return codec;
+    }
+
+    public boolean isAlive() {
+        return deadBlock != null;
     }
 
     @Override
@@ -66,40 +75,49 @@ public class BlockVarishCoral extends DoublePlantBlock implements SimpleWaterlog
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos pos = context.getClickedPos();
         Level level = context.getLevel();
-        if (pos.getY() + 1 > level.getMaxY() || !isFullWater(level, pos) || !isFullWater(level, pos.above())) {
+        if (pos.getY() + 1 > level.getMaxY()) {
             return null;
         }
-        return this.defaultBlockState();
+        if (isAlive() && (!isFullWater(level, pos) || !isFullWater(level, pos.above()))) {
+            return null;
+        }
+        if (!isAlive() && !level.getBlockState(pos.above()).canBeReplaced(context)) {
+            return null;
+        }
+        return this.defaultBlockState().setValue(WATERLOGGED, isFullWater(level, pos));
     }
 
     @Override
     public void setPlacedBy(Level level, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack) {
-        level.setBlock(pos.above(), this.defaultBlockState().setValue(HALF, DoubleBlockHalf.UPPER), 3);
+        level.setBlock(pos.above(), this.defaultBlockState().setValue(HALF, DoubleBlockHalf.UPPER).setValue(WATERLOGGED, isFullWater(level, pos.above())), 3);
     }
 
     @Override
     public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
-        if (!state.getValue(WATERLOGGED)) {
-            return false;
-        }
         BlockPos belowPos = pos.below();
         BlockState below = level.getBlockState(belowPos);
         if (state.getValue(HALF) == DoubleBlockHalf.UPPER) {
-            return below.is(this) && below.getValue(HALF) == DoubleBlockHalf.LOWER;
+            return below.getBlock() instanceof BlockVarishCoral && below.getValue(HALF) == DoubleBlockHalf.LOWER;
         }
         return below.isFaceSturdy(level, belowPos, Direction.UP);
     }
 
     @Override
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess tickAccess, BlockPos pos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
-        tickAccess.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+        if (state.getValue(WATERLOGGED)) {
+            tickAccess.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
+        }
+        BlockState empty = state.getValue(WATERLOGGED) ? Blocks.WATER.defaultBlockState() : Blocks.AIR.defaultBlockState();
         DoubleBlockHalf half = state.getValue(HALF);
         boolean partnerSide = (half == DoubleBlockHalf.LOWER && facing == Direction.UP) || (half == DoubleBlockHalf.UPPER && facing == Direction.DOWN);
-        if (partnerSide && (!facingState.is(this) || facingState.getValue(HALF) == half)) {
-            return Blocks.WATER.defaultBlockState();
+        if (partnerSide && (!(facingState.getBlock() instanceof BlockVarishCoral) || facingState.getValue(HALF) == half)) {
+            return empty;
         }
         if (half == DoubleBlockHalf.LOWER && facing == Direction.DOWN && !state.canSurvive(level, pos)) {
-            return Blocks.WATER.defaultBlockState();
+            return empty;
+        }
+        if (isAlive() && !CoralDeath.isWet(state, level, pos)) {
+            CoralDeath.scheduleCheck(tickAccess, pos, this, random);
         }
         return state;
     }
@@ -110,13 +128,36 @@ public class BlockVarishCoral extends DoublePlantBlock implements SimpleWaterlog
     }
 
     @Override
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean movedByPiston) {
+        if (isAlive() && !CoralDeath.isWet(state, level, pos)) {
+            level.scheduleTick(pos, this, CoralDeath.deathDelay(level.getRandom()));
+        }
+    }
+
+    @Override
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+        if (!isAlive() || CoralDeath.isWet(state, level, pos)) {
+            return;
+        }
+        BlockPos partnerPos = state.getValue(HALF) == DoubleBlockHalf.LOWER ? pos.above() : pos.below();
+        BlockState partner = level.getBlockState(partnerPos);
+        BlockState dead = deadBlock.get().defaultBlockState();
+        level.setBlock(pos, dead.setValue(HALF, state.getValue(HALF)).setValue(WATERLOGGED, state.getValue(WATERLOGGED)), 2);
+        if (partner.is(this)) {
+            level.setBlock(partnerPos, dead.setValue(HALF, partner.getValue(HALF)).setValue(WATERLOGGED, partner.getValue(WATERLOGGED)), 2);
+        }
+    }
+
+    @Override
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effectApplier, boolean isPrecise) {
-        PlantShock.shock(level, pos, entity, TOUCH_DAMAGE, true);
+        if (isAlive()) {
+            PlantShock.shock(level, pos, entity, TOUCH_DAMAGE, true);
+        }
     }
 
     @Override
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
-        if (!player.isCreative()) {
+        if (isAlive() && !player.isCreative()) {
             PlantShock.shock(level, pos, player, BREAK_DAMAGE, true);
         }
         return super.playerWillDestroy(level, pos, state, player);

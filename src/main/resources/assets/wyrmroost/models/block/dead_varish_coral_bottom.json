@@ -1,0 +1,163 @@
+{
+  "ambientocclusion": false,
+  "textures": {
+    "coral": "wyrmroost:block/dead_varish_coral_bottom",
+    "particle": "wyrmroost:block/dead_varish_coral_bottom"
+  },
+  "elements": [
+    {
+      "from": [
+        -3.5,
+        0,
+        8
+      ],
+      "to": [
+        19.5,
+        16,
+        8
+      ],
+      "rotation": {
+        "angle": 45,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            11.5,
+            16
+          ],
+          "texture": "#coral"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            16
+          ],
+          "texture": "#coral"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            11.5,
+            16
+          ],
+          "texture": "#coral"
+        },
+        "west": {
+          "uv": [
+            11.5,
+            0,
+            11.5,
+            16
+          ],
+          "texture": "#coral"
+        },
+        "up": {
+          "uv": [
+            11.5,
+            0,
+            0,
+            0
+          ],
+          "texture": "#coral"
+        },
+        "down": {
+          "uv": [
+            23,
+            0,
+            11.5,
+            0
+          ],
+          "texture": "#coral"
+        }
+      }
+    },
+    {
+      "from": [
+        -3.5,
+        0,
+        8
+      ],
+      "to": [
+        19.5,
+        16,
+        8
+      ],
+      "rotation": {
+        "angle": -45,
+        "axis": "y",
+        "origin": [
+          8,
+          0,
+          8
+        ]
+      },
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            11.5,
+            16
+          ],
+          "texture": "#coral"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0,
+            16
+          ],
+          "texture": "#coral"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            11.5,
+            16
+          ],
+          "texture": "#coral"
+        },
+        "west": {
+          "uv": [
+            11.5,
+            0,
+            11.5,
+            16
+          ],
+          "texture": "#coral"
+        },
+        "up": {
+          "uv": [
+            11.5,
+            0,
+            0,
+            0
+          ],
+          "texture": "#coral"
+        },
+        "down": {
+          "uv": [
+            23,
+            0,
+            11.5,
+            0
+          ],
+          "texture": "#coral"
+        }
+      }
+    }
+  ]
+}

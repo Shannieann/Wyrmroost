@@ -1,6 +1,6 @@
 package com.java.shannieann.wyrmroost.block.plant.ground;
 
-import com.java.shannieann.wyrmroost.registry.WyrmroostPlantItemRegistry;
+import com.java.shannieann.wyrmroost.registry.WyrmroostItemRegistry;
 import com.mojang.serialization.MapCodec;
 
 import net.minecraft.core.BlockPos;
@@ -52,7 +52,7 @@ public class BlockCinisRoot extends CropBlock {
 
     @Override
     protected ItemLike getBaseSeedId() {
-        return WyrmroostPlantItemRegistry.CINIS_ROOT_ITEM.get();
+        return WyrmroostItemRegistry.CINIS_ROOT_ITEM.get();
     }
 
     @Override

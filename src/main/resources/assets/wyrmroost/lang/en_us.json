@@ -277,5 +277,7 @@
   "item.wyrmroost.cinis_root": "Cinis Root",
   "item.wyrmroost.karpo_nut": "Karpo Nut",
   "death.attack.wyrmroost.shock": "%1$s was electrocuted",
-  "death.attack.wyrmroost.shock.player": "%1$s was electrocuted while fighting %2$s"
+  "death.attack.wyrmroost.shock.player": "%1$s was electrocuted while fighting %2$s",
+  "block.wyrmroost.dead_varish_coral": "Dead Varish Coral",
+  "item.wyrmroost.mesem_gem": "Mesem Gem"
 }

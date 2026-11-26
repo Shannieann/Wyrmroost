@@ -4,7 +4,7 @@
       "model": "wyrmroost:block/sidew_pitcher"
     },
     "filled=true": {
-      "model": "wyrmroost:block/sidew_pitcher"
+      "model": "wyrmroost:block/sidew_pitcher_filled"
     }
   }
 }
